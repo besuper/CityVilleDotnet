@@ -1,0 +1,735 @@
+{
+    "idCounter": 1,
+    "userInfo": {
+        "worldName": "",
+        "is_new": true,
+        "firstDay": false,
+        "creationTimestamp": 0,
+        "player": {
+            "uid": 333,
+            "lastTrackingTimestamp": 0,
+            "options": {
+                "sfxDisabled": false,
+                "musicDisabled": false
+            },
+            "playerNews": [],
+            "gold": 9000000,
+            "cash": 1000,
+            "level": 1,
+            "xp": 0,
+            "energy": 12,
+            "energyMax": 12,
+            "neighbors": [],
+            "commodities": {
+                "storage": {
+                    "goods": 100
+                }
+            },
+            "wishlist": [],
+            "seenFlags": {},
+            "expansionsPurchased": 0,
+            "inventory": {
+                "count": 0,
+                "items": {}
+            },
+            "collections": {},
+            "completedCollections": {},
+            "licenses": {},
+            "rollCounter": 0
+        },
+        "world": {
+            "mapRects": [
+                {
+                    "x": -24,
+                    "y": 0,
+                    "width": 36,
+                    "height": 36
+                }
+            ],
+            "sizeX": 36,
+            "sizeY": 36,
+            "citySim": {
+                "population": 2,
+                "populationCap": 0,
+                "potentialPopulation": 0
+            },
+            "objects": [
+                {
+                    "itemName": "storage_barn",
+                    "className": "Storage",
+                    "state": "static",
+                    "direction": 0,
+                    "position": {
+                        "x": -2,
+                        "y": 29
+                    },
+                    "id": 54000
+                },
+                {
+                    "itemName": "plot_crop",
+                    "className": "Plot",
+                    "contractName": "plot_strawberries",
+                    "state": "grown",
+                    "position": {
+                        "x": -2,
+                        "y": 27,
+                        "z": 0
+                    },
+                    "id": 54001
+                },
+                {
+                    "itemName": "plot_crop",
+                    "className": "Plot",
+                    "contractName": "plot_strawberries",
+                    "state": "grown",
+                    "position": {
+                        "x": -2,
+                        "y": 25,
+                        "z": 0
+                    },
+                    "id": 54002                    
+                },
+                {
+                    "itemName": "plot_crop",
+                    "className": "Plot",
+                    "contractName": "plot_strawberries",
+                    "state": "grown",
+                    "position": {
+                        "x": 0,
+                        "y": 27,
+                        "z": 0
+                    },
+                    "id": 54003
+                },
+                {
+                    "itemName": "plot_crop",
+                    "className": "Plot",
+                    "contractName": "plot_strawberries",
+                    "state": "grown",
+                    "position": {
+                        "x": 0,
+                        "y": 25,
+                        "z": 0
+                    },
+                    "id": 54004
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 33,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53000,
+                    "state": "static",
+                    "tempId": -1,
+                    "id": 54005
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 30,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53001,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 27,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53002,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 24,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53003,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 21,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53004,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 18,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53005,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 15,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53006,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 12,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53007,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 9,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53008,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 6,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53009,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 3,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53010,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 0,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53011,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -11,
+                        "y": 22,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53012,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -14,
+                        "y": 22,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53013,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -17,
+                        "y": 22,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53014,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -11,
+                        "y": 13,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53015,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -14,
+                        "y": 13,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53016,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -17,
+                        "y": 13,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53017,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": 4,
+                        "y": 33,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53018,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": 1,
+                        "y": 33,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53019,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -2,
+                        "y": 33,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53020,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -5,
+                        "y": 33,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53021,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -5,
+                        "y": 4,
+                        "z": 0
+                    },
+                    "direction": 0,
+                    "itemName": "biz_lotsite_4x4",
+                    "tempId": -1,
+                    "className": "LotSite",
+                    "components": {},
+                    "id": 53022,
+                    "state": "static"
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 39,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53026,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 42,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53027,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 45,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53028,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 48,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53029,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 51,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53030,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 54,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53031,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 57,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53032,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 60,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53033,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 63,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53034,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 66,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53035,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 69,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53036,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": 72,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road",
+                    "direction": 0,
+                    "id": 53037,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -46,
+                        "y": 36,
+                        "z": 0
+                    },
+                    "className": "TrainTracks",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "train_tracks_ne",
+                    "direction": 0,
+                    "id": 53038,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": -3,
+                        "y": 39,
+                        "z": 0
+                    },
+                    "className": "TrainStation",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "train_platform",
+                    "direction": 1,
+                    "id": 47,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": 7,
+                        "y": 33,
+                        "z": 0
+                    },
+                    "className": "Residence",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "res_ritahouse",
+                    "direction": 0,
+                    "id": 48,
+                    "state": "grown",
+                    "tempId": -1
+                },
+                {
+                    "deleted": false,
+                    "position": {
+                        "x": -10,
+                        "y": 32,
+                        "z": 0
+                    },
+                    "direction": 1,
+                    "itemName": "deco_roadsign2",
+                    "tempId": -1,
+                    "className": "Decoration",
+                    "components": {},
+                    "id": 49,
+                    "state": "static"
+                },
+                {
+                    "deleted": false,
+                    "position": {
+                        "x": -5,
+                        "y": 1,
+                        "z": 0
+                    },
+                    "direction": 0,
+                    "itemName": "deco_roadsign4",
+                    "tempId": -1,
+                    "className": "Decoration",
+                    "components": {},
+                    "id": 51,
+                    "state": "static"
+                },
+                {
+                    "position": {
+                        "x": -8,
+                        "y": -3,
+                        "z": 0
+                    },
+                    "className": "Road",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "road-init",
+                    "direction": 0,
+                    "id": 53011,
+                    "state": "static",
+                    "tempId": -1
+                }        
+            ]
+        }
+    },
+    "franchises": []
+}
