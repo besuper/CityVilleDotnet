@@ -5,7 +5,13 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder();
 
+builder.Services.AddRazorPages();
 builder.Services.AddFastEndpoints();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+}
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -21,6 +27,7 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(o =>
 
 var app = builder.Build();
 
+app.MapRazorPages();
 app.UseFastEndpoints();
 app.UseStaticFiles();
 app.UseRouting();
