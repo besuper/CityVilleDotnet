@@ -24,6 +24,7 @@
 
 	<ItemGroup>
 		<Folder Include="Common\Persistence\" />
+		<Folder Include="Common\Persistence\Migrations\" />
 		<Folder Include="wwwroot\" />
 	</ItemGroup>
 

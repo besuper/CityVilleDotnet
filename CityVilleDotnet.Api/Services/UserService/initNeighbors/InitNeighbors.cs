@@ -1,11 +1,12 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.Persistence;
 using FluorineFx;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace CityVilleDotnet.Api.Services.UserService.initNeighbors;
 
-internal sealed class InitNeighbors : AmfService
+internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService(context)
 {
     public class NeighborResponse
     {
@@ -22,7 +23,7 @@ internal sealed class InitNeighbors : AmfService
         public int? Fake { get; set; }
     }
 
-    public override async Task<ASObject> HandlePacket(object[] _params)
+    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId)
     {
         var response = new NeighborResponse()
         {

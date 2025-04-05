@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CityVilleDotnet.Api.Common.Persistence.Migrations
 {
     [DbContext(typeof(CityVilleDbContext))]
-    [Migration("20250405093851_Init")]
+    [Migration("20250405151352_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -73,9 +73,6 @@ namespace CityVilleDotnet.Api.Common.Persistence.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Uid")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -89,9 +86,6 @@ namespace CityVilleDotnet.Api.Common.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.HasIndex("Uid")
-                        .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
                 });

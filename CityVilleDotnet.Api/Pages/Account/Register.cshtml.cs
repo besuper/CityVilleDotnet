@@ -49,18 +49,9 @@ public class RegisterModel(
 
         if (ModelState.IsValid)
         {
-            int newUid = 1;
-
-            var maxUidUser = _context.Users.OrderByDescending(u => u.Uid).FirstOrDefault();
-            if (maxUidUser != null)
-            {
-                newUid = maxUidUser.Uid + 1;
-            }
-
             var user = new ApplicationUser
             {
                 UserName = Input.Username,
-                Uid = newUid
             };
 
             var result = await _userManager.CreateAsync(user, Input.Password);

@@ -1,13 +1,14 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.Persistence;
 using CityVilleDotnet.Api.Services.QuestService.Domain;
 using FluorineFx;
 using System.Text.Json;
 
 namespace CityVilleDotnet.Api.Services.UserService.pingFeedQuests;
 
-internal sealed class PingFeedQuests : AmfService
+internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService(context)
 {
-    public override async Task<ASObject> HandlePacket(object[] _params)
+    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId)
     {
         string jsonContent = File.ReadAllText("Resources/defaultQuests.json");
 

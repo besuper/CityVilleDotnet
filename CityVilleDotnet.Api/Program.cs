@@ -1,9 +1,11 @@
+using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Common.Domain;
 using CityVilleDotnet.Api.Common.Persistence;
 using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -51,6 +53,13 @@ builder.Services.Configure<JsonOptions>(options =>
 });
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(o => o.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
+
+var serviceTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(AmfService)));
+
+foreach (var type in serviceTypes)
+{
+    builder.Services.AddScoped(type);
+}
 
 var app = builder.Build();
 

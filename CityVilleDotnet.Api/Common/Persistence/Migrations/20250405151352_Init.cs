@@ -30,7 +30,6 @@ namespace CityVilleDotnet.Api.Common.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Uid = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -188,12 +187,6 @@ namespace CityVilleDotnet.Api.Common.Persistence.Migrations
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_Uid",
-                table: "AspNetUsers",
-                column: "Uid",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",

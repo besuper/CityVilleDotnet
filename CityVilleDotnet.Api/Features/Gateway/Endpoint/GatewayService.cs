@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CityVilleDotnet.Api.Features.Gateway.Endpoint;
 
-internal sealed class GatewayService(UserManager<ApplicationUser> _userManager) : EndpointWithoutRequest
+internal sealed class GatewayService(UserManager<ApplicationUser> _userManager, IServiceProvider _serviceProvider) : EndpointWithoutRequest
 {
     public override void Configure()
     {
@@ -58,12 +58,6 @@ internal sealed class GatewayService(UserManager<ApplicationUser> _userManager) 
 
             var uid = int.Parse((string)_uid);
 
-            if (uid != user.Uid)
-            {
-                await SendUnauthorizedAsync(ct);
-                return;
-            }
-
             foreach (ASObject item in _content)
             {
                 var _params = item["params"] as object[];
@@ -73,7 +67,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> _userManager) 
                 Console.WriteLine($"Received request for function {functionName} user {uid}");
 
                 var className = functionName.Split('.')[1].Pascalize();
-                var response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{functionName}.{className}", "HandlePacket", _params);
+                var response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{functionName}.{className}", "HandlePacket", _params, Guid.Parse(user.Id));
 
                 if (response is null)
                 {
@@ -102,7 +96,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> _userManager) 
         }
     }
 
-    public async Task<ASObject> InvokeHandlePacketAsync(string className, string methodName, object parameter)
+    public async Task<ASObject> InvokeHandlePacketAsync(string className, string methodName, object parameter, Guid userId)
     {
         var assembly = Assembly.GetExecutingAssembly();
         var classType = assembly.GetTypes()
@@ -113,7 +107,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> _userManager) 
             return null;
         }
 
-        var instance = Activator.CreateInstance(classType);
+        var instance = ActivatorUtilities.CreateInstance(_serviceProvider, classType);
 
         var method = classType.GetMethod(methodName,
             BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
@@ -128,7 +122,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> _userManager) 
             throw new Exception("The method does not match the expected return type.");
         }
 
-        return await (Task<ASObject>)method.Invoke(instance, new object[] { parameter });
+        return await (Task<ASObject>)method.Invoke(instance, new object[] { parameter, userId });
     }
 
     public static ASObject CreateEmptyResponse()

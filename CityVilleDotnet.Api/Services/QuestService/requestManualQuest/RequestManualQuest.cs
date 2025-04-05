@@ -1,12 +1,13 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.Persistence;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using FluorineFx;
 
 namespace CityVilleDotnet.Api.Services.QuestService.requestManualQuest;
 
-internal sealed class RequestManualQuest : AmfService
+internal sealed class RequestManualQuest(CityVilleDbContext context) : AmfService(context)
 {
-    public override async Task<ASObject> HandlePacket(object[] _params)
+    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId)
     {
         if (_params.Length < 1)
         {

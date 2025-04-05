@@ -1,10 +1,16 @@
-﻿using FluorineFx;
+﻿using CityVilleDotnet.Api.Common.Persistence;
+using FluorineFx;
 
 namespace CityVilleDotnet.Api.Common.Amf;
 
 public class AmfService
 {
-    public virtual async Task<ASObject> HandlePacket(object[] _params)
+    protected readonly CityVilleDbContext _context;
+    public AmfService(CityVilleDbContext context)
+    {
+        _context = context;
+    }
+    public virtual async Task<ASObject> HandlePacket(object[] _params, Guid userId)
     {
         throw new Exception("Not implemented");
     }
