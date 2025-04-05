@@ -5,19 +5,28 @@ using System.Collections;
 using System.Reflection;
 using Humanizer;
 using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.Domain;
+using Microsoft.AspNetCore.Identity;
 
 namespace CityVilleDotnet.Api.Features.Gateway.Endpoint;
 
-internal sealed class GatewayService : EndpointWithoutRequest
+internal sealed class GatewayService(UserManager<ApplicationUser> _userManager) : EndpointWithoutRequest
 {
     public override void Configure()
     {
         Post("/flashservices/gateway.php");
-        AllowAnonymous();
     }
 
     public override async Task HandleAsync(CancellationToken ct)
     {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user is null)
+        {
+            await SendUnauthorizedAsync(ct);
+            return;
+        }
+
         using var ms = new MemoryStream();
         await HttpContext.Request.Body.CopyToAsync(ms);
         ms.Position = 0;
@@ -34,9 +43,26 @@ internal sealed class GatewayService : EndpointWithoutRequest
             Console.WriteLine($"Response URI: {responseURI}, Target URI: {targetURI}");
 
             var content = requestBody.Content as object[];
+
+            var header = content[0] as ASObject;
             var _content = content[1] as object[];
 
             var responses = new ArrayList();
+            var _uid = header["zyUid"];
+
+            if (_uid is null)
+            {
+                await SendUnauthorizedAsync(ct);
+                return;
+            }
+
+            var uid = int.Parse((string)_uid);
+
+            if (uid != user.Uid)
+            {
+                await SendUnauthorizedAsync(ct);
+                return;
+            }
 
             foreach (ASObject item in _content)
             {
@@ -44,7 +70,7 @@ internal sealed class GatewayService : EndpointWithoutRequest
                 var functionName = item["functionName"] as string;
                 var sequence = item["sequence"];
 
-                Console.WriteLine($"Received request for function {functionName}");
+                Console.WriteLine($"Received request for function {functionName} user {uid}");
 
                 var className = functionName.Split('.')[1].Pascalize();
                 var response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{functionName}.{className}", "HandlePacket", _params);

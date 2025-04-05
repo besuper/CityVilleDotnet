@@ -1,20 +1,30 @@
 ﻿@page
 @model CityVilleDotnet.Api.Pages.GameModel
 
-<center>
-	<object data="Game.26346.swf?game_config_url=gameSettings.xml&quest_url=questSettings.xml&effects_config_url=effectsConfig.xml&localization_url=en.xml&debugMode=true&zySnid=333&zySnuid=333&zyUid=333&app_url=&flashRevision=26346&asset_url=.&generateSchema=1&sn_app_url=&snapiEnable=1" width="760" height="594" allowFullscreen="true">
-	</object>
-</center>
+<div id="game">
+</div>
 
 <script>
+	function createGame() {
+		const gameFile = "Game.26346.swf";
+		const user = getUserInfo();
+
+		const settings = `game_config_url=gameSettings.xml&quest_url=questSettings.xml&effects_config_url=effectsConfig.xml&localization_url=en.xml&debugMode=true&zySnid=${user.uid}&zySnuid=${user.uid}&zyUid=${user.uid}&app_url=&flashRevision=26346&asset_url=.&generateSchema=1&sn_app_url=&snapiEnable=1`;
+
+		const game = document.createElement("object");
+		game.setAttribute("data", `${gameFile}?${settings}`);
+
+		document.getElementById("game").appendChild(game);
+	}
+
 	function getUserInfo() {
 		console.log("getUserInfo called");
 		//inner_getUserInfo();
 		return {
-			'zid': 333,
-			'uid': 333,
-			'first_name': 'Captain Rusty',
-			'name': 'Captain Rusty',
+			'zid': @Model.CurrentUser.Uid,
+			'uid': @Model.CurrentUser.Uid,
+			'first_name': '@Model.CurrentUser.UserName',
+			'name': '@Model.CurrentUser.UserName',
 			"sex": 'M',
 			'pic_square': 'blank.png'
 		};
@@ -37,4 +47,8 @@
 		// inner_onGameLoaded();
 		return;
 	}
+
+	document.addEventListener("DOMContentLoaded", function() {
+		createGame();
+	});
 </script>
