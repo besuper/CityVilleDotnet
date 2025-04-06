@@ -26,4 +26,9 @@ public class World
     {
         Objects.Add(obj);
     }
+
+    internal WorldObject? GetBuilding(int id)
+    {
+        return Objects.FirstOrDefault(x => x.WorldFlatId == id);
+    }
 }

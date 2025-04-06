@@ -1,6 +1,7 @@
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Common.Domain;
 using CityVilleDotnet.Api.Common.Persistence;
+using CityVilleDotnet.Api.Services.Settings;
 using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -74,5 +75,7 @@ using var scope = app.Services.CreateScope();
 await using var context = scope.ServiceProvider.GetRequiredService<CityVilleDbContext>();
 
 await context.Database.MigrateAsync();
+
+GameSettingsManager.Instance.Initialize();
 
 app.Run();
