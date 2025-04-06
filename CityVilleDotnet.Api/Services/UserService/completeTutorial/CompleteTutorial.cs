@@ -13,7 +13,7 @@ public class CompleteTutorial(CityVilleDbContext context) : AmfService(context)
     {
         var user = await context.Set<User>()
             .Include(x => x.UserInfo)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(x => x.UserId == userId);
 
         if (user is null)
         {
