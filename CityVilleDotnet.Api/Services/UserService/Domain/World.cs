@@ -27,8 +27,8 @@ public class World
         Objects.Add(obj);
     }
 
-    internal WorldObject? GetBuilding(int id)
+    internal WorldObject? GetBuilding(int id, int x, int y, int z)
     {
-        return Objects.FirstOrDefault(x => x.WorldFlatId == id);
+        return Objects.FirstOrDefault(w => w.WorldFlatId == id && w.Position.X == x && w.Position.Y == y && w.Position.Z == z);
     }
 }

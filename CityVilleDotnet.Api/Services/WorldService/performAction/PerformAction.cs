@@ -83,9 +83,10 @@ internal sealed class PerformAction(CityVilleDbContext context) : AmfService(con
                 throw new Exception("Building can't be null when action type is place");
             }
 
+            var position = building["position"] as ASObject;
             var itemId = (int)building["id"];
 
-            var obj = user.GetWorld().GetBuilding(itemId);
+            var obj = user.GetWorld().GetBuilding(itemId, (int)position["x"], (int)position["y"], (int)position["z"]);
 
             if (obj is null)
             {
@@ -111,9 +112,10 @@ internal sealed class PerformAction(CityVilleDbContext context) : AmfService(con
                 throw new Exception($"Building can't be null when action type is {actionType}");
             }
 
+            var position = building["position"] as ASObject;
             var itemId = (int)building["id"];
 
-            var obj = user.GetWorld().GetBuilding(itemId);
+            var obj = user.GetWorld().GetBuilding(itemId, (int)position["x"], (int)position["y"], (int)position["z"]);
 
             if (obj is null)
             {

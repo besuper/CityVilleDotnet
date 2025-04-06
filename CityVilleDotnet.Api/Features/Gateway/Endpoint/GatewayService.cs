@@ -64,7 +64,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> _userManager, 
                 var functionName = item["functionName"] as string;
                 var sequence = item["sequence"];
 
-                Console.WriteLine($"Received request for function {functionName} user {uid}");
+                Console.WriteLine($"Received request for function {functionName} sequence {sequence}");
 
                 var className = functionName.Split('.')[1].Pascalize();
                 var response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{functionName}.{className}", "HandlePacket", _params, Guid.Parse(user.Id));
