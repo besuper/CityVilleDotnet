@@ -1,5 +1,4 @@
 using CityVilleDotnet.Api.Common.Domain;
-using CityVilleDotnet.Api.Common.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -9,12 +8,10 @@ namespace CityVilleDotnet.Api.Pages.Account;
 
 public class RegisterModel(
     UserManager<ApplicationUser> userManager,
-    SignInManager<ApplicationUser> signInManager,
-    CityVilleDbContext context) : PageModel
+    SignInManager<ApplicationUser> signInManager) : PageModel
 {
     private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
-    private readonly CityVilleDbContext _context = context;
 
     [BindProperty]
     public InputModel Input { get; set; }
@@ -45,7 +42,7 @@ public class RegisterModel(
 
     public async Task<IActionResult> OnPostAsync(string returnUrl = null)
     {
-        returnUrl = returnUrl ?? Url.Content("~/");
+        returnUrl = returnUrl ?? Url.Content("~/Game");
 
         if (ModelState.IsValid)
         {
