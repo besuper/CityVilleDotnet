@@ -1,6 +1,7 @@
 ﻿namespace CityVilleDotnet.Api.Services.UserService.Domain;
 
 using CityVilleDotnet.Api.Common.Domain;
+using CityVilleDotnet.Api.Services.QuestService.Domain;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -14,6 +15,9 @@ public class User
 
     [JsonIgnore]
     public ApplicationUser? AppUser { get; private set; }
+
+    [JsonIgnore]
+    public List<Quest> Quests { get; private set; } = new List<Quest>();
 
     [JsonPropertyName("userInfo")]
     public UserInfo? UserInfo { get; set; }
@@ -45,6 +49,9 @@ public class User
         {
             item.Id = Guid.NewGuid();
         }
+
+        // Setup first quest
+        Quests.Add(Quest.Create("q_rename_city", 0, 1, QuestType.Active));
     }
 
     internal int GetGold()

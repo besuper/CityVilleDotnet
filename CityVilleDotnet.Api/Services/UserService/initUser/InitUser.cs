@@ -1,6 +1,7 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Common.Domain;
 using CityVilleDotnet.Api.Common.Persistence;
+using CityVilleDotnet.Api.Services.QuestService.Domain;
 using CityVilleDotnet.Api.Services.UserService.Domain;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService(context)
     {
         var user = await context.Set<User>()
             .AsNoTracking()
+            .Include(x => x.Quests)
             .Include(x => x.UserInfo)
             .ThenInclude(x => x.Player)
             .ThenInclude(x => x.Options)
@@ -48,7 +50,14 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService(context)
 
         var userObj = AmfConverter.Convert(user);
 
-        var response = new CityVilleResponse(333, userObj);
+        var quests = new ASObject();
+
+        if (!user.UserInfo.IsNew)
+        {
+            quests["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active));
+        }
+
+        var response = new CityVilleResponse(0, 333, quests, userObj);
 
         return response;
     }
