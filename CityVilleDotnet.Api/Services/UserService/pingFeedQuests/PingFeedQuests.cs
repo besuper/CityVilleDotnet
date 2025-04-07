@@ -8,7 +8,7 @@ namespace CityVilleDotnet.Api.Services.UserService.pingFeedQuests;
 
 internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService(context)
 {
-    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId)
+    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {
         string jsonContent = File.ReadAllText("Resources/defaultQuests.json");
 

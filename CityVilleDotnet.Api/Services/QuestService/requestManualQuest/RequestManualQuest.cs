@@ -7,7 +7,7 @@ namespace CityVilleDotnet.Api.Services.QuestService.requestManualQuest;
 
 internal sealed class RequestManualQuest(CityVilleDbContext context) : AmfService(context)
 {
-    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId)
+    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {
         if (_params.Length < 1)
         {

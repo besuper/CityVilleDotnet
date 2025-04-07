@@ -67,7 +67,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> _userManager, 
                 Console.WriteLine($"Received request for function {functionName} sequence {sequence}");
 
                 var className = functionName.Split('.')[1].Pascalize();
-                var response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{functionName}.{className}", "HandlePacket", _params, Guid.Parse(user.Id));
+                var response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{functionName}.{className}", "HandlePacket", _params, Guid.Parse(user.Id), ct);
 
                 if (response is null)
                 {
@@ -96,7 +96,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> _userManager, 
         }
     }
 
-    public async Task<ASObject> InvokeHandlePacketAsync(string className, string methodName, object parameter, Guid userId)
+    public async Task<ASObject> InvokeHandlePacketAsync(string className, string methodName, object parameter, Guid userId, CancellationToken cancellationToken)
     {
         var assembly = Assembly.GetExecutingAssembly();
         var classType = assembly.GetTypes()
@@ -122,7 +122,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> _userManager, 
             throw new Exception("The method does not match the expected return type.");
         }
 
-        return await (Task<ASObject>)method.Invoke(instance, new object[] { parameter, userId });
+        return await (Task<ASObject>)method.Invoke(instance, new object[] { parameter, userId, cancellationToken });
     }
 
     public static ASObject CreateEmptyResponse()

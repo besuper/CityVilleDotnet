@@ -9,11 +9,11 @@ namespace CityVilleDotnet.Api.Services.UserService.completeTutorial;
 
 public class CompleteTutorial(CityVilleDbContext context) : AmfService(context)
 {
-    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId)
+    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .Include(x => x.UserInfo)
-            .FirstOrDefaultAsync(x => x.UserId == userId);
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (user is null)
         {
@@ -22,7 +22,7 @@ public class CompleteTutorial(CityVilleDbContext context) : AmfService(context)
 
         user.CompleteTutorial();
 
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
 
         return GatewayService.CreateEmptyResponse();
     }

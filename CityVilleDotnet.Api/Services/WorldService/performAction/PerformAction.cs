@@ -10,14 +10,14 @@ namespace CityVilleDotnet.Api.Services.WorldService.performAction;
 
 internal sealed class PerformAction(CityVilleDbContext context) : AmfService(context)
 {
-    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId)
+    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .Include(x => x.UserInfo)
             .ThenInclude(x => x.World)
             .ThenInclude(x => x.Objects)
             .Where(x => x.UserId == userId)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
 
         if (user is null)
         {
@@ -71,7 +71,7 @@ internal sealed class PerformAction(CityVilleDbContext context) : AmfService(con
             // TODO: Check coins, goods, energy, etc...
             // Add population
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         if (actionType == "build")
@@ -100,7 +100,7 @@ internal sealed class PerformAction(CityVilleDbContext context) : AmfService(con
 
             obj.AddConstructionStage();
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         if (actionType == "finish")
@@ -129,7 +129,7 @@ internal sealed class PerformAction(CityVilleDbContext context) : AmfService(con
 
             obj.FinishConstruction();
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         return GatewayService.CreateEmptyResponse();

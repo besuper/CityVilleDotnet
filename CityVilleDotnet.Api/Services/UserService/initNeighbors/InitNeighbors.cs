@@ -23,7 +23,7 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService(con
         public int? Fake { get; set; }
     }
 
-    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId)
+    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {
         var response = new NeighborResponse()
         {

@@ -10,7 +10,7 @@ namespace CityVilleDotnet.Api.Services.UserService.initUser;
 
 internal sealed class InitUser(CityVilleDbContext context) : AmfService(context)
 {
-    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId)
+    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsNoTracking()
@@ -30,20 +30,20 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService(context)
             .ThenInclude(x => x.World)
             .ThenInclude(x => x.Objects)
             .Where(x => x.UserId == userId)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
 
         if (user is null)
         {
             // Create a new player
 
-            var appUser = await context.Set<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId.ToString());
+            var appUser = await context.Set<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId.ToString(), cancellationToken);
             string jsonContent = File.ReadAllText("Resources/defaultUser.json");
 
             user = JsonSerializer.Deserialize<User>(jsonContent);
             user.SetupNewPlayer(appUser);
 
-            await context.AddAsync(user);
-            await context.SaveChangesAsync();
+            await context.AddAsync(user, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         ASObject userObj = AmfConverter.JsonToASObject(JsonSerializer.Serialize(user));
