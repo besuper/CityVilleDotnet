@@ -14,8 +14,9 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService(co
 
         var quest = JsonSerializer.Deserialize<UserQuest>(jsonContent);
 
-        ASObject questObj = AmfConverter.JsonToASObject(JsonSerializer.Serialize(quest));
+        var rep = new ASObject();
+        rep["QuestComponent"] = AmfConverter.Convert(quest.Active.Select(x => x.Value).ToList());
 
-        return new CityVilleResponse(0, 333, questObj);
+        return new CityVilleResponse(0, 333, rep);
     }
 }

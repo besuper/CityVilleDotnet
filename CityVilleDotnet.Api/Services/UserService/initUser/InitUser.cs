@@ -46,7 +46,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService(context)
             await context.SaveChangesAsync(cancellationToken);
         }
 
-        ASObject userObj = AmfConverter.JsonToASObject(JsonSerializer.Serialize(user));
+        var userObj = AmfConverter.Convert(user);
 
         var response = new CityVilleResponse(333, userObj);
 

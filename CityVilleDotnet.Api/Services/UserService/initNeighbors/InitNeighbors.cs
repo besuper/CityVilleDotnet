@@ -1,7 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Common.Persistence;
 using FluorineFx;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace CityVilleDotnet.Api.Services.UserService.initNeighbors;
@@ -53,7 +52,7 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService(con
             }
         };
 
-        var obj = AmfConverter.JsonToASObject(JsonSerializer.Serialize(response));
+        var obj = AmfConverter.Convert(response);
 
         return new CityVilleResponse(333, obj);
     }

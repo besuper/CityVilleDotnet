@@ -1,111 +1,97 @@
 ﻿using FluorineFx;
 using System.Collections;
-using System.Text.Json;
+using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace CityVilleDotnet.Api.Common.Amf;
 
 public class AmfConverter
 {
-    public static ASObject JsonToASObject(string json)
+    public static object Convert(object obj)
     {
-        try
+        if (obj == null)
+            return null;
+
+        if (obj is ASObject)
+            return obj;
+
+        if (IsSimpleType(obj.GetType()))
         {
-            using JsonDocument doc = JsonDocument.Parse(json);
-            return ConvertJsonElementToASObject(doc.RootElement);
+            return obj;
         }
-        catch (Exception ex)
+
+        if (obj is IEnumerable arrayList)
         {
-            Console.WriteLine($"{ex.Message}");
-            return new ASObject();
+            return ConvertToArrayList(arrayList);
         }
+
+        return ConvertToASObject(obj);
     }
 
-    public static ASObject ConvertJsonElementToASObject(JsonElement element)
+    public static ASObject ConvertToASObject(object obj)
     {
         var result = new ASObject();
 
-        if (element.ValueKind == JsonValueKind.Object)
+        if (obj == null)
+            return result;
+
+        Type type = obj.GetType();
+        PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        foreach (PropertyInfo property in properties)
         {
-            foreach (var property in element.EnumerateObject())
+            if (property.GetCustomAttribute<JsonIgnoreAttribute>() != null)
             {
-                switch (property.Value.ValueKind)
-                {
-                    case JsonValueKind.Object:
-                        result[property.Name] = ConvertJsonElementToASObject(property.Value);
-                        break;
-                    case JsonValueKind.Array:
-                        result[property.Name] = ConvertJsonElementToArrayList(property.Value);
-                        break;
-                    case JsonValueKind.String:
-                        result[property.Name] = property.Value.GetString();
-                        break;
-                    case JsonValueKind.Number:
-                        if (property.Value.TryGetInt32(out int intValue))
-                            result[property.Name] = intValue;
-                        else if (property.Value.TryGetDouble(out double doubleValue))
-                            result[property.Name] = doubleValue;
-                        else
-                            result[property.Name] = property.Value.GetRawText();
-                        break;
-                    case JsonValueKind.True:
-                        result[property.Name] = true;
-                        break;
-                    case JsonValueKind.False:
-                        result[property.Name] = false;
-                        break;
-                    case JsonValueKind.Null:
-                        result[property.Name] = null;
-                        break;
-                    default:
-                        result[property.Name] = property.Value.GetRawText();
-                        break;
-                }
+                continue;
+            }
+
+            var jsonPropertyNameAttr = property.GetCustomAttribute<JsonPropertyNameAttribute>();
+            string propertyName = jsonPropertyNameAttr != null
+                ? jsonPropertyNameAttr.Name
+                : property.Name;
+
+            object value = property.GetValue(obj);
+            result[propertyName] = Convert(value);
+        }
+
+        return result;
+    }
+
+    private static ArrayList ConvertToArrayList(IEnumerable collection)
+    {
+        var result = new ArrayList();
+
+        foreach (var item in collection)
+        {
+            if (item == null)
+            {
+                result.Add(null);
+            }
+            else if (IsSimpleType(item.GetType()))
+            {
+                result.Add(item);
+            }
+            else if (item is IEnumerable enumerable)
+            {
+                result.Add(ConvertToArrayList(enumerable));
+            }
+            else
+            {
+                result.Add(ConvertToASObject(item));
             }
         }
 
         return result;
     }
 
-    public static ArrayList ConvertJsonElementToArrayList(JsonElement element)
+    private static bool IsSimpleType(Type type)
     {
-        var result = new ArrayList();
-
-        foreach (var item in element.EnumerateArray())
-        {
-            switch (item.ValueKind)
-            {
-                case JsonValueKind.Object:
-                    result.Add(ConvertJsonElementToASObject(item));
-                    break;
-                case JsonValueKind.Array:
-                    result.Add(ConvertJsonElementToArrayList(item));
-                    break;
-                case JsonValueKind.String:
-                    result.Add(item.GetString());
-                    break;
-                case JsonValueKind.Number:
-                    if (item.TryGetInt32(out int intValue))
-                        result.Add(intValue);
-                    else if (item.TryGetDouble(out double doubleValue))
-                        result.Add(doubleValue);
-                    else
-                        result.Add(item.GetRawText());
-                    break;
-                case JsonValueKind.True:
-                    result.Add(true);
-                    break;
-                case JsonValueKind.False:
-                    result.Add(false);
-                    break;
-                case JsonValueKind.Null:
-                    result.Add(null);
-                    break;
-                default:
-                    result.Add(item.GetRawText());
-                    break;
-            }
-        }
-
-        return result;
+        return type.IsPrimitive
+            || type == typeof(string)
+            || type == typeof(decimal)
+            || type == typeof(DateTime)
+            || type == typeof(TimeSpan)
+            || type == typeof(Guid)
+            || type.IsEnum;
     }
 }

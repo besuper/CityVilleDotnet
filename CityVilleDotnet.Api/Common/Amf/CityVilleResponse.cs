@@ -7,7 +7,7 @@ public class CityVilleResponse
     public int ErrorType { get; private set; } = 0;
     public int UserId { get; private set; }
     public object Metadata { get; private set; } = new ASObject();
-    public object Data { get; private set; } = new object[] { };
+    public object Data { get; private set; } = new ASObject();
     public double ServerTime { get; private set; }
 
     public CityVilleResponse(int errorType, int userId, object metadata, object data)
