@@ -93,4 +93,13 @@ public class User
     {
         UserInfo.IsNew = false;
     }
+
+    internal string SetWorldName(string name)
+    {
+        var newName = name.Trim();
+
+        UserInfo.WorldName = newName;
+
+        return newName;
+    }
 }
