@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35919.96 d17.13
+VisualStudioVersion = 17.13.35919.96
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CityVilleDotnet.Api", "CityVilleDotnet.Api\CityVilleDotnet.Api.csproj", "{5A335644-8613-4F23-94FF-BE69A23572F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CityVilleDotnet.Domain", "CityVilleDotnet.Domain\CityVilleDotnet.Domain.csproj", "{AF797EA3-39B1-482A-BAD4-D48669B9DC4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CityVilleDotnet.Persistence", "CityVilleDotnet.Persistence\CityVilleDotnet.Persistence.csproj", "{EFC67537-6AB0-4255-A52F-223EE4D7DD52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{5A335644-8613-4F23-94FF-BE69A23572F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A335644-8613-4F23-94FF-BE69A23572F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A335644-8613-4F23-94FF-BE69A23572F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF797EA3-39B1-482A-BAD4-D48669B9DC4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF797EA3-39B1-482A-BAD4-D48669B9DC4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF797EA3-39B1-482A-BAD4-D48669B9DC4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF797EA3-39B1-482A-BAD4-D48669B9DC4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFC67537-6AB0-4255-A52F-223EE4D7DD52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFC67537-6AB0-4255-A52F-223EE4D7DD52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFC67537-6AB0-4255-A52F-223EE4D7DD52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFC67537-6AB0-4255-A52F-223EE4D7DD52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

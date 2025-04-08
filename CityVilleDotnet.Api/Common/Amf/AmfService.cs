@@ -1,4 +1,4 @@
-﻿using CityVilleDotnet.Api.Common.Persistence;
+﻿using CityVilleDotnet.Persistence;
 using FluorineFx;
 
 namespace CityVilleDotnet.Api.Common.Amf;

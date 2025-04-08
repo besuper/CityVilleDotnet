@@ -23,9 +23,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Common\Persistence\" />
-		<Folder Include="Common\Persistence\Migrations\" />
 		<Folder Include="wwwroot\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\CityVilleDotnet.Domain\CityVilleDotnet.Domain.csproj" />
+	  <ProjectReference Include="..\CityVilleDotnet.Persistence\CityVilleDotnet.Persistence.csproj" />
 	</ItemGroup>
 
 </Project>

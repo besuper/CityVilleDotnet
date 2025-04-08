@@ -1,7 +1,7 @@
 using CityVilleDotnet.Api.Common.Amf;
-using CityVilleDotnet.Api.Common.Domain;
-using CityVilleDotnet.Api.Common.Persistence;
 using CityVilleDotnet.Api.Services.Settings;
+using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Persistence;
 using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

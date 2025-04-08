@@ -5,8 +5,8 @@ using System.Collections;
 using System.Reflection;
 using Humanizer;
 using CityVilleDotnet.Api.Common.Amf;
-using CityVilleDotnet.Api.Common.Domain;
 using Microsoft.AspNetCore.Identity;
+using CityVilleDotnet.Domain.Entities;
 
 namespace CityVilleDotnet.Api.Features.Gateway.Endpoint;
 
@@ -66,8 +66,9 @@ internal sealed class GatewayService(UserManager<ApplicationUser> _userManager, 
 
                 Console.WriteLine($"Received request for function {functionName} sequence {sequence}");
 
+                var packageName = functionName.Split('.')[0];
                 var className = functionName.Split('.')[1].Pascalize();
-                var response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{functionName}.{className}", "HandlePacket", _params, Guid.Parse(user.Id), ct);
+                var response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{packageName}.{className}", "HandlePacket", _params, Guid.Parse(user.Id), ct);
 
                 if (response is null)
                 {
