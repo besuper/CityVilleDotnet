@@ -120,6 +120,9 @@ public class QuestSettingsManager
 
         [XmlAttribute("type")]
         public string Type { get; set; }
+
+        [XmlAttribute("total")]
+        public string Total { get; set; }
     }
 
     [Serializable]

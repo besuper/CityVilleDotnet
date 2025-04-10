@@ -102,6 +102,49 @@ public class User
         return newName;
     }
 
+    public void handleQuestProgress(string actionType)
+    {
+        foreach (var quest in Quests.Where(x => x.QuestType == QuestType.Active))
+        {
+            var questItem = QuestSettingsManager.Instance.GetItem(quest.Name);
+
+            if (questItem is null) continue;
+
+            var index = 0;
+
+            foreach (var task in questItem.Tasks.Tasks)
+            {
+                if (task.Action.Equals(actionType))
+                {
+                    quest.Progress[index] = 1;
+                }
+
+                if (task.Action.Equals("countPlayerResourceByType"))
+                {
+                    var completed = false;
+                    var ressourceType = task.Type;
+                    var amount = int.Parse(task.Total);
+
+                    switch (ressourceType)
+                    {
+                        case "population":
+                            completed = GetWorld().GetCurrentPopulation() >= amount;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    if (completed)
+                    {
+                        quest.Progress[index] = 1;
+                    }
+                }
+
+                index++;
+            }
+        }
+    }
+
     public void CheckCompletedQuests()
     {
         var newQuests = new List<Quest>();
@@ -144,5 +187,10 @@ public class User
         }
 
         Quests.AddRange(newQuests);
+    }
+
+    public void RemoveCoin(int amount)
+    {
+        UserInfo.Player.Gold += amount;
     }
 }

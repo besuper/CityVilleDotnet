@@ -30,6 +30,12 @@ public class GameItem
     [XmlElement("requiredPopulation")]
     public int? RequiredPopulation { get; set; }
 
+    [XmlElement("populationYield")]
+    public int? PopulationYield { get; set; }
+
+    [XmlElement("populationCapYield")]
+    public int? PopulationCapYield { get; set; }
+
     [XmlElement("cost")]
     public int? Cost { get; set; }
 

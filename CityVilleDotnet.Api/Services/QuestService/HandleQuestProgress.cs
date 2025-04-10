@@ -1,5 +1,4 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
-using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
@@ -18,28 +17,13 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService(contex
 
         var user = await context.Set<User>()
             .Include(x => x.Quests)
+            .Include(x => x.UserInfo)
+            .ThenInclude(x => x.World)
+            .ThenInclude(x => x.CitySim)
             .Where(x => x.UserId == userId)
             .FirstOrDefaultAsync(cancellationToken);
 
-        foreach (var quest in user.Quests)
-        {
-            var questItem = QuestSettingsManager.Instance.GetItem(quest.Name);
-
-            if (questItem is null) continue;
-
-            var index = 0;
-
-            foreach (var task in questItem.Tasks.Tasks)
-            {
-                if (task.Action.Equals(actionType))
-                {
-                    quest.Progress[index] = 1;
-                }
-
-                index++;
-            }
-        }
-
+        user.handleQuestProgress(actionType);
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
-internal sealed class PerformAction(CityVilleDbContext context) : AmfService(context)
+internal sealed class PerformAction(CityVilleDbContext context, ILogger<PerformAction> _logger) : AmfService(context)
 {
     public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {
@@ -16,6 +16,12 @@ internal sealed class PerformAction(CityVilleDbContext context) : AmfService(con
             .Include(x => x.UserInfo)
             .ThenInclude(x => x.World)
             .ThenInclude(x => x.Objects)
+            .Include(x => x.UserInfo)
+            .ThenInclude(x => x.World)
+            .ThenInclude(x => x.CitySim)
+            .Include(x => x.UserInfo)
+            .ThenInclude(x => x.Player)
+            .Include(x => x.Quests)
             .Where(x => x.UserId == userId)
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -25,6 +31,8 @@ internal sealed class PerformAction(CityVilleDbContext context) : AmfService(con
         }
 
         var actionType = _params[0] as string;
+
+        _logger.LogInformation($"PerformAction type {actionType}");
 
         if (actionType == "place")
         {
@@ -61,9 +69,17 @@ internal sealed class PerformAction(CityVilleDbContext context) : AmfService(con
 
             var gameItem = GameSettingsManager.Instance.GetItem(itemName);
 
-            if (gameItem is not null && gameItem.Construction is not null)
+            if (gameItem is not null)
             {
-                obj.SetAsConstructionSite();
+                if (gameItem.Cost is not null)
+                {
+                    user.RemoveCoin(gameItem.Cost.Value);
+                }
+
+                if (gameItem.Construction is not null)
+                {
+                    obj.SetAsConstructionSite();
+                }
             }
 
             user.GetWorld().AddBuilding(obj);
@@ -114,8 +130,9 @@ internal sealed class PerformAction(CityVilleDbContext context) : AmfService(con
 
             var position = building["position"] as ASObject;
             var itemId = (int)building["id"];
+            var world = user.GetWorld();
 
-            var obj = user.GetWorld().GetBuilding(itemId, (int)position["x"], (int)position["y"], (int)position["z"]);
+            var obj = world.GetBuilding(itemId, (int)position["x"], (int)position["y"], (int)position["z"]);
 
             if (obj is null)
             {
@@ -128,6 +145,12 @@ internal sealed class PerformAction(CityVilleDbContext context) : AmfService(con
             }
 
             obj.FinishConstruction();
+
+            world.calculateCurrentPopulation();
+            world.calculatePopulationCap();
+
+            user.handleQuestProgress("");
+            user.CheckCompletedQuests();
 
             await context.SaveChangesAsync(cancellationToken);
         }
