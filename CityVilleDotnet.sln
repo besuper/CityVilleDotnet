@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CityVilleDotnet.Domain", "C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CityVilleDotnet.Persistence", "CityVilleDotnet.Persistence\CityVilleDotnet.Persistence.csproj", "{EFC67537-6AB0-4255-A52F-223EE4D7DD52}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CityVilleDotnet.Common", "CityVilleDotnet.Common\CityVilleDotnet.Common.csproj", "{FD5E956F-2288-4671-833B-D07584EABB01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{EFC67537-6AB0-4255-A52F-223EE4D7DD52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFC67537-6AB0-4255-A52F-223EE4D7DD52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFC67537-6AB0-4255-A52F-223EE4D7DD52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD5E956F-2288-4671-833B-D07584EABB01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD5E956F-2288-4671-833B-D07584EABB01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD5E956F-2288-4671-833B-D07584EABB01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD5E956F-2288-4671-833B-D07584EABB01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

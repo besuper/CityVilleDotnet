@@ -1,5 +1,5 @@
 using CityVilleDotnet.Api.Common.Amf;
-using CityVilleDotnet.Api.Services.Settings;
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
 using FastEndpoints;
@@ -77,5 +77,6 @@ await using var context = scope.ServiceProvider.GetRequiredService<CityVilleDbCo
 await context.Database.MigrateAsync();
 
 GameSettingsManager.Instance.Initialize();
+QuestSettingsManager.Instance.Initialize();
 
 app.Run();

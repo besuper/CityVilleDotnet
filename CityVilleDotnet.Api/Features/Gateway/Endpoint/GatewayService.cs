@@ -7,6 +7,7 @@ using Humanizer;
 using CityVilleDotnet.Api.Common.Amf;
 using Microsoft.AspNetCore.Identity;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Common.Settings;
 
 namespace CityVilleDotnet.Api.Features.Gateway.Endpoint;
 
@@ -67,7 +68,22 @@ internal sealed class GatewayService(UserManager<ApplicationUser> _userManager, 
                 Console.WriteLine($"Received request for function {functionName} sequence {sequence}");
 
                 var packageName = functionName.Split('.')[0];
-                var className = functionName.Split('.')[1].Pascalize();
+                var _className = functionName.Split('.')[1];
+                var className = _className.Pascalize();
+
+                if (QuestSettingsManager.TASK_ACTIONS.Contains(_className))
+                {
+                    Console.WriteLine($"Handling task quest action {_className}");
+
+                    var taskParams = new object[] { _className };
+                    taskParams.Append(_params);
+
+                    _params = taskParams;
+
+                    packageName = "QuestService";
+                    className = "HandleQuestProgress";
+                }
+
                 var response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{packageName}.{className}", "HandlePacket", _params, Guid.Parse(user.Id), ct);
 
                 if (response is null)

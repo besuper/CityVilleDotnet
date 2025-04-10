@@ -1,5 +1,6 @@
 ﻿namespace CityVilleDotnet.Domain.Entities;
 
+using CityVilleDotnet.Common.Settings;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -99,5 +100,49 @@ public class User
         UserInfo.WorldName = newName;
 
         return newName;
+    }
+
+    public void CheckCompletedQuests()
+    {
+        var newQuests = new List<Quest>();
+
+        foreach (var item in Quests)
+        {
+            // TODO: Support purchased tasks
+
+            var completed = true;
+
+            for (var i = 0; i < item.Progress.Length; i++)
+            {
+                if (item.Progress[i] == 0)
+                {
+                    completed = false;
+                    break;
+                }
+            }
+
+            if (completed)
+            {
+                item.QuestType = QuestType.Completed;
+
+                var questItem = QuestSettingsManager.Instance.GetItem(item.Name);
+
+                if (questItem is null) continue;
+
+                foreach (var sequel in questItem.Sequels.Sequels)
+                {
+                    var sequelItem = QuestSettingsManager.Instance.GetItem(sequel.Name);
+
+                    if (sequelItem is null) continue;
+
+                    // TODO: Add support for pending tasks
+                    var newQuest = Quest.Create(sequelItem.Name, 0, sequelItem.Sequels.Sequels.Count, QuestType.Active);
+
+                    newQuests.Add(newQuest);
+                }
+            }
+        }
+
+        Quests.AddRange(newQuests);
     }
 }
