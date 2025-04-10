@@ -6,6 +6,8 @@ using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -62,21 +64,24 @@ foreach (var type in serviceTypes)
     builder.Services.AddScoped(type);
 }
 
+builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+
 var app = builder.Build();
 
+app.UseStaticFiles();
 app.MapRazorPages();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseSerilogRequestLogging();
 app.UseFastEndpoints();
-app.UseStaticFiles();
 
 using var scope = app.Services.CreateScope();
 await using var context = scope.ServiceProvider.GetRequiredService<CityVilleDbContext>();
-
 await context.Database.MigrateAsync();
 
-GameSettingsManager.Instance.Initialize();
-QuestSettingsManager.Instance.Initialize();
+GameSettingsManager.Instance.Initialize(scope.ServiceProvider.GetRequiredService<ILogger<GameSettingsManager>>());
+QuestSettingsManager.Instance.Initialize(scope.ServiceProvider.GetRequiredService<ILogger<QuestSettingsManager>>());
 
 app.Run();

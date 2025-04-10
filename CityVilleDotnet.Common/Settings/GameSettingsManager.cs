@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using Microsoft.Extensions.Logging;
+using System.Xml.Serialization;
 
 namespace CityVilleDotnet.Common.Settings;
 
@@ -69,14 +70,14 @@ public class GameSettingsManager
         }
     }
 
-    public void Initialize(string filePath = "wwwroot/gameSettings.xml")
+    public void Initialize(ILogger<GameSettingsManager> logger)
     {
         if (_isInitialized)
             return;
 
         XmlSerializer serializer = new XmlSerializer(typeof(GameSettings));
 
-        using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
+        using (FileStream fileStream = new FileStream("wwwroot/gameSettings.xml", FileMode.Open))
         {
             var gameSettings = (GameSettings)serializer.Deserialize(fileStream);
 
@@ -91,6 +92,8 @@ public class GameSettingsManager
                 }
             }
         }
+
+        logger.LogInformation($"Loaded gameSettings.xml with {_items.Count} items");
 
         _isInitialized = true;
     }

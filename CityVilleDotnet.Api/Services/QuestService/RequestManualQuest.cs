@@ -5,7 +5,7 @@ using FluorineFx;
 
 namespace CityVilleDotnet.Api.Services.QuestService;
 
-internal sealed class RequestManualQuest(CityVilleDbContext context) : AmfService(context)
+internal sealed class RequestManualQuest(CityVilleDbContext context, ILogger<RequestManualQuest> _logger) : AmfService(context)
 {
     public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {
@@ -16,7 +16,7 @@ internal sealed class RequestManualQuest(CityVilleDbContext context) : AmfServic
 
         var questName = _params[0].ToString();
 
-        Console.WriteLine($"Started new quest {questName}");
+        _logger.LogDebug($"Started new quest {questName}");
 
         var response = new CityVilleResponse(333, new ASObject() { { "questStarted", 1 } });
 

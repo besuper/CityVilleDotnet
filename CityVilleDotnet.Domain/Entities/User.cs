@@ -106,7 +106,7 @@ public class User
     {
         var newQuests = new List<Quest>();
 
-        foreach (var item in Quests)
+        foreach (var item in Quests.Where(x => x.QuestType == QuestType.Active))
         {
             // TODO: Support purchased tasks
 

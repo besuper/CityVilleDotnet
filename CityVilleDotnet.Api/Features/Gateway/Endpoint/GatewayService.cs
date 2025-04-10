@@ -11,7 +11,7 @@ using CityVilleDotnet.Common.Settings;
 
 namespace CityVilleDotnet.Api.Features.Gateway.Endpoint;
 
-internal sealed class GatewayService(UserManager<ApplicationUser> _userManager, IServiceProvider _serviceProvider) : EndpointWithoutRequest
+internal sealed class GatewayService(UserManager<ApplicationUser> _userManager, IServiceProvider _serviceProvider, ILogger<GatewayService> _logger) : EndpointWithoutRequest
 {
     public override void Configure()
     {
@@ -41,7 +41,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> _userManager, 
             string responseURI = $"{requestBody.Response}/onResult";
             string targetURI = "null";
 
-            Console.WriteLine($"Response URI: {responseURI}, Target URI: {targetURI}");
+            _logger.LogDebug($"Response URI: {responseURI}, Target URI: {targetURI}");
 
             var content = requestBody.Content as object[];
 
@@ -65,7 +65,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> _userManager, 
                 var functionName = item["functionName"] as string;
                 var sequence = item["sequence"];
 
-                Console.WriteLine($"Received request for function {functionName} sequence {sequence}");
+                _logger.LogDebug($"Received request for function {functionName} sequence {sequence}");
 
                 var packageName = functionName.Split('.')[0];
                 var _className = functionName.Split('.')[1];
@@ -73,7 +73,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> _userManager, 
 
                 if (QuestSettingsManager.TASK_ACTIONS.Contains(_className))
                 {
-                    Console.WriteLine($"Handling task quest action {_className}");
+                    _logger.LogDebug($"Handling task quest action {_className}");
 
                     var taskParams = new object[] { _className };
                     taskParams.Append(_params);
@@ -88,7 +88,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> _userManager, 
 
                 if (response is null)
                 {
-                    Console.WriteLine("Something went wrong while processing the request.");
+                    _logger.LogDebug("Something went wrong while processing the request.");
 
                     response = CreateEmptyResponse();
                 }

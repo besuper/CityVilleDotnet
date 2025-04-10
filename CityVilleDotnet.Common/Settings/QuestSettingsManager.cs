@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using Microsoft.Extensions.Logging;
+using System.Xml.Serialization;
 
 namespace CityVilleDotnet.Common.Settings;
 
@@ -29,14 +30,14 @@ public class QuestSettingsManager
         }
     }
 
-    public void Initialize(string filePath = "wwwroot/questSettings.xml")
+    public void Initialize(ILogger<QuestSettingsManager> logger)
     {
         if (_isInitialized)
             return;
 
         XmlSerializer serializer = new XmlSerializer(typeof(GameQuests));
 
-        using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
+        using (FileStream fileStream = new FileStream("wwwroot/questSettings.xml", FileMode.Open))
         {
             var gameSettings = (GameQuests)serializer.Deserialize(fileStream);
 
@@ -61,6 +62,8 @@ public class QuestSettingsManager
                 }
             }
         }
+
+        logger.LogInformation($"Loaded questSettings.xml with {_items.Count} items and {TASK_ACTIONS.Count} task actions");
 
         _isInitialized = true;
     }
