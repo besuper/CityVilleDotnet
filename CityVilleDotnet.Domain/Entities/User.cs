@@ -179,7 +179,7 @@ public class User
                     if (sequelItem is null) continue;
 
                     // TODO: Add support for pending tasks
-                    var newQuest = Quest.Create(sequelItem.Name, 0, sequelItem.Sequels.Sequels.Count, QuestType.Active);
+                    var newQuest = Quest.Create(sequelItem.Name, 0, sequelItem.Tasks.Tasks.Count, QuestType.Active);
 
                     newQuests.Add(newQuest);
                 }
@@ -192,5 +192,10 @@ public class User
     public void RemoveCoin(int amount)
     {
         UserInfo.Player.Gold += amount;
+    }
+
+    public void AddGoods(int amount)
+    {
+        UserInfo.Player.Commodities.Storage.Goods += amount;
     }
 }
