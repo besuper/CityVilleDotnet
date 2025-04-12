@@ -42,6 +42,9 @@ public class GameItem
     [XmlElement("construction")]
     public string Construction { get; set; }
 
+    [XmlElement("commodityReq")]
+    public int? CommodityRequired { get; set; }
+
     public GameItem() { }
 }
 

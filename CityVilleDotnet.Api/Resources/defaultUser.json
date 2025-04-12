@@ -63,7 +63,7 @@
                         "x": -2,
                         "y": 29
                     },
-                    "id": 54000
+                    "id": 1
                 },
                 {
                     "itemName": "plot_crop",
@@ -75,7 +75,7 @@
                         "y": 27,
                         "z": 0
                     },
-                    "id": 54001
+                    "id": 2
                 },
                 {
                     "itemName": "plot_crop",
@@ -87,7 +87,7 @@
                         "y": 25,
                         "z": 0
                     },
-                    "id": 54002                    
+                    "id": 3                    
                 },
                 {
                     "itemName": "plot_crop",
@@ -99,7 +99,7 @@
                         "y": 27,
                         "z": 0
                     },
-                    "id": 54003
+                    "id": 4
                 },
                 {
                     "itemName": "plot_crop",
@@ -111,7 +111,7 @@
                         "y": 25,
                         "z": 0
                     },
-                    "id": 54004
+                    "id": 5
                 },
                 {
                     "position": {
@@ -124,10 +124,9 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53000,
                     "state": "static",
                     "tempId": -1,
-                    "id": 54005
+                    "id": 6
                 },
                 {
                     "position": {
@@ -140,7 +139,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53001,
+                    "id": 7,
                     "state": "static",
                     "tempId": -1
                 },
@@ -155,7 +154,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53002,
+                    "id": 8,
                     "state": "static",
                     "tempId": -1
                 },
@@ -170,7 +169,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53003,
+                    "id": 9,
                     "state": "static",
                     "tempId": -1
                 },
@@ -185,7 +184,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53004,
+                    "id": 10,
                     "state": "static",
                     "tempId": -1
                 },
@@ -200,7 +199,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53005,
+                    "id": 11,
                     "state": "static",
                     "tempId": -1
                 },
@@ -215,7 +214,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53006,
+                    "id": 12,
                     "state": "static",
                     "tempId": -1
                 },
@@ -230,7 +229,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53007,
+                    "id": 13,
                     "state": "static",
                     "tempId": -1
                 },
@@ -245,7 +244,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53008,
+                    "id": 14,
                     "state": "static",
                     "tempId": -1
                 },
@@ -260,7 +259,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53009,
+                    "id": 15,
                     "state": "static",
                     "tempId": -1
                 },
@@ -275,7 +274,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53010,
+                    "id": 16,
                     "state": "static",
                     "tempId": -1
                 },
@@ -290,7 +289,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53011,
+                    "id": 17,
                     "state": "static",
                     "tempId": -1
                 },
@@ -305,7 +304,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53012,
+                    "id": 18,
                     "state": "static",
                     "tempId": -1
                 },
@@ -320,7 +319,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53013,
+                    "id": 19,
                     "state": "static",
                     "tempId": -1
                 },
@@ -335,7 +334,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53014,
+                    "id": 20,
                     "state": "static",
                     "tempId": -1
                 },
@@ -350,7 +349,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53015,
+                    "id": 21,
                     "state": "static",
                     "tempId": -1
                 },
@@ -365,7 +364,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53016,
+                    "id": 22,
                     "state": "static",
                     "tempId": -1
                 },
@@ -380,7 +379,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53017,
+                    "id": 23,
                     "state": "static",
                     "tempId": -1
                 },
@@ -395,7 +394,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53018,
+                    "id": 24,
                     "state": "static",
                     "tempId": -1
                 },
@@ -410,7 +409,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53019,
+                    "id": 25,
                     "state": "static",
                     "tempId": -1
                 },
@@ -425,7 +424,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53020,
+                    "id": 26,
                     "state": "static",
                     "tempId": -1
                 },
@@ -440,7 +439,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53021,
+                    "id": 27,
                     "state": "static",
                     "tempId": -1
                 },
@@ -455,7 +454,7 @@
                     "tempId": -1,
                     "className": "LotSite",
                     "components": {},
-                    "id": 53022,
+                    "id": 28,
                     "state": "static"
                 },
                 {
@@ -469,7 +468,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53026,
+                    "id": 29,
                     "state": "static",
                     "tempId": -1
                 },
@@ -484,7 +483,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53027,
+                    "id": 30,
                     "state": "static",
                     "tempId": -1
                 },
@@ -499,7 +498,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53028,
+                    "id": 31,
                     "state": "static",
                     "tempId": -1
                 },
@@ -514,7 +513,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53029,
+                    "id": 32,
                     "state": "static",
                     "tempId": -1
                 },
@@ -529,7 +528,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53030,
+                    "id": 33,
                     "state": "static",
                     "tempId": -1
                 },
@@ -544,7 +543,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53031,
+                    "id": 34,
                     "state": "static",
                     "tempId": -1
                 },
@@ -559,7 +558,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53032,
+                    "id": 35,
                     "state": "static",
                     "tempId": -1
                 },
@@ -574,7 +573,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53033,
+                    "id": 36,
                     "state": "static",
                     "tempId": -1
                 },
@@ -589,7 +588,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53034,
+                    "id": 37,
                     "state": "static",
                     "tempId": -1
                 },
@@ -604,7 +603,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53035,
+                    "id": 38,
                     "state": "static",
                     "tempId": -1
                 },
@@ -619,7 +618,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53036,
+                    "id": 39,
                     "state": "static",
                     "tempId": -1
                 },
@@ -634,7 +633,7 @@
                     "deleted": false,
                     "itemName": "road",
                     "direction": 0,
-                    "id": 53037,
+                    "id": 40,
                     "state": "static",
                     "tempId": -1
                 },
@@ -649,7 +648,7 @@
                     "deleted": false,
                     "itemName": "train_tracks_ne",
                     "direction": 0,
-                    "id": 53038,
+                    "id": 41,
                     "state": "static",
                     "tempId": -1
                 },
@@ -664,7 +663,7 @@
                     "deleted": false,
                     "itemName": "train_platform",
                     "direction": 1,
-                    "id": 47,
+                    "id": 42,
                     "state": "static",
                     "tempId": -1
                 },
@@ -679,7 +678,7 @@
                     "deleted": false,
                     "itemName": "res_ritahouse",
                     "direction": 0,
-                    "id": 48,
+                    "id": 43,
                     "state": "grown",
                     "tempId": -1
                 },
@@ -695,7 +694,7 @@
                     "tempId": -1,
                     "className": "Decoration",
                     "components": {},
-                    "id": 49,
+                    "id": 44,
                     "state": "static"
                 },
                 {
@@ -710,7 +709,7 @@
                     "tempId": -1,
                     "className": "Decoration",
                     "components": {},
-                    "id": 51,
+                    "id": 45,
                     "state": "static"
                 },
                 {
@@ -724,7 +723,7 @@
                     "deleted": false,
                     "itemName": "road-init",
                     "direction": 0,
-                    "id": 53011,
+                    "id": 46,
                     "state": "static",
                     "tempId": -1
                 }        

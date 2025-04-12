@@ -21,6 +21,8 @@ internal sealed class PerformAction(CityVilleDbContext context, ILogger<PerformA
             .ThenInclude(x => x.CitySim)
             .Include(x => x.UserInfo)
             .ThenInclude(x => x.Player)
+            .ThenInclude(x => x.Commodities)
+            .ThenInclude(x => x.Storage)
             .Include(x => x.Quests)
             .Where(x => x.UserId == userId)
             .FirstOrDefaultAsync(cancellationToken);
@@ -43,12 +45,18 @@ internal sealed class PerformAction(CityVilleDbContext context, ILogger<PerformA
                 throw new Exception("Building can't be null when action type is place");
             }
 
+            foreach (var item in building)
+            {
+                _logger.LogInformation($"{item.Key} = {item.Value}");
+            }
+
             // TODO: Implement components
             // ignore components for now
 
             var position = building["position"] as ASObject;
             var className = (string)building["className"];
             var itemName = (string)building["itemName"];
+            var world = user.GetWorld();
 
             var obj = new WorldObject(
                 itemName,
@@ -58,6 +66,8 @@ internal sealed class PerformAction(CityVilleDbContext context, ILogger<PerformA
                 (int)building["tempId"],
                 (string)building["state"],
                 (int)building["direction"],
+                (double)building["buildTime"],
+                (double)building["plantTime"],
                 new WorldObjectPosition()
                 {
                     X = (int)position["x"],
@@ -78,11 +88,11 @@ internal sealed class PerformAction(CityVilleDbContext context, ILogger<PerformA
 
                 if (gameItem.Construction is not null)
                 {
-                    obj.SetAsConstructionSite();
+                    obj.SetAsConstructionSite(gameItem.Construction);
                 }
             }
 
-            user.GetWorld().AddBuilding(obj);
+            world.AddBuilding(obj);
 
             // TODO: Check coins, goods, energy, etc...
             // Add population
@@ -99,10 +109,15 @@ internal sealed class PerformAction(CityVilleDbContext context, ILogger<PerformA
                 throw new Exception("Building can't be null when action type is place");
             }
 
+            foreach (var item in building)
+            {
+                _logger.LogInformation($"{item.Key} = {item.Value}");
+            }
+
             var position = building["position"] as ASObject;
             var itemId = (int)building["id"];
 
-            var obj = user.GetWorld().GetBuilding(itemId, (int)position["x"], (int)position["y"], (int)position["z"]);
+            var obj = user.GetWorld().GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]);
 
             if (obj is null)
             {
@@ -128,11 +143,16 @@ internal sealed class PerformAction(CityVilleDbContext context, ILogger<PerformA
                 throw new Exception($"Building can't be null when action type is {actionType}");
             }
 
+            foreach (var item in building)
+            {
+                _logger.LogInformation($"{item.Key} = {item.Value}");
+            }
+
             var position = building["position"] as ASObject;
             var itemId = (int)building["id"];
             var world = user.GetWorld();
 
-            var obj = world.GetBuilding(itemId, (int)position["x"], (int)position["y"], (int)position["z"]);
+            var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]);
 
             if (obj is null)
             {
@@ -144,6 +164,12 @@ internal sealed class PerformAction(CityVilleDbContext context, ILogger<PerformA
                 throw new Exception($"Can't find `builds`");
             }
 
+            var newId = world.GetAvailableBuildingId();
+
+            _logger.LogInformation($"Using new ID {newId}");
+
+            obj.WorldFlatId = newId;
+
             obj.FinishConstruction();
 
             world.calculateCurrentPopulation();
@@ -153,6 +179,72 @@ internal sealed class PerformAction(CityVilleDbContext context, ILogger<PerformA
             user.CheckCompletedQuests();
 
             await context.SaveChangesAsync(cancellationToken);
+
+            var rep = new ASObject();
+            rep["id"] = newId;
+
+            return new CityVilleResponse(333, rep);
+        }
+
+        if (actionType == "openBusiness")
+        {
+            var building = _params[1] as ASObject;
+
+            if (building is null)
+            {
+                throw new Exception($"Building can't be null when action type is {actionType}");
+            }
+
+            foreach (var item in building)
+            {
+                _logger.LogInformation($"{item.Key} = {item.Value}");
+            }
+
+            var position = building["position"] as ASObject;
+            var world = user.GetWorld();
+
+            var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]);
+
+            if (obj is null)
+            {
+                throw new Exception($"Can't find building with coords");
+            }
+
+            var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
+
+            if (gameItem is not null)
+            {
+                if (gameItem.CommodityRequired is not null)
+                {
+                    if (user.UserInfo.Player.Commodities.Storage.Goods < gameItem.CommodityRequired)
+                    {
+                        return new CityVilleResponse(9, 333);
+                    }
+
+                    user.RemoveGoods(gameItem.CommodityRequired.Value);
+
+                    obj.BuildTime = (double)building["buildTime"];
+                    obj.PlantTime = (double)building["plantTime"];
+                    obj.State = (string)building["state"];
+                }
+            }
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        if(actionType == "harvest")
+        {
+            var building = _params[1] as ASObject;
+
+            if (building is null)
+            {
+                throw new Exception($"Building can't be null when action type is {actionType}");
+            }
+
+            foreach (var item in building)
+            {
+                _logger.LogInformation($"{item.Key} = {item.Value}");
+            }
         }
 
         return GatewayService.CreateEmptyResponse();

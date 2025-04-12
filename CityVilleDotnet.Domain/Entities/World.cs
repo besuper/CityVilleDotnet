@@ -70,4 +70,29 @@ public class World
     {
         return Objects.FirstOrDefault(w => w.WorldFlatId == id && w.Position.X == x && w.Position.Y == y && w.Position.Z == z);
     }
+
+    public WorldObject? GetBuildingByCoord(int x, int y, int z)
+    {
+        return Objects.FirstOrDefault(w => w.Position.X == x && w.Position.Y == y && w.Position.Z == z);
+    }
+
+    public int CountBuildingByName(string name)
+    {
+        return Objects.Count(x => x.ItemName.Equals(name));
+    }
+
+    public int GetAvailableBuildingId()
+    {
+        for(var i = Objects.Count; i < Objects.Count + 1000; i++)
+        {
+            var building = Objects.FirstOrDefault(x => x.WorldFlatId == i);
+
+            if(building is null)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
 }

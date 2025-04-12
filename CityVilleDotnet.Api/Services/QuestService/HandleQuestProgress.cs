@@ -20,6 +20,9 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService(contex
             .Include(x => x.UserInfo)
             .ThenInclude(x => x.World)
             .ThenInclude(x => x.CitySim)
+            .Include(x => x.UserInfo)
+            .ThenInclude(x => x.World)
+            .ThenInclude(x => x.Objects)
             .Where(x => x.UserId == userId)
             .FirstOrDefaultAsync(cancellationToken);
 

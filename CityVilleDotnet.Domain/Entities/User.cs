@@ -140,6 +140,17 @@ public class User
                     }
                 }
 
+                if(task.Action.Equals("countConstructionOrBuildingByName"))
+                {
+                    var buildingName = task.Type;
+                    var amount = int.Parse(task.Total);
+
+                    if(GetWorld().CountBuildingByName(buildingName) >= amount)
+                    {
+                        quest.Progress[index] = 1;
+                    }
+                }
+
                 index++;
             }
         }
@@ -197,5 +208,10 @@ public class User
     public void AddGoods(int amount)
     {
         UserInfo.Player.Commodities.Storage.Goods += amount;
+    }
+
+    public void RemoveGoods(int amount)
+    {
+        UserInfo.Player.Commodities.Storage.Goods -= amount;
     }
 }

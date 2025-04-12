@@ -4,7 +4,7 @@ namespace CityVilleDotnet.Domain.Entities;
 
 public class WorldObject
 {
-    public WorldObject(string itemName, string className, string? contractName, bool deleted, int tempId, string state, int direction, WorldObjectPosition position, int worldFlatId)
+    public WorldObject(string itemName, string className, string? contractName, bool deleted, int tempId, string state, int direction, double buildTime, double plantTime, WorldObjectPosition position, int worldFlatId)
     {
         Id = Guid.NewGuid();
         ItemName = itemName;
@@ -16,6 +16,8 @@ public class WorldObject
         Direction = direction;
         Position = position;
         WorldFlatId = worldFlatId;
+        BuildTime = buildTime;
+        PlantTime = plantTime;
     }
 
     public WorldObject()
@@ -44,6 +46,12 @@ public class WorldObject
     [JsonPropertyName("tempId")]
     public int TempId { get; set; }
 
+    [JsonPropertyName("buildTime")]
+    public double? BuildTime { get; set; }
+
+    [JsonPropertyName("plantTime")]
+    public double? PlantTime { get; set; }
+
     [JsonPropertyName("state")]
     public string State { get; set; }
 
@@ -71,13 +79,16 @@ public class WorldObject
     [JsonPropertyName("builds")]
     public int? Builds { get; set; }
 
-    public void SetAsConstructionSite()
+    public void SetAsConstructionSite(string itemName)
     {
         Stage = 0;
         FinishedBuilds = 0;
         Builds = 0;
         TargetBuildingName = ItemName;
         TargetBuildingClass = ClassName;
+
+        ItemName = itemName;
+        ClassName = "ConstructionSite";
     }
 
     public void AddConstructionStage()
