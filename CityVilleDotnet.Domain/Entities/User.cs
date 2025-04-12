@@ -102,7 +102,7 @@ public class User
         return newName;
     }
 
-    public void handleQuestProgress(string actionType)
+    public void HandleQuestProgress(string actionType = "")
     {
         foreach (var quest in Quests.Where(x => x.QuestType == QuestType.Active))
         {
@@ -146,6 +146,17 @@ public class User
                     var amount = int.Parse(task.Total);
 
                     if(GetWorld().CountBuildingByName(buildingName) >= amount)
+                    {
+                        quest.Progress[index] = 1;
+                    }
+                }
+
+                if(task.Action.Equals("openBusinessByName"))
+                {
+                    var buildingName = task.Type;
+                    var amount = int.Parse(task.Total);
+
+                    if (GetWorld().CountOpenedBuildingByName(buildingName) >= amount)
                     {
                         quest.Progress[index] = 1;
                     }

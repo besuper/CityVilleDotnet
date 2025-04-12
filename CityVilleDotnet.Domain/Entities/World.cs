@@ -81,13 +81,18 @@ public class World
         return Objects.Count(x => x.ItemName.Equals(name));
     }
 
+    public int CountOpenedBuildingByName(string name)
+    {
+        return Objects.Count(x => x.ItemName.Equals(name) && x.State.Equals("open"));
+    }
+
     public int GetAvailableBuildingId()
     {
-        for(var i = Objects.Count; i < Objects.Count + 1000; i++)
+        for (var i = Objects.Count; i < Objects.Count + 1000; i++)
         {
             var building = Objects.FirstOrDefault(x => x.WorldFlatId == i);
 
-            if(building is null)
+            if (building is null)
             {
                 return i;
             }

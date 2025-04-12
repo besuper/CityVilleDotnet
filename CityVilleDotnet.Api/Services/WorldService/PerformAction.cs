@@ -175,7 +175,7 @@ internal sealed class PerformAction(CityVilleDbContext context, ILogger<PerformA
             world.calculateCurrentPopulation();
             world.calculatePopulationCap();
 
-            user.handleQuestProgress("");
+            user.HandleQuestProgress();
             user.CheckCompletedQuests();
 
             await context.SaveChangesAsync(cancellationToken);
@@ -226,6 +226,9 @@ internal sealed class PerformAction(CityVilleDbContext context, ILogger<PerformA
                     obj.BuildTime = (double)building["buildTime"];
                     obj.PlantTime = (double)building["plantTime"];
                     obj.State = (string)building["state"];
+
+                    user.HandleQuestProgress();
+                    user.CheckCompletedQuests();
                 }
             }
 

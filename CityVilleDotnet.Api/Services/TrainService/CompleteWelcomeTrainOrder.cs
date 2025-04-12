@@ -30,7 +30,7 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService(
         var amount = (int)trainInfo["amountFinal"];
 
         user.AddGoods(amount);
-        user.handleQuestProgress("welcomeTrain");
+        user.HandleQuestProgress("welcomeTrain");
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);

@@ -26,7 +26,7 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService(contex
             .Where(x => x.UserId == userId)
             .FirstOrDefaultAsync(cancellationToken);
 
-        user.handleQuestProgress(actionType);
+        user.HandleQuestProgress(actionType);
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
