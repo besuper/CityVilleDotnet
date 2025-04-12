@@ -53,6 +53,29 @@ public class User
         Quests.Add(Quest.Create("q_rename_city", 0, 1, QuestType.Active));
     }
 
+    public void ComputeLevel()
+    {
+        var level = 1;
+        var energyMax = 12;
+        var currentXP = UserInfo.Player.Xp;
+
+        foreach (var item in GameSettingsManager.Instance.GetLevels())
+        {
+            if (currentXP >= int.Parse(item.RequiredXp))
+            {
+                level = int.Parse(item.Num);
+                energyMax = int.Parse(item.EnergyMax);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        UserInfo.Player.Level = level;
+        UserInfo.Player.EnergyMax = energyMax;
+    }
+
     public int GetGold()
     {
         return UserInfo.Player.Gold;
@@ -140,18 +163,18 @@ public class User
                     }
                 }
 
-                if(task.Action.Equals("countConstructionOrBuildingByName"))
+                if (task.Action.Equals("countConstructionOrBuildingByName"))
                 {
                     var buildingName = task.Type;
                     var amount = int.Parse(task.Total);
 
-                    if(GetWorld().CountBuildingByName(buildingName) >= amount)
+                    if (GetWorld().CountBuildingByName(buildingName) >= amount)
                     {
                         quest.Progress[index] = 1;
                     }
                 }
 
-                if(task.Action.Equals("openBusinessByName"))
+                if (task.Action.Equals("openBusinessByName"))
                 {
                     var buildingName = task.Type;
                     var amount = int.Parse(task.Total);

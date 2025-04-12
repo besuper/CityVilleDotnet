@@ -9,6 +9,9 @@ public class GameSettings
 {
     [XmlElement("items")]
     public ItemsContainer Items { get; set; }
+
+    [XmlElement("levels")]
+    public LevelsContainer Levels { get; set; }
 }
 
 [Serializable]
@@ -48,11 +51,34 @@ public class GameItem
     public GameItem() { }
 }
 
+[Serializable]
+public class LevelsContainer
+{
+    [XmlElement("level")]
+    public List<LevelItem> Levels { get; set; }
+}
+
+[Serializable]
+public class LevelItem
+{
+    [XmlAttribute("num")]
+    public string Num { get; set; }
+
+    [XmlAttribute("requiredXP")]
+    public string RequiredXp { get; set; }
+
+    [XmlAttribute("energyMax")]
+    public string EnergyMax { get; set; }
+
+    public LevelItem() { }
+}
+
 public class GameSettingsManager
 {
     private static GameSettingsManager _instance;
     private static readonly object _lock = new object();
     private Dictionary<string, GameItem> _items;
+    private List<LevelItem> _levels = new List<LevelItem>();
     private bool _isInitialized;
 
     private GameSettingsManager()
@@ -100,6 +126,8 @@ public class GameSettingsManager
                     }
                 }
             }
+
+            _levels = gameSettings.Levels.Levels;
         }
 
         logger.LogInformation($"Loaded gameSettings.xml with {_items.Count} items");
@@ -120,5 +148,10 @@ public class GameSettingsManager
         }
 
         return null;
+    }
+
+    public IReadOnlyCollection<LevelItem> GetLevels()
+    {
+        return _levels.AsReadOnly();
     }
 }
