@@ -1,61 +1,98 @@
 ﻿@page
 @model CityVilleDotnet.Api.Pages.GameModel
 
-<div id="game">
-	<center>
-		<object data="Game.26346.swf?game_config_url=gameSettings.xml&quest_url=questSettings.xml&effects_config_url=effectsConfig.xml&localization_url=en.xml&debugMode=true&zySnid=333&zySnuid=333&zyUid=333&app_url=&flashRevision=26346&asset_url=.&generateSchema=1&sn_app_url=&snapiEnable=1" width="760" height="594" allowFullscreen="true">
-		</object>
-	</center>
+@section Header {
+	<script type="text/javascript" src="jquery.min.js"></script>
+	<script type="text/javascript" src="flash_integration.min.js"></script>
+	<script type="text/javascript" src="swfobject.min.js"></script>
+}
+
+<div class="gamePage">
+	<div class="tabs">
+		<div class="tab-content">
+			<div class="tab selected">
+				<a href="/Game" title="Game">Game</a>
+			</div>
+
+			<div class="tab">
+				<a href="/Friends" title="Friends">Friends</a>
+			</div>
+		</div>
+
+		<div class="tab-content">
+			<div class="tab">
+				<a href="#" title="Username">@Model.CurrentUser.UserName</a>
+			</div>
+
+			<div class="tab">
+				<a href="#" title="/logout">Disconnect</a>
+			</div>
+		</div>
+	</div>
+
+	<div style="width:760px;height:594px;">
+		<div id="flashOuterContainer">
+			<div id="flashContent">
+				<span class="loadingGame">Loading Game...</span><br />
+				<span class="upgradeFlash">If your game does not load within 10 seconds, you may need to upgrade your version of Flash. Please do so by clicking <a href="https://www.basilisk-browser.org/download.html">here</a></span>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script>
-	function createGame() {
-		const gameFile = "Game.26346.swf";
-		const user = getUserInfo();
-
-		const settings = `game_config_url=gameSettings.xml&quest_url=questSettings.xml&effects_config_url=effectsConfig.xml&localization_url=en.xml&debugMode=true&zySnid=${user.uid}&zySnuid=${user.uid}&zyUid=${user.uid}&app_url=&flashRevision=26346&asset_url=.&generateSchema=1&sn_app_url=&snapiEnable=1`;
-
-		const game = document.createElement("object");
-		game.setAttribute("data", `${gameFile}?${settings}`);
-		game.setAttribute("width", "760");
-		game.setAttribute("height", "594");
-		game.setAttribute("allowFullscreen", "true");
-
-		document.getElementById("game").appendChild(game);
-	}
+	var g_preBlurbs = ["Fluffing Clouds","Installing Parks","Opening Schools","Commencing Commerce","Building Playgrounds","Redirecting Traffic","Sweeping Sidewalks","Skip Intro","Build the City of Your Dreams!"];
+	var g_experiments = [{"name":"cv_example_test","variant":false},{"name":"cv_market_auto_close","variant":"1"},{"name":"cv_gift_flash_fork","variant":1},{"name":"city_delete_requests","variant":1},{"name":"cv_invite_friends_mfs","variant":false},{"name":"cv_invite_friends_mfs_height","variant":3},{"name":"cv_crew_popup_mfs","variant":false},{"name":"cv_email_farmville_friends","variant":false},{"name":"cv_increment_dashboard_count_async","variant":false},{"name":"cv_d2_inviteneighbor_prompt","variant":false},{"name":"cv_ftv_with_marketing","variant":false},{"name":"cv_doober_tracking","variant":false},{"name":"cv_show_share","variant":false},{"name":"cv_city_cash_seld_id","variant":3},{"name":"cv_addfriend_lhs","variant":"1"},{"name":"cv_coin_package_conversion_test","variant":false},{"name":"cv_nps_survey","variant":false},{"name":"cv_survey_overlay_test","variant":false},{"name":"cv_recommendfriendsNonCity","variant":false},{"name":"cv_quest_manager","variant":false}];
 
 	function getUserInfo() {
 		console.log("getUserInfo called");
-		//inner_getUserInfo();
+
 		return {
-			'zid': 333,
-			'uid': 333,
-			'first_name': '@Model.CurrentUser.UserName',
-			'name': '@Model.CurrentUser.UserName',
-			"sex": 'M',
-			'pic_square': 'blank.png'
+			"zid": "333",
+			"uid": "333",
+			"first_name": "@Model.CurrentUser.UserName",
+			"name": "@Model.CurrentUser.UserName",
+			"sex": "M",
+			"pic_square": "blank.png"
 		};
 	}
 
 	function getFriendData() {
 		console.log("getFriendData called");
-		// inner_getFriendData();
 		return [];
 	}
 
 	function getAppFriendIds() {
 		console.log("getAppFriendIds called");
-		// inner_getAppFriendIds();
 		return [];
 	}
 
 	function onGameLoaded(seen, popp, canvas) {
-		console.log("Game is loaded " + seen + ", " + popp + ", " + canvas)
-		// inner_onGameLoaded();
+		console.log("Game is loaded " + seen + ", " + popp + ", " + canvas);
 		return;
 	}
 
-	/*document.addEventListener("DOMContentLoaded", function() {
-		createGame();
-	});*/
+	embedGameSwf("Preloader.swf", "760", "594",
+	{
+		"serverTime": @((int)DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds),
+		"zySnid":333,
+		"zySnuid":"333",
+		"zyUid":"333",
+		"zyAuthHash":"333",
+		"zySig":"333",
+		"app_url":"",
+		"sn_app_url":"",
+		"asset_url":".",
+		"swfLocation":"Game.26346.swf?skipFacebook=true",
+		"snapiEnable":1,
+		"generateSchema": 1,
+		"debugMode": true,
+		"game_config_url":"gameSettings.xml",
+		"localization_url":"en.xml",
+		"quest_url":"questSettings.xml",
+		"effects_config_url":"effectsConfig.xml",
+		"flashRevision":"26346",
+		"preMusic":"hashed\/54f32a1258f75c007b8ad50b08a90fa4.mp3",
+		"preIntro":"hashed\/b108f1182bc7bf0e13d74b9d350ba28b.mp4"
+	});
 </script>

@@ -41,7 +41,7 @@ public class CityVilleResponse
     {
         ASObject obj = new ASObject();
         obj["errorType"] = ErrorType;
-        obj["userId"] = 333;
+        //obj["userId"] = 333;
         obj["metadata"] = Metadata;
         obj["data"] = Data;
         obj["serverTime"] = DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
