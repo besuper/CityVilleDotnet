@@ -1,6 +1,5 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
-using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
@@ -8,11 +7,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
-internal sealed class PerformAction(CityVilleDbContext context, ILogger<PerformAction> _logger) : AmfService(context)
+internal sealed partial class PerformAction : AmfService
 {
+    private readonly CityVilleDbContext _context;
+    private readonly ILogger<PerformAction> _logger;
+
+    public PerformAction(CityVilleDbContext context, ILogger<PerformAction> logger) : base(context)
+    {
+        _context = context;
+        _logger = logger;
+    }
+
     public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var user = await _context.Set<User>()
             .Include(x => x.UserInfo)
             .ThenInclude(x => x.World)
             .ThenInclude(x => x.Objects)
@@ -38,216 +46,38 @@ internal sealed class PerformAction(CityVilleDbContext context, ILogger<PerformA
 
         if (actionType == "place")
         {
-            var building = _params[1] as ASObject;
+            await PerformPlace(user, _params, userId, cancellationToken);
 
-            if (building is null)
-            {
-                throw new Exception("Building can't be null when action type is place");
-            }
-
-            foreach (var item in building)
-            {
-                _logger.LogInformation($"{item.Key} = {item.Value}");
-            }
-
-            // TODO: Implement components
-            // ignore components for now
-
-            var position = building["position"] as ASObject;
-            var className = (string)building["className"];
-            var itemName = (string)building["itemName"];
-            var world = user.GetWorld();
-
-            var obj = new WorldObject(
-                itemName,
-                className,
-                null,
-                (bool)building["deleted"],
-                (int)building["tempId"],
-                (string)building["state"],
-                (int)building["direction"],
-                (double)building["buildTime"],
-                (double)building["plantTime"],
-                new WorldObjectPosition()
-                {
-                    X = (int)position["x"],
-                    Y = (int)position["y"],
-                    Z = (int)position["z"]
-                },
-                (int)building["id"]
-            );
-
-            var gameItem = GameSettingsManager.Instance.GetItem(itemName);
-
-            if (gameItem is not null)
-            {
-                if (gameItem.Cost is not null)
-                {
-                    user.RemoveCoin(gameItem.Cost.Value);
-                }
-
-                if (gameItem.Construction is not null)
-                {
-                    obj.SetAsConstructionSite(gameItem.Construction);
-                }
-            }
-
-            world.AddBuilding(obj);
-
-            // TODO: Check coins, goods, energy, etc...
-            // Add population
-
-            await context.SaveChangesAsync(cancellationToken);
+            return GatewayService.CreateEmptyResponse();
         }
 
         if (actionType == "build")
         {
-            var building = _params[1] as ASObject;
+            await PerformBuild(user, _params, userId, cancellationToken);
 
-            if (building is null)
-            {
-                throw new Exception("Building can't be null when action type is place");
-            }
-
-            foreach (var item in building)
-            {
-                _logger.LogInformation($"{item.Key} = {item.Value}");
-            }
-
-            var position = building["position"] as ASObject;
-            var itemId = (int)building["id"];
-
-            var obj = user.GetWorld().GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]);
-
-            if (obj is null)
-            {
-                throw new Exception($"Can't find building with ID {itemId}");
-            }
-
-            if (obj.Builds is null)
-            {
-                throw new Exception($"Can't find `builds`");
-            }
-
-            obj.AddConstructionStage();
-
-            await context.SaveChangesAsync(cancellationToken);
+            return GatewayService.CreateEmptyResponse();
         }
 
         if (actionType == "finish")
         {
-            var building = _params[1] as ASObject;
-
-            if (building is null)
-            {
-                throw new Exception($"Building can't be null when action type is {actionType}");
-            }
-
-            foreach (var item in building)
-            {
-                _logger.LogInformation($"{item.Key} = {item.Value}");
-            }
-
-            var position = building["position"] as ASObject;
-            var itemId = (int)building["id"];
-            var world = user.GetWorld();
-
-            var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]);
-
-            if (obj is null)
-            {
-                throw new Exception($"Can't find building with ID {itemId}");
-            }
-
-            if (obj.Builds is null)
-            {
-                throw new Exception($"Can't find `builds`");
-            }
-
-            var newId = world.GetAvailableBuildingId();
-
-            _logger.LogInformation($"Using new ID {newId}");
-
-            obj.WorldFlatId = newId;
-
-            obj.FinishConstruction();
-
-            world.calculateCurrentPopulation();
-            world.calculatePopulationCap();
-
-            user.HandleQuestProgress();
-            user.CheckCompletedQuests();
-
-            await context.SaveChangesAsync(cancellationToken);
-
-            var rep = new ASObject();
-            rep["id"] = newId;
-
-            return new CityVilleResponse(333, rep);
+            return await PerformFinish(user, _params, userId, cancellationToken);
         }
 
         if (actionType == "openBusiness")
         {
-            var building = _params[1] as ASObject;
+            var response = await PerformOpenBusiness(user, _params, userId, cancellationToken);
 
-            if (building is null)
+            if (response is not null)
             {
-                throw new Exception($"Building can't be null when action type is {actionType}");
+                return response;
             }
 
-            foreach (var item in building)
-            {
-                _logger.LogInformation($"{item.Key} = {item.Value}");
-            }
-
-            var position = building["position"] as ASObject;
-            var world = user.GetWorld();
-
-            var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]);
-
-            if (obj is null)
-            {
-                throw new Exception($"Can't find building with coords");
-            }
-
-            var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
-
-            if (gameItem is not null)
-            {
-                if (gameItem.CommodityRequired is not null)
-                {
-                    if (user.UserInfo.Player.Commodities.Storage.Goods < gameItem.CommodityRequired)
-                    {
-                        return new CityVilleResponse(9, 333);
-                    }
-
-                    user.RemoveGoods(gameItem.CommodityRequired.Value);
-
-                    obj.BuildTime = (double)building["buildTime"];
-                    obj.PlantTime = (double)building["plantTime"];
-                    obj.State = (string)building["state"];
-
-                    user.HandleQuestProgress();
-                    user.CheckCompletedQuests();
-                }
-            }
-
-            await context.SaveChangesAsync(cancellationToken);
+            return GatewayService.CreateEmptyResponse();
         }
 
-        if(actionType == "harvest")
+        if (actionType == "harvest")
         {
-            var building = _params[1] as ASObject;
-
-            if (building is null)
-            {
-                throw new Exception($"Building can't be null when action type is {actionType}");
-            }
-
-            foreach (var item in building)
-            {
-                _logger.LogInformation($"{item.Key} = {item.Value}");
-            }
+            return await PerformHarvest(user, _params, userId, cancellationToken);
         }
 
         return GatewayService.CreateEmptyResponse();

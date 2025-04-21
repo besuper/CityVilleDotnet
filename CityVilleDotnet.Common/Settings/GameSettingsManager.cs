@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace CityVilleDotnet.Common.Settings;
@@ -12,6 +13,9 @@ public class GameSettings
 
     [XmlElement("levels")]
     public LevelsContainer Levels { get; set; }
+
+    [XmlElement("randomModifierTables")]
+    public RandomModifierTables Modifiers { get; set; }
 }
 
 [Serializable]
@@ -42,13 +46,23 @@ public class GameItem
     [XmlElement("cost")]
     public int? Cost { get; set; }
 
+    [XmlElement("coinYield")]
+    public int? CoinYield { get; set; }
+
+    [XmlElement("xpYield")]
+    public int? XpYield { get; set; }
+
+    [XmlElement("goodsYield")]
+    public int? GoodsYield { get; set; }
+
     [XmlElement("construction")]
     public string Construction { get; set; }
 
     [XmlElement("commodityReq")]
     public int? CommodityRequired { get; set; }
 
-    public GameItem() { }
+    [XmlElement("randomModifiers")]
+    public RandomModifiers? RandomModifiers { get; set; }
 }
 
 [Serializable]
@@ -69,8 +83,88 @@ public class LevelItem
 
     [XmlAttribute("energyMax")]
     public string EnergyMax { get; set; }
+}
 
-    public LevelItem() { }
+[Serializable]
+public class RandomModifiers
+{
+    [XmlElement("modifier")]
+    public List<RandomModifier> Modifiers { get; set; }
+}
+
+[Serializable]
+public class RandomModifier
+{
+    [XmlAttribute("type")]
+    public string Type { get; set; }
+
+    [XmlAttribute("tableName")]
+    public string TableName { get; set; }
+}
+
+[Serializable]
+public class RandomModifierTables
+{
+    [XmlElement("randomModifierTable")]
+    public List<RandomModifierTable> Table { get; set; }
+}
+
+[Serializable]
+public class RandomModifierTable
+{
+    [XmlAttribute("type")]
+    public string Type { get; set; }
+
+    [XmlAttribute("name")]
+    public string Name { get; set; }
+
+    [XmlElement("roll")]
+    public List<Roll> Rolls { get; set; }
+}
+
+[Serializable]
+public class Roll
+{
+    [XmlAttribute("percent")]
+    public int Percent { get; set; }
+
+    [XmlIgnore]
+    public Dictionary<string, List<AmountElement>> Rewards { get; set; } = new Dictionary<string, List<AmountElement>>();
+
+    [XmlAnyElement]
+    public XmlElement[] RewardElements { get; set; }
+
+    public void OnDeserialized()
+    {
+        if (RewardElements != null)
+        {
+            foreach (var element in RewardElements)
+            {
+                var rewardType = element.Name;
+                var _amount = element.GetAttribute("amount");
+
+                var amount = _amount == "" ? 0 : double.Parse(_amount);
+                var name = element.GetAttribute("name");
+
+                if (!Rewards.ContainsKey(rewardType))
+                {
+                    Rewards[rewardType] = new List<AmountElement>();
+                }
+
+                Rewards[rewardType].Add(new AmountElement { Amount = amount, Name = name });
+            }
+        }
+    }
+}
+
+[Serializable]
+public class AmountElement
+{
+    [XmlAttribute("amount")]
+    public double Amount { get; set; }
+
+    [XmlAttribute("name")]
+    public string Name { get; set; }
 }
 
 public class GameSettingsManager
@@ -78,12 +172,14 @@ public class GameSettingsManager
     private static GameSettingsManager _instance;
     private static readonly object _lock = new object();
     private Dictionary<string, GameItem> _items;
+    private Dictionary<string, RandomModifierTable> _randomModifiers;
     private List<LevelItem> _levels = new List<LevelItem>();
     private bool _isInitialized;
 
     private GameSettingsManager()
     {
         _items = new Dictionary<string, GameItem>();
+        _randomModifiers = new Dictionary<string, RandomModifierTable>();
         _isInitialized = false;
     }
 
@@ -127,10 +223,22 @@ public class GameSettingsManager
                 }
             }
 
+            foreach (var item in gameSettings.Modifiers.Table)
+            {
+                _randomModifiers[item.Name] = item;
+
+                foreach (var roll in _randomModifiers[item.Name].Rolls)
+                {
+                    roll.OnDeserialized();
+                }
+            }
+
             _levels = gameSettings.Levels.Levels;
         }
 
         logger.LogInformation($"Loaded gameSettings.xml with {_items.Count} items");
+        logger.LogInformation($"Loaded {_levels.Count} levels");
+        logger.LogInformation($"Loaded {_randomModifiers.Count} random modifiers");
 
         _isInitialized = true;
     }
@@ -143,6 +251,21 @@ public class GameSettingsManager
         }
 
         if (_items.TryGetValue(itemName, out GameItem item))
+        {
+            return item;
+        }
+
+        return null;
+    }
+
+    public RandomModifierTable GetRandomModifier(string name)
+    {
+        if (!_isInitialized)
+        {
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+        }
+
+        if (_randomModifiers.TryGetValue(name, out RandomModifierTable item))
         {
             return item;
         }

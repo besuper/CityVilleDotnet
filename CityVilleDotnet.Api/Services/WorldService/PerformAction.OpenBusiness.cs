@@ -1,0 +1,60 @@
+﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Domain.Entities;
+using FluorineFx;
+
+namespace CityVilleDotnet.Api.Services.WorldService;
+
+internal sealed partial class PerformAction
+{
+    private async Task<CityVilleResponse?> PerformOpenBusiness(User user, object[] _params, Guid userId, CancellationToken cancellationToken)
+    {
+        var building = _params[1] as ASObject;
+
+        if (building is null)
+        {
+            throw new Exception($"Building can't be null");
+        }
+
+        foreach (var item in building)
+        {
+            _logger.LogInformation($"{item.Key} = {item.Value}");
+        }
+
+        var position = building["position"] as ASObject;
+        var world = user.GetWorld();
+
+        var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]);
+
+        if (obj is null)
+        {
+            throw new Exception($"Can't find building with coords");
+        }
+
+        var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
+
+        if (gameItem is not null)
+        {
+            if (gameItem.CommodityRequired is not null)
+            {
+                if (user.UserInfo.Player.Commodities.Storage.Goods < gameItem.CommodityRequired)
+                {
+                    return new CityVilleResponse(9, 333);
+                }
+
+                user.RemoveGoods(gameItem.CommodityRequired.Value);
+
+                obj.BuildTime = (double)building["buildTime"];
+                obj.PlantTime = (double)building["plantTime"];
+                obj.State = (string)building["state"];
+
+                user.HandleQuestProgress();
+                user.CheckCompletedQuests();
+            }
+        }
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return null;
+    }
+}

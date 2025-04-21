@@ -2,6 +2,8 @@
 
 using CityVilleDotnet.Common.Settings;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json.Serialization;
 
 public class User
@@ -104,6 +106,26 @@ public class User
     public World GetWorld()
     {
         return UserInfo.World;
+    }
+
+    public void AddXp(int xp)
+    {
+        UserInfo.Player.Xp += xp;
+    }
+
+    public int GetMaxEnergy()
+    {
+        return UserInfo.Player.EnergyMax;
+    }
+
+    public void AddEnergy(int energy)
+    {
+        if (UserInfo.Player.Energy >= GetMaxEnergy())
+        {
+            return;
+        }
+
+        UserInfo.Player.Energy += energy;
     }
 
     public void AddGold(int amount)
@@ -247,5 +269,104 @@ public class User
     public void RemoveGoods(int amount)
     {
         UserInfo.Player.Commodities.Storage.Goods -= amount;
+    }
+
+    private static string GetMD5Hash(string input)
+    {
+        using (MD5 md5 = MD5.Create())
+        {
+            byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+            byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hashBytes.Length; i++)
+            {
+                sb.Append(hashBytes[i].ToString("x2"));
+            }
+            return sb.ToString();
+        }
+    }
+
+    // From SecureRand::rand
+    // FIXME: Looks like secure rand from client and server is not the same
+    public int GenerateRand(int min, int max)
+    {
+        UserInfo.Player.RollCounter += 1;
+        int rollCounter = UserInfo.Player.RollCounter;
+
+        string stringToHash = "YOUR_LIKE_AN_8" + "::" + "" + "::" + 333 + "::" + rollCounter;
+
+        int range = max - min + 1;
+
+        string md5Hash = "0x" + GetMD5Hash(stringToHash).Substring(0, 8);
+        ulong hashNumber = Convert.ToUInt64(md5Hash, 16);
+
+        int moduloResult = (int)(hashNumber % (ulong)range);
+        int result = moduloResult + min;
+
+        return result;
+    }
+
+    // From Player::processRandomModifiersFromConfig
+    public List<int> CollectDoobersRewards(string itemName)
+    {
+        var gameItem = GameSettingsManager.Instance.GetItem(itemName);
+
+        if (gameItem is null) return [];
+
+        var secureRands = new List<int>();
+
+        foreach (var itemModifier in gameItem.RandomModifiers.Modifiers)
+        {
+            var secureRand = GenerateRand(0, 99);
+
+            secureRands.Add(secureRand);
+
+            var modifierTable = GameSettingsManager.Instance.GetRandomModifier(itemModifier.TableName);
+
+            if (modifierTable is null) continue;
+
+            var previousRollPercent = 0;
+            var found = false;
+
+            foreach (var roll in modifierTable.Rolls)
+            {
+                var percent = roll.Percent + previousRollPercent;
+
+                previousRollPercent = roll.Percent;
+
+                if (secureRand < percent && !found)
+                {
+                    Console.WriteLine("FOUND WITH PERCENT : " + percent);
+                    Console.WriteLine("SECURE RAND : " + secureRand);
+
+                    foreach (var (key, value) in roll.Rewards)
+                    {
+                        Console.WriteLine("TYPE : " + key);
+
+                        switch (key)
+                        {
+                            case "coin":
+                                // FIXME: Change coins to double ? There are doubles in amount settings
+                                Console.WriteLine(value.Sum(x => x.Amount));
+                                AddGold((int)value.Sum(x => x.Amount));
+                                break;
+                            case "xp":
+                                // TODO: XP can be double
+                                AddXp((int)value.Sum(x => x.Amount));
+                                Console.WriteLine(value.Sum(x => x.Amount));
+                                break;
+                            case "energy":
+                                AddEnergy((int)value.Sum(x => x.Amount));
+                                break;
+                        }
+
+                        found = true;
+                    }
+                }
+            }
+        }
+
+        return secureRands;
     }
 }
