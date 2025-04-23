@@ -149,6 +149,8 @@ public class User
 
     public void HandleQuestProgress(string actionType = "", string itemName = "")
     {
+        // TODO: Make actionType required, update how quests are checked
+
         foreach (var quest in Quests.Where(x => x.QuestType == QuestType.Active))
         {
             var questItem = QuestSettingsManager.Instance.GetItem(quest.Name);
@@ -217,6 +219,7 @@ public class User
                 if (task.Action.Equals("harvestByClass")
                     || task.Action.Equals("harvestResidenceByName")
                     || task.Action.Equals("startContractByClass")
+                    || task.Action.Equals("clearByClass")
                     )
                 {
                     var buildingName = task.Type;

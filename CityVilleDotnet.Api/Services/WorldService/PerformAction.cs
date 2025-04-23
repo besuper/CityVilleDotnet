@@ -87,6 +87,11 @@ internal sealed partial class PerformAction : AmfService
             return GatewayService.CreateEmptyResponse();
         }
 
+        if (actionType == "clear")
+        {
+            return await PerformClear(user, _params, userId, cancellationToken);
+        }
+
         return GatewayService.CreateEmptyResponse();
     }
 }
