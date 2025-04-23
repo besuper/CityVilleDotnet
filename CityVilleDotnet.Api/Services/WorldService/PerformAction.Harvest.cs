@@ -79,6 +79,9 @@ internal sealed partial class PerformAction
         _logger.LogInformation($"{obj.State}");
         _logger.LogInformation($"{obj.PlantTime}");
 
+        user.HandleQuestProgress(itemName: obj.ItemName == "plot_crop" ? obj.ClassName : obj.ItemName);
+        user.CheckCompletedQuests();
+
         await _context.SaveChangesAsync(cancellationToken);
 
         var response = new ASObject();

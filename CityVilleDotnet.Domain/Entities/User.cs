@@ -147,7 +147,7 @@ public class User
         return newName;
     }
 
-    public void HandleQuestProgress(string actionType = "")
+    public void HandleQuestProgress(string actionType = "", string itemName = "")
     {
         foreach (var quest in Quests.Where(x => x.QuestType == QuestType.Active))
         {
@@ -161,49 +161,70 @@ public class User
             {
                 if (task.Action.Equals(actionType))
                 {
-                    quest.Progress[index] = 1;
+                    quest.Progress[index] += 1;
                 }
 
                 if (task.Action.Equals("countPlayerResourceByType"))
                 {
-                    var completed = false;
+                    var count = 0;
                     var ressourceType = task.Type;
-                    var amount = int.Parse(task.Total);
 
                     switch (ressourceType)
                     {
                         case "population":
-                            completed = GetWorld().GetCurrentPopulation() >= amount;
+                            count = GetWorld().GetCurrentPopulation();
                             break;
                         default:
                             break;
                     }
 
-                    if (completed)
-                    {
-                        quest.Progress[index] = 1;
-                    }
+                    quest.Progress[index] = count;
                 }
 
                 if (task.Action.Equals("countConstructionOrBuildingByName"))
                 {
                     var buildingName = task.Type;
-                    var amount = int.Parse(task.Total);
 
-                    if (GetWorld().CountBuildingByName(buildingName) >= amount)
-                    {
-                        quest.Progress[index] = 1;
-                    }
+                    quest.Progress[index] = GetWorld().CountBuildingByName(buildingName);
                 }
 
                 if (task.Action.Equals("openBusinessByName"))
                 {
                     var buildingName = task.Type;
+
+                    quest.Progress[index] = GetWorld().CountOpenedBuildingByName(buildingName);
+                }
+
+                if (task.Action.Equals("harvestBusinessByName"))
+                {
+                    var buildingName = task.Type;
+
+                    // TODO: Check amount
+
+                    if (buildingName.Equals(itemName))
+                    {
+                        quest.Progress[index] += 1;
+                    }
+                }
+
+                if (task.Action.Equals("countWorldObjectByName"))
+                {
+                    var buildingName = task.Type;
+
+                    quest.Progress[index] = GetWorld().CountBuildingByName(buildingName);
+                }
+
+                if (task.Action.Equals("harvestByClass")
+                    || task.Action.Equals("harvestResidenceByName")
+                    || task.Action.Equals("startContractByClass")
+                    )
+                {
+                    var buildingName = task.Type;
                     var amount = int.Parse(task.Total);
 
-                    if (GetWorld().CountOpenedBuildingByName(buildingName) >= amount)
+                    if (buildingName.Equals(itemName))
                     {
-                        quest.Progress[index] = 1;
+                        quest.Progress[index] += 1;
                     }
                 }
 
@@ -219,37 +240,11 @@ public class User
         foreach (var item in Quests.Where(x => x.QuestType == QuestType.Active))
         {
             // TODO: Support purchased tasks
-
-            var completed = true;
-
-            for (var i = 0; i < item.Progress.Length; i++)
-            {
-                if (item.Progress[i] == 0)
-                {
-                    completed = false;
-                    break;
-                }
-            }
-
-            if (completed)
+            if (item.IsCompleted())
             {
                 item.QuestType = QuestType.Completed;
 
-                var questItem = QuestSettingsManager.Instance.GetItem(item.Name);
-
-                if (questItem is null) continue;
-
-                foreach (var sequel in questItem.Sequels.Sequels)
-                {
-                    var sequelItem = QuestSettingsManager.Instance.GetItem(sequel.Name);
-
-                    if (sequelItem is null) continue;
-
-                    // TODO: Add support for pending tasks
-                    var newQuest = Quest.Create(sequelItem.Name, 0, sequelItem.Tasks.Tasks.Count, QuestType.Active);
-
-                    newQuests.Add(newQuest);
-                }
+                newQuests = item.StartSequels();
             }
         }
 
@@ -313,6 +308,8 @@ public class User
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
 
         if (gameItem is null) return [];
+        if (gameItem.RandomModifiers is null) return [];
+        if (gameItem.RandomModifiers.Modifiers is null) return [];
 
         var secureRands = new List<int>();
 

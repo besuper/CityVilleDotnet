@@ -102,7 +102,7 @@ public class QuestSettingsManager
         public TasksContainer Tasks { get; set; }
 
         [XmlElement("sequels")]
-        public SequelsContainer Sequels { get; set; }
+        public SequelsContainer? Sequels { get; set; }
     }
 
     [Serializable]
@@ -129,7 +129,7 @@ public class QuestSettingsManager
     public class SequelsContainer
     {
         [XmlElement("sequel")]
-        public List<Sequel> Sequels { get; set; }
+        public List<Sequel>? Sequels { get; set; }
     }
 
     [Serializable]

@@ -26,6 +26,8 @@ internal sealed partial class PerformAction
         var position = building["position"] as ASObject;
         var className = (string)building["className"];
         var itemName = (string)building["itemName"];
+        var buildTime = building.GetValueOrDefault("buildTime");
+        var plantTime = building.GetValueOrDefault("plantTime");
         var world = user.GetWorld();
 
         var obj = new WorldObject(
@@ -36,8 +38,8 @@ internal sealed partial class PerformAction
             (int)building["tempId"],
             (string)building["state"],
             (int)building["direction"],
-            (double)building["buildTime"],
-            (double)building["plantTime"],
+            buildTime == null ? 0 : (double)buildTime,
+            plantTime == null ? 0 : (double)plantTime,
             new WorldObjectPosition()
             {
                 X = (int)position["x"],
@@ -46,6 +48,8 @@ internal sealed partial class PerformAction
             },
             (int)building["id"]
         );
+
+        _logger.LogInformation($"x: {obj.Position.X} y: {obj.Position.Y} z: {obj.Position.Z}");
 
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
 
@@ -66,6 +70,9 @@ internal sealed partial class PerformAction
 
         // TODO: Check coins, goods, energy, etc...
         // Add population
+
+        user.HandleQuestProgress();
+        user.CheckCompletedQuests();
 
         await _context.SaveChangesAsync(cancellationToken);
     }

@@ -87,7 +87,7 @@
                         "y": 25,
                         "z": 0
                     },
-                    "id": 3                    
+                    "id": 3
                 },
                 {
                     "itemName": "plot_crop",
@@ -726,7 +726,127 @@
                     "id": 46,
                     "state": "static",
                     "tempId": -1
-                }        
+                },
+                {
+                    "position": {
+                        "x": 8,
+                        "y": 21,
+                        "z": 0
+                    },
+                    "className": "Wilderness",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "wilderness_02",
+                    "direction": 0,
+                    "id": 47,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": 8,
+                        "y": 20,
+                        "z": 0
+                    },
+                    "className": "Wilderness",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "wilderness_02",
+                    "direction": 0,
+                    "id": 48,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": 7,
+                        "y": 20,
+                        "z": 0
+                    },
+                    "className": "Wilderness",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "wilderness_02",
+                    "direction": 0,
+                    "id": 49,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": 4,
+                        "y": 8,
+                        "z": 0
+                    },
+                    "className": "Wilderness",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "wilderness_02",
+                    "direction": 0,
+                    "id": 50,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": 8,
+                        "y": 7,
+                        "z": 0
+                    },
+                    "className": "Wilderness",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "wilderness_02",
+                    "direction": 0,
+                    "id": 51,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": 8,
+                        "y": 8,
+                        "z": 0
+                    },
+                    "className": "Wilderness",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "wilderness_02",
+                    "direction": 0,
+                    "id": 52,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": 9,
+                        "y": 8,
+                        "z": 0
+                    },
+                    "className": "Wilderness",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "wilderness_02",
+                    "direction": 0,
+                    "id": 53,
+                    "state": "static",
+                    "tempId": -1
+                },
+                {
+                    "position": {
+                        "x": 9,
+                        "y": 7,
+                        "z": 0
+                    },
+                    "className": "Wilderness",
+                    "components": {},
+                    "deleted": false,
+                    "itemName": "wilderness_02",
+                    "direction": 0,
+                    "id": 54,
+                    "state": "static",
+                    "tempId": -1
+                }
             ]
         }
     },

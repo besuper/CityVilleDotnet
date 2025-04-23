@@ -89,7 +89,7 @@ public class LevelItem
 public class RandomModifiers
 {
     [XmlElement("modifier")]
-    public List<RandomModifier> Modifiers { get; set; }
+    public List<RandomModifier>? Modifiers { get; set; }
 }
 
 [Serializable]

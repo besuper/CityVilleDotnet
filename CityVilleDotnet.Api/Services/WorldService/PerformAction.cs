@@ -80,6 +80,13 @@ internal sealed partial class PerformAction : AmfService
             return await PerformHarvest(user, _params, userId, cancellationToken);
         }
 
+        if (actionType == "startContract")
+        {
+            await PerformStartContract(user, _params, userId, cancellationToken);
+
+            return GatewayService.CreateEmptyResponse();
+        }
+
         return GatewayService.CreateEmptyResponse();
     }
 }
