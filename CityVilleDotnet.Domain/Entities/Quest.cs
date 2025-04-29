@@ -63,6 +63,35 @@ public class Quest
         return completed;
     }
 
+    public void ClaimRewards(User user)
+    {
+        var questItem = QuestSettingsManager.Instance.GetItem(Name);
+
+        if (questItem is null) return;
+        if (questItem.ResourceModifiers is null) return;
+        if (questItem.ResourceModifiers.Rewards is null) return;
+
+        foreach (var reward in questItem.ResourceModifiers.Rewards)
+        {
+            if(reward.Gold is not null)
+            {
+                user.AddGold(int.Parse(reward.Gold));
+            }
+
+            if (reward.Xp is not null)
+            {
+                user.AddXp(int.Parse(reward.Xp));
+            }
+
+            if (reward.Goods is not null)
+            {
+                user.AddGoods(int.Parse(reward.Goods));
+            }
+
+            // TODO: Support energy (add energy engine) + items
+        }
+    }
+
     public List<Quest> StartSequels()
     {
         var sequels = new List<Quest>();

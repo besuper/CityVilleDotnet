@@ -103,6 +103,9 @@ public class QuestSettingsManager
 
         [XmlElement("sequels")]
         public SequelsContainer? Sequels { get; set; }
+
+        [XmlElement("resourceModifiers")]
+        public ResourceModifiers? ResourceModifiers { get; set; }
     }
 
     [Serializable]
@@ -137,5 +140,34 @@ public class QuestSettingsManager
     {
         [XmlAttribute("name")]
         public string Name { get; set; }
+    }
+
+    [Serializable]
+    public class ResourceModifiers
+    {
+        [XmlElement("questRewards")]
+        public List<QuestRewards>? Rewards { get; set; }
+    }
+
+    [Serializable]
+    public class QuestRewards
+    {
+        [XmlAttribute("gold")]
+        public string? Gold { get; set; }
+
+        [XmlAttribute("xp")]
+        public string? Xp { get; set; }
+
+        [XmlAttribute("goods")]
+        public string? Goods { get; set; }
+
+        [XmlAttribute("energy")]
+        public string? Energy { get; set; }
+
+        [XmlAttribute("itemUnlock")]
+        public string? ItemUnlock { get; set; }
+
+        [XmlAttribute("item")]
+        public string? Item { get; set; }
     }
 }

@@ -246,6 +246,7 @@ public class User
             if (item.IsCompleted())
             {
                 item.QuestType = QuestType.Completed;
+                item.ClaimRewards(this);
 
                 newQuests = item.StartSequels();
             }
