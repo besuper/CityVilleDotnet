@@ -7,17 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
-internal sealed partial class PerformAction : AmfService
+internal sealed partial class PerformAction(CityVilleDbContext _context, ILogger<PerformAction> _logger) : AmfService
 {
-    private readonly CityVilleDbContext _context;
-    private readonly ILogger<PerformAction> _logger;
-
-    public PerformAction(CityVilleDbContext context, ILogger<PerformAction> logger) : base(context)
-    {
-        _context = context;
-        _logger = logger;
-    }
-
     public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {
         var user = await _context.Set<User>()

@@ -5,7 +5,7 @@ using FluorineFx;
 
 namespace CityVilleDotnet.Api.Services.QuestService;
 
-internal sealed class RequestManualQuest(CityVilleDbContext context, ILogger<RequestManualQuest> _logger) : AmfService(context)
+internal sealed class RequestManualQuest(CityVilleDbContext context, ILogger<RequestManualQuest> _logger) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {

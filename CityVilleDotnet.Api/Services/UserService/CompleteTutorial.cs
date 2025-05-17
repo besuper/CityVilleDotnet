@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-public class CompleteTutorial(CityVilleDbContext context) : AmfService(context)
+public class CompleteTutorial(CityVilleDbContext context) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {

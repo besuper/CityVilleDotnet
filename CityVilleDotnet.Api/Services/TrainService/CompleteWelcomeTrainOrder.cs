@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.TrainService;
 
-public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService(context)
+public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {

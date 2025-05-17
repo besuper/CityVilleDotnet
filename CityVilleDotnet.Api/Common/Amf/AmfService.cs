@@ -5,10 +5,8 @@ namespace CityVilleDotnet.Api.Common.Amf;
 
 public class AmfService
 {
-    protected readonly CityVilleDbContext _context;
-    public AmfService(CityVilleDbContext context)
+    public AmfService()
     {
-        _context = context;
     }
     public virtual async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken = default)
     {

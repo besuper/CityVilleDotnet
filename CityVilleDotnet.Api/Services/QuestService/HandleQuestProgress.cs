@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.QuestService;
 
-public class HandleQuestProgress(CityVilleDbContext context) : AmfService(context)
+public class HandleQuestProgress(CityVilleDbContext context) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {

@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService(context)
+internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
 {
     // _loc6_.uid,_loc6_.gold,_loc6_.xp,_loc6_.level,null,_loc6_.cityname,_loc8_.snUser.picture,_loc8_.snUser.firstName,_loc9_,_loc6_.socialLevel,false,false
     public class NeighborResponse

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-public class SetCityName(CityVilleDbContext context) : AmfService(context)
+public class SetCityName(CityVilleDbContext context) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {

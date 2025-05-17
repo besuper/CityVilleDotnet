@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-internal sealed class InitUser(CityVilleDbContext context) : AmfService(context)
+internal sealed class InitUser(CityVilleDbContext context) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {

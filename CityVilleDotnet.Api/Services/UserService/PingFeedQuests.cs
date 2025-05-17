@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService(context)
+internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {
