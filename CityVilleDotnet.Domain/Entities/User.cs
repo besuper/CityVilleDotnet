@@ -5,56 +5,94 @@ using CityVilleDotnet.Domain.GameEntities;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json.Serialization;
 
 public class User
 {
-    [JsonIgnore]
     public Guid Id { get; private set; }
-
-    [JsonIgnore]
     public Guid UserId { get; private set; }
-
-    [JsonIgnore]
     public ApplicationUser? AppUser { get; private set; }
-
-    [JsonIgnore]
     public List<Quest> Quests { get; private set; } = new List<Quest>();
-    [JsonPropertyName("userInfo")]
-    public UserInfo? UserInfo { get; set; }
-
-
-    [JsonPropertyName("Franchises")]
+    public Player? Player { get; private set; }
+    public World? World { get; set; }
     public List<object> Franchises { get; set; } = new List<object>();
-
-    [JsonIgnore]
     public List<Friend> Friends { get; private set; } = new List<Friend>();
+
+    public static User CreateNewPlayer(UserDto defaultValue, ApplicationUser user)
+    {
+        return new User
+        {
+            Id = Guid.NewGuid(),
+            UserId = Guid.Parse(user.Id),
+            AppUser = user,
+            Player = new Player
+            {
+                Id = Guid.NewGuid(),
+                Cash = 0,
+                Energy = 12,
+                EnergyMax = 12,
+                Commodities = new Commodities()
+                {
+                    Id = Guid.NewGuid(),
+                    Storage = new Storage()
+                    {
+                        Goods = defaultValue.UserInfo.Player.Commodities.Storage.Goods
+                    }
+                },
+                Inventory = new Inventory()
+                {
+                    Id = Guid.NewGuid(),
+                    Count = 0
+                },
+                Username = user.UserName
+            },
+            World = new World()
+            {
+                Id = Guid.NewGuid(),
+                Population = defaultValue.UserInfo.World.CitySim.Population,
+                PopulationCap = defaultValue.UserInfo.World.CitySim.PopulationCap,
+                PotentialPopulation = defaultValue.UserInfo.World.CitySim.PotentialPopulation,
+                SizeX = defaultValue.UserInfo.World.SizeX,
+                SizeY = defaultValue.UserInfo.World.SizeY,
+                WorldName = "",
+                MapRects = defaultValue.UserInfo.World.MapRects.Select(x => new MapRect()
+                {
+                    Id = Guid.NewGuid(),
+                    Height = x.Height,
+                    Width = x.Width,
+                    X = x.X,
+                    Y = x.Y,
+                }).ToList(),
+                Objects = defaultValue.UserInfo.World.Objects.Select(x => new WorldObject()
+                {
+                    Id = Guid.NewGuid(),
+                    Builds = x.Builds,
+                    BuildTime = x.BuildTime,
+                    ClassName = x.ClassName,
+                    ContractName = x.ContractName,
+                    Deleted = x.Deleted,
+                    Direction = x.Direction,
+                    FinishedBuilds = x.FinishedBuilds,
+                    ItemName = x.ItemName,
+                    PlantTime = x.PlantTime,
+                    Position = new WorldObjectPosition()
+                    {
+                        X = x.Position.X,
+                        Y = x.Position.Y,
+                        Z = x.Position.Z,
+                    },
+                    Stage = x.Stage,
+                    State = x.State,
+                    TargetBuildingClass = x.TargetBuildingClass,
+                    TargetBuildingName = x.TargetBuildingName,
+                    TempId = x.TempId,
+                    WorldFlatId = x.WorldFlatId,
+                }).ToList()
+            }
+        };
+    }
 
     public void SetupNewPlayer(ApplicationUser user)
     {
-        Id = Guid.NewGuid();
-        UserId = Guid.Parse(user.Id);
-        AppUser = user;
-
-        UserInfo.Id = Guid.NewGuid();
-        UserInfo.Username = user.UserName;
-
-        UserInfo.Player.Id = Guid.NewGuid();
-        UserInfo.Player.Inventory.Id = Guid.NewGuid();
-        UserInfo.Player.Commodities.Id = Guid.NewGuid();
-
-        UserInfo.World.Id = Guid.NewGuid();
-
-        foreach (var item in UserInfo.World.MapRects)
-        {
-            item.Id = Guid.NewGuid();
-        }
-
-        foreach (var item in UserInfo.World.Objects)
-        {
-            item.Id = Guid.NewGuid();
-        }
-
         // Setup first quest
         Quests.Add(Quest.Create("q_rename_city", 0, 1, QuestType.Active));
     }
@@ -63,7 +101,7 @@ public class User
     {
         var level = 1;
         var energyMax = 12;
-        var currentXP = UserInfo.Player.Xp;
+        var currentXP = Player.Xp;
 
         foreach (var item in GameSettingsManager.Instance.GetLevels())
         {
@@ -78,75 +116,75 @@ public class User
             }
         }
 
-        UserInfo.Player.Level = level;
-        UserInfo.Player.EnergyMax = energyMax;
+        Player.Level = level;
+        Player.EnergyMax = energyMax;
     }
 
     public int GetGold()
     {
-        return UserInfo.Player.Gold;
+        return Player.Gold;
     }
 
     public int GetExperience()
     {
-        return UserInfo.Player.Xp;
+        return Player.Xp;
     }
 
     public int GetGoods()
     {
-        return UserInfo.Player.Commodities.Storage.Goods;
+        return Player.Commodities.Storage.Goods;
     }
 
     public int GetCash()
     {
-        return UserInfo.Player.Cash;
+        return Player.Cash;
     }
 
     public int GetLevel()
     {
-        return UserInfo.Player.Level;
+        return Player.Level;
     }
 
     public World GetWorld()
     {
-        return UserInfo.World;
+        return World;
     }
 
     public void AddXp(int xp)
     {
-        UserInfo.Player.Xp += xp;
+        Player.Xp += xp;
     }
 
     public int GetMaxEnergy()
     {
-        return UserInfo.Player.EnergyMax;
+        return Player.EnergyMax;
     }
 
     public void AddEnergy(int energy)
     {
-        if (UserInfo.Player.Energy >= GetMaxEnergy())
+        if (Player.Energy >= GetMaxEnergy())
         {
             return;
         }
 
-        UserInfo.Player.Energy += energy;
+        Player.Energy += energy;
     }
 
     public void AddGold(int amount)
     {
-        UserInfo.Player.Gold += amount;
+        Player.Gold += amount;
     }
 
     public void CompleteTutorial()
     {
-        UserInfo.IsNew = false;
+        Player.IsNew = false;
     }
 
     public string SetWorldName(string name)
     {
         var newName = name.Trim();
 
-        UserInfo.WorldName = newName;
+        World.WorldName = newName;
 
         return newName;
     }
@@ -261,17 +299,17 @@ public class User
 
     public void RemoveCoin(int amount)
     {
-        UserInfo.Player.Gold += amount;
+        Player.Gold += amount;
     }
 
     public void AddGoods(int amount)
     {
-        UserInfo.Player.Commodities.Storage.Goods += amount;
+        Player.Commodities.Storage.Goods += amount;
     }
 
     public void RemoveGoods(int amount)
     {
-        UserInfo.Player.Commodities.Storage.Goods -= amount;
+        Player.Commodities.Storage.Goods -= amount;
     }
 
     private static string GetMD5Hash(string input)
@@ -294,8 +332,8 @@ public class User
     // FIXME: Looks like secure rand from client and server is not the same
     public int GenerateRand(int min, int max)
     {
-        UserInfo.Player.RollCounter += 1;
-        int rollCounter = UserInfo.Player.RollCounter;
+        Player.RollCounter += 1;
+        int rollCounter = Player.RollCounter;
 
         string stringToHash = "YOUR_LIKE_AN_8" + "::" + "" + "::" + 333 + "::" + rollCounter;
 

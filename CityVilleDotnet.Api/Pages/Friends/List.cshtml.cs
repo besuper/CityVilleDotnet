@@ -34,7 +34,6 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             .Include(x => x.AppUser)
             .Include(x => x.Friends)
             .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.UserInfo)
             .ThenInclude(x => x.Player)
             .SelectMany(x => x.Friends, (_, friend) => friend)
             .Select(x => x.ToDto())
@@ -53,10 +52,8 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         var user = await _dbContext.Set<User>()
             .Include(x => x.Friends)
             .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.UserInfo)
             .ThenInclude(x => x.Player)
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.Player)
+            .Include(x => x.Player)
             .Include(x => x.AppUser)
             .FirstOrDefaultAsync(x => x.AppUser!.Id.Equals(CurrentUser.Id), ct);
 
@@ -64,14 +61,13 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             return RedirectToPage("/Account/Login");
 
         var targetUser = await _dbContext.Set<User>()
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.Player)
-            .Where(x => x.UserInfo!.Username.Equals(Username))
+            .Include(x => x.Player)
+            .Where(x => x.Player!.Username.Equals(Username))
             .FirstOrDefaultAsync(ct);
 
         if (targetUser is null) return RedirectToPage("/Friends/List");
 
-        var alreadyFriend = user.Friends.Any(x => x.FriendUser.UserInfo.Username.Equals(Username));
+        var alreadyFriend = user.Friends.Any(x => x.FriendUser.Player.Username.Equals(Username));
 
         if (alreadyFriend)
             // TODO: Show error
@@ -98,25 +94,23 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         var user = await _dbContext.Set<User>()
             .Include(x => x.Friends)
             .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.UserInfo)
             .ThenInclude(x => x.Player)
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.Player)
+            .Include(x => x.Player)
             .Include(x => x.AppUser)
             .Include(x => x.Friends)
             .ThenInclude(x => x.FriendUser)
             .ThenInclude(x => x.Friends)
             .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.UserInfo)
+            .ThenInclude(x => x.Player)
             .FirstOrDefaultAsync(x => x.AppUser!.Id.Equals(CurrentUser.Id), ct);
 
         if (user is null)
             return RedirectToPage("/Account/Login");
 
-        var friendship = user.Friends.FirstOrDefault(x => x.FriendUser.UserInfo.Username.Equals(userName));
+        var friendship = user.Friends.FirstOrDefault(x => x.FriendUser.Player.Username.Equals(userName));
         friendship.Status = FriendshipStatus.Accepted;
 
-        var targetFriendship = friendship.FriendUser.Friends.FirstOrDefault(x => x.FriendUser.UserInfo.Username.Equals(user.UserInfo.Username));
+        var targetFriendship = friendship.FriendUser.Friends.FirstOrDefault(x => x.FriendUser.Player.Username.Equals(user.Player.Username));
         targetFriendship.Status = FriendshipStatus.Accepted;
 
         await _dbContext.SaveChangesAsync(ct);

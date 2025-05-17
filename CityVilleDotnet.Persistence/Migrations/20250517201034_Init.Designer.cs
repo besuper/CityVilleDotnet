@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CityVilleDotnet.Persistence.Migrations
 {
     [DbContext(typeof(CityVilleDbContext))]
-    [Migration("20250407183107_AddQuests")]
-    partial class AddQuests
+    [Migration("20250517201034_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace CityVilleDotnet.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CityVilleDotnet.Api.Common.Domain.ApplicationUser", b =>
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -90,7 +90,186 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.QuestService.Domain.Quest", b =>
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Commodities", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Commodities");
+
+                    b.HasAnnotation("Relational:JsonPropertyName", "commodities");
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Friend", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("FriendUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Requested")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FriendUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Friend");
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Inventory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "count");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Inventory");
+
+                    b.HasAnnotation("Relational:JsonPropertyName", "inventory");
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.MapRect", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Height")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "height");
+
+                    b.Property<int>("Width")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "width");
+
+                    b.Property<Guid?>("WorldId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("X")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "x");
+
+                    b.Property<int>("Y")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "y");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorldId");
+
+                    b.ToTable("MapRect");
+
+                    b.HasAnnotation("Relational:JsonPropertyName", "mapRects");
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Player", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Cash")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "cash");
+
+                    b.Property<Guid?>("CommoditiesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CreationTimestamp")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "creationTimestamp");
+
+                    b.Property<int>("Energy")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "energy");
+
+                    b.Property<int>("EnergyMax")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "energyMax");
+
+                    b.Property<int>("ExpansionsPurchased")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "expansionsPurchased");
+
+                    b.Property<bool>("FirstDay")
+                        .HasColumnType("bit")
+                        .HasAnnotation("Relational:JsonPropertyName", "firstDay");
+
+                    b.Property<int>("Gold")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "gold");
+
+                    b.Property<Guid?>("InventoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsNew")
+                        .HasColumnType("bit")
+                        .HasAnnotation("Relational:JsonPropertyName", "is_new");
+
+                    b.Property<int>("LastTrackingTimestamp")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "lastTrackingTimestamp");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "level");
+
+                    b.Property<bool>("MusicDisabled")
+                        .HasColumnType("bit")
+                        .HasAnnotation("Relational:JsonPropertyName", "musicDisabled");
+
+                    b.Property<int>("RollCounter")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "rollCounter");
+
+                    b.Property<bool>("SfxDisabled")
+                        .HasColumnType("bit")
+                        .HasAnnotation("Relational:JsonPropertyName", "sfxDisabled");
+
+                    b.Property<int>("Uid")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "uid");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasAnnotation("Relational:JsonPropertyName", "username");
+
+                    b.Property<string>("WorldName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasAnnotation("Relational:JsonPropertyName", "worldName");
+
+                    b.Property<int>("Xp")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "xp");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommoditiesId");
+
+                    b.HasIndex("InventoryId");
+
+                    b.ToTable("Player");
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Quest", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -128,132 +307,7 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.ToTable("Quest");
                 });
 
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.Commodities", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Commodities");
-
-                    b.HasAnnotation("Relational:JsonPropertyName", "commodities");
-                });
-
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.Inventory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "count");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Inventory");
-
-                    b.HasAnnotation("Relational:JsonPropertyName", "inventory");
-                });
-
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.MapRect", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Height")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "height");
-
-                    b.Property<int>("Width")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "width");
-
-                    b.Property<Guid?>("WorldId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("X")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "x");
-
-                    b.Property<int>("Y")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "y");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WorldId");
-
-                    b.ToTable("MapRect");
-
-                    b.HasAnnotation("Relational:JsonPropertyName", "mapRects");
-                });
-
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.Player", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Cash")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "cash");
-
-                    b.Property<Guid?>("CommoditiesId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Energy")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "energy");
-
-                    b.Property<int>("EnergyMax")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "energyMax");
-
-                    b.Property<int>("ExpansionsPurchased")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "expansionsPurchased");
-
-                    b.Property<int>("Gold")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "gold");
-
-                    b.Property<Guid?>("InventoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("LastTrackingTimestamp")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "lastTrackingTimestamp");
-
-                    b.Property<int>("Level")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "level");
-
-                    b.Property<int>("RollCounter")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "rollCounter");
-
-                    b.Property<int>("Uid")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "uid");
-
-                    b.Property<int>("Xp")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "xp");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommoditiesId");
-
-                    b.HasIndex("InventoryId");
-
-                    b.ToTable("Player");
-
-                    b.HasAnnotation("Relational:JsonPropertyName", "player");
-                });
-
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.User", b =>
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -261,69 +315,42 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<string>("AppUserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<Guid?>("PlayerId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserInfoId")
+                    b.Property<Guid?>("WorldId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
 
-                    b.HasIndex("UserInfoId");
-
-                    b.ToTable("User");
-                });
-
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.UserInfo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("CreationTimestamp")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "creationTimestamp");
-
-                    b.Property<bool>("FirstDay")
-                        .HasColumnType("bit")
-                        .HasAnnotation("Relational:JsonPropertyName", "firstDay");
-
-                    b.Property<bool>("IsNew")
-                        .HasColumnType("bit")
-                        .HasAnnotation("Relational:JsonPropertyName", "is_new");
-
-                    b.Property<Guid?>("PlayerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasAnnotation("Relational:JsonPropertyName", "username");
-
-                    b.Property<Guid?>("WorldId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("WorldName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasAnnotation("Relational:JsonPropertyName", "worldName");
-
-                    b.HasKey("Id");
-
                     b.HasIndex("PlayerId");
 
                     b.HasIndex("WorldId");
 
-                    b.ToTable("UserInfo");
-
-                    b.HasAnnotation("Relational:JsonPropertyName", "userInfo");
+                    b.ToTable("User");
                 });
 
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.World", b =>
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.World", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Population")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "population");
+
+                    b.Property<int>("PopulationCap")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "populationCap");
+
+                    b.Property<int>("PotentialPopulation")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "potentialPopulation");
 
                     b.Property<int>("SizeX")
                         .HasColumnType("int")
@@ -333,17 +360,23 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "sizeY");
 
+                    b.Property<string>("WorldName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("World");
-
-                    b.HasAnnotation("Relational:JsonPropertyName", "world");
                 });
 
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.WorldObject", b =>
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.WorldObject", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<double?>("BuildTime")
+                        .HasColumnType("float")
+                        .HasAnnotation("Relational:JsonPropertyName", "buildTime");
 
                     b.Property<int?>("Builds")
                         .HasColumnType("int")
@@ -374,6 +407,10 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasAnnotation("Relational:JsonPropertyName", "itemName");
+
+                    b.Property<double?>("PlantTime")
+                        .HasColumnType("float")
+                        .HasAnnotation("Relational:JsonPropertyName", "plantTime");
 
                     b.Property<int?>("Stage")
                         .HasColumnType("int")
@@ -545,16 +582,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.QuestService.Domain.Quest", b =>
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Commodities", b =>
                 {
-                    b.HasOne("CityVilleDotnet.Api.Services.UserService.Domain.User", null)
-                        .WithMany("Quests")
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.Commodities", b =>
-                {
-                    b.OwnsOne("CityVilleDotnet.Api.Services.UserService.Domain.Storage", "Storage", b1 =>
+                    b.OwnsOne("CityVilleDotnet.Domain.Entities.Storage", "Storage", b1 =>
                         {
                             b1.Property<Guid>("CommoditiesId")
                                 .HasColumnType("uniqueidentifier");
@@ -576,137 +606,94 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Navigation("Storage");
                 });
 
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.MapRect", b =>
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Friend", b =>
                 {
-                    b.HasOne("CityVilleDotnet.Api.Services.UserService.Domain.World", null)
+                    b.HasOne("CityVilleDotnet.Domain.Entities.User", "FriendUser")
+                        .WithMany()
+                        .HasForeignKey("FriendUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CityVilleDotnet.Domain.Entities.User", "User")
+                        .WithMany("Friends")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FriendUser");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.MapRect", b =>
+                {
+                    b.HasOne("CityVilleDotnet.Domain.Entities.World", null)
                         .WithMany("MapRects")
                         .HasForeignKey("WorldId");
                 });
 
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.Player", b =>
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Player", b =>
                 {
-                    b.HasOne("CityVilleDotnet.Api.Services.UserService.Domain.Commodities", "Commodities")
+                    b.HasOne("CityVilleDotnet.Domain.Entities.Commodities", "Commodities")
                         .WithMany()
                         .HasForeignKey("CommoditiesId");
 
-                    b.HasOne("CityVilleDotnet.Api.Services.UserService.Domain.Inventory", "Inventory")
+                    b.HasOne("CityVilleDotnet.Domain.Entities.Inventory", "Inventory")
                         .WithMany()
                         .HasForeignKey("InventoryId");
-
-                    b.OwnsOne("CityVilleDotnet.Api.Services.UserService.Domain.Options", "Options", b1 =>
-                        {
-                            b1.Property<Guid>("PlayerId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<bool>("MusicDisabled")
-                                .HasColumnType("bit")
-                                .HasAnnotation("Relational:JsonPropertyName", "musicDisabled");
-
-                            b1.Property<bool>("SfxDisabled")
-                                .HasColumnType("bit")
-                                .HasAnnotation("Relational:JsonPropertyName", "sfxDisabled");
-
-                            b1.HasKey("PlayerId");
-
-                            b1.ToTable("Player");
-
-                            b1.HasAnnotation("Relational:JsonPropertyName", "options");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PlayerId");
-                        });
 
                     b.Navigation("Commodities");
 
                     b.Navigation("Inventory");
-
-                    b.Navigation("Options");
                 });
 
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.User", b =>
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Quest", b =>
                 {
-                    b.HasOne("CityVilleDotnet.Api.Common.Domain.ApplicationUser", "AppUser")
+                    b.HasOne("CityVilleDotnet.Domain.Entities.User", null)
+                        .WithMany("Quests")
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.User", b =>
+                {
+                    b.HasOne("CityVilleDotnet.Domain.Entities.ApplicationUser", "AppUser")
                         .WithMany()
                         .HasForeignKey("AppUserId");
 
-                    b.HasOne("CityVilleDotnet.Api.Services.UserService.Domain.UserInfo", "UserInfo")
-                        .WithMany()
-                        .HasForeignKey("UserInfoId");
-
-                    b.Navigation("AppUser");
-
-                    b.Navigation("UserInfo");
-                });
-
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.UserInfo", b =>
-                {
-                    b.HasOne("CityVilleDotnet.Api.Services.UserService.Domain.Player", "Player")
+                    b.HasOne("CityVilleDotnet.Domain.Entities.Player", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerId");
 
-                    b.HasOne("CityVilleDotnet.Api.Services.UserService.Domain.World", "World")
+                    b.HasOne("CityVilleDotnet.Domain.Entities.World", "World")
                         .WithMany()
                         .HasForeignKey("WorldId");
+
+                    b.Navigation("AppUser");
 
                     b.Navigation("Player");
 
                     b.Navigation("World");
                 });
 
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.World", b =>
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.WorldObject", b =>
                 {
-                    b.OwnsOne("CityVilleDotnet.Api.Services.UserService.Domain.CitySim", "CitySim", b1 =>
-                        {
-                            b1.Property<Guid>("WorldId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("Population")
-                                .HasColumnType("int")
-                                .HasAnnotation("Relational:JsonPropertyName", "population");
-
-                            b1.Property<int>("PopulationCap")
-                                .HasColumnType("int")
-                                .HasAnnotation("Relational:JsonPropertyName", "populationCap");
-
-                            b1.Property<int>("PotentialPopulation")
-                                .HasColumnType("int")
-                                .HasAnnotation("Relational:JsonPropertyName", "potentialPopulation");
-
-                            b1.HasKey("WorldId");
-
-                            b1.ToTable("World");
-
-                            b1.HasAnnotation("Relational:JsonPropertyName", "citySim");
-
-                            b1.WithOwner()
-                                .HasForeignKey("WorldId");
-                        });
-
-                    b.Navigation("CitySim");
-                });
-
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.WorldObject", b =>
-                {
-                    b.HasOne("CityVilleDotnet.Api.Services.UserService.Domain.World", null)
+                    b.HasOne("CityVilleDotnet.Domain.Entities.World", null)
                         .WithMany("Objects")
                         .HasForeignKey("WorldId");
 
-                    b.OwnsOne("CityVilleDotnet.Api.Services.UserService.Domain.WorldObjectPosition", "Position", b1 =>
+                    b.OwnsOne("CityVilleDotnet.Domain.Entities.WorldObjectPosition", "Position", b1 =>
                         {
                             b1.Property<Guid>("WorldObjectId")
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<int>("X")
-                                .HasColumnType("int")
-                                .HasAnnotation("Relational:JsonPropertyName", "x");
+                                .HasColumnType("int");
 
                             b1.Property<int>("Y")
-                                .HasColumnType("int")
-                                .HasAnnotation("Relational:JsonPropertyName", "y");
+                                .HasColumnType("int");
 
                             b1.Property<int?>("Z")
-                                .HasColumnType("int")
-                                .HasAnnotation("Relational:JsonPropertyName", "z");
+                                .HasColumnType("int");
 
                             b1.HasKey("WorldObjectId");
 
@@ -732,7 +719,7 @@ namespace CityVilleDotnet.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("CityVilleDotnet.Api.Common.Domain.ApplicationUser", null)
+                    b.HasOne("CityVilleDotnet.Domain.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -741,7 +728,7 @@ namespace CityVilleDotnet.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("CityVilleDotnet.Api.Common.Domain.ApplicationUser", null)
+                    b.HasOne("CityVilleDotnet.Domain.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -756,7 +743,7 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CityVilleDotnet.Api.Common.Domain.ApplicationUser", null)
+                    b.HasOne("CityVilleDotnet.Domain.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -765,19 +752,21 @@ namespace CityVilleDotnet.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("CityVilleDotnet.Api.Common.Domain.ApplicationUser", null)
+                    b.HasOne("CityVilleDotnet.Domain.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.User", b =>
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.User", b =>
                 {
+                    b.Navigation("Friends");
+
                     b.Navigation("Quests");
                 });
 
-            modelBuilder.Entity("CityVilleDotnet.Api.Services.UserService.Domain.World", b =>
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.World", b =>
                 {
                     b.Navigation("MapRects");
 

@@ -17,14 +17,10 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService(contex
 
         var user = await context.Set<User>()
             .Include(x => x.Quests)
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.World)
-            .ThenInclude(x => x.CitySim)
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.World)
+            .Include(x => x.Player)
+            .Include(x => x.World)
+            .Include(x => x.World)
             .ThenInclude(x => x.Objects)
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.Player)
             .Where(x => x.UserId == userId)
             .FirstOrDefaultAsync(cancellationToken);
 

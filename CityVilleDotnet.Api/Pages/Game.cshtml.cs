@@ -30,10 +30,8 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             .AsNoTracking()
             .Include(x => x.Friends)
             .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.UserInfo)
             .ThenInclude(x => x.Player)
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.Player)
+            .Include(x => x.Player)
             .FirstOrDefaultAsync(x => x.AppUser.Id.Equals(CurrentUser.Id));
 
         if(user is not null)

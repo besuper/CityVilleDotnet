@@ -1,26 +1,17 @@
 ﻿using CityVilleDotnet.Common.Settings;
-using System.Text.Json.Serialization;
 
 namespace CityVilleDotnet.Domain.Entities;
 
 public class World
 {
-    [JsonIgnore]
     public Guid Id { get; set; }
-
-    [JsonPropertyName("sizeX")]
+    public string WorldName { get; set; }
     public int SizeX { get; set; } = 36;
-
-    [JsonPropertyName("sizeY")]
     public int SizeY { get; set; } = 36;
-
-    [JsonPropertyName("mapRects")]
+    public int Population { get; set; }
+    public int PopulationCap { get; set; }
+    public int PotentialPopulation { get; set; }
     public List<MapRect> MapRects { get; set; }
-
-    [JsonPropertyName("citySim")]
-    public CitySim? CitySim { get; set; }
-
-    [JsonPropertyName("objects")]
     public List<WorldObject> Objects { get; set; }
 
     public void AddBuilding(WorldObject obj)
@@ -30,7 +21,7 @@ public class World
 
     public int GetCurrentPopulation()
     {
-        return CitySim.Population * 10;
+        return Population * 10;
     }
 
     public void calculateCurrentPopulation()
@@ -46,7 +37,7 @@ public class World
             population += 10 * gameItem.PopulationYield ?? 0;
         }
 
-        CitySim.Population = population / 10;
+        Population = population / 10;
     }
 
     public void calculatePopulationCap()
@@ -63,7 +54,7 @@ public class World
             population += 10 * gameItem.PopulationCapYield ?? 0;
         }
 
-        CitySim.PopulationCap = population / 10;
+        PopulationCap = population / 10;
     }
 
     public WorldObject? GetBuilding(int id, int x, int y, int z)

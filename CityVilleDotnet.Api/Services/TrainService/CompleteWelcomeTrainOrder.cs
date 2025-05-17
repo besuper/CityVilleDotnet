@@ -20,8 +20,7 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService(
 
         var user = await context.Set<User>()
             .Include(x => x.Quests)
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.Player)
+            .Include(x => x.Player)
             .ThenInclude(x => x.Commodities)
             .ThenInclude(x => x.Storage)
             .Where(x => x.UserId == userId)

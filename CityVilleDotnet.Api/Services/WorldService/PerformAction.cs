@@ -21,16 +21,13 @@ internal sealed partial class PerformAction : AmfService
     public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {
         var user = await _context.Set<User>()
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.World)
+            .Include(x => x.World)
             .ThenInclude(x => x.Objects)
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.World)
-            .ThenInclude(x => x.CitySim)
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.Player)
+
+            .Include(x => x.Player)
             .ThenInclude(x => x.Commodities)
             .ThenInclude(x => x.Storage)
+
             .Include(x => x.Quests)
             .Where(x => x.UserId == userId)
             .FirstOrDefaultAsync(cancellationToken);

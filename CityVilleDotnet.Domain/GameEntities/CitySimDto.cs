@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CityVilleDotnet.Domain.Entities;
+namespace CityVilleDotnet.Domain.GameEntities;
 
-public class CitySim
+public class CitySimDto
 {
     [JsonPropertyName("population")]
     public int Population { get; set; }

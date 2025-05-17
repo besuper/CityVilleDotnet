@@ -33,7 +33,6 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService(con
         var user = await context.Set<User>()
             .Include(x => x.Friends.Where(x => x.Status == FriendshipStatus.Accepted))
             .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.UserInfo)
             .ThenInclude(x => x.Player)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
@@ -54,8 +53,8 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService(con
         {
             response.Neighbors.Add(new Neighbor()
             {
-                Uid = friend.FriendUser.UserInfo.Player.Uid,
-                Level = friend.FriendUser.UserInfo.Player.Level,
+                Uid = friend.FriendUser.Player.Uid,
+                Level = friend.FriendUser.Player.Level,
             });
         }
 

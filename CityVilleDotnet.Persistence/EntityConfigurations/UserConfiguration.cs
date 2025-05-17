@@ -15,7 +15,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         // TODO: Implement franchises
         builder.Ignore(x => x.Franchises);
 
-        builder.HasOne(x => x.UserInfo);
+        builder.HasOne(x => x.Player);
+        builder.HasOne(x => x.World);
+
         builder.HasOne(x => x.AppUser);
         builder.HasMany(x => x.Quests);
         builder.HasMany(x => x.Friends);

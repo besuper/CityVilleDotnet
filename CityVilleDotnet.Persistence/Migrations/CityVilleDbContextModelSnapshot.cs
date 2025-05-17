@@ -188,6 +188,10 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<Guid?>("CommoditiesId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("CreationTimestamp")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "creationTimestamp");
+
                     b.Property<int>("Energy")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "energy");
@@ -200,12 +204,20 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "expansionsPurchased");
 
+                    b.Property<bool>("FirstDay")
+                        .HasColumnType("bit")
+                        .HasAnnotation("Relational:JsonPropertyName", "firstDay");
+
                     b.Property<int>("Gold")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "gold");
 
                     b.Property<Guid?>("InventoryId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsNew")
+                        .HasColumnType("bit")
+                        .HasAnnotation("Relational:JsonPropertyName", "is_new");
 
                     b.Property<int>("LastTrackingTimestamp")
                         .HasColumnType("int")
@@ -215,13 +227,31 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "level");
 
+                    b.Property<bool>("MusicDisabled")
+                        .HasColumnType("bit")
+                        .HasAnnotation("Relational:JsonPropertyName", "musicDisabled");
+
                     b.Property<int>("RollCounter")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "rollCounter");
 
+                    b.Property<bool>("SfxDisabled")
+                        .HasColumnType("bit")
+                        .HasAnnotation("Relational:JsonPropertyName", "sfxDisabled");
+
                     b.Property<int>("Uid")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "uid");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasAnnotation("Relational:JsonPropertyName", "username");
+
+                    b.Property<string>("WorldName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasAnnotation("Relational:JsonPropertyName", "worldName");
 
                     b.Property<int>("Xp")
                         .HasColumnType("int")
@@ -234,8 +264,6 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.HasIndex("InventoryId");
 
                     b.ToTable("Player");
-
-                    b.HasAnnotation("Relational:JsonPropertyName", "player");
                 });
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Quest", b =>
@@ -284,69 +312,42 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<string>("AppUserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<Guid?>("PlayerId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserInfoId")
+                    b.Property<Guid?>("WorldId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
 
-                    b.HasIndex("UserInfoId");
-
-                    b.ToTable("User");
-                });
-
-            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.UserInfo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("CreationTimestamp")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "creationTimestamp");
-
-                    b.Property<bool>("FirstDay")
-                        .HasColumnType("bit")
-                        .HasAnnotation("Relational:JsonPropertyName", "firstDay");
-
-                    b.Property<bool>("IsNew")
-                        .HasColumnType("bit")
-                        .HasAnnotation("Relational:JsonPropertyName", "is_new");
-
-                    b.Property<Guid?>("PlayerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasAnnotation("Relational:JsonPropertyName", "username");
-
-                    b.Property<Guid?>("WorldId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("WorldName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasAnnotation("Relational:JsonPropertyName", "worldName");
-
-                    b.HasKey("Id");
-
                     b.HasIndex("PlayerId");
 
                     b.HasIndex("WorldId");
 
-                    b.ToTable("UserInfo");
-
-                    b.HasAnnotation("Relational:JsonPropertyName", "userInfo");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.World", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Population")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "population");
+
+                    b.Property<int>("PopulationCap")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "populationCap");
+
+                    b.Property<int>("PotentialPopulation")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "potentialPopulation");
 
                     b.Property<int>("SizeX")
                         .HasColumnType("int")
@@ -356,11 +357,13 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "sizeY");
 
+                    b.Property<string>("WorldName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("World");
-
-                    b.HasAnnotation("Relational:JsonPropertyName", "world");
                 });
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.WorldObject", b =>
@@ -636,34 +639,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("InventoryId");
 
-                    b.OwnsOne("CityVilleDotnet.Domain.Entities.Options", "Options", b1 =>
-                        {
-                            b1.Property<Guid>("PlayerId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<bool>("MusicDisabled")
-                                .HasColumnType("bit")
-                                .HasAnnotation("Relational:JsonPropertyName", "musicDisabled");
-
-                            b1.Property<bool>("SfxDisabled")
-                                .HasColumnType("bit")
-                                .HasAnnotation("Relational:JsonPropertyName", "sfxDisabled");
-
-                            b1.HasKey("PlayerId");
-
-                            b1.ToTable("Player");
-
-                            b1.HasAnnotation("Relational:JsonPropertyName", "options");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PlayerId");
-                        });
-
                     b.Navigation("Commodities");
 
                     b.Navigation("Inventory");
-
-                    b.Navigation("Options");
                 });
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Quest", b =>
@@ -679,17 +657,6 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("AppUserId");
 
-                    b.HasOne("CityVilleDotnet.Domain.Entities.UserInfo", "UserInfo")
-                        .WithMany()
-                        .HasForeignKey("UserInfoId");
-
-                    b.Navigation("AppUser");
-
-                    b.Navigation("UserInfo");
-                });
-
-            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.UserInfo", b =>
-                {
                     b.HasOne("CityVilleDotnet.Domain.Entities.Player", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerId");
@@ -698,41 +665,11 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("WorldId");
 
+                    b.Navigation("AppUser");
+
                     b.Navigation("Player");
 
                     b.Navigation("World");
-                });
-
-            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.World", b =>
-                {
-                    b.OwnsOne("CityVilleDotnet.Domain.Entities.CitySim", "CitySim", b1 =>
-                        {
-                            b1.Property<Guid>("WorldId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("Population")
-                                .HasColumnType("int")
-                                .HasAnnotation("Relational:JsonPropertyName", "population");
-
-                            b1.Property<int>("PopulationCap")
-                                .HasColumnType("int")
-                                .HasAnnotation("Relational:JsonPropertyName", "populationCap");
-
-                            b1.Property<int>("PotentialPopulation")
-                                .HasColumnType("int")
-                                .HasAnnotation("Relational:JsonPropertyName", "potentialPopulation");
-
-                            b1.HasKey("WorldId");
-
-                            b1.ToTable("World");
-
-                            b1.HasAnnotation("Relational:JsonPropertyName", "citySim");
-
-                            b1.WithOwner()
-                                .HasForeignKey("WorldId");
-                        });
-
-                    b.Navigation("CitySim");
                 });
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.WorldObject", b =>
@@ -747,16 +684,13 @@ namespace CityVilleDotnet.Persistence.Migrations
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<int>("X")
-                                .HasColumnType("int")
-                                .HasAnnotation("Relational:JsonPropertyName", "x");
+                                .HasColumnType("int");
 
                             b1.Property<int>("Y")
-                                .HasColumnType("int")
-                                .HasAnnotation("Relational:JsonPropertyName", "y");
+                                .HasColumnType("int");
 
                             b1.Property<int?>("Z")
-                                .HasColumnType("int")
-                                .HasAnnotation("Relational:JsonPropertyName", "z");
+                                .HasColumnType("int");
 
                             b1.HasKey("WorldObjectId");
 

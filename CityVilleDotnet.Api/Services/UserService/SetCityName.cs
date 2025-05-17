@@ -11,7 +11,7 @@ public class SetCityName(CityVilleDbContext context) : AmfService(context)
     public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
-            .Include(x => x.UserInfo)
+            .Include(x => x.World)
             .Where(x => x.UserId == userId)
             .FirstOrDefaultAsync(cancellationToken);
 

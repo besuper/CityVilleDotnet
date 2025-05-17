@@ -1,12 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CityVilleDotnet.Domain.Entities;
+namespace CityVilleDotnet.Domain.GameEntities;
 
-public class UserInfo
+public class UserInfoDto
 {
-    [JsonIgnore]
-    public Guid Id { get; set; }
-
     [JsonPropertyName("worldName")]
     public string WorldName { get; set; } = "";
 
@@ -23,9 +20,8 @@ public class UserInfo
     public string Username { get; set; }
 
     [JsonPropertyName("player")]
-    public Player? Player { get; set; }
+    public PlayerDto? Player { get; set; }
 
     [JsonPropertyName("world")]
-    public World? World { get; set; }
+    public WorldDto? World { get; set; }
 }
-

@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -14,43 +15,42 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService(context)
         var user = await context.Set<User>()
             .AsNoTracking()
             .Include(x => x.Quests)
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.Player)
-            .ThenInclude(x => x.Options)
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.Player)
+
+            .Include(x => x.Player)
             .ThenInclude(x => x.Inventory)
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.Player)
+
+            .Include(x => x.Player)
             .ThenInclude(x => x.Commodities)
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.World)
+
+            .Include(x => x.World)
             .ThenInclude(x => x.MapRects)
-            .Include(x => x.UserInfo)
-            .ThenInclude(x => x.World)
+
+            .Include(x => x.World)
             .ThenInclude(x => x.Objects)
+
             .Where(x => x.UserId == userId)
             .FirstOrDefaultAsync(cancellationToken);
 
         if (user is null)
         {
             // Create a new player
-
             var appUser = await context.Set<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId.ToString(), cancellationToken);
             string jsonContent = File.ReadAllText("Resources/defaultUser.json");
 
-            user = JsonSerializer.Deserialize<User>(jsonContent);
+            var userDto = JsonSerializer.Deserialize<UserDto>(jsonContent);
+
+            user = User.CreateNewPlayer(userDto, appUser);
             user.SetupNewPlayer(appUser);
 
             await context.AddAsync(user, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);
         }
 
-        var userObj = AmfConverter.Convert(user);
+        var userObj = AmfConverter.Convert(user.ToDto());
 
         var quests = new ASObject();
 
-        if (!user.UserInfo.IsNew)
+        if (!user.Player.IsNew)
         {
             quests["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active));
         }

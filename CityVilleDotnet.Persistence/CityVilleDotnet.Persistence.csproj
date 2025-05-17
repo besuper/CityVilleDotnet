@@ -15,4 +15,8 @@
     <ProjectReference Include="..\CityVilleDotnet.Domain\CityVilleDotnet.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

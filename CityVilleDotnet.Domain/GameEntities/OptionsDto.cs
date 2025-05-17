@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CityVilleDotnet.Domain.Entities;
+namespace CityVilleDotnet.Domain.GameEntities;
 
-public class Options
+public class OptionsDto
 {
     [JsonPropertyName("sfxDisabled")]
     public bool SfxDisabled { get; set; } = false;
