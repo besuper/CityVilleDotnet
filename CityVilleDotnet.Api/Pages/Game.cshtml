@@ -15,7 +15,7 @@
 			</div>
 
 			<div class="tab">
-				<a href="/Friends" title="Friends">Friends</a>
+				<a href="/Friends/List" title="Friends">Friends</a>
 			</div>
 		</div>
 
@@ -53,13 +53,16 @@
 			"first_name": "@Model.CurrentUser.UserName",
 			"name": "@Model.CurrentUser.UserName",
 			"sex": "M",
-			"pic_square": "blank.png"
+			"pic_square": "blank.png",
+			"level": 5
 		};
 	}
 
+
 	function getFriendData() {
 		console.log("getFriendData called");
-		return [];
+
+		return @Html.Raw(Model.FriendList);
 	}
 
 	function getAppFriendIds() {

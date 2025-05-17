@@ -1,6 +1,7 @@
 ﻿namespace CityVilleDotnet.Domain.Entities;
 
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Domain.GameEntities;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
@@ -19,12 +20,15 @@ public class User
 
     [JsonIgnore]
     public List<Quest> Quests { get; private set; } = new List<Quest>();
-
     [JsonPropertyName("userInfo")]
     public UserInfo? UserInfo { get; set; }
 
+
     [JsonPropertyName("Franchises")]
     public List<object> Franchises { get; set; } = new List<object>();
+
+    [JsonIgnore]
+    public List<Friend> Friends { get; private set; } = new List<Friend>();
 
     public void SetupNewPlayer(ApplicationUser user)
     {
@@ -369,5 +373,17 @@ public class User
         }
 
         return secureRands;
+    }
+
+    public List<GameFriendData> GetFriendsData()
+    {
+        var items = new List<GameFriendData>();
+
+        foreach (var friend in Friends)
+        {
+            items.Add(friend.ToFriendData());
+        }
+
+        return items;
     }
 }

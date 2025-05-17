@@ -1,0 +1,80 @@
+﻿@page
+@model CityVilleDotnet.Api.Pages.Friends.ListModel
+
+@section Header {
+<script type="text/javascript" src="/jquery.min.js"></script>
+<script type="text/javascript" src="/flash_integration.min.js"></script>
+<script type="text/javascript" src="/swfobject.min.js"></script>
+}
+
+<div class="gamePage">
+	<div class="tabs">
+		<div class="tab-content">
+			<div class="tab">
+				<a href="/Game" title="Game">Game</a>
+			</div>
+
+			<div class="tab selected">
+				<a href="/Friends/List" title="Friends">Friends</a>
+			</div>
+		</div>
+
+		<div class="tab-content">
+			<div class="tab">
+				<a href="#" title="Username">@Model.CurrentUser.UserName</a>
+			</div>
+
+			<div class="tab">
+				<a href="#" title="/logout">Disconnect</a>
+			</div>
+		</div>
+	</div>
+
+	<div style="width:760px;height:594px;" class="main">
+		<form asp-page-handler="AddFriend" method="post" class="add-friend">
+			<label>Add friend</label>
+			<div>
+				<input type="text" asp-for="Username" />
+				<button type="submit">Add</button>
+			</div>
+		</form>
+
+		<p>Friends</p>
+		<hr />
+
+		<div class="friends">
+			@foreach (var item in Model.Friends.Where(x => x.Status == Domain.Entities.FriendshipStatus.Accepted))
+			{
+				<div class="friend">
+					<img src="/blank.png" />
+					<div class="friend-content">
+						<div>@item.UserName</div>
+						<div>X</div>
+					</div>
+				</div>
+			}
+		</div>
+
+		<p>Pending</p>
+		<hr />
+
+		<div class="friends">
+			@foreach (var item in Model.Friends.Where(x => x.Status == Domain.Entities.FriendshipStatus.Pending))
+			{
+				<div class="friend">
+					<img src="/blank.png" />
+					<div class="friend-content">
+						<div>@item.UserName</div>
+						<div class="interactions">
+							@if (item.Requested)
+							{
+								<a class="accept" asp-page-handler="Accept" asp-route-userName="@item.UserName">V</a>
+							}
+							<a class="reject" asp-page-handler="Reject" asp-route-userName="@item.UserName">X</a>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>
