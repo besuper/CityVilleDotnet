@@ -28,16 +28,15 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .Include(x => x.World)
             .ThenInclude(x => x.Objects)
 
-            .Where(x => x.UserId == userId)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (user is null)
         {
             // Create a new player
-            var appUser = await context.Set<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId.ToString(), cancellationToken);
+            var appUser = await context.Set<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId.ToString(), cancellationToken) ?? throw new Exception("Can't find ApplicationUser with UserId");
             string jsonContent = File.ReadAllText("Resources/defaultUser.json");
 
-            var userDto = JsonSerializer.Deserialize<UserDto>(jsonContent);
+            var userDto = JsonSerializer.Deserialize<UserDto>(jsonContent) ?? throw new Exception("UserDTO can't be null");
 
             user = User.CreateNewPlayer(userDto, appUser);
             user.SetupNewPlayer(appUser);
@@ -46,14 +45,15 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             await context.SaveChangesAsync(cancellationToken);
         }
 
+        if (user.Player is null)
+            throw new Exception("Player not initialized correctly");
+
         var userObj = AmfConverter.Convert(user.ToDto());
 
         var quests = new ASObject();
 
         if (!user.Player.IsNew)
-        {
             quests["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active));
-        }
 
         var response = new CityVilleResponse(0, 333, quests, userObj);
 

@@ -9,28 +9,20 @@ internal sealed partial class PerformAction
 {
     private async Task<CityVilleResponse> PerformHarvest(User user, object[] _params, Guid userId, CancellationToken cancellationToken)
     {
-        var building = _params[1] as ASObject;
+        var building = _params[1] as ASObject ?? throw new Exception($"Building can't be null");
 
-        if (building is null)
-        {
-            throw new Exception($"Building can't be null");
-        }
-
+        // TODO: Remove (or make debug)
         foreach (var item in building)
         {
             _logger.LogInformation($"{item.Key} = {item.Value}");
         }
 
-        var position = building["position"] as ASObject;
+        var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
         var world = user.GetWorld();
 
-        var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]);
+        var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]) ?? throw new Exception($"Can't find building");
 
-        if (obj is null)
-        {
-            throw new Exception($"Can't find building with coords");
-        }
-
+        // TODO: Remove
         _logger.LogInformation($"{obj.State}");
         _logger.LogInformation($"{obj.PlantTime}");
 
@@ -43,9 +35,7 @@ internal sealed partial class PerformAction
             var gameItem = GameSettingsManager.Instance.GetItem(contract);
 
             if (gameItem is not null)
-            {
                 coinYield = gameItem.CoinYield ?? 0;
-            }
 
             obj.State = "plowed";
         }
@@ -55,15 +45,11 @@ internal sealed partial class PerformAction
             var gameItem = GameSettingsManager.Instance.GetItem(itemName);
 
             if (gameItem is not null)
-            {
                 coinYield = gameItem.CoinYield ?? 0;
-            }
         }
 
         if (obj.State == "open")
-        {
             obj.State = "closed";
-        }
 
         if (obj.State == "grown")
         {
@@ -84,12 +70,11 @@ internal sealed partial class PerformAction
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        var response = new ASObject();
-
-        response["retCoinYield"] = coinYield;
-        //response["doobers"] = AmfConverter.Convert(new List<int>());
-        response["secureRands"] = AmfConverter.Convert(secureRands);
-
-        return new CityVilleResponse(333, response);
+        return new CityVilleResponse(333, new ASObject
+        {
+            ["retCoinYield"] = coinYield,
+            //response["doobers"] = AmfConverter.Convert(new List<int>());
+            ["secureRands"] = AmfConverter.Convert(secureRands)
+        });
     }
 }

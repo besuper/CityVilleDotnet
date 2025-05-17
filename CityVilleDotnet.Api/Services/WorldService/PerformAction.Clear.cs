@@ -8,27 +8,17 @@ internal sealed partial class PerformAction
 {
     private async Task<CityVilleResponse> PerformClear(User user, object[] _params, Guid userId, CancellationToken cancellationToken)
     {
-        var building = _params[1] as ASObject;
-
-        if (building is null)
-        {
-            throw new Exception("Building can't be null when action type is place");
-        }
+        var building = _params[1] as ASObject ?? throw new Exception("Building can't be null when action type is clear");
 
         foreach (var item in building)
         {
             _logger.LogInformation($"{item.Key} = {item.Value}");
         }
 
-        var position = building["position"] as ASObject;
+        var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
         var world = user.GetWorld();
 
-        var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]);
-
-        if (obj is null)
-        {
-            throw new Exception($"Can't find building");
-        }
+        var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]) ?? throw new Exception($"Can't find building");
 
         var secureRands = user.CollectDoobersRewards(obj.ItemName);
 
@@ -39,9 +29,9 @@ internal sealed partial class PerformAction
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        var response = new ASObject();
-        response["secureRands"] = AmfConverter.Convert(secureRands);
-
-        return new CityVilleResponse(333, response);
+        return new CityVilleResponse(333, new ASObject
+        {
+            ["secureRands"] = AmfConverter.Convert(secureRands)
+        });
     }
 }

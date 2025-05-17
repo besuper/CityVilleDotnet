@@ -9,27 +9,17 @@ internal sealed partial class PerformAction
 {
     private async Task<CityVilleResponse?> PerformOpenBusiness(User user, object[] _params, Guid userId, CancellationToken cancellationToken)
     {
-        var building = _params[1] as ASObject;
-
-        if (building is null)
-        {
-            throw new Exception($"Building can't be null");
-        }
+        var building = _params[1] as ASObject ?? throw new Exception($"Building can't be null");
 
         foreach (var item in building)
         {
             _logger.LogInformation($"{item.Key} = {item.Value}");
         }
 
-        var position = building["position"] as ASObject;
+        var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
         var world = user.GetWorld();
 
-        var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]);
-
-        if (obj is null)
-        {
-            throw new Exception($"Can't find building with coords");
-        }
+        var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]) ?? throw new Exception($"Can't find building");
 
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
 
@@ -38,9 +28,8 @@ internal sealed partial class PerformAction
             if (gameItem.CommodityRequired is not null)
             {
                 if (user.Player.Commodities.Storage.Goods < gameItem.CommodityRequired)
-                {
+                    // TODO: Show an error ?
                     return new CityVilleResponse(9, 333);
-                }
 
                 user.RemoveGoods(gameItem.CommodityRequired.Value);
 

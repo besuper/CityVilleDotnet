@@ -20,13 +20,7 @@ internal sealed partial class PerformAction(CityVilleDbContext _context, ILogger
             .ThenInclude(x => x.Storage)
 
             .Include(x => x.Quests)
-            .Where(x => x.UserId == userId)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        if (user is null)
-        {
-            throw new Exception("User can't be null");
-        }
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
 
         var actionType = _params[0] as string;
 

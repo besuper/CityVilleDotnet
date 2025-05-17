@@ -13,11 +13,12 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
         var user = await context.Set<User>()
             .AsNoTracking()
             .Include(x => x.Quests)
-            .Where(x => x.UserId == userId)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't to find user with UserId");
 
-        var rep = new ASObject();
-        rep["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active));
+        var rep = new ASObject
+        {
+            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active))
+        };
 
         return new CityVilleResponse(0, 333, rep);
     }

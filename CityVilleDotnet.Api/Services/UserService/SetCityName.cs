@@ -12,20 +12,15 @@ public class SetCityName(CityVilleDbContext context) : AmfService
     {
         var user = await context.Set<User>()
             .Include(x => x.World)
-            .Where(x => x.UserId == userId)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't to find user with UserId");
 
-        var newName = (string)_params[1];
-
-        if (newName is null)
-        {
-            throw new Exception("World name can't be null");
-        }
-
+        var newName = (string)_params[1] ?? throw new Exception("World name can't be null");
         var name = user.SetWorldName(newName);
 
-        var response = new ASObject();
-        response["name"] = name;
+        var response = new ASObject
+        {
+            ["name"] = name
+        };
 
         await context.SaveChangesAsync(cancellationToken);
 

@@ -16,15 +16,17 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
         // orderAction (ex: buy)
         // timeSent (ex: 174545896)
 
-        var trainInfo = _params[0] as ASObject;
+        var trainInfo = _params[0] as ASObject ?? throw new Exception("trainInfo is null");
 
         var user = await context.Set<User>()
             .Include(x => x.Quests)
             .Include(x => x.Player)
             .ThenInclude(x => x.Commodities)
             .ThenInclude(x => x.Storage)
-            .Where(x => x.UserId == userId)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+
+        if (user is null)
+            throw new Exception("Unable to find user with UserId");
 
         var amount = (int)trainInfo["amountFinal"];
 

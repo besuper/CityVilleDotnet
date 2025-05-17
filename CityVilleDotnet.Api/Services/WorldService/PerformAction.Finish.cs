@@ -8,28 +8,18 @@ internal sealed partial class PerformAction
 {
     private async Task<CityVilleResponse> PerformFinish(User user, object[] _params, Guid userId, CancellationToken cancellationToken)
     {
-        var building = _params[1] as ASObject;
-
-        if (building is null)
-        {
-            throw new Exception($"Building can't be null");
-        }
+        var building = _params[1] as ASObject ?? throw new Exception($"Building can't be null");
 
         foreach (var item in building)
         {
             _logger.LogInformation($"{item.Key} = {item.Value}");
         }
 
-        var position = building["position"] as ASObject;
+        var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
         var itemId = (int)building["id"];
         var world = user.GetWorld();
 
-        var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]);
-
-        if (obj is null)
-        {
-            throw new Exception($"Can't find building with ID {itemId}");
-        }
+        var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]) ?? throw new Exception($"Can't find building with ID {itemId}");
 
         if (obj.Builds is null)
         {
@@ -55,9 +45,9 @@ internal sealed partial class PerformAction
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        var rep = new ASObject();
-        rep["id"] = newId;
-
-        return new CityVilleResponse(333, rep);
+        return new CityVilleResponse(333, new ASObject
+        {
+            ["id"] = newId
+        });
     }
 }
