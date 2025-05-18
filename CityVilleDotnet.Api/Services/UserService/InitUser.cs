@@ -13,11 +13,13 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
     public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
+            .AsSplitQuery()
             .AsNoTracking()
             .Include(x => x.Quests)
 
             .Include(x => x.Player)
             .ThenInclude(x => x.Inventory)
+            .ThenInclude(x => x.Items)
 
             .Include(x => x.Player)
             .ThenInclude(x => x.Commodities)

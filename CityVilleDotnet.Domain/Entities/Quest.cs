@@ -73,7 +73,7 @@ public class Quest
 
         foreach (var reward in questItem.ResourceModifiers.Rewards)
         {
-            if(reward.Gold is not null)
+            if (reward.Gold is not null)
             {
                 user.AddGold(int.Parse(reward.Gold));
             }
@@ -88,7 +88,14 @@ public class Quest
                 user.AddGoods(int.Parse(reward.Goods));
             }
 
-            // TODO: Support energy (add energy engine) + items
+            if (reward.Item is not null)
+            {
+                var inventory = user.GetInventory();
+
+                inventory?.AddItem(reward.Item);
+            }
+
+            // TODO: Support energy (add energy engine)
         }
     }
 

@@ -40,8 +40,7 @@ public class User
                 },
                 Inventory = new Inventory()
                 {
-                    Id = Guid.NewGuid(),
-                    Count = 0
+                    Id = Guid.NewGuid()
                 },
                 Username = user.UserName
             },
@@ -423,5 +422,10 @@ public class User
         }
 
         return items;
+    }
+
+    public Inventory? GetInventory()
+    {
+        return Player?.Inventory;
     }
 }
