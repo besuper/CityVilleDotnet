@@ -1,4 +1,6 @@
-﻿namespace CityVilleDotnet.Domain.Entities;
+﻿using CityVilleDotnet.Common.Utils;
+
+namespace CityVilleDotnet.Domain.Entities;
 
 public class WorldObject
 {
@@ -20,7 +22,6 @@ public class WorldObject
 
     public WorldObject()
     {
-
     }
 
     public Guid Id { get; set; }
@@ -66,9 +67,7 @@ public class WorldObject
     public void FinishConstruction()
     {
         if (TargetBuildingName is null || TargetBuildingClass is null)
-        {
             throw new Exception("Can't finish build");
-        }
 
         ItemName = TargetBuildingName;
         ClassName = TargetBuildingClass;
@@ -78,5 +77,15 @@ public class WorldObject
         Builds = null;
         TargetBuildingName = null;
         TargetBuildingClass = null;
+    }
+
+    public bool HasGrown()
+    {
+        return State == "planted" && PlantTime <= ServerUtils.GetCurrentTime();
+    }
+
+    public void SetReadyToHarvest()
+    {
+        State = "grown";
     }
 }

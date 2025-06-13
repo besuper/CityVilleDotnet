@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using FluorineFx;
 
@@ -21,10 +22,6 @@ internal sealed partial class PerformAction
         var world = user.GetWorld();
 
         var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]) ?? throw new Exception($"Can't find building");
-
-        // TODO: Remove
-        logger.LogInformation($"{obj.State}");
-        logger.LogInformation($"{obj.PlantTime}");
 
         var className = (string)building["className"];
         var coinYield = 0;
@@ -48,22 +45,31 @@ internal sealed partial class PerformAction
                 coinYield = gameItem.CoinYield ?? 0;
         }
 
+        if (obj.HasGrown())
+            obj.SetReadyToHarvest();
+
         if (obj.State == "open")
             obj.State = "closed";
 
         if (obj.State == "grown")
         {
-            obj.State = "planted";
-            obj.PlantTime = DateTimeOffset.Now.ToUnixTimeSeconds() * 1000;
+            // FIXME: Re-use gameItem ?
+            var itemName = (string)building["itemName"];
+            var gameItem = GameSettingsManager.Instance.GetItem(itemName);
+
+            if (gameItem is not null)
+            {
+                var multiplier = Math.Round((double)GameSettingsManager.Instance.GetInt("InGameDaySeconds") * 1000.0 * gameItem.GrowTime ?? 1.0, 2);
+
+                obj.State = "planted";
+                obj.PlantTime = ServerUtils.GetCurrentTime() + multiplier;
+            }
         }
 
         var secureRands = user.CollectDoobersRewards(obj.ItemName);
 
         logger.LogInformation($"Secure rands {secureRands}");
         logger.LogInformation($"Secure rands {secureRands.Count}");
-
-        logger.LogInformation($"{obj.State}");
-        logger.LogInformation($"{obj.PlantTime}");
 
         user.HandleQuestProgress(itemName: obj.ItemName == "plot_crop" ? obj.ClassName : obj.ItemName);
         user.CheckCompletedQuests();

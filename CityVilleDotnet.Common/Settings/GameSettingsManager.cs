@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Xml;
 using System.Xml.Serialization;
+using CityVilleDotnet.Common.Utils;
 
 namespace CityVilleDotnet.Common.Settings;
 
@@ -12,7 +13,16 @@ public class GameSettings
 
     [XmlElement("levels")] public LevelsContainer Levels { get; set; }
 
+    [XmlElement("farming")] public FarmingSettings Farming { get; set; }
+
     [XmlElement("randomModifierTables")] public RandomModifierTables Modifiers { get; set; }
+}
+
+[Serializable]
+[XmlRoot("farming")]
+public class FarmingSettings
+{
+    [XmlAttribute("inGameDaySeconds")] public string InGameDaySeconds { get; set; }
 }
 
 [Serializable]
@@ -35,6 +45,7 @@ public class GameItem
     [XmlElement("populationCapYield")] public int? PopulationCapYield { get; set; }
 
     [XmlElement("cost")] public int? Cost { get; set; }
+    [XmlElement("growTime")] public double? GrowTime { get; set; }
 
     [XmlElement("coinYield")] public int? CoinYield { get; set; }
 
@@ -141,6 +152,7 @@ public class GameSettingsManager
     private static readonly object Lock = new();
     private readonly Dictionary<string, GameItem?> _items;
     private readonly Dictionary<string, RandomModifierTable> _randomModifiers;
+    private Dictionary<string, object> _settings;
     private List<LevelItem> _levels = [];
     private bool _isInitialized;
 
@@ -148,6 +160,7 @@ public class GameSettingsManager
     {
         _items = new Dictionary<string, GameItem?>();
         _randomModifiers = new Dictionary<string, RandomModifierTable>();
+        _settings = new Dictionary<string, object>();
         _isInitialized = false;
     }
 
@@ -200,6 +213,8 @@ public class GameSettingsManager
             }
 
             _levels = gameSettings.Levels.Levels;
+
+            _settings = gameSettings.Farming.ToDictionary();
         }
 
         logger.LogInformation($"Loaded gameSettings.xml with {_items.Count} items");
@@ -228,5 +243,10 @@ public class GameSettingsManager
     public IReadOnlyCollection<LevelItem> GetLevels()
     {
         return _levels.AsReadOnly();
+    }
+
+    public int GetInt(string name)
+    {
+        return (int)_settings[name];
     }
 }

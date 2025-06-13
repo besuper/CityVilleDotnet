@@ -8,6 +8,7 @@ using CityVilleDotnet.Api.Common.Amf;
 using Microsoft.AspNetCore.Identity;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Utils;
 
 namespace CityVilleDotnet.Api.Features.Gateway.Endpoint;
 
@@ -98,7 +99,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
             var emsg = new ASObject
             {
-                ["serverTime"] = DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds,
+                ["serverTime"] = ServerUtils.GetCurrentTime(),
                 ["errorType"] = 0,
                 ["data"] = responses
             };
