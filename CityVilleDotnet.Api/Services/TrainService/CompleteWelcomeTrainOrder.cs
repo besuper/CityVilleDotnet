@@ -8,7 +8,7 @@ namespace CityVilleDotnet.Api.Services.TrainService;
 
 public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
         // TODO
         // amountFinal
@@ -16,7 +16,7 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
         // orderAction (ex: buy)
         // timeSent (ex: 174545896)
 
-        var trainInfo = _params[0] as ASObject ?? throw new Exception("trainInfo is null");
+        var trainInfo = @params[0] as ASObject ?? throw new Exception("trainInfo is null");
 
         var user = await context.Set<User>()
             .Include(x => x.Quests)
@@ -36,8 +36,10 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
 
         await context.SaveChangesAsync(cancellationToken);
 
-        var quests = new ASObject();
-        quests["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active));
+        var quests = new ASObject
+        {
+            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active))
+        };
 
         var response = new CityVilleResponse(0, 333, quests);
 

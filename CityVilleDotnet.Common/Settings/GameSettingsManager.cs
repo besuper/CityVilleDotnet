@@ -8,147 +8,117 @@ namespace CityVilleDotnet.Common.Settings;
 [XmlRoot("settings")]
 public class GameSettings
 {
-    [XmlElement("items")]
-    public ItemsContainer Items { get; set; }
+    [XmlElement("items")] public ItemsContainer Items { get; set; }
 
-    [XmlElement("levels")]
-    public LevelsContainer Levels { get; set; }
+    [XmlElement("levels")] public LevelsContainer Levels { get; set; }
 
-    [XmlElement("randomModifierTables")]
-    public RandomModifierTables Modifiers { get; set; }
+    [XmlElement("randomModifierTables")] public RandomModifierTables Modifiers { get; set; }
 }
 
 [Serializable]
 public class ItemsContainer
 {
-    [XmlElement("item")]
-    public List<GameItem> Items { get; set; }
+    [XmlElement("item")] public List<GameItem?> Items { get; set; }
 }
 
 [Serializable]
 public class GameItem
 {
-    [XmlAttribute("name")]
-    public string Name { get; set; }
+    [XmlAttribute("name")] public string Name { get; set; }
 
-    [XmlElement("requiredLevel")]
-    public int? RequiredLevel { get; set; }
+    [XmlElement("requiredLevel")] public int? RequiredLevel { get; set; }
 
-    [XmlElement("requiredPopulation")]
-    public int? RequiredPopulation { get; set; }
+    [XmlElement("requiredPopulation")] public int? RequiredPopulation { get; set; }
 
-    [XmlElement("populationYield")]
-    public int? PopulationYield { get; set; }
+    [XmlElement("populationYield")] public int? PopulationYield { get; set; }
 
-    [XmlElement("populationCapYield")]
-    public int? PopulationCapYield { get; set; }
+    [XmlElement("populationCapYield")] public int? PopulationCapYield { get; set; }
 
-    [XmlElement("cost")]
-    public int? Cost { get; set; }
+    [XmlElement("cost")] public int? Cost { get; set; }
 
-    [XmlElement("coinYield")]
-    public int? CoinYield { get; set; }
+    [XmlElement("coinYield")] public int? CoinYield { get; set; }
 
-    [XmlElement("xpYield")]
-    public int? XpYield { get; set; }
+    [XmlElement("xpYield")] public int? XpYield { get; set; }
 
-    [XmlElement("goodsYield")]
-    public int? GoodsYield { get; set; }
+    [XmlElement("goodsYield")] public int? GoodsYield { get; set; }
 
-    [XmlElement("construction")]
-    public string Construction { get; set; }
+    [XmlElement("construction")] public string Construction { get; set; }
 
-    [XmlElement("commodityReq")]
-    public int? CommodityRequired { get; set; }
+    [XmlElement("commodityReq")] public int? CommodityRequired { get; set; }
 
-    [XmlElement("randomModifiers")]
-    public RandomModifiers? RandomModifiers { get; set; }
+    [XmlElement("randomModifiers")] public RandomModifiers? RandomModifiers { get; set; }
 }
 
 [Serializable]
 public class LevelsContainer
 {
-    [XmlElement("level")]
-    public List<LevelItem> Levels { get; set; }
+    [XmlElement("level")] public List<LevelItem> Levels { get; set; }
 }
 
 [Serializable]
 public class LevelItem
 {
-    [XmlAttribute("num")]
-    public string Num { get; set; }
+    [XmlAttribute("num")] public string Num { get; set; }
 
-    [XmlAttribute("requiredXP")]
-    public string RequiredXp { get; set; }
+    [XmlAttribute("requiredXP")] public string RequiredXp { get; set; }
 
-    [XmlAttribute("energyMax")]
-    public string EnergyMax { get; set; }
+    [XmlAttribute("energyMax")] public string EnergyMax { get; set; }
 }
 
 [Serializable]
 public class RandomModifiers
 {
-    [XmlElement("modifier")]
-    public List<RandomModifier>? Modifiers { get; set; }
+    [XmlElement("modifier")] public List<RandomModifier>? Modifiers { get; set; }
 }
 
 [Serializable]
 public class RandomModifier
 {
-    [XmlAttribute("type")]
-    public string Type { get; set; }
+    [XmlAttribute("type")] public string Type { get; set; }
 
-    [XmlAttribute("tableName")]
-    public string TableName { get; set; }
+    [XmlAttribute("tableName")] public string TableName { get; set; }
 }
 
 [Serializable]
 public class RandomModifierTables
 {
-    [XmlElement("randomModifierTable")]
-    public List<RandomModifierTable> Table { get; set; }
+    [XmlElement("randomModifierTable")] public List<RandomModifierTable> Table { get; set; }
 }
 
 [Serializable]
 public class RandomModifierTable
 {
-    [XmlAttribute("type")]
-    public string Type { get; set; }
+    [XmlAttribute("type")] public string Type { get; set; }
 
-    [XmlAttribute("name")]
-    public string Name { get; set; }
+    [XmlAttribute("name")] public string Name { get; set; }
 
-    [XmlElement("roll")]
-    public List<Roll> Rolls { get; set; }
+    [XmlElement("roll")] public List<Roll> Rolls { get; set; }
 }
 
 [Serializable]
 public class Roll
 {
-    [XmlAttribute("percent")]
-    public int Percent { get; set; }
+    [XmlAttribute("percent")] public int Percent { get; set; }
 
-    [XmlIgnore]
-    public Dictionary<string, List<AmountElement>> Rewards { get; set; } = new Dictionary<string, List<AmountElement>>();
+    [XmlIgnore] public Dictionary<string, List<AmountElement>> Rewards { get; set; } = new();
 
-    [XmlAnyElement]
-    public XmlElement[] RewardElements { get; set; }
+    [XmlAnyElement] public XmlElement[] RewardElements { get; set; }
 
     public void OnDeserialized()
     {
-        if (RewardElements != null)
+        if (RewardElements is not null)
         {
             foreach (var element in RewardElements)
             {
                 var rewardType = element.Name;
-                var _amount = element.GetAttribute("amount");
+                var amountAttribute = element.GetAttribute("amount");
 
-                var amount = _amount == "" ? 0 : double.Parse(_amount);
+                var amount = amountAttribute == "" ? 0 : double.Parse(amountAttribute);
                 var name = element.GetAttribute("name");
 
                 if (!Rewards.ContainsKey(rewardType))
                 {
-                    Rewards[rewardType] = new List<AmountElement>();
+                    Rewards[rewardType] = [];
                 }
 
                 Rewards[rewardType].Add(new AmountElement { Amount = amount, Name = name });
@@ -160,25 +130,23 @@ public class Roll
 [Serializable]
 public class AmountElement
 {
-    [XmlAttribute("amount")]
-    public double Amount { get; set; }
+    [XmlAttribute("amount")] public double Amount { get; set; }
 
-    [XmlAttribute("name")]
-    public string Name { get; set; }
+    [XmlAttribute("name")] public string Name { get; set; }
 }
 
 public class GameSettingsManager
 {
-    private static GameSettingsManager _instance;
-    private static readonly object _lock = new object();
-    private Dictionary<string, GameItem> _items;
-    private Dictionary<string, RandomModifierTable> _randomModifiers;
-    private List<LevelItem> _levels = new List<LevelItem>();
+    private static GameSettingsManager? _instance;
+    private static readonly object Lock = new();
+    private readonly Dictionary<string, GameItem?> _items;
+    private readonly Dictionary<string, RandomModifierTable> _randomModifiers;
+    private List<LevelItem> _levels = [];
     private bool _isInitialized;
 
     private GameSettingsManager()
     {
-        _items = new Dictionary<string, GameItem>();
+        _items = new Dictionary<string, GameItem?>();
         _randomModifiers = new Dictionary<string, RandomModifierTable>();
         _isInitialized = false;
     }
@@ -187,16 +155,14 @@ public class GameSettingsManager
     {
         get
         {
-            if (_instance == null)
+            if (_instance is null)
             {
-                lock (_lock)
+                lock (Lock)
                 {
-                    if (_instance == null)
-                    {
-                        _instance = new GameSettingsManager();
-                    }
+                    _instance ??= new GameSettingsManager();
                 }
             }
+
             return _instance;
         }
     }
@@ -206,17 +172,17 @@ public class GameSettingsManager
         if (_isInitialized)
             return;
 
-        XmlSerializer serializer = new XmlSerializer(typeof(GameSettings));
+        var serializer = new XmlSerializer(typeof(GameSettings));
 
-        using (FileStream fileStream = new FileStream("wwwroot/gameSettings.xml", FileMode.Open))
+        using (var fileStream = new FileStream("wwwroot/gameSettings.xml", FileMode.Open))
         {
             var gameSettings = (GameSettings)serializer.Deserialize(fileStream);
 
-            if (gameSettings?.Items?.Items != null)
+            if (gameSettings?.Items?.Items is not null)
             {
                 foreach (var item in gameSettings.Items.Items)
                 {
-                    if (item.Name != null)
+                    if (item.Name is not null)
                     {
                         _items[item.Name] = item;
                     }
@@ -243,34 +209,20 @@ public class GameSettingsManager
         _isInitialized = true;
     }
 
-    public GameItem GetItem(string itemName)
+    public GameItem? GetItem(string itemName)
     {
         if (!_isInitialized)
-        {
             throw new InvalidOperationException("GameSettingsManager not initialized");
-        }
 
-        if (_items.TryGetValue(itemName, out GameItem item))
-        {
-            return item;
-        }
-
-        return null;
+        return _items.TryGetValue(itemName, out var item) ? item : null;
     }
 
-    public RandomModifierTable GetRandomModifier(string name)
+    public RandomModifierTable? GetRandomModifier(string name)
     {
         if (!_isInitialized)
-        {
             throw new InvalidOperationException("GameSettingsManager not initialized");
-        }
 
-        if (_randomModifiers.TryGetValue(name, out RandomModifierTable item))
-        {
-            return item;
-        }
-
-        return null;
+        return _randomModifiers.TryGetValue(name, out var item) ? item : null;
     }
 
     public IReadOnlyCollection<LevelItem> GetLevels()

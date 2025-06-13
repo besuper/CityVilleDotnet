@@ -4,18 +4,18 @@ using FluorineFx;
 
 namespace CityVilleDotnet.Api.Services.QuestService;
 
-internal sealed class RequestManualQuest(ILogger<RequestManualQuest> _logger) : AmfService
+internal sealed class RequestManualQuest(ILogger<RequestManualQuest> logger) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
-        if (_params.Length < 1)
+        if (@params.Length < 1)
             return GatewayService.CreateEmptyResponse();
 
-        var questName = _params[0].ToString();
+        var questName = @params[0].ToString();
 
-        _logger.LogDebug($"Started new quest {questName}");
+        logger.LogDebug($"Started new quest {questName}");
 
-        var response = new CityVilleResponse(333, new ASObject() { { "questStarted", 1 } });
+        var response = new CityVilleResponse(333, new ASObject { { "questStarted", 1 } });
 
         return response;
     }

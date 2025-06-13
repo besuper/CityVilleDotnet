@@ -37,16 +37,16 @@ public class CityVilleResponse
         UserId = userId;
     }
 
-    public ASObject ToObject()
+    private ASObject ToObject()
     {
-        ASObject obj = new ASObject();
-        obj["errorType"] = ErrorType;
-        //obj["userId"] = 333;
-        obj["metadata"] = Metadata;
-        obj["data"] = Data;
-        obj["serverTime"] = DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-
-        return obj;
+        return new ASObject
+        {
+            ["errorType"] = ErrorType,
+            //obj["userId"] = 333;
+            ["metadata"] = Metadata,
+            ["data"] = Data,
+            ["serverTime"] = DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds
+        };
     }
 
     public static implicit operator ASObject(CityVilleResponse d) => d.ToObject();

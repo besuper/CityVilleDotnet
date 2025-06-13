@@ -100,11 +100,13 @@ public class User
     {
         var level = 1;
         var energyMax = 12;
-        var currentXP = Player.Xp;
+        var currentXp = Player?.Xp;
+
+        if (currentXp is null) return;
 
         foreach (var item in GameSettingsManager.Instance.GetLevels())
         {
-            if (currentXP >= int.Parse(item.RequiredXp))
+            if (currentXp >= int.Parse(item.RequiredXp))
             {
                 level = int.Parse(item.Num);
                 energyMax = int.Parse(item.EnergyMax);
@@ -261,7 +263,7 @@ public class User
                     || task.Action.Equals("harvestResidenceByName")
                     || task.Action.Equals("startContractByClass")
                     || task.Action.Equals("clearByClass")
-                    )
+                   )
                 {
                     var buildingName = task.Type;
                     var amount = int.Parse(task.Total);
@@ -311,20 +313,19 @@ public class User
         Player.Commodities.Storage.Goods -= amount;
     }
 
-    private static string GetMD5Hash(string input)
+    private static string GetMd5Hash(string input)
     {
-        using (MD5 md5 = MD5.Create())
-        {
-            byte[] inputBytes = Encoding.UTF8.GetBytes(input);
-            byte[] hashBytes = md5.ComputeHash(inputBytes);
+        var inputBytes = Encoding.UTF8.GetBytes(input);
+        var hashBytes = MD5.HashData(inputBytes);
 
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < hashBytes.Length; i++)
-            {
-                sb.Append(hashBytes[i].ToString("x2"));
-            }
-            return sb.ToString();
+        var sb = new StringBuilder();
+
+        foreach (var t in hashBytes)
+        {
+            sb.Append(t.ToString("x2"));
         }
+
+        return sb.ToString();
     }
 
     // From SecureRand::rand
@@ -332,17 +333,17 @@ public class User
     public int GenerateRand(int min, int max)
     {
         Player.RollCounter += 1;
-        int rollCounter = Player.RollCounter;
+        var rollCounter = Player.RollCounter;
 
-        string stringToHash = "YOUR_LIKE_AN_8" + "::" + "" + "::" + 333 + "::" + rollCounter;
+        var stringToHash = "YOUR_LIKE_AN_8" + "::" + "" + "::" + 333 + "::" + rollCounter;
 
-        int range = max - min + 1;
+        var range = max - min + 1;
 
-        string md5Hash = "0x" + GetMD5Hash(stringToHash).Substring(0, 8);
-        ulong hashNumber = Convert.ToUInt64(md5Hash, 16);
+        var md5Hash = "0x" + GetMd5Hash(stringToHash).Substring(0, 8);
+        var hashNumber = Convert.ToUInt64(md5Hash, 16);
 
-        int moduloResult = (int)(hashNumber % (ulong)range);
-        int result = moduloResult + min;
+        var moduloResult = (int)(hashNumber % (ulong)range);
+        var result = moduloResult + min;
 
         return result;
     }
@@ -414,14 +415,7 @@ public class User
 
     public List<GameFriendData> GetFriendsData()
     {
-        var items = new List<GameFriendData>();
-
-        foreach (var friend in Friends)
-        {
-            items.Add(friend.ToFriendData());
-        }
-
-        return items;
+        return Friends.Select(friend => friend.ToFriendData()).ToList();
     }
 
     public Inventory? GetInventory()

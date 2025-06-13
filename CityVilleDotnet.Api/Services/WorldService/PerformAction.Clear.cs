@@ -6,13 +6,13 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 internal sealed partial class PerformAction
 {
-    private async Task<CityVilleResponse> PerformClear(User user, object[] _params, Guid userId, CancellationToken cancellationToken)
+    private async Task<CityVilleResponse> PerformClear(User user, object[] @params, Guid userId, CancellationToken cancellationToken)
     {
-        var building = _params[1] as ASObject ?? throw new Exception("Building can't be null when action type is clear");
+        var building = @params[1] as ASObject ?? throw new Exception("Building can't be null when action type is clear");
 
         foreach (var item in building)
         {
-            _logger.LogInformation($"{item.Key} = {item.Value}");
+            logger.LogInformation($"{item.Key} = {item.Value}");
         }
 
         var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
@@ -27,7 +27,7 @@ internal sealed partial class PerformAction
         user.HandleQuestProgress(itemName: obj.ClassName); // Wilderness
         user.CheckCompletedQuests();
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
 
         return new CityVilleResponse(333, new ASObject
         {

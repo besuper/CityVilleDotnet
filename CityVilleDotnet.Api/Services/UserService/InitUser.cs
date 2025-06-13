@@ -10,7 +10,7 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 internal sealed class InitUser(CityVilleDbContext context) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
@@ -36,7 +36,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
         {
             // Create a new player
             var appUser = await context.Set<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId.ToString(), cancellationToken) ?? throw new Exception("Can't find ApplicationUser with UserId");
-            string jsonContent = File.ReadAllText("Resources/defaultUser.json");
+            var jsonContent = await File.ReadAllTextAsync("Resources/defaultUser.json", cancellationToken);
 
             var userDto = JsonSerializer.Deserialize<UserDto>(jsonContent) ?? throw new Exception("UserDTO can't be null");
 

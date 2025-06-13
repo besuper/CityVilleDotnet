@@ -5,27 +5,25 @@ namespace CityVilleDotnet.Common.Settings;
 
 public class QuestSettingsManager
 {
-    public static List<string> TASK_ACTIONS = new List<string>() { "seenQuest" };
+    public static readonly List<string> TaskActions = ["seenQuest"];
 
-    private static QuestSettingsManager _instance;
-    private static readonly object _lock = new object();
-    private Dictionary<string, QuestItem> _items = new Dictionary<string, QuestItem>();
+    private static QuestSettingsManager? _instance;
+    private static readonly object Lock = new();
+    private readonly Dictionary<string, QuestItem> _items = new();
     private bool _isInitialized = false;
 
     public static QuestSettingsManager Instance
     {
         get
         {
-            if (_instance == null)
+            if (_instance is null)
             {
-                lock (_lock)
+                lock (Lock)
                 {
-                    if (_instance == null)
-                    {
-                        _instance = new QuestSettingsManager();
-                    }
+                    _instance ??= new QuestSettingsManager();
                 }
             }
+
             return _instance;
         }
     }
@@ -35,9 +33,9 @@ public class QuestSettingsManager
         if (_isInitialized)
             return;
 
-        XmlSerializer serializer = new XmlSerializer(typeof(GameQuests));
+        var serializer = new XmlSerializer(typeof(GameQuests));
 
-        using (FileStream fileStream = new FileStream("wwwroot/questSettings.xml", FileMode.Open))
+        using (var fileStream = new FileStream("wwwroot/questSettings.xml", FileMode.Open))
         {
             var gameSettings = (GameQuests)serializer.Deserialize(fileStream);
 
@@ -53,9 +51,9 @@ public class QuestSettingsManager
 
                         foreach (var task in item.Tasks.Tasks)
                         {
-                            if (!TASK_ACTIONS.Contains(task.Action))
+                            if (!TaskActions.Contains(task.Action))
                             {
-                                TASK_ACTIONS.Add(task.Action);
+                                TaskActions.Add(task.Action);
                             }
                         }
                     }
@@ -63,24 +61,17 @@ public class QuestSettingsManager
             }
         }
 
-        logger.LogInformation($"Loaded questSettings.xml with {_items.Count} items and {TASK_ACTIONS.Count} task actions");
+        logger.LogInformation($"Loaded questSettings.xml with {_items.Count} items and {TaskActions.Count} task actions");
 
         _isInitialized = true;
     }
 
-    public QuestItem GetItem(string itemName)
+    public QuestItem? GetItem(string itemName)
     {
         if (!_isInitialized)
-        {
             throw new InvalidOperationException("QuestSettingsManager not initialized");
-        }
 
-        if (_items.TryGetValue(itemName, out QuestItem item))
-        {
-            return item;
-        }
-
-        return null;
+        return _items.TryGetValue(itemName, out var item) ? item : null;
     }
 
 
@@ -88,86 +79,68 @@ public class QuestSettingsManager
     [XmlRoot("quests")]
     public class GameQuests
     {
-        [XmlElement("quest")]
-        public List<QuestItem> Quests { get; set; }
+        [XmlElement("quest")] public List<QuestItem> Quests { get; set; }
     }
 
     [Serializable]
     public class QuestItem
     {
-        [XmlAttribute("name")]
-        public string Name { get; set; }
+        [XmlAttribute("name")] public string Name { get; set; }
 
-        [XmlElement("tasks")]
-        public TasksContainer Tasks { get; set; }
+        [XmlElement("tasks")] public TasksContainer Tasks { get; set; }
 
-        [XmlElement("sequels")]
-        public SequelsContainer? Sequels { get; set; }
+        [XmlElement("sequels")] public SequelsContainer? Sequels { get; set; }
 
-        [XmlElement("resourceModifiers")]
-        public ResourceModifiers? ResourceModifiers { get; set; }
+        [XmlElement("resourceModifiers")] public ResourceModifiers? ResourceModifiers { get; set; }
     }
 
     [Serializable]
     public class TasksContainer
     {
-        [XmlElement("task")]
-        public List<QuestTask> Tasks { get; set; }
+        [XmlElement("task")] public List<QuestTask> Tasks { get; set; }
     }
 
     [Serializable]
     public class QuestTask
     {
-        [XmlAttribute("action")]
-        public string Action { get; set; }
+        [XmlAttribute("action")] public string Action { get; set; }
 
-        [XmlAttribute("type")]
-        public string Type { get; set; }
+        [XmlAttribute("type")] public string Type { get; set; }
 
-        [XmlAttribute("total")]
-        public string Total { get; set; }
+        [XmlAttribute("total")] public string Total { get; set; }
     }
 
     [Serializable]
     public class SequelsContainer
     {
-        [XmlElement("sequel")]
-        public List<Sequel>? Sequels { get; set; }
+        [XmlElement("sequel")] public List<Sequel>? Sequels { get; set; }
     }
 
     [Serializable]
     public class Sequel
     {
-        [XmlAttribute("name")]
-        public string Name { get; set; }
+        [XmlAttribute("name")] public string Name { get; set; }
     }
 
     [Serializable]
     public class ResourceModifiers
     {
-        [XmlElement("questRewards")]
-        public List<QuestRewards>? Rewards { get; set; }
+        [XmlElement("questRewards")] public List<QuestRewards>? Rewards { get; set; }
     }
 
     [Serializable]
     public class QuestRewards
     {
-        [XmlAttribute("gold")]
-        public string? Gold { get; set; }
+        [XmlAttribute("gold")] public string? Gold { get; set; }
 
-        [XmlAttribute("xp")]
-        public string? Xp { get; set; }
+        [XmlAttribute("xp")] public string? Xp { get; set; }
 
-        [XmlAttribute("goods")]
-        public string? Goods { get; set; }
+        [XmlAttribute("goods")] public string? Goods { get; set; }
 
-        [XmlAttribute("energy")]
-        public string? Energy { get; set; }
+        [XmlAttribute("energy")] public string? Energy { get; set; }
 
-        [XmlAttribute("itemUnlock")]
-        public string? ItemUnlock { get; set; }
+        [XmlAttribute("itemUnlock")] public string? ItemUnlock { get; set; }
 
-        [XmlAttribute("item")]
-        public string? Item { get; set; }
+        [XmlAttribute("item")] public string? Item { get; set; }
     }
 }

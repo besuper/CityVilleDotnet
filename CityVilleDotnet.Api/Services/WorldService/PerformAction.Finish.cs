@@ -6,13 +6,13 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 internal sealed partial class PerformAction
 {
-    private async Task<CityVilleResponse> PerformFinish(User user, object[] _params, Guid userId, CancellationToken cancellationToken)
+    private async Task<CityVilleResponse> PerformFinish(User user, object[] @params, Guid userId, CancellationToken cancellationToken)
     {
-        var building = _params[1] as ASObject ?? throw new Exception($"Building can't be null");
+        var building = @params[1] as ASObject ?? throw new Exception($"Building can't be null");
 
         foreach (var item in building)
         {
-            _logger.LogInformation($"{item.Key} = {item.Value}");
+            logger.LogInformation($"{item.Key} = {item.Value}");
         }
 
         var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
@@ -31,7 +31,7 @@ internal sealed partial class PerformAction
 
         var newId = world.GetAvailableBuildingId();
 
-        _logger.LogInformation($"Using new ID {newId}");
+        logger.LogInformation($"Using new ID {newId}");
 
         obj.WorldFlatId = newId;
 
@@ -43,7 +43,7 @@ internal sealed partial class PerformAction
         user.HandleQuestProgress();
         user.CheckCompletedQuests();
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
 
         return new CityVilleResponse(333, new ASObject
         {

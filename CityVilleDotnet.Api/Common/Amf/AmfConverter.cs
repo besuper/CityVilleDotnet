@@ -5,11 +5,11 @@ using System.Text.Json.Serialization;
 
 namespace CityVilleDotnet.Api.Common.Amf;
 
-public class AmfConverter
+public static class AmfConverter
 {
-    public static object Convert(object obj)
+    public static object? Convert(object obj)
     {
-        if (obj == null)
+        if (obj is null)
             return null;
 
         if (obj is ASObject)
@@ -25,20 +25,20 @@ public class AmfConverter
             return ConvertToArrayList(arrayList);
         }
 
-        return ConvertToASObject(obj);
+        return ConvertToAsObject(obj);
     }
 
-    public static ASObject ConvertToASObject(object obj)
+    private static ASObject ConvertToAsObject(object obj)
     {
         var result = new ASObject();
 
-        if (obj == null)
+        if (obj is null)
             return result;
 
-        Type type = obj.GetType();
-        PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        var type = obj.GetType();
+        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-        foreach (PropertyInfo property in properties)
+        foreach (var property in properties)
         {
             if (property.GetCustomAttribute<JsonIgnoreAttribute>() != null)
             {
@@ -46,11 +46,11 @@ public class AmfConverter
             }
 
             var jsonPropertyNameAttr = property.GetCustomAttribute<JsonPropertyNameAttribute>();
-            string propertyName = jsonPropertyNameAttr != null
+            var propertyName = jsonPropertyNameAttr != null
                 ? jsonPropertyNameAttr.Name
                 : property.Name;
 
-            object value = property.GetValue(obj);
+            var value = property.GetValue(obj);
             result[propertyName] = Convert(value);
         }
 
@@ -63,7 +63,7 @@ public class AmfConverter
 
         foreach (var item in collection)
         {
-            if (item == null)
+            if (item is null)
             {
                 result.Add(null);
             }
@@ -77,7 +77,7 @@ public class AmfConverter
             }
             else
             {
-                result.Add(ConvertToASObject(item));
+                result.Add(ConvertToAsObject(item));
             }
         }
 
@@ -87,11 +87,11 @@ public class AmfConverter
     private static bool IsSimpleType(Type type)
     {
         return type.IsPrimitive
-            || type == typeof(string)
-            || type == typeof(decimal)
-            || type == typeof(DateTime)
-            || type == typeof(TimeSpan)
-            || type == typeof(Guid)
-            || type.IsEnum;
+               || type == typeof(string)
+               || type == typeof(decimal)
+               || type == typeof(DateTime)
+               || type == typeof(TimeSpan)
+               || type == typeof(Guid)
+               || type.IsEnum;
     }
 }

@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
-internal sealed partial class PerformAction(CityVilleDbContext _context, ILogger<PerformAction> _logger) : AmfService
+internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<PerformAction> logger) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
-        var user = await _context.Set<User>()
+        var user = await context.Set<User>()
             .AsSplitQuery()
             .Include(x => x.World)
             .ThenInclude(x => x.Objects)
@@ -24,56 +24,51 @@ internal sealed partial class PerformAction(CityVilleDbContext _context, ILogger
             .Include(x => x.Quests)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
 
-        var actionType = _params[0] as string;
+        var actionType = @params[0] as string;
 
-        _logger.LogInformation($"PerformAction type {actionType}");
+        logger.LogInformation($"PerformAction type {actionType}");
 
         if (actionType == "place")
         {
-            await PerformPlace(user, _params, userId, cancellationToken);
+            await PerformPlace(user, @params, userId, cancellationToken);
 
             return GatewayService.CreateEmptyResponse();
         }
 
         if (actionType == "build")
         {
-            await PerformBuild(user, _params, userId, cancellationToken);
+            await PerformBuild(user, @params, userId, cancellationToken);
 
             return GatewayService.CreateEmptyResponse();
         }
 
         if (actionType == "finish")
         {
-            return await PerformFinish(user, _params, userId, cancellationToken);
+            return await PerformFinish(user, @params, userId, cancellationToken);
         }
 
         if (actionType == "openBusiness")
         {
-            var response = await PerformOpenBusiness(user, _params, userId, cancellationToken);
+            var response = await PerformOpenBusiness(user, @params, userId, cancellationToken);
 
-            if (response is not null)
-            {
-                return response;
-            }
-
-            return GatewayService.CreateEmptyResponse();
+            return response ?? GatewayService.CreateEmptyResponse();
         }
 
         if (actionType == "harvest")
         {
-            return await PerformHarvest(user, _params, userId, cancellationToken);
+            return await PerformHarvest(user, @params, userId, cancellationToken);
         }
 
         if (actionType == "startContract")
         {
-            await PerformStartContract(user, _params, userId, cancellationToken);
+            await PerformStartContract(user, @params, userId, cancellationToken);
 
             return GatewayService.CreateEmptyResponse();
         }
 
         if (actionType == "clear")
         {
-            return await PerformClear(user, _params, userId, cancellationToken);
+            return await PerformClear(user, @params, userId, cancellationToken);
         }
 
         return GatewayService.CreateEmptyResponse();

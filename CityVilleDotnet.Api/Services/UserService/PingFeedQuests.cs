@@ -8,7 +8,7 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] _params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsNoTracking()

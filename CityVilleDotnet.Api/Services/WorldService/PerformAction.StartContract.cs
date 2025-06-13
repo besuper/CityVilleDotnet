@@ -5,13 +5,13 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 internal sealed partial class PerformAction
 {
-    private async Task PerformStartContract(User user, object[] _params, Guid userId, CancellationToken cancellationToken)
+    private async Task PerformStartContract(User user, object[] @params, Guid userId, CancellationToken cancellationToken)
     {
-        var building = _params[1] as ASObject ?? throw new Exception("Building can't be null when action type is start contract");
+        var building = @params[1] as ASObject ?? throw new Exception("Building can't be null when action type is start contract");
 
         foreach (var item in building)
         {
-            _logger.LogInformation($"{item.Key} = {item.Value}");
+            logger.LogInformation($"{item.Key} = {item.Value}");
         }
 
         var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
@@ -35,6 +35,6 @@ internal sealed partial class PerformAction
         user.HandleQuestProgress(itemName: obj.ItemName == "plot_crop" ? obj.ClassName : obj.ItemName);
         user.CheckCompletedQuests();
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
 }

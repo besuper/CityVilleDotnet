@@ -6,13 +6,13 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 internal sealed partial class PerformAction
 {
-    private async Task PerformPlace(User user, object[] _params, Guid userId, CancellationToken cancellationToken)
+    private async Task PerformPlace(User user, object[] @params, Guid userId, CancellationToken cancellationToken)
     {
-        var building = _params[1] as ASObject ?? throw new Exception("Building can't be null when action type is place");
+        var building = @params[1] as ASObject ?? throw new Exception("Building can't be null when action type is place");
 
         foreach (var item in building)
         {
-            _logger.LogInformation($"{item.Key} = {item.Value}");
+            logger.LogInformation($"{item.Key} = {item.Value}");
         }
 
         // TODO: Implement components
@@ -44,7 +44,7 @@ internal sealed partial class PerformAction
             (int)building["id"]
         );
 
-        _logger.LogInformation($"x: {obj.Position.X} y: {obj.Position.Y} z: {obj.Position.Z}");
+        logger.LogInformation($"x: {obj.Position.X} y: {obj.Position.Y} z: {obj.Position.Z}");
 
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
 
@@ -65,6 +65,6 @@ internal sealed partial class PerformAction
         user.HandleQuestProgress();
         user.CheckCompletedQuests();
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
 }
