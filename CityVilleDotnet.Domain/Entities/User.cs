@@ -27,7 +27,8 @@ public class User
             Player = new Player
             {
                 Id = Guid.NewGuid(),
-                Cash = 0,
+                Cash = 900,
+                Gold = 50000,
                 Energy = 12,
                 EnergyMax = 12,
                 Commodities = new Commodities()
@@ -154,6 +155,9 @@ public class User
     public void AddXp(int xp)
     {
         Player.Xp += xp;
+
+        // FIXME: Check user level after each xp
+        ComputeLevel();
     }
 
     public int GetMaxEnergy()
@@ -421,5 +425,13 @@ public class User
     public Inventory? GetInventory()
     {
         return Player?.Inventory;
+    }
+
+    public void SetSeenFlag(string flag)
+    {
+        if (!Player.SeenFlags.Any(x => x.Key == flag))
+        {
+            Player.SeenFlags.Add(new SeenFlag(flag));
+        }
     }
 }

@@ -18,7 +18,7 @@ public class Player
     public int Xp { get; set; } = 0;
     public int Energy { get; set; } = 12;
     public int EnergyMax { get; set; } = 12;
-    public Dictionary<object, object> SeenFlags { get; set; } = new Dictionary<object, object>();
+    public List<SeenFlag> SeenFlags { get; set; } = new();
     public int ExpansionsPurchased { get; set; } = 0;
     public Dictionary<object, object> Collections { get; set; } = new Dictionary<object, object>();
     public Dictionary<object, object> CompletedCollections { get; set; } = new Dictionary<object, object>();

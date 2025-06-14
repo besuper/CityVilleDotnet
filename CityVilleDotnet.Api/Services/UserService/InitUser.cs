@@ -44,7 +44,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
 
         if (user.Player is null)
             throw new Exception("Player not initialized correctly");
-
+        
         var userObj = AmfConverter.Convert(user.ToDto());
 
         var quests = new ASObject();

@@ -1,4 +1,5 @@
-﻿using CityVilleDotnet.Domain.Entities;
+﻿using System.Text.Json;
+using CityVilleDotnet.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -27,12 +28,12 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
         builder.Ignore(x => x.PlayerNews);
         builder.Ignore(x => x.Neighbors);
         builder.Ignore(x => x.Wishlist);
-        builder.Ignore(x => x.SeenFlags);
         builder.Ignore(x => x.Collections);
         builder.Ignore(x => x.CompletedCollections);
         builder.Ignore(x => x.Licenses);
 
         builder.HasOne(x => x.Commodities);
         builder.HasOne(x => x.Inventory);
+        builder.HasMany(x => x.SeenFlags);
     }
 }

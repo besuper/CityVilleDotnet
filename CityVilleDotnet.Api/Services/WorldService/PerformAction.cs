@@ -11,6 +11,7 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
 {
     public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
+        // FIXME: Optimize this
         var user = await context.Set<User>()
             .AsSplitQuery()
             .Include(x => x.World)
@@ -21,6 +22,8 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
             .Include(x => x.Player)
             .ThenInclude(x => x.Inventory)
             .ThenInclude(x => x.Items)
+            .Include(x => x.Player)
+            .ThenInclude(x => x.SeenFlags)
             .Include(x => x.Quests)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
 

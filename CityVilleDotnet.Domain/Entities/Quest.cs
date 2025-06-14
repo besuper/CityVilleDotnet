@@ -95,6 +95,11 @@ public class Quest
                 inventory?.AddItem(reward.Item);
             }
 
+            if (reward.ItemUnlock is not null)
+            {
+                user.SetSeenFlag(reward.ItemUnlock);
+            }
+
             // TODO: Support energy (add energy engine)
         }
     }
