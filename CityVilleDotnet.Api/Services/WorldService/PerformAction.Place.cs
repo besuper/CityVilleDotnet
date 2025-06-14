@@ -59,6 +59,19 @@ internal sealed partial class PerformAction
 
         world.AddBuilding(obj);
 
+        var userInventory = user.GetInventory();
+
+        if (userInventory is null)
+            throw new Exception("User inventory can't be null");
+
+        if (userInventory.HasItem(itemName))
+        {
+            var removedItem = userInventory.RemoveItem(itemName);
+
+            if (removedItem is not null)
+                context.Set<InventoryItem>().Remove(removedItem);
+        }
+
         // TODO: Check coins, goods, energy, etc...
         // Add population
 

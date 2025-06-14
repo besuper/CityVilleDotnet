@@ -15,7 +15,7 @@ public class Inventory
             item.AddAmount(amount);
     }
 
-    public void RemoveItem(string itemName, int amount = 1)
+    public InventoryItem? RemoveItem(string itemName, int amount = 1)
     {
         var item = Items.FirstOrDefault(x => x.Name == itemName);
 
@@ -28,11 +28,21 @@ public class Inventory
         item.RemoveAmount(amount);
 
         if (item.Amount <= 0)
+        {
             Items.Remove(item);
+            return item;
+        }
+
+        return null;
     }
 
     public int Count()
     {
         return Items.Sum(x => x.Amount);
+    }
+
+    public bool HasItem(string itemName)
+    {
+        return Items.Any(x => x.Name == itemName && x.Amount > 0);
     }
 }
