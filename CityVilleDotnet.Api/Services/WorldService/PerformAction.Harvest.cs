@@ -53,17 +53,8 @@ internal sealed partial class PerformAction
 
         if (obj.State == "grown")
         {
-            // FIXME: Re-use gameItem ?
-            var itemName = (string)building["itemName"];
-            var gameItem = GameSettingsManager.Instance.GetItem(itemName);
-
-            if (gameItem is not null)
-            {
-                var multiplier = Math.Round((double)GameSettingsManager.Instance.GetInt("InGameDaySeconds") * 1000.0 * gameItem.GrowTime ?? 1.0, 2);
-
-                obj.State = "planted";
-                obj.PlantTime = ServerUtils.GetCurrentTime() + multiplier;
-            }
+            obj.State = "planted";
+            obj.PlantTime = ServerUtils.GetCurrentTime();
         }
 
         var secureRands = user.CollectDoobersRewards(obj.ItemName);
