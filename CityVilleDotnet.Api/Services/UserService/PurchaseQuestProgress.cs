@@ -1,4 +1,5 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
+public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQuestProgress> logger) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
@@ -21,15 +22,23 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
             .ThenInclude(x => x.Storage)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't to find user with UserId");
 
-        user.CheckCompletedQuests();
+        var questName = (string)@params[0];
+        var taskIndex = (int)@params[1];
 
-        var rep = new ASObject
-        {
-            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active))
-        };
+        logger.LogInformation($"Quest {questName} at {taskIndex} is purchased");
+
+        var currentQuest = user.Quests.FirstOrDefault(x => x.Name == questName && x.QuestType == QuestType.Active);
+
+        if (currentQuest is null)
+            throw new Exception("Quest not found");
+
+        // TODO: Check cashcost from task in QuestSettings
+        currentQuest.PurchaseProgression(taskIndex);
+
+        user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse(0, 333, rep);
+        return GatewayService.CreateEmptyResponse();
     }
 }

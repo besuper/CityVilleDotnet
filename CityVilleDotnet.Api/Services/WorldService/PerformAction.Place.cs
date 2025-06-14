@@ -76,6 +76,9 @@ internal sealed partial class PerformAction
         // Add population
 
         user.HandleQuestProgress();
+        user.HandleQuestProgress(itemName: itemName);
+        user.HandleQuestProgress(itemName: className);
+        
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);

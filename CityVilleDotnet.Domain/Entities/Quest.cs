@@ -17,26 +17,19 @@ public class Quest
 
     public Quest()
     {
-
     }
 
-    [JsonIgnore]
-    public Guid Id { get; private set; }
+    [JsonIgnore] public Guid Id { get; private set; }
 
-    [JsonPropertyName("name")]
-    public string Name { get; set; }
+    [JsonPropertyName("name")] public string Name { get; set; }
 
-    [JsonPropertyName("complete")]
-    public int Complete { get; set; }
+    [JsonPropertyName("complete")] public int Complete { get; set; }
 
-    [JsonPropertyName("progress")]
-    public int[] Progress { get; set; }
+    [JsonPropertyName("progress")] public int[] Progress { get; set; }
 
-    [JsonPropertyName("purchased")]
-    public int[] Purchased { get; set; }
+    [JsonPropertyName("purchased")] public int[] Purchased { get; set; }
 
-    [JsonIgnore]
-    public QuestType QuestType { get; set; }
+    [JsonIgnore] public QuestType QuestType { get; set; }
 
     public static Quest Create(string name, int complete, int length, QuestType questType)
     {
@@ -53,7 +46,7 @@ public class Quest
 
         for (var i = 0; i < Progress.Length; i++)
         {
-            if (Progress[i] < int.Parse(questItem.Tasks.Tasks[i].Total))
+            if ((Progress[i] + Purchased[i]) < int.Parse(questItem.Tasks.Tasks[i].Total))
             {
                 completed = false;
                 break;
@@ -127,5 +120,17 @@ public class Quest
         }
 
         return sequels;
+    }
+
+    public void PurchaseProgression(int index)
+    {
+        var questItem = QuestSettingsManager.Instance.GetItem(Name);
+
+        if (questItem is null) return;
+
+        // TODO: Check if it's ok
+        var requiredAmount = int.Parse(questItem.Tasks.Tasks[index].Total);
+
+        Purchased[index] = requiredAmount;
     }
 }

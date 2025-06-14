@@ -183,6 +183,7 @@ public class User
     public void CompleteTutorial()
     {
         Player.IsNew = false;
+        Player.FirstDay = false;
     }
 
     public string SetWorldName(string name)
@@ -267,6 +268,8 @@ public class User
                     || task.Action.Equals("harvestResidenceByName")
                     || task.Action.Equals("startContractByClass")
                     || task.Action.Equals("clearByClass")
+                    || task.Action.Equals("harvestPlotByName")
+                    || task.Action.Equals("placeByClass")
                    )
                 {
                     var buildingName = task.Type;
@@ -289,7 +292,6 @@ public class User
 
         foreach (var item in Quests.Where(x => x.QuestType == QuestType.Active))
         {
-            // TODO: Support purchased tasks
             if (item.IsCompleted())
             {
                 item.QuestType = QuestType.Completed;
