@@ -22,6 +22,8 @@ internal sealed partial class PerformAction
             throw new Exception($"Can't find `builds`");
 
         obj.AddConstructionStage();
+        
+        user.CollectDoobersRewards(obj.ItemName);
 
         await context.SaveChangesAsync(cancellationToken);
     }

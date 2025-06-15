@@ -24,6 +24,8 @@ internal sealed partial class PerformAction
 
         world.RemoveObject(obj);
 
+        context.Set<WorldObject>().Remove(obj);
+
         user.HandleQuestProgress(itemName: obj.ClassName); // Wilderness
         user.CheckCompletedQuests();
 
