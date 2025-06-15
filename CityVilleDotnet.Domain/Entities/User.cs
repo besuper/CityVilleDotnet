@@ -1,4 +1,6 @@
-﻿namespace CityVilleDotnet.Domain.Entities;
+﻿using CityVilleDotnet.Common.Global;
+
+namespace CityVilleDotnet.Domain.Entities;
 
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.GameEntities;
@@ -319,55 +321,21 @@ public class User
         Player.Commodities.Storage.Goods -= amount;
     }
 
-    private static string GetMd5Hash(string input)
-    {
-        var inputBytes = Encoding.UTF8.GetBytes(input);
-        var hashBytes = MD5.HashData(inputBytes);
-
-        var sb = new StringBuilder();
-
-        foreach (var t in hashBytes)
-        {
-            sb.Append(t.ToString("x2"));
-        }
-
-        return sb.ToString();
-    }
-
-    // From SecureRand::rand
-    // FIXME: Looks like secure rand from client and server is not the same
-    public int GenerateRand(int min, int max)
-    {
-        Player.RollCounter += 1;
-        var rollCounter = Player.RollCounter;
-
-        var stringToHash = "YOUR_LIKE_AN_8" + "::" + "" + "::" + 333 + "::" + rollCounter;
-
-        var range = max - min + 1;
-
-        var md5Hash = "0x" + GetMd5Hash(stringToHash).Substring(0, 8);
-        var hashNumber = Convert.ToUInt64(md5Hash, 16);
-
-        var moduloResult = (int)(hashNumber % (ulong)range);
-        var result = moduloResult + min;
-
-        return result;
-    }
-
     // From Player::processRandomModifiersFromConfig
     public List<int> CollectDoobersRewards(string itemName)
     {
+        if (Player is null) return [];
+
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
 
-        if (gameItem is null) return [];
-        if (gameItem.RandomModifiers is null) return [];
-        if (gameItem.RandomModifiers.Modifiers is null) return [];
+        if (gameItem?.RandomModifiers?.Modifiers is null) return [];
 
         var secureRands = new List<int>();
 
         foreach (var itemModifier in gameItem.RandomModifiers.Modifiers)
         {
-            var secureRand = GenerateRand(0, 99);
+            Player.RollCounter += 1;
+            var secureRand = SecureRand.GenerateRand(0, 99, Player.RollCounter);
 
             secureRands.Add(secureRand);
 
@@ -375,12 +343,16 @@ public class User
 
             if (modifierTable is null) continue;
 
+            Console.WriteLine($"Checking random table named {modifierTable.Name} type {modifierTable.Type} with rand {secureRand}");
+
             var previousRollPercent = 0;
             var found = false;
 
             foreach (var roll in modifierTable.Rolls)
             {
                 var percent = roll.Percent + previousRollPercent;
+
+                Console.WriteLine($"Percent {percent}");
 
                 previousRollPercent = roll.Percent;
 
@@ -397,6 +369,7 @@ public class User
                         {
                             case "coin":
                                 // FIXME: Change coins to double ? There are doubles in amount settings
+                                // Coins can be double if there are any bonus items 
                                 Console.WriteLine(value.Sum(x => x.Amount));
                                 AddGold((int)value.Sum(x => x.Amount));
                                 break;
@@ -407,6 +380,13 @@ public class User
                                 break;
                             case "energy":
                                 AddEnergy((int)value.Sum(x => x.Amount));
+                                break;
+                            case "collectable":
+                                Console.WriteLine($"Found collectable {string.Join(", ", value.Select(x => x.Name).ToList())}");
+                                break;
+                            case "food":
+                                AddGoods((int)value.Sum(x => x.Amount));
+                                Console.WriteLine((int)value.Sum(x => x.Amount));
                                 break;
                         }
 

@@ -57,9 +57,9 @@ internal sealed partial class PerformAction
             obj.PlantTime = ServerUtils.GetCurrentTime();
         }
 
-        var secureRands = user.CollectDoobersRewards(obj.ItemName);
+        var secureRands = user.CollectDoobersRewards(obj.ContractName ?? obj.ItemName);
 
-        logger.LogInformation($"Secure rands {secureRands}");
+        logger.LogInformation($"Secure rands {string.Join(",", secureRands.ToArray())}");
         logger.LogInformation($"Secure rands {secureRands.Count}");
 
         user.HandleQuestProgress(itemName: obj.ItemName == "plot_crop" ? obj.ClassName : obj.ItemName);
