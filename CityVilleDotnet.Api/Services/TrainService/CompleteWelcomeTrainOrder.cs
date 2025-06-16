@@ -23,6 +23,11 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
             .Include(x => x.Player)
             .ThenInclude(x => x.Commodities)
             .ThenInclude(x => x.Storage)
+            // FIXME: This should not be here
+            // Trigger task countWorldObjectByName
+            // Might be fixed with quests rework
+            .Include(x => x.World)
+            .ThenInclude(x => x.Objects)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (user is null)
