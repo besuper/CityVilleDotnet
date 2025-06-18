@@ -22,7 +22,7 @@ internal sealed partial class PerformAction
 
         var secureRands = user.CollectDoobersRewards(obj.ItemName);
 
-        world.RemoveObject(obj);
+        world.RemoveBuilding(obj);
 
         context.Set<WorldObject>().Remove(obj);
 

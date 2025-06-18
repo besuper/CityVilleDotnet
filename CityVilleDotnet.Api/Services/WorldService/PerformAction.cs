@@ -38,6 +38,13 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
             return GatewayService.CreateEmptyResponse();
         }
 
+        if (actionType == "sell")
+        {
+            await PerformSell(user, @params, userId, cancellationToken);
+
+            return GatewayService.CreateEmptyResponse();
+        }
+
         if (actionType == "build")
         {
             await PerformBuild(user, @params, userId, cancellationToken);

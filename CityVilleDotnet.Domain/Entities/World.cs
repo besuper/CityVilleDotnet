@@ -92,7 +92,7 @@ public class World
         return -1;
     }
 
-    public void RemoveObject(WorldObject obj)
+    public void RemoveBuilding(WorldObject obj)
     {
         Objects.Remove(obj);
     }
