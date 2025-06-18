@@ -35,6 +35,8 @@ public class ItemsContainer
 public class GameItem
 {
     [XmlAttribute("name")] public string Name { get; set; }
+    [XmlAttribute("height")] public string? Height { get; set; }
+    [XmlAttribute("width")] public string? Width { get; set; }
 
     [XmlElement("requiredLevel")] public int? RequiredLevel { get; set; }
 

@@ -96,4 +96,10 @@ public class World
     {
         Objects.Remove(obj);
     }
+
+    public void AddMapRect(MapRect mapRect)
+    {
+        // FIXME: Check if this map already exist
+        MapRects.Add(mapRect); 
+    }
 }
