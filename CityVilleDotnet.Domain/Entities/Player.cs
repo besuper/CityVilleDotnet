@@ -3,7 +3,8 @@
 public class Player
 {
     public Guid Id { get; set; }
-    public int Uid { get; set; } = 333;
+    public string Uid { get; set; } = "333";
+    public int Snuid { get; set; } = 333;
     public int LastTrackingTimestamp { get; set; } = 0;
     public List<object> PlayerNews { get; set; } = [];
     public List<object> Neighbors { get; set; } = [];

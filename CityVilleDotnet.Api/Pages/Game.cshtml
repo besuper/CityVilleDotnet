@@ -48,13 +48,13 @@
 		console.log("getUserInfo called");
 
 		return {
-			"zid": "333",
-			"uid": "333",
+			"zid": "@Model.CurrentPlayer.Player.Uid",
+			"uid": "@Model.CurrentPlayer.Player.Uid",
 			"first_name": "@Model.CurrentUser.UserName",
 			"name": "@Model.CurrentUser.UserName",
 			"sex": "M",
 			"pic_square": "blank.png",
-			"level": 5
+			"level": @Model.CurrentPlayer.Player.Level
 		};
 	}
 
@@ -78,11 +78,11 @@
 	embedGameSwf("Preloader.swf", "760", "594",
 	{
 		"serverTime": @((int)DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds),
-		"zySnid":333,
-		"zySnuid":"333",
-		"zyUid":"333",
-		"zyAuthHash":"333",
-		"zySig":"333",
+		"zySnid":0,
+		"zySnuid":"@Model.CurrentPlayer.Player.Uid",
+		"zyUid":"@Model.CurrentPlayer.Player.Uid",
+		"zyAuthHash":"@Model.CurrentPlayer.Player.Uid",
+		"zySig":"@Model.CurrentPlayer.Player.Uid",
 		"app_url":"",
 		"sn_app_url":"",
 		"asset_url":".",

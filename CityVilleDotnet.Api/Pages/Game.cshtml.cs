@@ -17,6 +17,7 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
     private readonly CityVilleDbContext _dbContext = dbContext;
 
     public required ApplicationUser CurrentUser { get; set; }
+    public required User CurrentPlayer { get; set; }
     public string FriendList { get; set; } = "[]";
 
     public async Task<IActionResult> OnGetAsync()
@@ -36,6 +37,8 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         if(user is not null)
         {
+            CurrentPlayer = user;
+            
             var options = new JsonSerializerOptions() { WriteIndented = false, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
 
             FriendList = JsonSerializer.Serialize(user.GetFriendsData(), options);

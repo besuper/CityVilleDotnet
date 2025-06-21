@@ -6,7 +6,7 @@ namespace CityVilleDotnet.Domain.GameEntities;
 
 public class PlayerDto
 {
-    [JsonPropertyName("uid")] public int Uid { get; set; } = 333;
+    [JsonPropertyName("uid")] public string Uid { get; set; } = "333";
 
     [JsonPropertyName("lastTrackingTimestamp")]
     public int LastTrackingTimestamp { get; set; } = 0;

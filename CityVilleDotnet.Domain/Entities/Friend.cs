@@ -36,9 +36,9 @@ public class Friend
     {
         return new GameFriendData()
         {
-            Zid = FriendUser.Player.Uid,
-            Snuid = FriendUser.Player.Uid,
-            Snid = FriendUser.Player.Uid,
+            Zid = FriendUser.Player.Snuid,
+            Snuid = FriendUser.Player.Snuid,
+            Snid = FriendUser.Player.Snuid,
             FirstName = FriendUser.Player.Username,
             Name = FriendUser.Player.Username,
             Picture = "blank.png",

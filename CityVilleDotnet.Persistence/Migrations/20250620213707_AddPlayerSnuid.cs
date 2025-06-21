@@ -1,0 +1,48 @@
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace CityVilleDotnet.Persistence.Migrations
+{
+    /// <inheritdoc />
+    public partial class AddPlayerSnuid : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.AlterColumn<string>(
+                name: "Uid",
+                table: "Player",
+                type: "nvarchar(64)",
+                maxLength: 64,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
+
+            migrationBuilder.AddColumn<int>(
+                name: "Snuid",
+                table: "Player",
+                type: "int",
+                nullable: false,
+                defaultValue: 0)
+                .Annotation("SqlServer:Identity", "1, 1");
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropColumn(
+                name: "Snuid",
+                table: "Player");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Uid",
+                table: "Player",
+                type: "nvarchar(max)",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(64)",
+                oldMaxLength: 64);
+        }
+    }
+}

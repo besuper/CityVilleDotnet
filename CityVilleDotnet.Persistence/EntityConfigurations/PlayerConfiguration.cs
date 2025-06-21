@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using CityVilleDotnet.Domain.Entities;
+﻿using CityVilleDotnet.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,7 +12,8 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
         builder.Property(x => x.Id)
             .ValueGeneratedNever();
 
-        builder.Property(x => x.Uid);
+        builder.Property(x => x.Uid).HasMaxLength(64);
+        builder.Property(x => x.Snuid).ValueGeneratedOnAdd();
         builder.Property(x => x.LastTrackingTimestamp);
         builder.Property(x => x.Gold);
         builder.Property(x => x.Cash);

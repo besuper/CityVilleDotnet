@@ -1,4 +1,5 @@
 ﻿using CityVilleDotnet.Common.Global;
+using CityVilleDotnet.Common.Utils;
 
 namespace CityVilleDotnet.Domain.Entities;
 
@@ -186,6 +187,8 @@ public class User
     {
         Player.IsNew = false;
         Player.FirstDay = false;
+
+        Player.Uid = $"{Player.Snuid}";
     }
 
     public string SetWorldName(string name)
