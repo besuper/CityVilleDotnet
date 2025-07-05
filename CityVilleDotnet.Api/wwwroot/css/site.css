@@ -1,0 +1,102 @@
+﻿div.tabs {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 4px solid #ffe8af;
+    background: white url(tabs_bg.png) bottom left repeat-x;
+    width: 760px;
+}
+
+.tab-content {
+    display: flex;
+    gap: 4px;
+}
+
+    .tab-content a {
+        font-size: 8pt;
+        background-color: #FFE6A9;
+        border: 2px solid #BDAB7D;
+        display: inline-block;
+        padding: 4px;
+        text-decoration: none;
+        color: #473C1E;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        -webkit-border-top-left-radius: 5px;
+        -webkit-border-top-right-radius: 5px;
+        -moz-border-radius-topleft: 5px;
+        -moz-border-radius-topright: 5px;
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFF3D9', endColorstr='#ffe6a9');
+        background: -webkit-gradient(linear, left top, left bottom, from(#FFF3D9), to(#ffe6a9));
+        background: -moz-linear-gradient(top, #FFF3D9, #ffe6a9);
+    }
+
+.tab.selected a,
+.tab.selected a:hover {
+    background-color: #D9BA6C;
+    color: #473C1E;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ECD9AB', endColorstr='#D9BA6C');
+    background: -webkit-gradient(linear, left top, left bottom, from(#ECD9AB), to(#D9BA6C));
+    background: -moz-linear-gradient(top, #ECD9AB, #D9BA6C);
+}
+
+.tab a:hover {
+    background-color: #F7D840;
+    color: #473C1E;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFF2B0', endColorstr='#F7D840');
+    background: -webkit-gradient(linear, left top, left bottom, from(#FFF2B0), to(#F7D840));
+    background: -moz-linear-gradient(top, #FFF2B0, #F7D840);
+}
+
+.gamePage {
+    width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.main {
+    padding-top: 25px;
+}
+
+.friends {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    gap: 25px;
+    margin-top: 25px;
+}
+
+.friend {
+    display: flex;
+    height: 64px;
+    gap: 10px;
+    border: 2px solid grey;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+    .friend img {
+        width: 64px;
+        height: 64px;
+    }
+
+.friend-content {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.add-friend {
+    display: flex;
+    flex-direction: column;
+}
+
+.interactions a {
+    text-decoration: none;
+}
+
+.interactions .accept {
+    color: green;
+}
+
+.interactions .reject {
+    color: red;
+}

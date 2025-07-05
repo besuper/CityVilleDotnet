@@ -1,2 +1,12 @@
-*
-!.gitignore
+assets/
+hashed/
+effectsConfig.xml
+en.xml
+en_US.xml
+Game.26346.swf
+gameSettings.xml
+jquery.min.js
+Preloader.swf
+questSettings.xml
+flash_integration.min.js
+ZYFrameManager.min.js
