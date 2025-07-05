@@ -28,6 +28,27 @@ public class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : 
         if (userToLoad is null)
             throw new Exception($"Unable to find user with Player.Uid {visitUserId}");
 
+        if (userToLoad.UserId.ToString() != userId.ToString())
+        {
+            var currentUser = await context.Set<User>()
+                .AsSplitQuery()
+                .Include(x => x.Quests)
+                .Include(x => x.Player)
+                .ThenInclude(x => x.Inventory)
+                .ThenInclude(x => x.Items)
+                .Include(x => x.Player)
+                .ThenInclude(x => x.Commodities)
+                .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            
+            if(currentUser is null)
+                throw new Exception($"Unable to find current user with UserId {userId}");
+            
+            currentUser.HandleQuestProgress("neighborVisit");
+            currentUser.CheckCompletedQuests();
+            
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
         var dtoUser = userToLoad.ToDto();
 
         var response = (ASObject)AmfConverter.Convert(dtoUser.UserInfo);
