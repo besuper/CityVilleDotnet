@@ -12,6 +12,7 @@ public class GameSettings
     [XmlElement("items")] public ItemsContainer Items { get; set; }
 
     [XmlElement("levels")] public LevelsContainer Levels { get; set; }
+    [XmlElement("reputation")] public ReputationContainer Reputation { get; set; }
 
     [XmlElement("farming")] public FarmingSettings Farming { get; set; }
 
@@ -23,6 +24,30 @@ public class GameSettings
 public class FarmingSettings
 {
     [XmlAttribute("inGameDaySeconds")] public string InGameDaySeconds { get; set; }
+
+    [XmlAttribute("friendVisitShipRepGain")]
+    public string FriendVisitShipRepGain { get; set; }
+
+    [XmlAttribute("friendVisitConstructionRepGain")]
+    public string FriendVisitConstructionRepGain { get; set; }
+
+    [XmlAttribute("friendVisitPlotRepGain")]
+    public string FriendVisitPlotRepGain { get; set; }
+
+    [XmlAttribute("friendHelpDefaultGoodsReward")]
+    public string FriendHelpDefaultGoodsReward { get; set; }
+
+    [XmlAttribute("friendVisitBusinessRepGain")]
+    public string FriendVisitBusinessRepGain { get; set; }
+
+    [XmlAttribute("friendHelpDefaultCoinReward")]
+    public string FriendHelpDefaultCoinReward { get; set; }
+
+    [XmlAttribute("friendVisitWildernessRepGain")]
+    public string FriendVisitWildernessRepGain { get; set; }
+
+    [XmlAttribute("friendVisitResidenceRepGain")]
+    public string FriendVisitResidenceRepGain { get; set; }
 }
 
 [Serializable]
@@ -69,6 +94,12 @@ public class LevelsContainer
 }
 
 [Serializable]
+public class ReputationContainer
+{
+    [XmlElement("level")] public List<ReputationItem> Levels { get; set; }
+}
+
+[Serializable]
 public class LevelItem
 {
     [XmlAttribute("num")] public string Num { get; set; }
@@ -76,6 +107,16 @@ public class LevelItem
     [XmlAttribute("requiredXP")] public string RequiredXp { get; set; }
 
     [XmlAttribute("energyMax")] public string EnergyMax { get; set; }
+}
+
+[Serializable]
+public class ReputationItem
+{
+    [XmlAttribute("num")] public string Num { get; set; }
+
+    [XmlAttribute("requiredXP")] public string RequiredXp { get; set; }
+
+    [XmlAttribute("reward")] public string Reward { get; set; }
 }
 
 [Serializable]
@@ -156,6 +197,7 @@ public class GameSettingsManager
     private readonly Dictionary<string, RandomModifierTable> _randomModifiers;
     private Dictionary<string, object> _settings;
     private List<LevelItem> _levels = [];
+    private List<ReputationItem> _reputationLevels = [];
     private bool _isInitialized;
 
     private GameSettingsManager()
@@ -215,12 +257,14 @@ public class GameSettingsManager
             }
 
             _levels = gameSettings.Levels.Levels;
+            _reputationLevels = gameSettings.Reputation.Levels;
 
             _settings = gameSettings.Farming.ToDictionary();
         }
 
         logger.LogInformation($"Loaded gameSettings.xml with {_items.Count} items");
         logger.LogInformation($"Loaded {_levels.Count} levels");
+        logger.LogInformation($"Loaded {_reputationLevels.Count} social levels");
         logger.LogInformation($"Loaded {_randomModifiers.Count} random modifiers");
 
         _isInitialized = true;
@@ -245,6 +289,11 @@ public class GameSettingsManager
     public IReadOnlyCollection<LevelItem> GetLevels()
     {
         return _levels.AsReadOnly();
+    }
+
+    public IReadOnlyCollection<ReputationItem> GetSocialLevels()
+    {
+        return _reputationLevels.AsReadOnly();
     }
 
     public int GetInt(string name)

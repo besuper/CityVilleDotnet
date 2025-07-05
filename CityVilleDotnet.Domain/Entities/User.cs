@@ -125,6 +125,29 @@ public class User
         Player.EnergyMax = energyMax;
     }
 
+    public void ComputeSocialLevel()
+    {
+        // FIXME: Give the reward
+        var level = 1;
+        var currentXp = Player?.SocialXp;
+
+        if (currentXp is null) return;
+
+        foreach (var item in GameSettingsManager.Instance.GetSocialLevels())
+        {
+            if (currentXp >= int.Parse(item.RequiredXp))
+            {
+                level = int.Parse(item.Num);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        Player.SocialLevel = level;
+    }
+
     public int GetGold()
     {
         return Player.Gold;
@@ -322,6 +345,13 @@ public class User
     public void RemoveGoods(int amount)
     {
         Player.Commodities.Storage.Goods -= amount;
+    }
+
+    public void AddSocialXp(int amount)
+    {
+        Player.SocialXp += amount;
+
+        ComputeSocialLevel();
     }
 
     // From Player::processRandomModifiersFromConfig
