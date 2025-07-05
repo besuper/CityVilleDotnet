@@ -7,7 +7,6 @@ public class Player
     public int Snuid { get; set; }
     public int LastTrackingTimestamp { get; set; } = 0;
     public List<object> PlayerNews { get; set; } = [];
-    public List<object> Neighbors { get; set; } = [];
     public List<object> Wishlist { get; set; } = [];
     public bool SfxDisabled { get; set; } = false;
     public bool MusicDisabled { get; set; } = false;

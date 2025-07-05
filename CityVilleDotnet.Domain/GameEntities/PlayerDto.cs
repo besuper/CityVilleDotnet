@@ -13,7 +13,7 @@ public class PlayerDto
 
     [JsonPropertyName("playerNews")] public List<object> PlayerNews { get; set; } = [];
 
-    [JsonPropertyName("neighbors")] public List<object> Neighbors { get; set; } = [];
+    [JsonPropertyName("neighbors")] public List<NeighborDto> Neighbors { get; set; } = [];
 
     [JsonPropertyName("wishlist")] public List<object> Wishlist { get; set; } = [];
 
@@ -73,7 +73,7 @@ public static class PlayerDtoMapper
             LastTrackingTimestamp = model.LastTrackingTimestamp,
             Level = model.Level,
             Licenses = model.Licenses,
-            Neighbors = model.Neighbors,
+            Neighbors = [],
             Options = new OptionsDto
             {
                 MusicDisabled = model.MusicDisabled,

@@ -27,7 +27,6 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
 
         // TODO: Implement these
         builder.Ignore(x => x.PlayerNews);
-        builder.Ignore(x => x.Neighbors);
         builder.Ignore(x => x.Wishlist);
         builder.Ignore(x => x.Collections);
         builder.Ignore(x => x.CompletedCollections);
