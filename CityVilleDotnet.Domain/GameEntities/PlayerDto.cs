@@ -31,6 +31,10 @@ public class PlayerDto
 
     [JsonPropertyName("xp")] public int Xp { get; set; } = 0;
 
+    [JsonPropertyName("socialLevel")] public int SocialLevel { get; set; } = 1;
+
+    [JsonPropertyName("socialXp")] public int SocialXp { get; set; } = 0;
+
     [JsonPropertyName("energy")] public int Energy { get; set; } = 12;
 
     [JsonPropertyName("energyMax")] public int EnergyMax { get; set; } = 12;
@@ -79,7 +83,9 @@ public static class PlayerDtoMapper
             RollCounter = model.RollCounter,
             SeenFlags = new ASObject(model.SeenFlags.ToDictionary(x => x.Key, x => (object)true)),
             Wishlist = model.Wishlist,
-            Xp = model.Xp
+            Xp = model.Xp,
+            SocialLevel = model.SocialLevel,
+            SocialXp = model.SocialXp,
         };
     }
 }

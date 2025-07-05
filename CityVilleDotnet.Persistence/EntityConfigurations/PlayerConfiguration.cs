@@ -23,6 +23,7 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
         builder.Property(x => x.EnergyMax);
         builder.Property(x => x.ExpansionsPurchased);
         builder.Property(x => x.RollCounter);
+        builder.Property(x => x.Username).HasMaxLength(32);
 
         // TODO: Implement these
         builder.Ignore(x => x.PlayerNews);

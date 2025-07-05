@@ -6,7 +6,7 @@
         "firstDay": false,
         "creationTimestamp": 0,
         "player": {
-            "uid": 333,
+            "uid": "333",
             "lastTrackingTimestamp": 0,
             "options": {
                 "sfxDisabled": false,

@@ -48,13 +48,13 @@
 		console.log("getUserInfo called");
 
 		return {
-			"zid": "@Model.CurrentPlayer.Player.Uid",
-			"uid": "@Model.CurrentPlayer.Player.Uid",
+			"zid": "@(Model.CurrentPlayer?.Player?.Uid ?? "333")",
+			"uid": "@(Model.CurrentPlayer?.Player?.Uid ?? "333")",
 			"first_name": "@Model.CurrentUser.UserName",
 			"name": "@Model.CurrentUser.UserName",
 			"sex": "M",
 			"pic_square": "blank.png",
-			"level": @Model.CurrentPlayer.Player.Level
+			"level": @(Model.CurrentPlayer?.Player?.Level ?? 1)
 		};
 	}
 
@@ -79,10 +79,10 @@
 	{
 		"serverTime": @((int)DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds),
 		"zySnid":0,
-		"zySnuid":"@Model.CurrentPlayer.Player.Uid",
-		"zyUid":"@Model.CurrentPlayer.Player.Uid",
-		"zyAuthHash":"@Model.CurrentPlayer.Player.Uid",
-		"zySig":"@Model.CurrentPlayer.Player.Uid",
+		"zySnuid":"@(Model.CurrentPlayer?.Player?.Uid ?? "333")",
+		"zyUid":"@(Model.CurrentPlayer?.Player?.Uid ?? "333")",
+		"zyAuthHash":"@(Model.CurrentPlayer?.Player?.Uid ?? "333")",
+		"zySig":"@(Model.CurrentPlayer?.Player?.Uid ?? "333")",
 		"app_url":"",
 		"sn_app_url":"",
 		"asset_url":".",

@@ -81,6 +81,8 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
             world.AddBuilding(newTree);
         }
 
+        user.Player.ExpansionsPurchased += 1;
+
         await context.SaveChangesAsync(cancellationToken);
 
         // FIXME : Return array of new trees with newId property to have a correct remapIds
