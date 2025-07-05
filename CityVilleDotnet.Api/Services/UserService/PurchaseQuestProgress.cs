@@ -16,16 +16,16 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
             .Include(x => x.Quests)
             .Include(x => x.Player)
             .Include(x => x.World)
-            .ThenInclude(x => x.Objects)
+            .ThenInclude(x => x!.Objects)
             .Include(x => x.Player)
-            .ThenInclude(x => x.Commodities)
-            .ThenInclude(x => x.Storage)
+            .ThenInclude(x => x!.Commodities)
+            .ThenInclude(x => x!.Storage)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't to find user with UserId");
 
         var questName = (string)@params[0];
         var taskIndex = (int)@params[1];
 
-        logger.LogInformation($"Quest {questName} at {taskIndex} is purchased");
+        logger.LogInformation("Quest {QuestName} at {TaskIndex} is purchased", questName, taskIndex);
 
         var currentQuest = user.Quests.FirstOrDefault(x => x.Name == questName && x.QuestType == QuestType.Active);
 

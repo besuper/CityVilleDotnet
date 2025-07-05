@@ -15,10 +15,10 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
             .Include(x => x.Quests)
             .Include(x => x.Player)
             .Include(x => x.World)
-            .ThenInclude(x => x.Objects)
+            .ThenInclude(x => x!.Objects)
             .Include(x => x.Player)
-            .ThenInclude(x => x.Commodities)
-            .ThenInclude(x => x.Storage)
+            .ThenInclude(x => x!.Commodities)
+            .ThenInclude(x => x!.Storage)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't to find user with UserId");
 
         user.CheckCompletedQuests();

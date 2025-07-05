@@ -13,12 +13,12 @@ public class SetSeenFlag(CityVilleDbContext context, ILogger<SetSeenFlag> logger
     {
         var user = await context.Set<User>()
             .Include(x => x.Player)
-            .ThenInclude(x => x.SeenFlags)
+            .ThenInclude(x => x!.SeenFlags)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't to find user with UserId");
 
         var flagName = (string)@params[0] ?? throw new Exception("Flag name can't be null");
 
-        logger.LogInformation($"Set seen flag for {flagName}");
+        logger.LogInformation("Set seen flag for {FlagName}", flagName);
 
         user.SetSeenFlag(flagName);
 

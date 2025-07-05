@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.FarmService;
 
-public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) : AmfService
+public class ExpandCity(CityVilleDbContext context) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
@@ -16,12 +16,12 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
             .AsSplitQuery()
             .Include(x => x.Player)
             .Include(x => x.World)
-            .ThenInclude(x => x.Objects)
+            .ThenInclude(x => x!.Objects)
             .Include(x => x.World)
-            .ThenInclude(x => x.MapRects)
+            .ThenInclude(x => x!.MapRects)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
-        if (user is null)
+        if (user?.Player is null)
             throw new Exception("Can't find user");
 
         var itemName = (string)@params[0]; // expand_12_12
@@ -29,6 +29,9 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
 
         if (item is null)
             throw new Exception($"Can't find item {itemName}");
+
+        if (item.Height is null || item.Width is null)
+            throw new Exception($"Item {itemName} has no height or width defined");
 
         var coordinates = (ASObject)@params[1];
         var x = (int?)coordinates["x"];

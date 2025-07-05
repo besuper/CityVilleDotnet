@@ -5,7 +5,7 @@ namespace CityVilleDotnet.Domain.GameEntities;
 
 public class UserDto
 {
-    [JsonPropertyName("userInfo")] public UserInfoDto? UserInfo { get; set; }
+    [JsonPropertyName("userInfo")] public required UserInfoDto UserInfo { get; set; }
 }
 
 public static class UserDtoMapper

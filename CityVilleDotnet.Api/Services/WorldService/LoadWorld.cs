@@ -13,17 +13,17 @@ public class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : 
     {
         var visitUserId = (string)@params[0];
 
-        logger.LogInformation($"LoadWorld for user {userId} visiting {visitUserId}");
+        logger.LogInformation("LoadWorld for user {UserId} visiting {VisitUserId}", userId, visitUserId);
 
         var userToLoad = await context.Set<User>()
             .AsNoTracking()
             .AsSplitQuery()
             .Include(x => x.World)
-            .ThenInclude(x => x.Objects)
+            .ThenInclude(x => x!.Objects)
             .Include(x => x.World)
-            .ThenInclude(x => x.MapRects)
+            .ThenInclude(x => x!.MapRects)
             .Include(x => x.Player)
-            .FirstOrDefaultAsync(x => x.Player.Uid.ToString() == visitUserId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Player!.Uid.ToString() == visitUserId, cancellationToken);
 
         if (userToLoad is null)
             throw new Exception($"Unable to find user with Player.Uid {visitUserId}");
@@ -34,18 +34,18 @@ public class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : 
                 .AsSplitQuery()
                 .Include(x => x.Quests)
                 .Include(x => x.Player)
-                .ThenInclude(x => x.Inventory)
-                .ThenInclude(x => x.Items)
+                .ThenInclude(x => x!.Inventory)
+                .ThenInclude(x => x!.Items)
                 .Include(x => x.Player)
-                .ThenInclude(x => x.Commodities)
+                .ThenInclude(x => x!.Commodities)
                 .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
-            
-            if(currentUser is null)
+
+            if (currentUser is null)
                 throw new Exception($"Unable to find current user with UserId {userId}");
-            
+
             currentUser.HandleQuestProgress("neighborVisit");
             currentUser.CheckCompletedQuests();
-            
+
             await context.SaveChangesAsync(cancellationToken);
         }
 

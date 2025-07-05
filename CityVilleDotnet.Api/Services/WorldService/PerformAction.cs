@@ -15,21 +15,21 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
         var user = await context.Set<User>()
             .AsSplitQuery()
             .Include(x => x.World)
-            .ThenInclude(x => x.Objects)
+            .ThenInclude(x => x!.Objects)
             .Include(x => x.Player)
-            .ThenInclude(x => x.Commodities)
-            .ThenInclude(x => x.Storage)
+            .ThenInclude(x => x!.Commodities)
+            .ThenInclude(x => x!.Storage)
             .Include(x => x.Player)
-            .ThenInclude(x => x.Inventory)
-            .ThenInclude(x => x.Items)
+            .ThenInclude(x => x!.Inventory)
+            .ThenInclude(x => x!.Items)
             .Include(x => x.Player)
-            .ThenInclude(x => x.SeenFlags)
+            .ThenInclude(x => x!.SeenFlags)
             .Include(x => x.Quests)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
 
         var actionType = @params[0] as string;
 
-        logger.LogInformation($"PerformAction type {actionType}");
+        logger.LogInformation("PerformAction type {ActionType}", actionType);
 
         if (actionType == "place")
         {
