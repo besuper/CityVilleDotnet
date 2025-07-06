@@ -27,7 +27,7 @@ internal sealed partial class PerformAction
         {
             if (gameItem.CommodityRequired is not null)
             {
-                if (user.Player.Commodities.Storage.Goods < gameItem.CommodityRequired)
+                if (user.Player.Goods < gameItem.CommodityRequired)
                     // TODO: Show an error ?
                     return new CityVilleResponse(9, 333);
 

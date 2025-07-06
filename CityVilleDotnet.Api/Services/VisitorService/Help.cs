@@ -48,8 +48,6 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
 
         var currentUser = await context.Set<User>()
             .Include(x => x.Player)
-            .ThenInclude(x => x!.Commodities)
-            .ThenInclude(x => x!.Storage)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (currentUser is null)

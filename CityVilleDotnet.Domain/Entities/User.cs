@@ -1,13 +1,8 @@
 ﻿using CityVilleDotnet.Common.Global;
-using CityVilleDotnet.Common.Utils;
-
-namespace CityVilleDotnet.Domain.Entities;
-
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.GameEntities;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
+
+namespace CityVilleDotnet.Domain.Entities;
 
 public class User
 {
@@ -34,15 +29,8 @@ public class User
                 Gold = 50000,
                 Energy = 12,
                 EnergyMax = 12,
-                Commodities = new Commodities()
-                {
-                    Id = Guid.NewGuid(),
-                    Storage = new Storage()
-                    {
-                        Goods = defaultValue.UserInfo.Player.Commodities.Storage.Goods
-                    }
-                },
-                Inventory = new Inventory()
+                Goods = defaultValue.UserInfo.Player.Commodities.Storage.Goods,
+                Inventory = new Inventory
                 {
                     Id = Guid.NewGuid()
                 },
@@ -77,7 +65,7 @@ public class User
                     FinishedBuilds = x.FinishedBuilds,
                     ItemName = x.ItemName,
                     PlantTime = x.PlantTime,
-                    Position = new WorldObjectPosition()
+                    Position = new WorldObjectPosition
                     {
                         X = x.Position.X,
                         Y = x.Position.Y,
@@ -160,7 +148,7 @@ public class User
 
     public int GetGoods()
     {
-        return Player.Commodities.Storage.Goods;
+        return Player.Goods;
     }
 
     public int GetCash()
@@ -339,12 +327,12 @@ public class User
 
     public void AddGoods(int amount)
     {
-        Player.Commodities.Storage.Goods += amount;
+        Player.Goods += amount;
     }
 
     public void RemoveGoods(int amount)
     {
-        Player.Commodities.Storage.Goods -= amount;
+        Player.Goods -= amount;
     }
 
     public void AddSocialXp(int amount)

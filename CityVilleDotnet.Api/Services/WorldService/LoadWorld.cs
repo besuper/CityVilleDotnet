@@ -36,8 +36,6 @@ public class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : 
                 .Include(x => x.Player)
                 .ThenInclude(x => x!.Inventory)
                 .ThenInclude(x => x!.Items)
-                .Include(x => x.Player)
-                .ThenInclude(x => x!.Commodities)
                 .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
             if (currentUser is null)

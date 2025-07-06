@@ -63,7 +63,13 @@ public static class PlayerDtoMapper
             Uid = model.Uid,
             Cash = model.Cash,
             Collections = model.Collections,
-            Commodities = model.Commodities?.ToDto(),
+            Commodities = new CommoditiesDto
+            {
+                Storage = new StorageDto
+                {
+                    Goods = model.Goods
+                }
+            },
             CompletedCollections = model.CompletedCollections,
             Energy = model.Energy,
             EnergyMax = model.EnergyMax,

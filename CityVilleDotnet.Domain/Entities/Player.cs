@@ -10,13 +10,12 @@ public class Player
     public List<object> Wishlist { get; set; } = [];
     public bool SfxDisabled { get; set; } = false;
     public bool MusicDisabled { get; set; } = false;
-    public Commodities? Commodities { get; set; }
     public Inventory? Inventory { get; set; }
     public int Gold { get; set; } = 500;
+    public int Goods { get; set; } = 100;
     public int Cash { get; set; } = 0;
     public int Level { get; set; } = 1;
     public int Xp { get; set; } = 0;
-    
     public int SocialLevel { get; set; } = 1;
     public int SocialXp { get; set; } = 0;
     public int Energy { get; set; } = 12;

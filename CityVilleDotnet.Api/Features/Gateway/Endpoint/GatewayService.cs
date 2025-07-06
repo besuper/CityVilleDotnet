@@ -42,7 +42,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
             var responseUri = $"{requestBody.Response}/onResult";
             var targetUri = "null";
 
-            logger.LogDebug($"Response URI: {responseUri}, Target URI: {targetUri}");
+            logger.LogDebug("Response URI: {ResponseUri}, Target URI: {TargetUri}", responseUri, targetUri);
 
             var content = requestBody.Content as object[];
 
@@ -74,7 +74,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
                 if (QuestSettingsManager.TaskActions.Contains(_className))
                 {
-                    logger.LogDebug($"Handling task quest action {_className}");
+                    logger.LogDebug("Handling task quest action {ClassName}", _className);
 
                     var taskParams = new object[] { _className };
                     taskParams.Append(_params);

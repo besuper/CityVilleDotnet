@@ -19,8 +19,6 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .Include(x => x.Player)
             .ThenInclude(x => x!.Inventory)
             .ThenInclude(x => x!.Items)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Commodities)
             .Include(x => x.World)
             .ThenInclude(x => x!.MapRects)
             .Include(x => x.World)

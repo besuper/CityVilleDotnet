@@ -32,7 +32,6 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
         builder.Ignore(x => x.CompletedCollections);
         builder.Ignore(x => x.Licenses);
 
-        builder.HasOne(x => x.Commodities);
         builder.HasOne(x => x.Inventory);
         builder.HasMany(x => x.SeenFlags);
     }
