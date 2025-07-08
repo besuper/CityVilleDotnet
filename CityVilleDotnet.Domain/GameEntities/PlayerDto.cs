@@ -44,10 +44,10 @@ public class PlayerDto
     [JsonPropertyName("expansionsPurchased")]
     public int ExpansionsPurchased { get; set; } = 0;
 
-    [JsonPropertyName("collections")] public Dictionary<object, object> Collections { get; set; } = new Dictionary<object, object>();
+    [JsonPropertyName("collections")] public ASObject Collections { get; set; } = new();
 
     [JsonPropertyName("completedCollections")]
-    public Dictionary<object, object> CompletedCollections { get; set; } = new Dictionary<object, object>();
+    public ASObject CompletedCollections { get; set; } = new();
 
     [JsonPropertyName("licenses")] public Dictionary<object, object> Licenses { get; set; } = new Dictionary<object, object>();
 
@@ -62,7 +62,12 @@ public static class PlayerDtoMapper
         {
             Uid = model.Uid,
             Cash = model.Cash,
-            Collections = model.Collections,
+            Collections = new ASObject(model.Collections
+                .GroupBy(item => item.Name)
+                .ToDictionary(
+                    group => group.Key, object (group) => new ASObject(
+                        group.SelectMany(x => x.Items).ToDictionary(x => x.Name, x => (object)x.Amount))
+                )),
             Commodities = new CommoditiesDto
             {
                 Storage = new StorageDto
@@ -70,7 +75,7 @@ public static class PlayerDtoMapper
                     Goods = model.Goods
                 }
             },
-            CompletedCollections = model.CompletedCollections,
+            CompletedCollections = new ASObject(model.Collections.Where(x => x.Completed > 0).ToDictionary(x => x.Name, x => (object)x.Completed)),
             Energy = model.Energy,
             EnergyMax = model.EnergyMax,
             ExpansionsPurchased = model.ExpansionsPurchased,

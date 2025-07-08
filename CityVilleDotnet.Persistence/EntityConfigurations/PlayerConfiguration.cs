@@ -28,11 +28,12 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
         // TODO: Implement these
         builder.Ignore(x => x.PlayerNews);
         builder.Ignore(x => x.Wishlist);
-        builder.Ignore(x => x.Collections);
-        builder.Ignore(x => x.CompletedCollections);
         builder.Ignore(x => x.Licenses);
 
         builder.HasOne(x => x.Inventory);
         builder.HasMany(x => x.SeenFlags);
+        builder.HasMany(x => x.Collections)
+            .WithOne()
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
