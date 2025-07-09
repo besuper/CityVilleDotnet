@@ -27,6 +27,7 @@ internal sealed partial class PerformAction
         }
 
         // Collect modifiers from construction stage
+        // FIXME: Use logic from "ConstructionSite" (only XP + stack secure rands)
         user.CollectDoobersRewards(obj.ItemName);
 
         var newId = world.GetAvailableBuildingId();

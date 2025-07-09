@@ -23,7 +23,8 @@ internal sealed partial class PerformAction
 
         obj.AddConstructionStage();
         
-        user.CollectDoobersRewards(obj.ItemName);
+        // FIXME: Don't do this
+        //user.CollectDoobersRewards(obj.ItemName);
 
         await context.SaveChangesAsync(cancellationToken);
     }

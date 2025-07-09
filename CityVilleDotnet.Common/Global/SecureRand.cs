@@ -19,10 +19,9 @@ public static class SecureRand
     }
 
     // From SecureRand::rand
-    public static int GenerateRand(int min, int max, int rollCounter)
+    public static int GenerateRand(int min, int max, int rollCounter, string playerId)
     {
-        // FIXME: Use current user id
-        var stringToHash = HardCodedSecret + "::" + _handshake + "::" + 333 + "::" + rollCounter;
+        var stringToHash = HardCodedSecret + "::" + _handshake + "::" + playerId + "::" + rollCounter;
 
         var range = max - min + 1;
 

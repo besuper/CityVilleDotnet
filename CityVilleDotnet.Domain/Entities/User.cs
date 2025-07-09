@@ -356,7 +356,11 @@ public class User
         foreach (var itemModifier in gameItem.RandomModifiers.Modifiers)
         {
             Player.RollCounter += 1;
-            var secureRand = SecureRand.GenerateRand(0, 99, Player.RollCounter);
+
+            var debugName = gameItem.Name;
+            var secureRand = SecureRand.GenerateRand(0, 99, Player.RollCounter, Player.Uid);
+            
+            Console.WriteLine($"SecureRand for {debugName}: rollCounter={Player.RollCounter} => {secureRand}");
 
             secureRands.Add(secureRand);
 
@@ -371,63 +375,63 @@ public class User
 
             foreach (var roll in modifierTable.Rolls)
             {
-                var percent = roll.Percent + previousRollPercent;
-
-                Console.WriteLine($"Percent {percent}");
-
-                previousRollPercent = roll.Percent;
-
-                if (secureRand < percent && !found)
+                if (roll.Percent > 0)
                 {
-                    Console.WriteLine("FOUND WITH PERCENT : " + percent);
-                    Console.WriteLine("SECURE RAND : " + secureRand);
+                    var currentRollPercent = roll.Percent + previousRollPercent;
 
-                    foreach (var (key, value) in roll.Rewards)
+                    Console.WriteLine($"Percent {currentRollPercent}");
+
+                    if (secureRand < currentRollPercent && !found)
                     {
-                        Console.WriteLine("TYPE : " + key);
+                        Console.WriteLine("FOUND WITH PERCENT : " + currentRollPercent);
+                        Console.WriteLine("SECURE RAND : " + secureRand);
 
-                        switch (key)
+                        foreach (var (key, value) in roll.Rewards)
                         {
-                            case "coin":
-                                // FIXME: Change coins to double ? There are doubles in amount settings
-                                // Coins can be double if there are any bonus items 
-                                Console.WriteLine(value.Sum(x => x.Amount));
-                                AddGold((int)value.Sum(x => x.Amount));
-                                break;
-                            case "xp":
-                                // TODO: XP can be double
-                                AddXp((int)value.Sum(x => x.Amount));
-                                Console.WriteLine(value.Sum(x => x.Amount));
-                                break;
-                            case "energy":
-                                AddEnergy((int)value.Sum(x => x.Amount));
-                                break;
-                            case "collectable":
-                                Console.WriteLine($"Found collectable {string.Join(", ", value.Select(x => x.Name).ToList())}");
-                                foreach (var element in value)
-                                {
-                                    var collectionName = GameSettingsManager.Instance.GetCollectionByItemName(element.Name);
-                                    
-                                    if (collectionName is not null)
+                            Console.WriteLine("TYPE : " + key);
+
+                            switch (key)
+                            {
+                                case "coin":
+                                    Console.WriteLine(value.Sum(x => x.Amount));
+                                    AddGold((int)value.Sum(x => x.Amount));
+                                    break;
+                                case "xp":
+                                    AddXp((int)value.Sum(x => x.Amount));
+                                    Console.WriteLine(value.Sum(x => x.Amount));
+                                    break;
+                                case "energy":
+                                    AddEnergy((int)value.Sum(x => x.Amount));
+                                    break;
+                                case "collectable":
+                                    Console.WriteLine($"Found collectable {string.Join(", ", value.Select(x => x.Name).ToList())}");
+                                    foreach (var element in value)
                                     {
-                                        Player.AddItemToCollection(collectionName, element.Name);
-                                        Console.WriteLine($"Added {element.Name} to collection {collectionName}");
+                                        var collectionName = GameSettingsManager.Instance.GetCollectionByItemName(element.Name);
+
+                                        if (collectionName is not null)
+                                        {
+                                            Player.AddItemToCollection(collectionName, element.Name);
+                                            Console.WriteLine($"Added {element.Name} to collection {collectionName}");
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"Collection for item {element.Name} not found");
+                                        }
                                     }
-                                    else
-                                    {
-                                        Console.WriteLine($"Collection for item {element.Name} not found");
-                                    }
-                                }
-                                
-                                break;
-                            case "food":
-                                AddGoods((int)value.Sum(x => x.Amount));
-                                Console.WriteLine((int)value.Sum(x => x.Amount));
-                                break;
+
+                                    break;
+                                case "food":
+                                    AddGoods((int)value.Sum(x => x.Amount));
+                                    Console.WriteLine((int)value.Sum(x => x.Amount));
+                                    break;
+                            }
                         }
 
                         found = true;
                     }
+
+                    previousRollPercent = currentRollPercent;
                 }
             }
         }
