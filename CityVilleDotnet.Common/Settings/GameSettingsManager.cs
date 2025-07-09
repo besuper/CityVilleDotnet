@@ -17,6 +17,34 @@ public class GameSettings
     [XmlElement("farming")] public FarmingSettings Farming { get; set; }
 
     [XmlElement("randomModifierTables")] public RandomModifierTables Modifiers { get; set; }
+    [XmlElement("collections")] public CollectionContainer Collections { get; set; }
+}
+
+[Serializable]
+public class CollectionContainer
+{
+    [XmlElement("collection")] public List<CollectionSetting> Collections { get; set; }
+}
+
+[Serializable]
+[XmlRoot("collection")]
+public class CollectionSetting
+{
+    [XmlAttribute("name")] public required string Name { get; set; }
+    [XmlElement("collectables")] public required CollectableContainer Collectables { get; set; }
+}
+
+[Serializable]
+public class CollectableContainer
+{
+    [XmlElement("collectable")] public List<Collectable> Collectables { get; set; }
+}
+
+[Serializable]
+[XmlRoot("collectable")]
+public class Collectable
+{
+    [XmlAttribute("name")] public required string Name { get; set; }
 }
 
 [Serializable]
@@ -198,6 +226,7 @@ public class GameSettingsManager
     private Dictionary<string, object> _settings;
     private List<LevelItem> _levels = [];
     private List<ReputationItem> _reputationLevels = [];
+    private List<CollectionSetting> _collections = [];
     private bool _isInitialized;
 
     private GameSettingsManager()
@@ -260,12 +289,14 @@ public class GameSettingsManager
             _reputationLevels = gameSettings.Reputation.Levels;
 
             _settings = gameSettings.Farming.ToDictionary();
+            _collections = gameSettings.Collections.Collections;
         }
 
-        logger.LogInformation($"Loaded gameSettings.xml with {_items.Count} items");
-        logger.LogInformation($"Loaded {_levels.Count} levels");
-        logger.LogInformation($"Loaded {_reputationLevels.Count} social levels");
-        logger.LogInformation($"Loaded {_randomModifiers.Count} random modifiers");
+        logger.LogInformation("Loaded gameSettings.xml with {ItemsCount} items", _items.Count);
+        logger.LogInformation("Loaded {LevelsCount} levels", _levels.Count);
+        logger.LogInformation("Loaded {ReputationLevelsCount} social levels", _reputationLevels.Count);
+        logger.LogInformation("Loaded {RandomModifiersCount} random modifiers", _randomModifiers.Count);
+        logger.LogInformation("Loaded {CollectionsCount} collections", _collections.Count);
 
         _isInitialized = true;
     }
@@ -299,5 +330,21 @@ public class GameSettingsManager
     public int GetInt(string name)
     {
         return (int)_settings[name];
+    }
+
+    public string? GetCollectionByItemName(string itemName)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        foreach (var collection in _collections)
+        {
+            if (collection.Collectables.Collectables.Any(c => c.Name == itemName))
+            {
+                return collection.Name;
+            }
+        }
+
+        return null;
     }
 }

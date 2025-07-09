@@ -404,6 +404,21 @@ public class User
                                 break;
                             case "collectable":
                                 Console.WriteLine($"Found collectable {string.Join(", ", value.Select(x => x.Name).ToList())}");
+                                foreach (var element in value)
+                                {
+                                    var collectionName = GameSettingsManager.Instance.GetCollectionByItemName(element.Name);
+                                    
+                                    if (collectionName is not null)
+                                    {
+                                        Player.AddItemToCollection(collectionName, element.Name);
+                                        Console.WriteLine($"Added {element.Name} to collection {collectionName}");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Collection for item {element.Name} not found");
+                                    }
+                                }
+                                
                                 break;
                             case "food":
                                 AddGoods((int)value.Sum(x => x.Amount));
