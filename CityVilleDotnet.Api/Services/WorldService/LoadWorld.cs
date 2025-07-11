@@ -34,8 +34,7 @@ public class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : 
                 .AsSplitQuery()
                 .Include(x => x.Quests)
                 .Include(x => x.Player)
-                .ThenInclude(x => x!.Inventory)
-                .ThenInclude(x => x!.Items)
+                .ThenInclude(x => x!.InventoryItems)
                 .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
             if (currentUser is null)

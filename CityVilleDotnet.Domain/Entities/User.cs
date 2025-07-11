@@ -30,10 +30,6 @@ public class User
                 Energy = 12,
                 EnergyMax = 12,
                 Goods = defaultValue.UserInfo.Player.Commodities.Storage.Goods,
-                Inventory = new Inventory
-                {
-                    Id = Guid.NewGuid()
-                },
                 Username = user.UserName
             },
             World = new World()
@@ -442,11 +438,6 @@ public class User
     public List<GameFriendData> GetFriendsData()
     {
         return Friends.Select(friend => friend.ToFriendData()).ToList();
-    }
-
-    public Inventory? GetInventory()
-    {
-        return Player?.Inventory;
     }
 
     public void SetSeenFlag(string flag)

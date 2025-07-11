@@ -80,7 +80,10 @@ public static class PlayerDtoMapper
             EnergyMax = model.EnergyMax,
             ExpansionsPurchased = model.ExpansionsPurchased,
             Gold = model.Gold,
-            Inventory = model.Inventory?.ToDto(),
+            Inventory = new InventoryDto {
+                Count = model.CountIventoryItems(),
+                Items = new ASObject(model.InventoryItems.ToDictionary(x => x.Name, x => (object)x.Amount))
+            },
             LastTrackingTimestamp = model.LastTrackingTimestamp,
             Level = model.Level,
             Licenses = model.Licenses,

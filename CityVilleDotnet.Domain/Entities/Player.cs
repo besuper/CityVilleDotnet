@@ -10,7 +10,7 @@ public class Player
     public List<object> Wishlist { get; set; } = [];
     public bool SfxDisabled { get; set; } = false;
     public bool MusicDisabled { get; set; } = false;
-    public Inventory? Inventory { get; set; }
+    public List<InventoryItem> InventoryItems { get; set; } = [];
     public int Gold { get; set; } = 500;
     public int Goods { get; set; } = 100;
     public int Cash { get; set; } = 0;
@@ -51,6 +51,47 @@ public class Player
             throw new Exception($"Collection not found: {collectionName}");
 
         return collection.RemoveItem(itemName, amount);
+    }
+    
+    public void AddItem(string itemName, int amount = 1)
+    {
+        var item = InventoryItems.FirstOrDefault(x => x.Name == itemName);
+
+        if (item is null)
+            InventoryItems.Add(new InventoryItem(itemName, amount));
+        else
+            item.AddAmount(amount);
+    }
+
+    public InventoryItem? RemoveItem(string itemName, int amount = 1)
+    {
+        var item = InventoryItems.FirstOrDefault(x => x.Name == itemName);
+
+        if (item is null)
+            throw new Exception($"Item not found in player inventory {itemName}");
+
+        if (item.Amount < amount)
+            throw new Exception("Not enough items");
+
+        item.RemoveAmount(amount);
+
+        if (item.Amount <= 0)
+        {
+            InventoryItems.Remove(item);
+            return item;
+        }
+
+        return null;
+    }
+
+    public int CountIventoryItems()
+    {
+        return InventoryItems.Sum(x => x.Amount);
+    }
+
+    public bool HasItem(string itemName)
+    {
+        return InventoryItems.Any(x => x.Name == itemName && x.Amount > 0);
     }
     
 }

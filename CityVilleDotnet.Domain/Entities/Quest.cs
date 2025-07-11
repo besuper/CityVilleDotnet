@@ -83,9 +83,7 @@ public class Quest
 
             if (reward.Item is not null)
             {
-                var inventory = user.GetInventory();
-
-                inventory?.AddItem(reward.Item);
+                user.Player?.AddItem(reward.Item);
             }
 
             if (reward.ItemUnlock is not null)

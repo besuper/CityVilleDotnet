@@ -59,14 +59,14 @@ internal sealed partial class PerformAction
 
         world.AddBuilding(obj);
 
-        var userInventory = user.GetInventory();
+        var player = user.Player;
 
-        if (userInventory is null)
-            throw new Exception("User inventory can't be null");
+        if (player is null)
+            throw new Exception("Player can't be null");
 
-        if (userInventory.HasItem(itemName))
+        if (player.HasItem(itemName))
         {
-            var removedItem = userInventory.RemoveItem(itemName);
+            var removedItem = player.RemoveItem(itemName);
 
             if (removedItem is not null)
                 context.Set<InventoryItem>().Remove(removedItem);

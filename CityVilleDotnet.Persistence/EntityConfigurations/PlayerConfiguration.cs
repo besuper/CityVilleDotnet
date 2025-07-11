@@ -30,7 +30,7 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
         builder.Ignore(x => x.Wishlist);
         builder.Ignore(x => x.Licenses);
 
-        builder.HasOne(x => x.Inventory);
+        builder.HasMany(x => x.InventoryItems).WithOne();
         builder.HasMany(x => x.SeenFlags);
         builder.HasMany(x => x.Collections)
             .WithOne()
