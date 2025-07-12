@@ -24,6 +24,6 @@ public class SetCityName(CityVilleDbContext context) : AmfService
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse(333, response);
+        return new CityVilleResponse().Data(response);
     }
 }

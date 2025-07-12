@@ -27,6 +27,6 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse(0, 333, rep);
+        return new CityVilleResponse().MetaData(rep);
     }
 }

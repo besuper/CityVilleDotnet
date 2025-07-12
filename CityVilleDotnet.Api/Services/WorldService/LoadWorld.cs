@@ -51,6 +51,6 @@ public class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : 
         var response = (ASObject)AmfConverter.Convert(dtoUser.UserInfo);
         response!["franchises"] = new List<object>();
 
-        return new CityVilleResponse(333, response);
+        return new CityVilleResponse().Data(response);
     }
 }

@@ -141,6 +141,6 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
     public static ASObject CreateEmptyResponse()
     {
-        return new CityVilleResponse(0, 333);
+        return new CityVilleResponse();
     }
 }

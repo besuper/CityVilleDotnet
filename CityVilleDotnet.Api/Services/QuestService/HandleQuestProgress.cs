@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,6 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService
             ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active))
         };
 
-        return new CityVilleResponse(0, 333, rep);
+        return new CityVilleResponse().MetaData(rep);
     }
 }

@@ -17,6 +17,6 @@ public class InitialVisit(CityVilleDbContext context, ILogger<InitialVisit> logg
             ["energyLeft"] = 4,
         };
 
-        return new CityVilleResponse(333, AmfConverter.Convert(response));
+        return new CityVilleResponse().Data(AmfConverter.Convert(response));
     }
 }

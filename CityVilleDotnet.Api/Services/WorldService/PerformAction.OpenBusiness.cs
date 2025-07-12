@@ -1,6 +1,7 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using FluorineFx;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
@@ -29,7 +30,7 @@ internal sealed partial class PerformAction
             {
                 if (user.Player.Goods < gameItem.CommodityRequired)
                     // TODO: Show an error ?
-                    return new CityVilleResponse(9, 333);
+                    return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
 
                 user.RemoveGoods(gameItem.CommodityRequired.Value);
 

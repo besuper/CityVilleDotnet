@@ -14,9 +14,7 @@ internal sealed class RequestManualQuest(ILogger<RequestManualQuest> logger) : A
         var questName = @params[0].ToString();
 
         logger.LogDebug("Started new quest {QuestName}", questName);
-
-        var response = new CityVilleResponse(333, new ASObject { { "questStarted", 1 } });
-
-        return response;
+        
+        return new CityVilleResponse().Data(new ASObject { { "questStarted", 1 } });
     }
 }

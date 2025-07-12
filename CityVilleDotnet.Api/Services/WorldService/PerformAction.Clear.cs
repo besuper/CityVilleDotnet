@@ -12,7 +12,7 @@ internal sealed partial class PerformAction
 
         foreach (var item in building)
         {
-            logger.LogInformation($"{item.Key} = {item.Value}");
+            logger.LogDebug("{ItemKey} = {ItemValue}", item.Key, item.Value);
         }
 
         var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
@@ -31,7 +31,7 @@ internal sealed partial class PerformAction
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse(333, new ASObject
+        return new CityVilleResponse().Data(new ASObject
         {
             ["secureRands"] = AmfConverter.Convert(secureRands)
         });

@@ -37,6 +37,6 @@ internal sealed partial class PerformAction
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse(0, 333);
+        return new CityVilleResponse();
     }
 }

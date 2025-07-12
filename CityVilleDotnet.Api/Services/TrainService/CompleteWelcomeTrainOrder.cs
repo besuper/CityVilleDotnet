@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -43,9 +44,7 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
         {
             ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active))
         };
-
-        var response = new CityVilleResponse(0, 333, quests);
-
-        return response;
+        
+        return new CityVilleResponse().MetaData(quests);
     }
 }

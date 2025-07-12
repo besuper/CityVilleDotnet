@@ -31,7 +31,7 @@ internal sealed partial class PerformAction
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse(333, new ASObject
+        return new CityVilleResponse().Data(new ASObject
         {
             ["retCoinYield"] = coinYield,
             //response["doobers"] = AmfConverter.Convert(new List<int>());

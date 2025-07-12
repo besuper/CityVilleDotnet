@@ -13,7 +13,7 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
     public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
-            .Include(x => x.Friends.Where(x => x.Status == FriendshipStatus.Accepted))
+            .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
             .ThenInclude(x => x.FriendUser)
             .ThenInclude(x => x.Player)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
@@ -35,6 +35,6 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
             ["neighbors"] = AmfConverter.Convert(neighborList)
         };
 
-        return new CityVilleResponse(333, response);
+        return new CityVilleResponse().Data(response);
     }
 }

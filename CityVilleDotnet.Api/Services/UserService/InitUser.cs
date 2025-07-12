@@ -56,9 +56,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
 
         if (!user.Player.IsNew)
             quests["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active));
-
-        var response = new CityVilleResponse(0, 333, quests, userObj);
-
-        return response;
+        
+        return new CityVilleResponse().Data(userObj).MetaData(quests);
     }
 }
