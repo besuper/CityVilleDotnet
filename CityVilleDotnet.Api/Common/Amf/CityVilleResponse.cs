@@ -35,7 +35,7 @@ public class CityVilleResponse
             ["errorType"] = ErrorType,
             ["metadata"] = Metadata,
             ["data"] = GameData,
-            ["serverTime"] = ServerUtils.GetCurrentTime()
+            ["serverTime"] = DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds
         };
     }
 
