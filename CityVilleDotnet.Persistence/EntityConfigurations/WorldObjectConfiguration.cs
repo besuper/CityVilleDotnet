@@ -12,6 +12,13 @@ public class WorldObjectConfiguration : IEntityTypeConfiguration<WorldObject>
         builder.Property(x => x.Id)
             .ValueGeneratedNever();
 
+        builder.Property(x => x.ItemName).HasMaxLength(64);
+        builder.Property(x => x.ClassName).HasMaxLength(64);
+        builder.Property(x => x.TargetBuildingClass).IsRequired(false).HasMaxLength(64);
+        builder.Property(x => x.TargetBuildingName).IsRequired(false).HasMaxLength(64);
+        builder.Property(x => x.State).HasMaxLength(32);
+        builder.Property(x => x.ContractName).IsRequired(false).HasMaxLength(64);
+
         builder.OwnsOne(x => x.Position);
     }
 }

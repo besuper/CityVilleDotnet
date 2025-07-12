@@ -24,7 +24,7 @@ internal sealed partial class PerformAction
         var buildTime = building.GetValueOrDefault("buildTime");
         var plantTime = building.GetValueOrDefault("plantTime");
         var world = user.GetWorld();
-        
+
         var newId = world.GetAvailableBuildingId();
 
         logger.LogInformation("Using new ID {NewId}", newId);
@@ -37,8 +37,8 @@ internal sealed partial class PerformAction
             (int)building["tempId"],
             (string)building["state"],
             (int)building["direction"],
-            buildTime == null ? 0 : (double)buildTime,
-            plantTime == null ? 0 : (double)plantTime,
+            (double?)buildTime,
+            (double?)plantTime,
             new WorldObjectPosition()
             {
                 X = (int)position["x"],

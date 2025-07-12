@@ -1,10 +1,11 @@
-﻿using CityVilleDotnet.Common.Utils;
+﻿using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Utils;
 
 namespace CityVilleDotnet.Domain.Entities;
 
 public class WorldObject
 {
-    public WorldObject(string itemName, string className, string? contractName, bool deleted, int tempId, string state, int direction, double buildTime, double plantTime, WorldObjectPosition position, int worldFlatId)
+    public WorldObject(string itemName, string className, string? contractName, bool deleted, int tempId, string state, int direction, double? buildTime, double? plantTime, WorldObjectPosition position, int worldFlatId)
     {
         Id = Guid.NewGuid();
         ItemName = itemName;
@@ -54,7 +55,7 @@ public class WorldObject
         TargetBuildingClass = ClassName;
 
         ItemName = itemName;
-        ClassName = "ConstructionSite";
+        ClassName = nameof(BuildingClassType.ConstructionSite);
     }
 
     public void AddConstructionStage()
@@ -87,5 +88,45 @@ public class WorldObject
     public void SetReadyToHarvest()
     {
         State = "grown";
+    }
+
+    public int Harvest()
+    {
+        var coinYield = 0;
+
+        if (ClassName == nameof(BuildingClassType.Plot))
+        {
+            if (ContractName is null)
+                throw new Exception("Contract name is null, can't harvest");
+            
+            var gameItem = GameSettingsManager.Instance.GetItem(ContractName);
+
+            if (gameItem is not null)
+                coinYield = gameItem.CoinYield ?? 0;
+
+            State = "plowed";
+        }
+        else
+        {
+            var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
+
+            if (gameItem is not null)
+                coinYield = gameItem.CoinYield ?? 0;
+        }
+
+        // Update state to planted if it was grown
+        if (HasGrown()) SetReadyToHarvest();
+
+        // Close business
+        if (State == "open") State = "closed";
+
+        // If ready to harvest, update state to planted
+        if (State == "grown")
+        {
+            State = "planted";
+            PlantTime = ServerUtils.GetCurrentTime();
+        }
+
+        return coinYield;
     }
 }

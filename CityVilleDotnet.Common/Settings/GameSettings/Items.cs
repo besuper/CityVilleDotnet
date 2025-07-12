@@ -35,6 +35,7 @@ public class GameItem
     [XmlElement("construction")] public string? Construction { get; set; }
 
     [XmlElement("commodityReq")] public int? CommodityRequired { get; set; }
+    [XmlElement("numberOfStages")] public int? NumberOfStages { get; set; }
 
     [XmlElement("randomModifiers")] public RandomModifiers? RandomModifiers { get; set; }
 }

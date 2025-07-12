@@ -9,7 +9,7 @@ internal sealed partial class PerformAction
 {
     private async Task<CityVilleResponse> PerformFinish(User user, object[] @params, Guid userId, CancellationToken cancellationToken)
     {
-        var building = @params[1] as ASObject ?? throw new Exception($"Building can't be null");
+        var building = @params[1] as ASObject ?? throw new Exception("Building can't be null");
 
         foreach (var item in building)
         {
@@ -23,12 +23,8 @@ internal sealed partial class PerformAction
         var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]) ?? throw new Exception($"Can't find building with ID {itemId}");
 
         if (obj.Builds is null)
-        {
             throw new Exception($"Can't find `builds` {obj}");
-        }
 
-        // Collect modifiers from construction stage
-        // FIXME: Use logic from "ConstructionSite" (only XP + stack secure rands)
         user.CollectDoobersRewards(obj.ItemName);
 
         obj.FinishConstruction();

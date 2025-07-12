@@ -339,7 +339,7 @@ public class User
     }
 
     // From Player::processRandomModifiersFromConfig
-    public List<int> CollectDoobersRewards(string itemName)
+    public List<int> CollectDoobersRewards(string itemName, List<string>? allowedDooberTypes = null)
     {
         if (Player is null) return [];
 
@@ -384,6 +384,13 @@ public class User
 
                         foreach (var (key, value) in roll.Rewards)
                         {
+                            // FIXME: Implement a better skip
+                            if (allowedDooberTypes is not null && !allowedDooberTypes.Contains(key))
+                            {
+                                Console.WriteLine($"Skipping doober type {key} as it is not allowed");
+                                continue;
+                            }
+                            
                             Console.WriteLine("TYPE : " + key);
 
                             switch (key)

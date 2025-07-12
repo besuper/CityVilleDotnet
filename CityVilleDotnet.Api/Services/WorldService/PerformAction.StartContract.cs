@@ -11,7 +11,7 @@ internal sealed partial class PerformAction
 
         foreach (var item in building)
         {
-            logger.LogInformation($"{item.Key} = {item.Value}");
+            logger.LogDebug("{ItemKey} = {ItemValue}", item.Key, item.Value);
         }
 
         var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
@@ -19,14 +19,10 @@ internal sealed partial class PerformAction
         var plantTime = building.GetValueOrDefault("plantTime");
         var state = (string)building["state"];
 
-        var world = user.GetWorld();
-
-        var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]);
+        var obj = user.World?.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]);
 
         if (obj is null)
-        {
-            throw new Exception($"Can't find building with coords");
-        }
+            throw new Exception("Can't find building with coords");
 
         obj.ContractName = contractName;
         obj.PlantTime = plantTime is null ? 0 : (double)plantTime;

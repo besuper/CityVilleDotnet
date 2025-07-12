@@ -1,4 +1,5 @@
-﻿using CityVilleDotnet.Domain.Entities;
+﻿using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Domain.Entities;
 using FluorineFx;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
@@ -11,7 +12,7 @@ internal sealed partial class PerformAction
 
         foreach (var item in building)
         {
-            logger.LogInformation($"{item.Key} = {item.Value}");
+            logger.LogDebug("{ItemKey} = {ItemValue}", item.Key, item.Value);
         }
 
         var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
@@ -20,11 +21,21 @@ internal sealed partial class PerformAction
 
         if (obj.Builds is null)
             throw new Exception($"Can't find `builds`");
+        
+        var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
+        
+        if(gameItem is null)
+            throw new Exception($"Can't find game item for {obj.ItemName}");
+        
+        if(gameItem.NumberOfStages is null)
+            throw new Exception($"Game item {obj.ItemName} doesn't have number of stages defined");
 
         obj.AddConstructionStage();
-        
-        // FIXME: Don't do this
-        //user.CollectDoobersRewards(obj.ItemName);
+
+        if (obj.Stage != gameItem.NumberOfStages)
+        {
+            user.CollectDoobersRewards(obj.ItemName, ["xp"]);
+        }
 
         await context.SaveChangesAsync(cancellationToken);
     }
