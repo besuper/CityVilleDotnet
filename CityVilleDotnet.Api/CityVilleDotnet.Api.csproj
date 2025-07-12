@@ -33,4 +33,13 @@
 	  <ProjectReference Include="..\CityVilleDotnet.Persistence\CityVilleDotnet.Persistence.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Compile Update="Pages\Account\Login.cshtml.model.cs">
+	    <DependentUpon>Login.cshtml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\Account\Register.cshtml.model.cs">
+	    <DependentUpon>Register.cshtml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
 </Project>

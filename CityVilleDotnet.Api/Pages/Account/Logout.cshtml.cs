@@ -7,19 +7,10 @@ namespace CityVilleDotnet.Api.Pages.Account;
 
 public class LogoutModel(SignInManager<ApplicationUser> signInManager) : PageModel
 {
-    private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
-
-    public async Task<IActionResult> OnPost(string returnUrl = null)
+    public async Task<IActionResult> OnGet()
     {
-        await _signInManager.SignOutAsync();
-
-        if (returnUrl != null)
-        {
-            return LocalRedirect(returnUrl);
-        }
-        else
-        {
-            return RedirectToPage("/Game");
-        }
+        await signInManager.SignOutAsync();
+        
+        return LocalRedirect("~/Account/Login");
     }
 }

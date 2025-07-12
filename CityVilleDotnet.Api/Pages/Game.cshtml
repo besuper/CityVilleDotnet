@@ -1,4 +1,8 @@
 ﻿@page
+@{
+	Layout = "Shared/_GameLayout";
+}
+
 @model CityVilleDotnet.Api.Pages.GameModel
 
 @section Header {
@@ -25,7 +29,7 @@
 			</div>
 
 			<div class="tab">
-				<a asp-page="/Logout" title="Logout">Disconnect</a>
+				<a asp-page="/Account/Logout" title="Logout">Disconnect</a>
 			</div>
 		</div>
 	</div>
