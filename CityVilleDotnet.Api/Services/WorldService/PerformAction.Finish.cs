@@ -1,4 +1,5 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Domain.Entities;
 using FluorineFx;
 
@@ -12,7 +13,7 @@ internal sealed partial class PerformAction
 
         foreach (var item in building)
         {
-            logger.LogInformation($"{item.Key} = {item.Value}");
+            logger.LogInformation("{ItemKey} = {ItemValue}", item.Key, item.Value);
         }
 
         var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
@@ -23,18 +24,12 @@ internal sealed partial class PerformAction
 
         if (obj.Builds is null)
         {
-            throw new Exception($"Can't find `builds`");
+            throw new Exception($"Can't find `builds` {obj}");
         }
 
         // Collect modifiers from construction stage
         // FIXME: Use logic from "ConstructionSite" (only XP + stack secure rands)
         user.CollectDoobersRewards(obj.ItemName);
-
-        var newId = world.GetAvailableBuildingId();
-
-        logger.LogInformation($"Using new ID {newId}");
-
-        obj.WorldFlatId = newId;
 
         obj.FinishConstruction();
 
@@ -46,9 +41,6 @@ internal sealed partial class PerformAction
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse(333, new ASObject
-        {
-            ["id"] = newId
-        });
+        return new CityVilleResponse(0, 333);
     }
 }

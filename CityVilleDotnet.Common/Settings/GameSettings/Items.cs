@@ -32,7 +32,7 @@ public class GameItem
 
     [XmlElement("goodsYield")] public int? GoodsYield { get; set; }
 
-    [XmlElement("construction")] public required string Construction { get; set; }
+    [XmlElement("construction")] public string? Construction { get; set; }
 
     [XmlElement("commodityReq")] public int? CommodityRequired { get; set; }
 

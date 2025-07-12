@@ -12,7 +12,7 @@ internal sealed partial class PerformAction
 
         foreach (var item in building)
         {
-            logger.LogInformation($"{item.Key} = {item.Value}");
+            logger.LogInformation("{ItemKey} = {ItemValue}", item.Key, item.Value);
         }
 
         // TODO: Implement components
@@ -24,6 +24,10 @@ internal sealed partial class PerformAction
         var buildTime = building.GetValueOrDefault("buildTime");
         var plantTime = building.GetValueOrDefault("plantTime");
         var world = user.GetWorld();
+        
+        var newId = world.GetAvailableBuildingId();
+
+        logger.LogInformation("Using new ID {NewId}", newId);
 
         var obj = new WorldObject(
             itemName,
@@ -39,12 +43,12 @@ internal sealed partial class PerformAction
             {
                 X = (int)position["x"],
                 Y = (int)position["y"],
-                Z = (int)position["z"]
+                Z = (int)position["z"] // TODO: Remove Z coordinate, seems not used in CityVille
             },
-            (int)building["id"]
+            newId
         );
 
-        logger.LogInformation($"x: {obj.Position.X} y: {obj.Position.Y} z: {obj.Position.Z}");
+        logger.LogInformation("x: {PositionX} y: {PositionY} z: {PositionZ}", obj.Position.X, obj.Position.Y, obj.Position.Z);
 
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
 
@@ -54,7 +58,9 @@ internal sealed partial class PerformAction
                 user.RemoveCoin(gameItem.Cost.Value);
 
             if (gameItem.Construction is not null)
+            {
                 obj.SetAsConstructionSite(gameItem.Construction);
+            }
         }
 
         world.AddBuilding(obj);
@@ -78,7 +84,7 @@ internal sealed partial class PerformAction
         user.HandleQuestProgress();
         user.HandleQuestProgress(itemName: itemName);
         user.HandleQuestProgress(itemName: className);
-        
+
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
