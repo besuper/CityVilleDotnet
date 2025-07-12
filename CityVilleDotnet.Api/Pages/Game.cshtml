@@ -11,21 +11,21 @@
 	<div class="tabs">
 		<div class="tab-content">
 			<div class="tab selected">
-				<a href="/Game" title="Game">Game</a>
+				<a asp-page="/Game" title="Game">Game</a>
 			</div>
 
 			<div class="tab">
-				<a href="/Friends/List" title="Friends">Friends</a>
+				<a asp-page="/Friends/List" title="Friends">Friends</a>
 			</div>
 		</div>
 
 		<div class="tab-content">
 			<div class="tab">
-				<a href="#" title="Username">@Model.CurrentUser.UserName</a>
+				<a href="#" title="Username">@Model.UserName</a>
 			</div>
 
 			<div class="tab">
-				<a href="#" title="/logout">Disconnect</a>
+				<a asp-page="/Logout" title="Logout">Disconnect</a>
 			</div>
 		</div>
 	</div>
@@ -33,31 +33,58 @@
 	<div style="width:760px;height:594px;">
 		<div id="flashOuterContainer">
 			<div id="flashContent">
-				<span class="loadingGame">Loading Game...</span><br />
-				<span class="upgradeFlash">If your game does not load within 10 seconds, you may need to upgrade your version of Flash. Please do so by clicking <a href="https://www.basilisk-browser.org/download.html">here</a></span>
+				<span class="loadingGame">Loading Game...</span><br/>
+				<span class="upgradeFlash">If your game does not load within 10 seconds, you may need to upgrade your version of Flash. Please do so by clicking <a
+						href="https://www.basilisk-browser.org/download.html">here</a></span>
 			</div>
 		</div>
 	</div>
 </div>
 
 <script>
-	var g_preBlurbs = ["Fluffing Clouds","Installing Parks","Opening Schools","Commencing Commerce","Building Playgrounds","Redirecting Traffic","Sweeping Sidewalks","Skip Intro","Build the City of Your Dreams!"];
-	var g_experiments = [{"name":"cv_example_test","variant":false},{"name":"cv_market_auto_close","variant":"1"},{"name":"cv_gift_flash_fork","variant":1},{"name":"city_delete_requests","variant":1},{"name":"cv_invite_friends_mfs","variant":false},{"name":"cv_invite_friends_mfs_height","variant":3},{"name":"cv_crew_popup_mfs","variant":false},{"name":"cv_email_farmville_friends","variant":false},{"name":"cv_increment_dashboard_count_async","variant":false},{"name":"cv_d2_inviteneighbor_prompt","variant":false},{"name":"cv_ftv_with_marketing","variant":false},{"name":"cv_doober_tracking","variant":false},{"name":"cv_show_share","variant":false},{"name":"cv_city_cash_seld_id","variant":3},{"name":"cv_addfriend_lhs","variant":"1"},{"name":"cv_coin_package_conversion_test","variant":false},{"name":"cv_nps_survey","variant":false},{"name":"cv_survey_overlay_test","variant":false},{"name":"cv_recommendfriendsNonCity","variant":false},{"name":"cv_quest_manager","variant":false}];
+	var g_preBlurbs = ["Fluffing Clouds", "Installing Parks", "Opening Schools", "Commencing Commerce", "Building Playgrounds", "Redirecting Traffic", "Sweeping Sidewalks", "Skip Intro", "Build the City of Your Dreams!"];
+	var g_experiments = [{"name": "cv_example_test", "variant": false}, {
+		"name": "cv_market_auto_close",
+		"variant": "1"
+	}, {"name": "cv_gift_flash_fork", "variant": 1}, {
+		"name": "city_delete_requests",
+		"variant": 1
+	}, {"name": "cv_invite_friends_mfs", "variant": false}, {
+		"name": "cv_invite_friends_mfs_height",
+		"variant": 3
+	}, {"name": "cv_crew_popup_mfs", "variant": false}, {
+		"name": "cv_email_farmville_friends",
+		"variant": false
+	}, {"name": "cv_increment_dashboard_count_async", "variant": false}, {
+		"name": "cv_d2_inviteneighbor_prompt",
+		"variant": false
+	}, {"name": "cv_ftv_with_marketing", "variant": false}, {
+		"name": "cv_doober_tracking",
+		"variant": false
+	}, {"name": "cv_show_share", "variant": false}, {
+		"name": "cv_city_cash_seld_id",
+		"variant": 3
+	}, {"name": "cv_addfriend_lhs", "variant": "1"}, {
+		"name": "cv_coin_package_conversion_test",
+		"variant": false
+	}, {"name": "cv_nps_survey", "variant": false}, {
+		"name": "cv_survey_overlay_test",
+		"variant": false
+	}, {"name": "cv_recommendfriendsNonCity", "variant": false}, {"name": "cv_quest_manager", "variant": false}];
 
 	function getUserInfo() {
 		console.log("getUserInfo called");
 
 		return {
-			"zid": "@(Model.CurrentPlayer?.Player?.Uid ?? "333")",
-			"uid": "@(Model.CurrentPlayer?.Player?.Uid ?? "333")",
-			"first_name": "@Model.CurrentUser.UserName",
-			"name": "@Model.CurrentUser.UserName",
+			"zid": "@(Model.Uid)",
+			"uid": "@(Model.Uid)",
+			"first_name": "@Model.UserName",
+			"name": "@Model.UserName",
 			"sex": "M",
 			"pic_square": "blank.png",
-			"level": @(Model.CurrentPlayer?.Player?.Level ?? 1)
+			"level": @(Model.Level)
 		};
 	}
-
 
 	function getFriendData() {
 		console.log("getFriendData called");
@@ -72,30 +99,45 @@
 
 	function onGameLoaded(seen, popp, canvas) {
 		console.log("Game is loaded " + seen + ", " + popp + ", " + canvas);
-		return;
+	}
+
+	window.ZYFrameManager = {
+		"reloadApp": function () {
+			console.log("Reload App");
+			window.location.reload();
+		},
+		"navigateTo": function (a, b, c) {
+			console.log("Navigate To" + a + " - " + b + " - " + c);
+		},
+		"openTab": function (a, b, c) {
+			console.log("Open Tab" + a + " - " + b + " - " + c);
+		},
+		"switchToTab": function (a) {
+			console.log("Switch To Tab" + a);
+		}
 	}
 
 	embedGameSwf("Preloader.swf", "760", "594",
-	{
-		"serverTime": @((int)DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds),
-		"zySnid":0,
-		"zySnuid":"@(Model.CurrentPlayer?.Player?.Uid ?? "333")",
-		"zyUid":"@(Model.CurrentPlayer?.Player?.Uid ?? "333")",
-		"zyAuthHash":"@(Model.CurrentPlayer?.Player?.Uid ?? "333")",
-		"zySig":"@(Model.CurrentPlayer?.Player?.Uid ?? "333")",
-		"app_url":"",
-		"sn_app_url":"",
-		"asset_url":".",
-		"swfLocation":"Game.26346.swf?skipFacebook=true",
-		"snapiEnable":1,
-		"generateSchema": 1,
-		"debugMode": true,
-		"game_config_url":"gameSettings.xml",
-		"localization_url":"en.xml",
-		"quest_url":"questSettings.xml",
-		"effects_config_url":"effectsConfig.xml",
-		"flashRevision":"26346",
-		"preMusic":"hashed\/54f32a1258f75c007b8ad50b08a90fa4.mp3",
-		"preIntro":"hashed\/b108f1182bc7bf0e13d74b9d350ba28b.mp4"
-	});
+		{
+			"serverTime": @Model.ServerTime,
+			"zySnid": 0,
+			"zySnuid": "@(Model.Uid)",
+			"zyUid": "@(Model.Uid)",
+			"zyAuthHash": "@(Model.Uid)",
+			"zySig": "@(Model.Uid)",
+			"app_url": "",
+			"sn_app_url": "",
+			"asset_url": ".",
+			"swfLocation": "Game.26346.swf?skipFacebook=true",
+			"snapiEnable": 1,
+			"generateSchema": 1,
+			"debugMode": true,
+			"game_config_url": "gameSettings.xml",
+			"localization_url": "en.xml",
+			"quest_url": "questSettings.xml",
+			"effects_config_url": "effectsConfig.xml",
+			"flashRevision": "26346",
+			"preMusic": "hashed\/54f32a1258f75c007b8ad50b08a90fa4.mp3",
+			"preIntro": "hashed\/b108f1182bc7bf0e13d74b9d350ba28b.mp4"
+		});
 </script>

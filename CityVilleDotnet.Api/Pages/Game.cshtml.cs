@@ -7,41 +7,47 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using CityVilleDotnet.Common.Utils;
 
 namespace CityVilleDotnet.Api.Pages;
 
 [Authorize]
 public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbContext dbContext) : PageModel
 {
-    private readonly UserManager<ApplicationUser> _userManager = userManager;
-    private readonly CityVilleDbContext _dbContext = dbContext;
-
-    public required ApplicationUser CurrentUser { get; set; }
-    public required User CurrentPlayer { get; set; }
     public string FriendList { get; set; } = "[]";
+    public string Uid { get; set; } = "333";
+    public string UserName { get; set; } = "Steve";
+    public int Level { get; set; } = 1;
+    public long ServerTime { get; set; } = 0;
 
     public async Task<IActionResult> OnGetAsync()
     {
-        CurrentUser = await _userManager.GetUserAsync(User);
+        var currentUser = await userManager.GetUserAsync(User);
 
-        if (CurrentUser is null)
+        if (currentUser is null)
             return RedirectToPage("/Account/Login");
 
-        var user = await _dbContext.Set<User>()
+        var user = await dbContext.Set<User>()
             .AsNoTracking()
+            .Include(x => x.AppUser)
             .Include(x => x.Friends)
             .ThenInclude(x => x.FriendUser)
             .ThenInclude(x => x.Player)
             .Include(x => x.Player)
-            .FirstOrDefaultAsync(x => x.AppUser.Id.Equals(CurrentUser.Id));
+            .FirstOrDefaultAsync(x => x.AppUser!.Id.Equals(currentUser.Id));
+        
+        ServerTime = ServerUtils.GetCurrentTime();
 
-        if(user is not null)
+        if (user?.Player is not null)
         {
-            CurrentPlayer = user;
-            
-            var options = new JsonSerializerOptions() { WriteIndented = false, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
-
-            FriendList = JsonSerializer.Serialize(user.GetFriendsData(), options);
+            Uid = user.Player.Uid;
+            UserName = user.Player.Username;
+            Level = user.Player.Level;
+            FriendList = JsonSerializer.Serialize(user.GetFriendsData(), new JsonSerializerOptions { WriteIndented = false, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
+        }
+        else
+        {
+            UserName = currentUser.UserName ?? "Unknown";
         }
 
         return Page();
