@@ -9,13 +9,13 @@ public class User
     public Guid Id { get; private set; }
     public Guid UserId { get; private set; }
     public ApplicationUser? AppUser { get; private set; }
-    public List<Quest> Quests { get; private set; } = new List<Quest>();
+    public List<Quest> Quests { get; } = [];
     public Player? Player { get; private set; }
     public World? World { get; set; }
-    public List<object> Franchises { get; set; } = new List<object>();
-    public List<Friend> Friends { get; private set; } = new List<Friend>();
+    public List<object> Franchises { get; set; } = [];
+    public List<Friend> Friends { get; } = [];
 
-    public static User CreateNewPlayer(UserDto defaultValue, ApplicationUser user)
+    public static User CreateNewPlayer(WorldDto defaultValue, ApplicationUser user)
     {
         return new User
         {
@@ -29,19 +29,19 @@ public class User
                 Gold = 50000,
                 Energy = 12,
                 EnergyMax = 12,
-                Goods = defaultValue.UserInfo.Player.Commodities.Storage.Goods,
-                Username = user.UserName
+                Goods = 100,
+                Username = user.UserName!
             },
-            World = new World()
+            World = new World
             {
                 Id = Guid.NewGuid(),
-                Population = defaultValue.UserInfo.World.CitySim.Population,
-                PopulationCap = defaultValue.UserInfo.World.CitySim.PopulationCap,
-                PotentialPopulation = defaultValue.UserInfo.World.CitySim.PotentialPopulation,
-                SizeX = defaultValue.UserInfo.World.SizeX,
-                SizeY = defaultValue.UserInfo.World.SizeY,
+                Population = 2,
+                PopulationCap = 0,
+                PotentialPopulation = 0,
+                SizeX = 36,
+                SizeY = 36,
                 WorldName = "",
-                MapRects = defaultValue.UserInfo.World.MapRects.Select(x => new MapRect()
+                MapRects = defaultValue.MapRects.Select(x => new MapRect()
                 {
                     Id = Guid.NewGuid(),
                     Height = x.Height,
@@ -49,7 +49,7 @@ public class User
                     X = x.X,
                     Y = x.Y,
                 }).ToList(),
-                Objects = defaultValue.UserInfo.World.Objects.Select(x => new WorldObject()
+                Objects = defaultValue.Objects.Select(x => new WorldObject()
                 {
                     Id = Guid.NewGuid(),
                     Builds = x.Builds,
@@ -355,7 +355,7 @@ public class User
 
             var debugName = gameItem.Name;
             var secureRand = SecureRand.GenerateRand(0, 99, Player.RollCounter, Player.Uid);
-            
+
             Console.WriteLine($"SecureRand for {debugName}: rollCounter={Player.RollCounter} => {secureRand}");
 
             secureRands.Add(secureRand);
@@ -390,7 +390,7 @@ public class User
                                 Console.WriteLine($"Skipping doober type {key} as it is not allowed");
                                 continue;
                             }
-                            
+
                             Console.WriteLine("TYPE : " + key);
 
                             switch (key)
