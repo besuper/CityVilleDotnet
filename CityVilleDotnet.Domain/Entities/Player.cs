@@ -1,4 +1,6 @@
-﻿namespace CityVilleDotnet.Domain.Entities;
+﻿using CityVilleDotnet.Common.Utils;
+
+namespace CityVilleDotnet.Domain.Entities;
 
 public class Player
 {
@@ -29,30 +31,30 @@ public class Player
     public bool FirstDay { get; set; } = true;
     public int CreationTimestamp { get; set; } = 0;
     public string Username { get; set; } = "";
-    
+
     public void AddItemToCollection(string collectionName, string itemName, int amount = 1)
     {
         var collection = Collections.FirstOrDefault(x => x.Name == collectionName);
-        
+
         if (collection is null)
         {
             collection = new Collection(collectionName);
             Collections.Add(collection);
         }
-        
+
         collection.AddItem(itemName, amount);
     }
-    
+
     public CollectionItem? RemoveItemFromCollection(string collectionName, string itemName, int amount = 1)
     {
         var collection = Collections.FirstOrDefault(x => x.Name == collectionName);
-        
+
         if (collection is null)
             throw new Exception($"Collection not found: {collectionName}");
 
         return collection.RemoveItem(itemName, amount);
     }
-    
+
     public void AddItem(string itemName, int amount = 1)
     {
         var item = InventoryItems.FirstOrDefault(x => x.Name == itemName);
@@ -93,5 +95,9 @@ public class Player
     {
         return InventoryItems.Any(x => x.Name == itemName && x.Amount > 0);
     }
-    
+
+    public void UpdateTracking()
+    {
+        LastTrackingTimestamp = (int)ServerUtils.GetCurrentTime();
+    }
 }
