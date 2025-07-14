@@ -28,7 +28,7 @@ public class CityVilleResponse
         return this;
     }
 
-    private ASObject ToObject()
+    public ASObject ToObject()
     {
         return new ASObject
         {

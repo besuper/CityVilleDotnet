@@ -46,46 +46,65 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
             var content = requestBody.Content as object[];
 
+            if (content is null)
+            {
+                logger.LogWarning("Received empty content in request.");
+                return;
+            }
+
             var header = content[0] as ASObject;
-            var _content = content[1] as object[];
+            var amfContent = content[1] as object[];
+
+            if (amfContent is null)
+            {
+                logger.LogWarning("Received empty AMF content in request.");
+                return;
+            }
+
+            logger.LogDebug("Request header received: {Header}", header);
 
             var responses = new ArrayList();
-            var _uid = header["zyUid"];
+            var objectUid = header?["zyUid"];
 
-            if (_uid is null)
+            if (objectUid is null)
             {
                 await SendUnauthorizedAsync(ct);
                 return;
             }
 
-            var uid = int.Parse((string)_uid);
+            var uid = int.Parse((string)objectUid);
 
-            foreach (ASObject item in _content)
+            foreach (ASObject item in amfContent)
             {
-                var _params = item["params"] as object[];
+                var @params = item["params"] as object[];
                 var functionName = item["functionName"] as string;
                 var sequence = item["sequence"];
 
-                logger.LogDebug($"Received request for function {functionName} sequence {sequence}");
-
-                var packageName = functionName.Split('.')[0];
-                var _className = functionName.Split('.')[1];
-                var className = _className.Pascalize();
-
-                if (QuestSettingsManager.TaskActions.Contains(_className))
+                if (@params is null || functionName is null || sequence is null)
                 {
-                    logger.LogDebug("Handling task quest action {ClassName}", _className);
-
-                    var taskParams = new object[] { _className };
-                    taskParams.Append(_params);
-
-                    _params = taskParams;
-
-                    packageName = "QuestService";
-                    className = "HandleQuestProgress";
+                    logger.LogWarning("Received incomplete request item: {Item}", item);
+                    continue;
                 }
 
-                var response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{packageName}.{className}", "HandlePacket", _params, Guid.Parse(user.Id), ct);
+                logger.LogDebug("Received request for function {FunctionName} sequence {Sequence}", functionName, sequence);
+
+                var packageName = functionName.Split('.')[0];
+                var className = functionName.Split('.')[1];
+                var upperClassName = className.Pascalize();
+
+                if (QuestSettingsManager.TaskActions.Contains(className))
+                {
+                    logger.LogDebug("Handling task quest action {ClassName}", className);
+
+                    var taskParams = new object[] { className };
+
+                    @params = taskParams.Append(@params).ToArray();
+
+                    packageName = "QuestService";
+                    upperClassName = "HandleQuestProgress";
+                }
+
+                var response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{packageName}.{upperClassName}", "HandlePacket", @params, Guid.Parse(user.Id), ct);
 
                 if (response is null)
                 {
@@ -97,12 +116,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
                 responses.Add(response);
             }
 
-            var emsg = new ASObject
-            {
-                ["serverTime"] = ServerUtils.GetCurrentTime(),
-                ["errorType"] = 0,
-                ["data"] = responses
-            };
+            var emsg = new CityVilleResponse().Data(responses).ToObject();
 
             var responseMessage = new AMFMessage(0);
             responseMessage.AddBody(new AMFBody(responseUri, targetUri, emsg));

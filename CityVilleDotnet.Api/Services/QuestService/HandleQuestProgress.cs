@@ -20,7 +20,7 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService
             .Include(x => x.Quests)
             .Include(x => x.Player)
             .Include(x => x.World)
-            .ThenInclude(x => x.Objects)
+            .ThenInclude(x => x!.Objects)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (user is null) throw new Exception("Can't to find user with UserId");
