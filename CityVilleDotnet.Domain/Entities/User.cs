@@ -1,6 +1,7 @@
 ﻿using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.GameEntities;
+using Microsoft.Extensions.Logging;
 
 namespace CityVilleDotnet.Domain.Entities;
 
@@ -356,7 +357,7 @@ public class User
             var debugName = gameItem.Name;
             var secureRand = SecureRand.GenerateRand(0, 99, Player.RollCounter, Player.Uid);
 
-            Console.WriteLine($"SecureRand for {debugName}: rollCounter={Player.RollCounter} => {secureRand}");
+            StaticLogger.Current.LogDebug("SecureRand for {DebugName}: rollCounter={PlayerRollCounter} => {SecureRand}", debugName, Player.RollCounter, secureRand);
 
             secureRands.Add(secureRand);
 
@@ -364,7 +365,7 @@ public class User
 
             if (modifierTable is null) continue;
 
-            Console.WriteLine($"Checking random table named {modifierTable.Name} type {modifierTable.Type} with rand {secureRand}");
+            StaticLogger.Current.LogDebug("Checking random table named {ModifierTableName} type {ModifierTableType} with rand {SecureRand}", modifierTable.Name, modifierTable.Type, secureRand);
 
             var previousRollPercent = 0;
             var found = false;
@@ -375,39 +376,40 @@ public class User
                 {
                     var currentRollPercent = roll.Percent + previousRollPercent;
 
-                    Console.WriteLine($"Percent {currentRollPercent}");
+                    StaticLogger.Current.LogDebug("Percent {CurrentRollPercent}", currentRollPercent);
 
                     if (secureRand < currentRollPercent && !found)
                     {
-                        Console.WriteLine("FOUND WITH PERCENT : " + currentRollPercent);
-                        Console.WriteLine("SECURE RAND : " + secureRand);
+                        StaticLogger.Current.LogDebug("FOUND WITH PERCENT : {CurrentRollPercent}", currentRollPercent);
+                        StaticLogger.Current.LogDebug("SECURE RAND : {SecureRand}", secureRand);
 
                         foreach (var (key, value) in roll.Rewards)
                         {
                             // FIXME: Implement a better skip
                             if (allowedDooberTypes is not null && !allowedDooberTypes.Contains(key))
                             {
-                                Console.WriteLine($"Skipping doober type {key} as it is not allowed");
+                                StaticLogger.Current.LogDebug("Skipping doober type {Key} as it is not allowed", key);
                                 continue;
                             }
 
-                            Console.WriteLine("TYPE : " + key);
+                            StaticLogger.Current.LogDebug("TYPE : {Key}", key);
 
                             switch (key)
                             {
                                 case "coin":
-                                    Console.WriteLine(value.Sum(x => x.Amount));
+                                    StaticLogger.Current.LogDebug("Found coin {CoinAmount}", value.Sum(x => x.Amount));
                                     AddGold((int)value.Sum(x => x.Amount));
                                     break;
                                 case "xp":
                                     AddXp((int)value.Sum(x => x.Amount));
-                                    Console.WriteLine(value.Sum(x => x.Amount));
+                                    StaticLogger.Current.LogDebug("Found xp {XpAmount}", value.Sum(x => x.Amount));
                                     break;
                                 case "energy":
                                     AddEnergy((int)value.Sum(x => x.Amount));
                                     break;
                                 case "collectable":
-                                    Console.WriteLine($"Found collectable {string.Join(", ", value.Select(x => x.Name).ToList())}");
+                                    StaticLogger.Current.LogDebug("Found collectable {CollectableName}", string.Join(", ", value.Select(x => x.Name).ToList()));
+
                                     foreach (var element in value)
                                     {
                                         var collectionName = GameSettingsManager.Instance.GetCollectionByItemName(element.Name);
@@ -415,18 +417,18 @@ public class User
                                         if (collectionName is not null)
                                         {
                                             Player.AddItemToCollection(collectionName, element.Name);
-                                            Console.WriteLine($"Added {element.Name} to collection {collectionName}");
+                                            StaticLogger.Current.LogDebug("Added {CollectableName} to collection {CollectionName}", element.Name, collectionName);
                                         }
                                         else
                                         {
-                                            Console.WriteLine($"Collection for item {element.Name} not found");
+                                            StaticLogger.Current.LogWarning("Collection for item {CollectableName} not found", element.Name);
                                         }
                                     }
 
                                     break;
                                 case "food":
                                     AddGoods((int)value.Sum(x => x.Amount));
-                                    Console.WriteLine((int)value.Sum(x => x.Amount));
+                                    StaticLogger.Current.LogDebug("Found food {FoodAmount}", value.Sum(x => x.Amount));
                                     break;
                             }
                         }

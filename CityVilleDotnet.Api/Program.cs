@@ -10,6 +10,7 @@ using Serilog;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using CityVilleDotnet.Common.Global;
 
 var builder = WebApplication.CreateBuilder();
 
@@ -69,6 +70,8 @@ app.UseAuthorization();
 
 app.UseSerilogRequestLogging();
 app.UseFastEndpoints();
+
+StaticLogger.Configure(app.Services.GetRequiredService<ILoggerFactory>());
 
 using var scope = app.Services.CreateScope();
 await using var context = scope.ServiceProvider.GetRequiredService<CityVilleDbContext>();
