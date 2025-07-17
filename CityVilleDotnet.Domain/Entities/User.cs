@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.GameEntities;
 using Microsoft.Extensions.Logging;
 
@@ -31,7 +32,8 @@ public class User
                 Energy = 12,
                 EnergyMax = 12,
                 Goods = 100,
-                Username = user.UserName!
+                Username = user.UserName!,
+                CreationTimestamp = (int)ServerUtils.GetCurrentTime()
             },
             World = new World
             {

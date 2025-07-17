@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
+using CityVilleDotnet.Domain.Enums;
 
 namespace CityVilleDotnet.Api.Features.Gateway.Endpoint;
 
@@ -74,6 +75,8 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
             var uid = int.Parse((string)objectUid);
 
+            ASObject? errorResponse = null;
+
             foreach (ASObject item in amfContent)
             {
                 var @params = item["params"] as object[];
@@ -104,19 +107,37 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
                     upperClassName = "HandleQuestProgress";
                 }
 
-                var response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{packageName}.{upperClassName}", "HandlePacket", @params, Guid.Parse(user.Id), ct);
+                ASObject? response = null;
 
-                if (response is null)
+                try
                 {
-                    logger.LogDebug("Something went wrong while processing the request.");
+                    response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{packageName}.{upperClassName}", "HandlePacket", @params, Guid.Parse(user.Id), ct);
 
-                    response = CreateEmptyResponse();
+                    if (response is null)
+                    {
+                        logger.LogDebug("Something went wrong while processing the request.");
+
+                        response = CreateEmptyResponse();
+                    }
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, "Error processing request for function {FunctionName} with params {@Params}", functionName, @params);
+
+                    response = new CityVilleResponse().Error(GameErrorType.InvalidData).ErrorMessage(e.Message).ToObject();
+
+                    errorResponse = response;
                 }
 
                 responses.Add(response);
             }
 
             var emsg = new CityVilleResponse().Data(responses).ToObject();
+
+            if (errorResponse is not null)
+            {
+                emsg = errorResponse;
+            }
 
             var responseMessage = new AMFMessage(0);
             responseMessage.AddBody(new AMFBody(responseUri, targetUri, emsg));

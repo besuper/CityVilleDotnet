@@ -100,4 +100,10 @@ public class Player
     {
         LastTrackingTimestamp = (int)ServerUtils.GetCurrentTime();
     }
+    
+    public void UpdateSettings(bool musicDisabled, bool sfxDisabled)
+    {
+        MusicDisabled = musicDisabled;
+        SfxDisabled = sfxDisabled;
+    }
 }

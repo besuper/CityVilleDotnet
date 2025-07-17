@@ -7,6 +7,7 @@ namespace CityVilleDotnet.Api.Common.Amf;
 public class CityVilleResponse
 {
     private int ErrorType { get; set; } = (int)GameErrorType.NoError;
+    private string? ErrorData { get; set; }
     private object Metadata { get; set; } = new ASObject();
     private object GameData { get; set; } = new ASObject();
 
@@ -27,12 +28,19 @@ public class CityVilleResponse
         GameData = data;
         return this;
     }
+    
+    public CityVilleResponse ErrorMessage(string errorData)
+    {
+        ErrorData = errorData;
+        return this;
+    }
 
     public ASObject ToObject()
     {
         return new ASObject
         {
             ["errorType"] = ErrorType,
+            ["errorData"] = ErrorData ?? string.Empty,
             ["metadata"] = Metadata,
             ["data"] = GameData,
             ["serverTime"] = DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds
