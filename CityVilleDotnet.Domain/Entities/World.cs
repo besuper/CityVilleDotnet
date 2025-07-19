@@ -59,12 +59,12 @@ public class World
 
     public WorldObject? GetBuilding(int id, int x, int y, int z)
     {
-        return Objects.FirstOrDefault(w => w.WorldFlatId == id && w.Position.X == x && w.Position.Y == y && w.Position.Z == z);
+        return Objects.FirstOrDefault(w => w.WorldFlatId == id && w.X == x && w.Y == y && (w.Z ?? 0) == z);
     }
 
     public WorldObject? GetBuildingByCoord(int x, int y, int z)
     {
-        return Objects.FirstOrDefault(w => w.Position.X == x && w.Position.Y == y && w.Position.Z == z);
+        return Objects.FirstOrDefault(w => w.X == x && w.Y == y && (w.Z ?? 0) == z);
     }
 
     public int CountBuildingByName(string name)

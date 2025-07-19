@@ -39,16 +39,13 @@ internal sealed partial class PerformAction
             (int)building["direction"],
             (double?)buildTime,
             (double?)plantTime,
-            new WorldObjectPosition()
-            {
-                X = (int)position["x"],
-                Y = (int)position["y"],
-                Z = (int)position["z"] // TODO: Remove Z coordinate, seems not used in CityVille
-            },
+            (int)position["x"],
+            (int)position["y"],
+            (int)position["z"], // TODO: Remove Z coordinate, seems not used in CityVille
             newId
         );
 
-        logger.LogInformation("x: {PositionX} y: {PositionY} z: {PositionZ}", obj.Position.X, obj.Position.Y, obj.Position.Z);
+        logger.LogInformation("x: {PositionX} y: {PositionY} z: {PositionZ}", obj.X, obj.Y, obj.Z);
 
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
 

@@ -5,7 +5,7 @@ namespace CityVilleDotnet.Domain.Entities;
 
 public class WorldObject
 {
-    public WorldObject(string itemName, string className, string? contractName, bool deleted, int tempId, string state, int direction, double? buildTime, double? plantTime, WorldObjectPosition position, int worldFlatId)
+    public WorldObject(string itemName, string className, string? contractName, bool deleted, int tempId, string state, int direction, double? buildTime, double? plantTime, int x, int y, int z, int worldFlatId)
     {
         Id = Guid.NewGuid();
         ItemName = itemName;
@@ -15,10 +15,12 @@ public class WorldObject
         TempId = tempId;
         State = state;
         Direction = direction;
-        Position = position;
         WorldFlatId = worldFlatId;
         BuildTime = buildTime;
         PlantTime = plantTime;
+        X = x;
+        Y = y;
+        Z = z;
     }
 
     public WorldObject()
@@ -38,7 +40,9 @@ public class WorldObject
     public double? PlantTime { get; set; }
     public string State { get; set; }
     public int Direction { get; set; }
-    public WorldObjectPosition? Position { get; set; }
+    public int X { get; set; }
+    public int Y { get; set; }
+    public int? Z { get; set; }
     public int WorldFlatId { get; set; }
     public string? TargetBuildingClass { get; set; }
     public string? TargetBuildingName { get; set; }

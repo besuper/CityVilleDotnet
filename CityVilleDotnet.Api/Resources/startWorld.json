@@ -33,8 +33,7 @@
 			"state": "grown",
 			"position": {
 				"x": -2,
-				"y": 27,
-				"z": 0
+				"y": 27
 			},
 			"id": 2
 		},
@@ -45,8 +44,7 @@
 			"state": "grown",
 			"position": {
 				"x": -2,
-				"y": 25,
-				"z": 0
+				"y": 25
 			},
 			"id": 3
 		},
@@ -57,8 +55,7 @@
 			"state": "grown",
 			"position": {
 				"x": 0,
-				"y": 27,
-				"z": 0
+				"y": 27
 			},
 			"id": 4
 		},
@@ -69,16 +66,14 @@
 			"state": "grown",
 			"position": {
 				"x": 0,
-				"y": 25,
-				"z": 0
+				"y": 25
 			},
 			"id": 5
 		},
 		{
 			"position": {
 				"x": -8,
-				"y": 33,
-				"z": 0
+				"y": 33
 			},
 			"className": "Road",
 			"components": {},
@@ -92,8 +87,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 30,
-				"z": 0
+				"y": 30
 			},
 			"className": "Road",
 			"components": {},
@@ -107,8 +101,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 27,
-				"z": 0
+				"y": 27
 			},
 			"className": "Road",
 			"components": {},
@@ -122,8 +115,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 24,
-				"z": 0
+				"y": 24
 			},
 			"className": "Road",
 			"components": {},
@@ -137,8 +129,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 21,
-				"z": 0
+				"y": 21
 			},
 			"className": "Road",
 			"components": {},
@@ -152,8 +143,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 18,
-				"z": 0
+				"y": 18
 			},
 			"className": "Road",
 			"components": {},
@@ -167,8 +157,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 15,
-				"z": 0
+				"y": 15
 			},
 			"className": "Road",
 			"components": {},
@@ -182,8 +171,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 12,
-				"z": 0
+				"y": 12
 			},
 			"className": "Road",
 			"components": {},
@@ -197,8 +185,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 9,
-				"z": 0
+				"y": 9
 			},
 			"className": "Road",
 			"components": {},
@@ -212,8 +199,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 6,
-				"z": 0
+				"y": 6
 			},
 			"className": "Road",
 			"components": {},
@@ -227,8 +213,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 3,
-				"z": 0
+				"y": 3
 			},
 			"className": "Road",
 			"components": {},
@@ -242,8 +227,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 0,
-				"z": 0
+				"y": 0
 			},
 			"className": "Road",
 			"components": {},
@@ -257,8 +241,7 @@
 		{
 			"position": {
 				"x": -11,
-				"y": 22,
-				"z": 0
+				"y": 22
 			},
 			"className": "Road",
 			"components": {},
@@ -272,8 +255,7 @@
 		{
 			"position": {
 				"x": -14,
-				"y": 22,
-				"z": 0
+				"y": 22
 			},
 			"className": "Road",
 			"components": {},
@@ -287,8 +269,7 @@
 		{
 			"position": {
 				"x": -17,
-				"y": 22,
-				"z": 0
+				"y": 22
 			},
 			"className": "Road",
 			"components": {},
@@ -302,8 +283,7 @@
 		{
 			"position": {
 				"x": -11,
-				"y": 13,
-				"z": 0
+				"y": 13
 			},
 			"className": "Road",
 			"components": {},
@@ -317,8 +297,7 @@
 		{
 			"position": {
 				"x": -14,
-				"y": 13,
-				"z": 0
+				"y": 13
 			},
 			"className": "Road",
 			"components": {},
@@ -332,8 +311,7 @@
 		{
 			"position": {
 				"x": -17,
-				"y": 13,
-				"z": 0
+				"y": 13
 			},
 			"className": "Road",
 			"components": {},
@@ -347,8 +325,7 @@
 		{
 			"position": {
 				"x": 4,
-				"y": 33,
-				"z": 0
+				"y": 33
 			},
 			"className": "Road",
 			"components": {},
@@ -362,8 +339,7 @@
 		{
 			"position": {
 				"x": 1,
-				"y": 33,
-				"z": 0
+				"y": 33
 			},
 			"className": "Road",
 			"components": {},
@@ -377,8 +353,7 @@
 		{
 			"position": {
 				"x": -2,
-				"y": 33,
-				"z": 0
+				"y": 33
 			},
 			"className": "Road",
 			"components": {},
@@ -392,8 +367,7 @@
 		{
 			"position": {
 				"x": -5,
-				"y": 33,
-				"z": 0
+				"y": 33
 			},
 			"className": "Road",
 			"components": {},
@@ -407,8 +381,7 @@
 		{
 			"position": {
 				"x": -5,
-				"y": 4,
-				"z": 0
+				"y": 4
 			},
 			"direction": 0,
 			"itemName": "biz_lotsite_4x4",
@@ -421,8 +394,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 39,
-				"z": 0
+				"y": 39
 			},
 			"className": "Road",
 			"components": {},
@@ -436,8 +408,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 42,
-				"z": 0
+				"y": 42
 			},
 			"className": "Road",
 			"components": {},
@@ -451,8 +422,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 45,
-				"z": 0
+				"y": 45
 			},
 			"className": "Road",
 			"components": {},
@@ -466,8 +436,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 48,
-				"z": 0
+				"y": 48
 			},
 			"className": "Road",
 			"components": {},
@@ -481,8 +450,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 51,
-				"z": 0
+				"y": 51
 			},
 			"className": "Road",
 			"components": {},
@@ -496,8 +464,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 54,
-				"z": 0
+				"y": 54
 			},
 			"className": "Road",
 			"components": {},
@@ -511,8 +478,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 57,
-				"z": 0
+				"y": 57
 			},
 			"className": "Road",
 			"components": {},
@@ -526,8 +492,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 60,
-				"z": 0
+				"y": 60
 			},
 			"className": "Road",
 			"components": {},
@@ -541,8 +506,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 63,
-				"z": 0
+				"y": 63
 			},
 			"className": "Road",
 			"components": {},
@@ -556,8 +520,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 66,
-				"z": 0
+				"y": 66
 			},
 			"className": "Road",
 			"components": {},
@@ -571,8 +534,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 69,
-				"z": 0
+				"y": 69
 			},
 			"className": "Road",
 			"components": {},
@@ -586,8 +548,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": 72,
-				"z": 0
+				"y": 72
 			},
 			"className": "Road",
 			"components": {},
@@ -601,8 +562,7 @@
 		{
 			"position": {
 				"x": -46,
-				"y": 36,
-				"z": 0
+				"y": 36
 			},
 			"className": "TrainTracks",
 			"components": {},
@@ -616,8 +576,7 @@
 		{
 			"position": {
 				"x": -3,
-				"y": 39,
-				"z": 0
+				"y": 39
 			},
 			"className": "TrainStation",
 			"components": {},
@@ -631,8 +590,7 @@
 		{
 			"position": {
 				"x": 7,
-				"y": 33,
-				"z": 0
+				"y": 33
 			},
 			"className": "Residence",
 			"components": {},
@@ -647,8 +605,7 @@
 			"deleted": false,
 			"position": {
 				"x": -10,
-				"y": 32,
-				"z": 0
+				"y": 32
 			},
 			"direction": 1,
 			"itemName": "deco_roadsign2",
@@ -662,8 +619,7 @@
 			"deleted": false,
 			"position": {
 				"x": -5,
-				"y": 1,
-				"z": 0
+				"y": 1
 			},
 			"direction": 0,
 			"itemName": "deco_roadsign4",
@@ -676,8 +632,7 @@
 		{
 			"position": {
 				"x": -8,
-				"y": -3,
-				"z": 0
+				"y": -3
 			},
 			"className": "Road",
 			"components": {},
@@ -691,8 +646,7 @@
 		{
 			"position": {
 				"x": 8,
-				"y": 21,
-				"z": 0
+				"y": 21
 			},
 			"className": "Wilderness",
 			"components": {},
@@ -706,8 +660,7 @@
 		{
 			"position": {
 				"x": 8,
-				"y": 20,
-				"z": 0
+				"y": 20
 			},
 			"className": "Wilderness",
 			"components": {},
@@ -721,8 +674,7 @@
 		{
 			"position": {
 				"x": 7,
-				"y": 20,
-				"z": 0
+				"y": 20
 			},
 			"className": "Wilderness",
 			"components": {},
@@ -736,8 +688,7 @@
 		{
 			"position": {
 				"x": 4,
-				"y": 8,
-				"z": 0
+				"y": 8
 			},
 			"className": "Wilderness",
 			"components": {},
@@ -751,8 +702,7 @@
 		{
 			"position": {
 				"x": 8,
-				"y": 7,
-				"z": 0
+				"y": 7
 			},
 			"className": "Wilderness",
 			"components": {},
@@ -766,8 +716,7 @@
 		{
 			"position": {
 				"x": 8,
-				"y": 8,
-				"z": 0
+				"y": 8
 			},
 			"className": "Wilderness",
 			"components": {},
@@ -781,8 +730,7 @@
 		{
 			"position": {
 				"x": 9,
-				"y": 8,
-				"z": 0
+				"y": 8
 			},
 			"className": "Wilderness",
 			"components": {},
@@ -796,8 +744,7 @@
 		{
 			"position": {
 				"x": 9,
-				"y": 7,
-				"z": 0
+				"y": 7
 			},
 			"className": "Wilderness",
 			"components": {},

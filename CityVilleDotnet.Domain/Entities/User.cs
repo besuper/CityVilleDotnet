@@ -51,12 +51,9 @@ public class User
                     FinishedBuilds = x.FinishedBuilds,
                     ItemName = x.ItemName,
                     PlantTime = x.PlantTime,
-                    Position = new WorldObjectPosition
-                    {
-                        X = x.Position.X,
-                        Y = x.Position.Y,
-                        Z = x.Position.Z,
-                    },
+                    X = x.Position.X,
+                    Y = x.Position.Y,
+                    Z = x.Position.Z,
                     Stage = x.Stage,
                     State = x.State,
                     TargetBuildingClass = x.TargetBuildingClass,

@@ -73,12 +73,8 @@ public class ExpandCity(CityVilleDbContext context) : AmfService
                 State = "static",
                 Direction = (int)tree["dir"],
                 Deleted = false,
-                Position = new WorldObjectPosition
-                {
-                    X = (int)tree["x"],
-                    Y = (int)tree["y"],
-                    Z = 0
-                }
+                X = (int)tree["x"],
+                Y = (int)tree["y"]
             };
 
             world.AddBuilding(newTree);
