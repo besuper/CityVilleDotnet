@@ -89,8 +89,6 @@ public class User
 
     public void ComputeLevel()
     {
-        var level = 1;
-        var energyMax = 12;
         var currentXp = Player?.Xp;
 
         if (currentXp is null) return;
@@ -99,17 +97,31 @@ public class User
         {
             if (currentXp >= int.Parse(item.RequiredXp))
             {
-                level = int.Parse(item.Num);
-                energyMax = int.Parse(item.EnergyMax);
-            }
-            else
-            {
+                var level = int.Parse(item.Num);
+                
+                if(level <= Player.Level)
+                {
+                    continue;
+                }
+                
+                // Level up!
+                StaticLogger.Current.LogDebug("Level up! New level: {Level}", level);
+                
+                var energyMax = int.Parse(item.EnergyMax);
+
+                // TODO: Add heldEnergy and cash
+                var energy = energyMax + Math.Max(Player.Energy - energyMax, 0);
+
+                Player.Level = level;
+                Player.Energy = energy;
+                Player.EnergyMax = energyMax;
+                Player.TimeBeforeNextEnergy = (int)ServerUtils.GetCurrentTime();
+
+                Player.UpdateEnergy();
+
                 break;
             }
         }
-
-        Player.Level = level;
-        Player.EnergyMax = energyMax;
     }
 
     public void ComputeSocialLevel()
@@ -135,31 +147,6 @@ public class User
         Player.SocialLevel = level;
     }
 
-    public int GetGold()
-    {
-        return Player.Gold;
-    }
-
-    public int GetExperience()
-    {
-        return Player.Xp;
-    }
-
-    public int GetGoods()
-    {
-        return Player.Goods;
-    }
-
-    public int GetCash()
-    {
-        return Player.Cash;
-    }
-
-    public int GetLevel()
-    {
-        return Player.Level;
-    }
-
     public World GetWorld()
     {
         return World;
@@ -171,21 +158,6 @@ public class User
 
         // FIXME: Check user level after each xp
         ComputeLevel();
-    }
-
-    public int GetMaxEnergy()
-    {
-        return Player.EnergyMax;
-    }
-
-    public void AddEnergy(int energy)
-    {
-        if (Player.Energy >= GetMaxEnergy())
-        {
-            return;
-        }
-
-        Player.Energy += energy;
     }
 
     public void AddGold(int amount)
@@ -407,7 +379,7 @@ public class User
                                     StaticLogger.Current.LogDebug("Found xp {XpAmount}", value.Sum(x => x.Amount));
                                     break;
                                 case "energy":
-                                    AddEnergy((int)value.Sum(x => x.Amount));
+                                    Player.AddEnergy((int)value.Sum(x => x.Amount));
                                     break;
                                 case "collectable":
                                     StaticLogger.Current.LogDebug("Found collectable {CollectableName}", string.Join(", ", value.Select(x => x.Name).ToList()));

@@ -7,6 +7,7 @@ namespace CityVilleDotnet.Common.Settings.GameSettings;
 public class FarmingSettings
 {
     [XmlAttribute("inGameDaySeconds")] public required string InGameDaySeconds { get; set; }
+    [XmlAttribute("energyRegenerationSeconds")] public required string EnergyRegenerationSeconds { get; set; }
 
     [XmlAttribute("friendVisitShipRepGain")]
     public required string FriendVisitShipRepGain { get; set; }

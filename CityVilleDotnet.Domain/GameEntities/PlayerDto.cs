@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Domain.Entities;
 using System.Text.Json.Serialization;
+using CityVilleDotnet.Common.Utils;
 using FluorineFx;
 
 namespace CityVilleDotnet.Domain.GameEntities;
@@ -38,6 +39,7 @@ public class PlayerDto
     [JsonPropertyName("energy")] public int Energy { get; set; } = 12;
 
     [JsonPropertyName("energyMax")] public int EnergyMax { get; set; } = 12;
+    [JsonPropertyName("lastEnergyCheck")] public int LastEnergyCheck { get; set; } = 0;
 
     [JsonPropertyName("seenFlags")] public ASObject SeenFlags { get; set; } = new ASObject();
 
@@ -78,6 +80,7 @@ public static class PlayerDtoMapper
             CompletedCollections = new ASObject(model.Collections.Where(x => x.Completed > 0).ToDictionary(x => x.Name, x => (object)x.Completed)),
             Energy = model.Energy,
             EnergyMax = model.EnergyMax,
+            LastEnergyCheck = model.GetLastCheckEnergyTimestamp(),
             ExpansionsPurchased = model.ExpansionsPurchased,
             Gold = model.Gold,
             Inventory = new InventoryDto {

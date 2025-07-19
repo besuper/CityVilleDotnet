@@ -24,6 +24,7 @@ public class GameItem
     [XmlElement("populationCapYield")] public int? PopulationCapYield { get; set; }
 
     [XmlElement("cost")] public int? Cost { get; set; }
+    [XmlElement("cash")] public int? Cash { get; set; }
     [XmlElement("growTime")] public double? GrowTime { get; set; }
 
     [XmlElement("coinYield")] public int? CoinYield { get; set; }
@@ -36,6 +37,20 @@ public class GameItem
 
     [XmlElement("commodityReq")] public int? CommodityRequired { get; set; }
     [XmlElement("numberOfStages")] public int? NumberOfStages { get; set; }
+    [XmlElement("energyCostPerBuild")] public int? EnergyCostPerBuild { get; set; }
+    [XmlElement("energyRewards")] public int? EnergyRewards { get; set; }
 
     [XmlElement("randomModifiers")] public RandomModifiers? RandomModifiers { get; set; }
+    [XmlElement("energyCost")] public EnergyCost? EnergyCost { get; set; }
+}
+
+[Serializable]
+public class EnergyCost
+{
+    [XmlAttribute("build")] public string? Build { get; set; }
+    [XmlAttribute("instantFinish")] public string? InstantFinish { get; set; }
+    [XmlAttribute("harvest")] public string? Harvest { get; set; }
+    [XmlAttribute("open")] public string? Open { get; set; }
+    [XmlAttribute("clean")] public string? Clean { get; set; }
+    [XmlAttribute("clear")] public string? Clear { get; set; }
 }

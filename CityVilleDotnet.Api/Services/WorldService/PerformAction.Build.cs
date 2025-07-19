@@ -30,6 +30,24 @@ internal sealed partial class PerformAction
         if(gameItem.NumberOfStages is null)
             throw new Exception($"Game item {obj.ItemName} doesn't have number of stages defined");
 
+        if (gameItem.EnergyCost?.Build is not null)
+        {
+            var energyCost = int.Parse(gameItem.EnergyCost.Build);
+
+            if (!user.Player!.RemoveEnergy(energyCost))
+            {
+                // FIXME: Return error response
+                return;
+            }
+        }else if (gameItem.EnergyCostPerBuild is not null)
+        {
+            if (!user.Player!.RemoveEnergy(gameItem.EnergyCostPerBuild.Value))
+            {
+                // FIXME: Return error response
+                return;
+            }
+        } 
+
         obj.AddConstructionStage();
 
         if (obj.Stage != gameItem.NumberOfStages)

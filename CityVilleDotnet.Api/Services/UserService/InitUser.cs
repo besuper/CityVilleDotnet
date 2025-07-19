@@ -49,14 +49,28 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
 
         if (user.Player is null)
             throw new Exception("Player not initialized correctly");
-        
+
+        // Handle energy regeneration
+        var player = await context.Set<User>()
+            .Where(x => x.UserId == userId)
+            .Select(x => x.Player)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (player is null)
+            throw new Exception("Player not found for user");
+
+        player.UpdateEnergy();
+        user.Player.UpdateEnergy(); // This will not save
+
+        await context.SaveChangesAsync(cancellationToken);
+
         var userObj = AmfConverter.Convert(user.ToDto());
 
         var quests = new ASObject();
 
         if (!user.Player.IsNew)
             quests["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active));
-        
+
         return new CityVilleResponse().Data(userObj).MetaData(quests);
     }
 }

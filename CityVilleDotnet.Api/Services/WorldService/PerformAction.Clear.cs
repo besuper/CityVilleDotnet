@@ -1,5 +1,7 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using FluorineFx;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
@@ -20,6 +22,21 @@ internal sealed partial class PerformAction
 
         var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]) ?? throw new Exception($"Can't find building");
 
+        var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
+
+        if (gameItem is null)
+            throw new Exception($"Can't find game item for {obj.ItemName}");
+
+        if (gameItem.EnergyCost?.Clear is not null)
+        {
+            var energyCost = int.Parse(gameItem.EnergyCost.Clear);
+
+            if (!user.Player!.RemoveEnergy(energyCost))
+            {
+                return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
+            }
+        }
+        
         var secureRands = user.CollectDoobersRewards(obj.ItemName);
 
         world.RemoveBuilding(obj);

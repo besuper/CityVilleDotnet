@@ -1,5 +1,8 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Settings.GameSettings;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using FluorineFx;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
@@ -19,6 +22,26 @@ internal sealed partial class PerformAction
         var world = user.GetWorld();
 
         var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]) ?? throw new Exception("Can't find building");
+
+        var itemName = obj.ClassName == nameof(BuildingClassType.Plot) ? obj.ContractName : obj.ItemName;
+
+        if (itemName is null)
+            throw new Exception("Item name is null, can't harvest");
+
+        var gameItem = GameSettingsManager.Instance.GetItem(itemName);
+
+        if (gameItem is null)
+            throw new Exception($"Can't find game item for {itemName}");
+
+        if (gameItem.EnergyCost?.Harvest is not null)
+        {
+            var energyCost = int.Parse(gameItem.EnergyCost.Harvest);
+
+            if (!user.Player!.RemoveEnergy(energyCost))
+            {
+                return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
+            }
+        }
 
         var coinYield = obj.Harvest();
         var secureRands = user.CollectDoobersRewards(obj.ContractName ?? obj.ItemName);

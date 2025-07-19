@@ -24,24 +24,34 @@ internal sealed partial class PerformAction
 
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
 
-        if (gameItem is not null)
+        if (gameItem is null)
+            throw new Exception($"Can't find game item with name {obj.ItemName}");
+
+        if (gameItem.CommodityRequired is null)
+            throw new Exception($"Game item {obj.ItemName} doesn't have commodity required");
+
+        if (user.Player!.Goods < gameItem.CommodityRequired)
+            // TODO: Show an error ?
+            return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
+
+        if (gameItem.EnergyCost?.Open is not null)
         {
-            if (gameItem.CommodityRequired is not null)
+            var energyCost = int.Parse(gameItem.EnergyCost.Open);
+
+            if (!user.Player!.RemoveEnergy(energyCost))
             {
-                if (user.Player.Goods < gameItem.CommodityRequired)
-                    // TODO: Show an error ?
-                    return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
-
-                user.RemoveGoods(gameItem.CommodityRequired.Value);
-
-                obj.BuildTime = (double)building["buildTime"];
-                obj.PlantTime = (double)building["plantTime"];
-                obj.State = (string)building["state"];
-
-                user.HandleQuestProgress();
-                user.CheckCompletedQuests();
+                return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
             }
         }
+
+        user.RemoveGoods(gameItem.CommodityRequired.Value);
+
+        obj.BuildTime = (double)building["buildTime"];
+        obj.PlantTime = (double)building["plantTime"];
+        obj.State = (string)building["state"];
+
+        user.HandleQuestProgress();
+        user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

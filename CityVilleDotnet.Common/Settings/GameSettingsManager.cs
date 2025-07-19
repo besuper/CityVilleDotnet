@@ -120,6 +120,11 @@ public class GameSettingsManager
         return (int)_settings[name];
     }
 
+    public double GetDouble(string name)
+    {
+        return (double)_settings[name];
+    }
+
     public string? GetCollectionByItemName(string itemName)
     {
         if (!_isInitialized)

@@ -8,8 +8,8 @@ public class CityVilleResponse
 {
     private int ErrorType { get; set; } = (int)GameErrorType.NoError;
     private string? ErrorData { get; set; }
-    private object Metadata { get; set; } = new ASObject();
-    private object GameData { get; set; } = new ASObject();
+    private ASObject Metadata { get; set; } = new ASObject();
+    private object PacketData { get; set; } = new ASObject();
 
     public CityVilleResponse Error(GameErrorType errorType)
     {
@@ -19,19 +19,31 @@ public class CityVilleResponse
 
     public CityVilleResponse MetaData(object metadata)
     {
-        Metadata = metadata;
+        Metadata = (ASObject)metadata;
         return this;
     }
 
     public CityVilleResponse Data(object data)
     {
-        GameData = data;
+        PacketData = data;
         return this;
     }
     
     public CityVilleResponse ErrorMessage(string errorData)
     {
         ErrorData = errorData;
+        return this;
+    }
+    
+    public CityVilleResponse GameData(object data)
+    {
+        Metadata["gamedata"] = data;
+        return this;
+    }
+    
+    public CityVilleResponse PushData(object data)
+    {
+        Metadata["pushdata"] = data;
         return this;
     }
 
@@ -42,7 +54,7 @@ public class CityVilleResponse
             ["errorType"] = ErrorType,
             ["errorData"] = ErrorData ?? string.Empty,
             ["metadata"] = Metadata,
-            ["data"] = GameData,
+            ["data"] = PacketData,
             ["serverTime"] = DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds
         };
     }

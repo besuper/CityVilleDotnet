@@ -6,4 +6,9 @@ public static class ServerUtils
     {
         return DateTimeOffset.Now.ToUnixTimeMilliseconds();
     }
+    
+    public static double GetCurrentTimeSeconds()
+    {
+        return DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+    }
 }

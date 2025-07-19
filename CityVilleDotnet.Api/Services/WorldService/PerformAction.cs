@@ -1,6 +1,7 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,8 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
             .ThenInclude(x => x!.Collections)
             .ThenInclude(x => x.Items)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
+
+        if (user.Player is null) throw new Exception("Player not found for user");
 
         var actionType = @params[0] as string;
 

@@ -14,7 +14,7 @@ public static class ClassUtils
         
             if (int.TryParse(value, out int intValue))
                 result[prop.Name] = intValue;
-            else if (double.TryParse(value, out double doubleValue))
+            else if (double.TryParse(value, System.Globalization.CultureInfo.InvariantCulture, out double doubleValue))
                 result[prop.Name] = doubleValue;
             else
                 result[prop.Name] = value;
