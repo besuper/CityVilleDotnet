@@ -44,7 +44,7 @@ internal sealed partial class PerformAction
         }
 
         var coinYield = obj.Harvest();
-        var secureRands = user.CollectDoobersRewards(obj.ContractName ?? obj.ItemName);
+        var secureRands = user.Player!.CollectDoobersRewards(obj.ContractName ?? obj.ItemName);
 
         logger.LogDebug("Secure rands {Join}", string.Join(",", secureRands.ToArray()));
         logger.LogDebug("Secure rands {SecureRandsCount}", secureRands.Count);

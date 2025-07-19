@@ -50,12 +50,12 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
             .Include(x => x.Player)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
-        if (currentUser is null)
+        if (currentUser?.Player is null)
             throw new Exception($"Can't find user with userId {userId}");
 
-        currentUser.AddGold(coins);
-        currentUser.AddGoods(goods);
-        currentUser.AddSocialXp(reputation);
+        currentUser.Player.AddCoins(coins);
+        currentUser.Player.AddGoods(goods);
+        currentUser.Player.AddSocialXp(reputation);
 
         await context.SaveChangesAsync(cancellationToken);
 

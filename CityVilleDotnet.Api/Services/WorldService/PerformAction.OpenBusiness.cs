@@ -44,7 +44,7 @@ internal sealed partial class PerformAction
             }
         }
 
-        user.RemoveGoods(gameItem.CommodityRequired.Value);
+        user.Player.RemoveGoods(gameItem.CommodityRequired.Value);
 
         obj.BuildTime = (double)building["buildTime"];
         obj.PlantTime = (double)building["plantTime"];

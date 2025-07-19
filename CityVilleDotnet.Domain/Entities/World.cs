@@ -100,6 +100,15 @@ public class World
     public void AddMapRect(MapRect mapRect)
     {
         // FIXME: Check if this map already exist
-        MapRects.Add(mapRect); 
+        MapRects.Add(mapRect);
+    }
+
+    public string SetWorldName(string name)
+    {
+        var newName = name.Trim();
+
+        WorldName = newName;
+
+        return newName;
     }
 }

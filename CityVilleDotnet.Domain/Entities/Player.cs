@@ -7,34 +7,46 @@ namespace CityVilleDotnet.Domain.Entities;
 
 public class Player
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; }
     public string Uid { get; set; } = "333";
     public int Snuid { get; set; }
-    public int LastTrackingTimestamp { get; set; } = 0;
+    public int LastTrackingTimestamp { get; private set; }
     public List<object> PlayerNews { get; set; } = [];
     public List<object> Wishlist { get; set; } = [];
-    public bool SfxDisabled { get; set; } = false;
-    public bool MusicDisabled { get; set; } = false;
+    public bool SfxDisabled { get; private set; }
+    public bool MusicDisabled { get; private set; }
     public List<InventoryItem> InventoryItems { get; set; } = [];
-    public int Gold { get; set; } = 500;
-    public int Goods { get; set; } = 100;
-    public int Cash { get; set; } = 0;
-    public int Level { get; set; } = 1;
-    public int Xp { get; set; } = 0;
-    public int SocialLevel { get; set; } = 1;
-    public int SocialXp { get; set; } = 0;
-    public int Energy { get; set; } = 12;
-    public int EnergyMax { get; set; } = 12;
-    public int TimeBeforeNextEnergy { get; set; }
+    public int Gold { get; private set; }
+    public int Goods { get; private set; }
+    public int Cash { get; private set; }
+    public int Level { get; private set; } = 1;
+    public int Xp { get; private set; }
+    public int SocialLevel { get; private set; } = 1;
+    public int SocialXp { get; private set; }
+    public int Energy { get; private set; }
+    public int EnergyMax { get; private set; }
+    public int TimeBeforeNextEnergy { get; private set; }
     public List<SeenFlag> SeenFlags { get; set; } = new();
-    public int ExpansionsPurchased { get; set; }
+    public int ExpansionsPurchased { get; private set; }
     public List<Collection> Collections { get; set; } = [];
     public Dictionary<object, object> Licenses { get; set; } = [];
-    public int RollCounter { get; set; }
-    public bool IsNew { get; set; } = true;
-    public bool FirstDay { get; set; } = true;
-    public int CreationTimestamp { get; set; }
-    public string Username { get; set; } = "";
+    public int RollCounter { get; private set; }
+    public bool IsNew { get; private set; } = true;
+    public bool FirstDay { get; private set; } = true;
+    public int CreationTimestamp { get; private set; }
+    public string Username { get; private set; }
+
+    public Player(string username)
+    {
+        Id = Guid.NewGuid();
+        Cash = 900;
+        Gold = 50000;
+        Energy = 12;
+        EnergyMax = 12;
+        Goods = 100;
+        Username = username;
+        CreationTimestamp = (int)ServerUtils.GetCurrentTime();
+    }
 
     public void AddItemToCollection(string collectionName, string itemName, int amount = 1)
     {
@@ -126,7 +138,7 @@ public class Player
     public bool RemoveEnergy(int amount)
     {
         StaticLogger.Current.LogDebug("Removing {Amount} energy from player {PlayerId}", amount, Id);
-        
+
         var currentEnergy = CalculateCurrentEnergy();
         if (currentEnergy.CurrentNewEnergy < amount) return false;
 
@@ -199,5 +211,217 @@ public class Player
     public void RemoveCash(int amount)
     {
         Cash -= amount;
+    }
+
+    public void AddXp(int xp)
+    {
+        Xp += xp;
+
+        ComputeLevel();
+    }
+
+    private void ComputeLevel()
+    {
+        foreach (var item in GameSettingsManager.Instance.GetLevels())
+        {
+            if (Xp < int.Parse(item.RequiredXp)) continue;
+
+            var level = int.Parse(item.Num);
+
+            if (level <= Level) continue;
+
+            // Level up!
+            StaticLogger.Current.LogDebug("Level up! New level: {Level}", level);
+
+            var energyMax = int.Parse(item.EnergyMax);
+
+            // TODO: Add heldEnergy and cash
+            var energy = energyMax + Math.Max(Energy - energyMax, 0);
+
+            Level = level;
+            Energy = energy;
+            EnergyMax = energyMax;
+            TimeBeforeNextEnergy = (int)ServerUtils.GetCurrentTime();
+
+            UpdateEnergy();
+
+            break;
+        }
+    }
+
+    public void CompleteTutorial()
+    {
+        IsNew = false;
+        FirstDay = false;
+
+        Uid = $"{Snuid}";
+    }
+
+    private void ComputeSocialLevel()
+    {
+        foreach (var item in GameSettingsManager.Instance.GetSocialLevels())
+        {
+            if (SocialXp < int.Parse(item.RequiredXp)) continue;
+
+            var level = int.Parse(item.Num);
+
+            if (level <= SocialLevel) continue;
+
+            StaticLogger.Current.LogDebug("Social level up! New level: {Level}", level);
+
+            SocialLevel = level;
+
+            // FIXME: Give the reward
+
+            break;
+        }
+    }
+
+    public void AddSocialXp(int amount)
+    {
+        SocialXp += amount;
+
+        ComputeSocialLevel();
+    }
+
+    public void AddCoins(int amount)
+    {
+        Gold += amount;
+    }
+
+    public void RemoveCoins(int amount)
+    {
+        Gold += amount;
+    }
+
+    public void RemoveGoods(int amount)
+    {
+        Goods -= amount;
+    }
+
+    public void AddGoods(int amount)
+    {
+        Goods += amount;
+    }
+
+    public void SetSeenFlag(string flag)
+    {
+        if (!SeenFlags.Any(x => x.Key == flag))
+        {
+            SeenFlags.Add(new SeenFlag(flag));
+        }
+    }
+
+    public void IncrementRollCounter()
+    {
+        RollCounter++;
+    }
+
+    public void IncrementExpansionsPurchased()
+    {
+        ExpansionsPurchased++;
+    }
+
+    // From Player::processRandomModifiersFromConfig
+    public List<int> CollectDoobersRewards(string itemName, List<string>? allowedDooberTypes = null)
+    {
+        var gameItem = GameSettingsManager.Instance.GetItem(itemName);
+
+        if (gameItem?.RandomModifiers?.Modifiers is null) return [];
+
+        var secureRands = new List<int>();
+
+        foreach (var itemModifier in gameItem.RandomModifiers.Modifiers)
+        {
+            IncrementRollCounter();
+
+            var debugName = gameItem.Name;
+            var secureRand = SecureRand.GenerateRand(0, 99, RollCounter, Uid);
+
+            StaticLogger.Current.LogDebug("SecureRand for {DebugName}: rollCounter={PlayerRollCounter} => {SecureRand}", debugName, RollCounter, secureRand);
+
+            secureRands.Add(secureRand);
+
+            var modifierTable = GameSettingsManager.Instance.GetRandomModifier(itemModifier.TableName);
+
+            if (modifierTable is null) continue;
+
+            StaticLogger.Current.LogDebug("Checking random table named {ModifierTableName} type {ModifierTableType} with rand {SecureRand}", modifierTable.Name, modifierTable.Type, secureRand);
+
+            var previousRollPercent = 0;
+            var found = false;
+
+            foreach (var roll in modifierTable.Rolls)
+            {
+                if (roll.Percent > 0)
+                {
+                    var currentRollPercent = roll.Percent + previousRollPercent;
+
+                    StaticLogger.Current.LogDebug("Percent {CurrentRollPercent}", currentRollPercent);
+
+                    if (secureRand < currentRollPercent && !found)
+                    {
+                        StaticLogger.Current.LogDebug("FOUND WITH PERCENT : {CurrentRollPercent}", currentRollPercent);
+                        StaticLogger.Current.LogDebug("SECURE RAND : {SecureRand}", secureRand);
+
+                        foreach (var (key, value) in roll.Rewards)
+                        {
+                            // FIXME: Implement a better skip
+                            if (allowedDooberTypes is not null && !allowedDooberTypes.Contains(key))
+                            {
+                                StaticLogger.Current.LogDebug("Skipping doober type {Key} as it is not allowed", key);
+                                continue;
+                            }
+
+                            StaticLogger.Current.LogDebug("TYPE : {Key}", key);
+
+                            switch (key)
+                            {
+                                case "coin":
+                                    StaticLogger.Current.LogDebug("Found coin {CoinAmount}", value.Sum(x => x.Amount));
+                                    AddCoins((int)value.Sum(x => x.Amount));
+                                    break;
+                                case "xp":
+                                    AddXp((int)value.Sum(x => x.Amount));
+                                    StaticLogger.Current.LogDebug("Found xp {XpAmount}", value.Sum(x => x.Amount));
+                                    break;
+                                case "energy":
+                                    AddEnergy((int)value.Sum(x => x.Amount));
+                                    break;
+                                case "collectable":
+                                    StaticLogger.Current.LogDebug("Found collectable {CollectableName}", string.Join(", ", value.Select(x => x.Name).ToList()));
+
+                                    foreach (var element in value)
+                                    {
+                                        var collectionName = GameSettingsManager.Instance.GetCollectionByItemName(element.Name);
+
+                                        if (collectionName is not null)
+                                        {
+                                            AddItemToCollection(collectionName, element.Name);
+                                            StaticLogger.Current.LogDebug("Added {CollectableName} to collection {CollectionName}", element.Name, collectionName);
+                                        }
+                                        else
+                                        {
+                                            StaticLogger.Current.LogWarning("Collection for item {CollectableName} not found", element.Name);
+                                        }
+                                    }
+
+                                    break;
+                                case "food":
+                                    AddGoods((int)value.Sum(x => x.Amount));
+                                    StaticLogger.Current.LogDebug("Found food {FoodAmount}", value.Sum(x => x.Amount));
+                                    break;
+                            }
+                        }
+
+                        found = true;
+                    }
+
+                    previousRollPercent = currentRollPercent;
+                }
+            }
+        }
+
+        return secureRands;
     }
 }

@@ -55,7 +55,7 @@ internal sealed partial class PerformAction
         if (gameItem is not null)
         {
             if (gameItem.Cost is not null)
-                user.RemoveCoin(gameItem.Cost.Value);
+                user.Player!.RemoveCoins(gameItem.Cost.Value);
 
             if (gameItem.Construction is not null)
             {
@@ -65,14 +65,9 @@ internal sealed partial class PerformAction
 
         world.AddBuilding(obj);
 
-        var player = user.Player;
-
-        if (player is null)
-            throw new Exception("Player can't be null");
-
-        if (player.HasItem(itemName))
+        if (user.Player!.HasItem(itemName))
         {
-            var removedItem = player.RemoveItem(itemName);
+            var removedItem = user.Player.RemoveItem(itemName);
 
             if (removedItem is not null)
                 context.Set<InventoryItem>().Remove(removedItem);

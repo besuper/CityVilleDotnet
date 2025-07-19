@@ -11,16 +11,18 @@ public class SetSeenFlag(CityVilleDbContext context, ILogger<SetSeenFlag> logger
 {
     public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var player = await context.Set<User>()
+            .Where(x => x.UserId == userId)
             .Include(x => x.Player)
             .ThenInclude(x => x!.SeenFlags)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't to find user with UserId");
+            .Select(x => x.Player)
+            .FirstOrDefaultAsync(cancellationToken) ?? throw new Exception("Can't to find player with UserId");
 
         var flagName = (string)@params[0] ?? throw new Exception("Flag name can't be null");
 
         logger.LogInformation("Set seen flag for {FlagName}", flagName);
 
-        user.SetSeenFlag(flagName);
+        player.SetSeenFlag(flagName);
 
         await context.SaveChangesAsync(cancellationToken);
 

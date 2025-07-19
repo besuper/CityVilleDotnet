@@ -29,12 +29,12 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
             .ThenInclude(x => x!.Objects)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
-        if (user is null)
+        if (user?.Player is null)
             throw new Exception("Unable to find user with UserId");
 
         var amount = (int)trainInfo["amountFinal"];
 
-        user.AddGoods(amount);
+        user.Player.AddGoods(amount);
         user.HandleQuestProgress("welcomeTrain");
         user.CheckCompletedQuests();
 
@@ -44,7 +44,7 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
         {
             ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active))
         };
-        
+
         return new CityVilleResponse().MetaData(quests);
     }
 }

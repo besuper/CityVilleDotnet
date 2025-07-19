@@ -84,7 +84,7 @@ public class ExpandCity(CityVilleDbContext context) : AmfService
             world.AddBuilding(newTree);
         }
 
-        user.Player.ExpansionsPurchased += 1;
+        user.Player.IncrementExpansionsPurchased();
 
         await context.SaveChangesAsync(cancellationToken);
 

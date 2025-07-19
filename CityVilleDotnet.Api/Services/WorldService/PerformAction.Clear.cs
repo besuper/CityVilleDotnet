@@ -37,7 +37,7 @@ internal sealed partial class PerformAction
             }
         }
         
-        var secureRands = user.CollectDoobersRewards(obj.ItemName);
+        var secureRands = user.Player!.CollectDoobersRewards(obj.ItemName);
 
         world.RemoveBuilding(obj);
 

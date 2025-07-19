@@ -10,12 +10,14 @@ public class SetCityName(CityVilleDbContext context) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
-            .Include(x => x.World)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't to find user with UserId");
-
         var newName = (string)@params[1] ?? throw new Exception("World name can't be null");
-        var name = user.SetWorldName(newName);
+
+        var world = await context.Set<User>()
+            .Where(x => x.UserId == userId)
+            .Select(x => x.World)
+            .FirstOrDefaultAsync(cancellationToken) ?? throw new Exception("Can't to find world with UserId");
+
+        var name = world.SetWorldName(newName);
 
         var response = new ASObject
         {

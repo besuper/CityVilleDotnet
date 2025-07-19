@@ -25,7 +25,7 @@ internal sealed partial class PerformAction
         if (obj.Builds is null)
             throw new Exception($"Can't find `builds` {obj}");
 
-        user.CollectDoobersRewards(obj.ItemName);
+        user.Player!.CollectDoobersRewards(obj.ItemName);
 
         obj.FinishConstruction();
 

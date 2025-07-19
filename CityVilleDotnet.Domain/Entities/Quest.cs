@@ -68,17 +68,17 @@ public class Quest
         {
             if (reward.Gold is not null)
             {
-                user.AddGold(int.Parse(reward.Gold));
+                user.Player.AddCoins(int.Parse(reward.Gold));
             }
 
             if (reward.Xp is not null)
             {
-                user.AddXp(int.Parse(reward.Xp));
+                user.Player.AddXp(int.Parse(reward.Xp));
             }
 
             if (reward.Goods is not null)
             {
-                user.AddGoods(int.Parse(reward.Goods));
+                user.Player.AddGoods(int.Parse(reward.Goods));
             }
 
             if (reward.Item is not null)
@@ -88,7 +88,7 @@ public class Quest
 
             if (reward.ItemUnlock is not null)
             {
-                user.SetSeenFlag(reward.ItemUnlock);
+                user.Player.SetSeenFlag(reward.ItemUnlock);
             }
 
             // TODO: Support energy (add energy engine)
