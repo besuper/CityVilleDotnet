@@ -77,6 +77,12 @@ public class GameSettingsManager
             _reputationLevels = gameSettings.Reputation.Levels;
 
             _settings = gameSettings.Farming.ToDictionary();
+
+            foreach (var collection in gameSettings.Collections.Collections)
+            {
+                collection.TradeInRewards.OnDeserialized();
+            }
+
             _collections = gameSettings.Collections.Collections;
         }
 
@@ -139,5 +145,13 @@ public class GameSettingsManager
         }
 
         return null;
+    }
+
+    public CollectionSetting? GetCollectionByName(string collectionName)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return _collections.FirstOrDefault(x => x.Name == collectionName);
     }
 }

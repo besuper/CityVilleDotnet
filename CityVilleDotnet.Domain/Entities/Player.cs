@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Settings.GameSettings;
 using CityVilleDotnet.Common.Utils;
 using Microsoft.Extensions.Logging;
 
@@ -423,5 +424,83 @@ public class Player
         }
 
         return secureRands;
+    }
+
+    public bool HasCompletedCollection(CollectionSetting targetCollection)
+    {
+        var collection = Collections.FirstOrDefault(x => x.Name == targetCollection.Name);
+
+        if (collection is null) return false;
+
+        var itemsToComplete = targetCollection.Collectables.Collectables.Count;
+        var currentItems = 0;
+
+        foreach (var items in targetCollection.Collectables.Collectables)
+        {
+            var userItem = collection.Items.FirstOrDefault(x => x.Name == items.Name);
+
+            if (userItem is null) return false;
+            if (userItem.Amount < 1) return false;
+
+            currentItems++;
+        }
+
+        return itemsToComplete == currentItems;
+    }
+
+    public List<CollectionItem> CompleteCollection(CollectionSetting targetCollection)
+    {
+        // Should call HasCompletedCollection before this method
+
+        var collection = Collections.FirstOrDefault(x => x.Name == targetCollection.Name);
+
+        if (collection is null) return [];
+
+        var toRemove = new List<CollectionItem>();
+
+        foreach (var items in targetCollection.Collectables.Collectables)
+        {
+            var removedItem = collection.RemoveItem(items.Name);
+
+            if (removedItem is not null)
+                toRemove.Add(removedItem);
+        }
+
+        foreach (var (type, reward) in targetCollection.TradeInRewards.Rewards)
+        {
+            switch (type)
+            {
+                case "xp":
+                    AddXp(reward.Sum(x => int.Parse(x.Amount ?? "0")));
+                    StaticLogger.Current.LogDebug("Added xp {XpAmount}", reward.Sum(x => int.Parse(x.Amount ?? "0")));
+                    break;
+                case "coin":
+                    AddCoins(reward.Sum(x => int.Parse(x.Amount ?? "0")));
+                    StaticLogger.Current.LogDebug("Added coins {CoinAmount}", reward.Sum(x => int.Parse(x.Amount ?? "0")));
+                    break;
+                case "goods":
+                    AddGoods(reward.Sum(x => int.Parse(x.Amount ?? "0")));
+                    StaticLogger.Current.LogDebug("Added goods {GoodsAmount}", reward.Sum(x => int.Parse(x.Amount ?? "0")));
+                    break;
+                case "energy":
+                    AddEnergy(reward.Sum(x => int.Parse(x.Amount ?? "0")));
+                    StaticLogger.Current.LogDebug("Added energy {EnergyAmount}", reward.Sum(x => int.Parse(x.Amount ?? "0")));
+                    break;
+                case "item":
+                    foreach (var item in reward)
+                    {
+                        AddItem(item.Name!);
+                        StaticLogger.Current.LogDebug("Added item {ItemName}", item.Name);
+                    }
+
+                    break;
+            }
+        }
+
+        collection.Complete();
+
+        StaticLogger.Current.LogDebug("Collection {CollectionName} completed with {ItemsCount} items removed", collection.Name, toRemove.Count);
+
+        return toRemove;
     }
 }
