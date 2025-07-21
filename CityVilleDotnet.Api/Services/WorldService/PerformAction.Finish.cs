@@ -13,7 +13,7 @@ internal sealed partial class PerformAction
 
         foreach (var item in building)
         {
-            logger.LogInformation("{ItemKey} = {ItemValue}", item.Key, item.Value);
+            logger.LogDebug("{ItemKey} = {ItemValue}", item.Key, item.Value);
         }
 
         var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
@@ -29,8 +29,8 @@ internal sealed partial class PerformAction
 
         obj.FinishConstruction();
 
-        world.calculateCurrentPopulation();
-        world.calculatePopulationCap();
+        world.CalculateCurrentPopulation();
+        world.CalculatePopulationCap();
 
         user.HandleQuestProgress();
         user.CheckCompletedQuests();

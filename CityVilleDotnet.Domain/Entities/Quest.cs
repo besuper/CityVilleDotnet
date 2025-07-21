@@ -59,10 +59,8 @@ public class Quest
     public void ClaimRewards(User user)
     {
         var questItem = QuestSettingsManager.Instance.GetItem(Name);
-
-        if (questItem is null) return;
-        if (questItem.ResourceModifiers is null) return;
-        if (questItem.ResourceModifiers.Rewards is null) return;
+        
+        if (questItem?.ResourceModifiers?.Rewards is null) return;
 
         foreach (var reward in questItem.ResourceModifiers.Rewards)
         {
@@ -91,7 +89,10 @@ public class Quest
                 user.Player.SetSeenFlag(reward.ItemUnlock);
             }
 
-            // TODO: Support energy (add energy engine)
+            if (reward.Energy is not null)
+            {
+                user.Player.AddEnergy(int.Parse(reward.Energy));
+            }
         }
     }
 
@@ -99,11 +100,8 @@ public class Quest
     {
         var sequels = new List<Quest>();
         var questItem = QuestSettingsManager.Instance.GetItem(Name);
-
-        if (questItem is null) return sequels;
-
-        if (questItem.Sequels is null) return sequels;
-        if (questItem.Sequels.Sequels is null) return sequels;
+        
+        if (questItem?.Sequels?.Sequels is null) return sequels;
 
         foreach (var sequel in questItem.Sequels.Sequels)
         {

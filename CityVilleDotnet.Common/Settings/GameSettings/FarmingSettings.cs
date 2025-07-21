@@ -32,4 +32,7 @@ public class FarmingSettings
 
     [XmlAttribute("friendVisitResidenceRepGain")]
     public required string FriendVisitResidenceRepGain { get; set; }
+    
+    [XmlAttribute("initPopulationCap")]
+    public required string InitPopulationCap { get; set; }
 }

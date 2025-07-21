@@ -5,14 +5,14 @@ namespace CityVilleDotnet.Domain.Entities;
 public class World
 {
     public Guid Id { get; set; }
-    public string WorldName { get; set; }
+    public required string WorldName { get; set; }
     public int SizeX { get; set; } = 36;
     public int SizeY { get; set; } = 36;
     public int Population { get; set; }
     public int PopulationCap { get; set; }
     public int PotentialPopulation { get; set; }
-    public List<MapRect> MapRects { get; set; }
-    public List<WorldObject> Objects { get; set; }
+    public required List<MapRect> MapRects { get; set; }
+    public required List<WorldObject> Objects { get; set; }
 
     public void AddBuilding(WorldObject obj)
     {
@@ -24,7 +24,7 @@ public class World
         return Population * 10;
     }
 
-    public void calculateCurrentPopulation()
+    public void CalculateCurrentPopulation()
     {
         var population = 0;
 
@@ -40,10 +40,9 @@ public class World
         Population = population / 10;
     }
 
-    public void calculatePopulationCap()
+    public void CalculatePopulationCap()
     {
-        // TODO: Load default initPopulationCap from farming in game settings
-        var population = 120;
+        var population = GameSettingsManager.Instance.GetInt("InitPopulationCap") * 10;
 
         foreach (var item in Objects)
         {
@@ -55,11 +54,6 @@ public class World
         }
 
         PopulationCap = population / 10;
-    }
-
-    public WorldObject? GetBuilding(int id, int x, int y, int z)
-    {
-        return Objects.FirstOrDefault(w => w.WorldFlatId == id && w.X == x && w.Y == y && (w.Z ?? 0) == z);
     }
 
     public WorldObject? GetBuildingByCoord(int x, int y, int z)
