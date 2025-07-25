@@ -32,11 +32,11 @@ internal sealed partial class PerformAction
         world.CalculateCurrentPopulation();
         world.CalculatePopulationCap();
 
-        user.HandleQuestProgress();
+        user.HandleQuestsProgress(""); // Empty actionType to force recheck counts
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse();
+        return new CityVilleResponse().MetaData(CreateQuestComponentResponse(user));
     }
 }

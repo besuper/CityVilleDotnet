@@ -40,7 +40,7 @@ public class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : 
             if (currentUser is null)
                 throw new Exception($"Unable to find current user with UserId {userId}");
 
-            currentUser.HandleQuestProgress("neighborVisit");
+            currentUser.HandleQuestsProgress("neighborVisit");
             currentUser.CheckCompletedQuests();
 
             await context.SaveChangesAsync(cancellationToken);

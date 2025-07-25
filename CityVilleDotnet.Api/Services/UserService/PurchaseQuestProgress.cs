@@ -1,6 +1,7 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +36,12 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
+        
+        var quests = new ASObject
+        {
+            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()))
+        };
 
-        return GatewayService.CreateEmptyResponse();
+        return new CityVilleResponse().MetaData(quests);
     }
 }

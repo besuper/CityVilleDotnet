@@ -28,7 +28,7 @@ internal sealed partial class PerformAction
         obj.PlantTime = plantTime is null ? 0 : (double)plantTime;
         obj.State = state;
 
-        user.HandleQuestProgress(itemName: obj.ItemName == "plot_crop" ? obj.ClassName : obj.ItemName);
+        user.HandleQuestsProgress("startContractByClass", className: obj.ClassName);
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);

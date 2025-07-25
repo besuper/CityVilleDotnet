@@ -503,4 +503,10 @@ public class Player
 
         return toRemove;
     }
+    
+    public int CountCollectableByName(string itemName)
+    {
+        return Collections.Sum(x => x.Items.Count(y => y.Name == itemName));
+    }
+    
 }

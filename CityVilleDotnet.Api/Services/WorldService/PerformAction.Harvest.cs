@@ -49,7 +49,24 @@ internal sealed partial class PerformAction
         logger.LogDebug("Secure rands {Join}", string.Join(",", secureRands.ToArray()));
         logger.LogDebug("Secure rands {SecureRandsCount}", secureRands.Count);
 
-        user.HandleQuestProgress(itemName: obj.ItemName == "plot_crop" ? obj.ClassName : obj.ItemName);
+        user.HandleQuestsProgress("harvestByClass", className: obj.ClassName);
+
+        if (obj.ClassName == nameof(BuildingClassType.Plot))
+        {
+            user.HandleQuestsProgress("harvestPlotByName", itemName: obj.ItemName);
+        }
+
+        if (obj.ClassName == nameof(BuildingClassType.Business))
+        {
+            user.HandleQuestsProgress("harvestBusinessByName", itemName: obj.ItemName);
+            user.HandleQuestsProgress("harvestBusinessByClass", className: obj.ClassName);
+        }
+
+        if (obj.ClassName == nameof(BuildingClassType.Residence))
+        {
+            user.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);
+        }
+
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
@@ -59,6 +76,6 @@ internal sealed partial class PerformAction
             ["retCoinYield"] = coinYield,
             //response["doobers"] = AmfConverter.Convert(new List<int>());
             ["secureRands"] = AmfConverter.Convert(secureRands)
-        });
+        }).MetaData(CreateQuestComponentResponse(user));
     }
 }

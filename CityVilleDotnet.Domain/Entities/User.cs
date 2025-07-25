@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.GameEntities;
+using FluorineFx;
 
 namespace CityVilleDotnet.Domain.Entities;
 
@@ -76,93 +77,102 @@ public class User
         return World;
     }
 
-    public void HandleQuestProgress(string actionType = "", string itemName = "")
+    public void HandleQuestsProgress(string actionType, string? className = null, string? itemName = null)
     {
-        // TODO: Make actionType required, update how quests are checked
-
         foreach (var quest in Quests.Where(x => x.QuestType == QuestType.Active))
         {
+            // FIXME: Optimize this, it is called too often
             var questItem = QuestSettingsManager.Instance.GetItem(quest.Name);
 
             if (questItem is null) continue;
 
-            var index = 0;
+            var index = -1;
 
             foreach (var task in questItem.Tasks.Tasks)
             {
-                if (task.Action.Equals(actionType))
+                index++;
+
+                var actionTask = task.Action;
+                var taskType = task.Type;
+                var splitType = taskType.Contains(',') ? taskType.Split(',') : null;
+
+                // When user performs an action
+                if (!string.IsNullOrEmpty(actionType) && actionTask.Equals(actionType))
                 {
-                    quest.Progress[index] += 1;
+                    switch (actionType)
+                    {
+                        case "seenQuest":
+                        case "popNews":
+                        case "sendTrain":
+                        case "welcomeTrain":
+                        case "neighborVisit":
+                        case "onValidCityName":
+                            quest.Progress[index] += 1;
+                            continue;
+                        case "harvestByClass":
+                        case "startContractByClass":
+                        case "placeByClass":
+                        case "harvestBusinessByClass":
+                        case "clearByClass":
+                        {
+                            if (className is null)
+                                throw new Exception("Can't validate byClass action without className");
+
+                            if (task.Type.Equals(className))
+                                quest.Progress[index] += 1;
+
+                            continue;
+                        }
+                        case "harvestResidenceByName":
+                        case "harvestPlotByName":
+                        case "openBusinessByName":
+                        case "harvestBusinessByName":
+                        {
+                            if (itemName is null)
+                                throw new Exception("Can't validate byName action without itemName");
+
+                            if (task.Type.Equals(itemName) || (splitType is not null && splitType.Contains(itemName)))
+                                quest.Progress[index] += 1;
+
+                            continue;
+                        }
+                    }
                 }
 
-                if (task.Action.Equals("countPlayerResourceByType"))
-                {
-                    var count = 0;
-                    var ressourceType = task.Type;
+                // Here we can check global values like counting population or buildings
 
-                    switch (ressourceType)
+                // FIXME: countConstructionOrBuildingByName
+                if (actionTask.Equals("countWorldObjectByName") || actionTask.Equals("countConstructionOrBuildingByName"))
+                {
+                    if (splitType is null)
+                    {
+                        quest.Progress[index] = GetWorld().CountBuildingByName(task.Type);
+                    }
+                    else
+                    {
+                        //bus_toyota1_zyngage,bus_toyota1_zyngage_2,bus_toyota1_zyngage_3
+                        quest.Progress[index] = splitType.Sum(x => GetWorld().CountBuildingByName(x));
+                    }
+
+                    continue;
+                }
+
+                if (actionTask.Equals("countPlayerResourceByType"))
+                {
+                    switch (task.Type)
                     {
                         case "population":
-                            count = GetWorld().GetCurrentPopulation();
-                            break;
-                        default:
-                            break;
-                    }
-
-                    quest.Progress[index] = count;
-                }
-
-                if (task.Action.Equals("countConstructionOrBuildingByName"))
-                {
-                    var buildingName = task.Type;
-
-                    quest.Progress[index] = GetWorld().CountBuildingByName(buildingName);
-                }
-
-                if (task.Action.Equals("openBusinessByName"))
-                {
-                    var buildingName = task.Type;
-
-                    quest.Progress[index] = GetWorld().CountOpenedBuildingByName(buildingName);
-                }
-
-                if (task.Action.Equals("harvestBusinessByName"))
-                {
-                    var buildingName = task.Type;
-
-                    // TODO: Check amount
-
-                    if (buildingName.Equals(itemName))
-                    {
-                        quest.Progress[index] += 1;
+                        {
+                            quest.Progress[index] = GetWorld().GetCurrentPopulation();
+                            continue;
+                        }
                     }
                 }
 
-                if (task.Action.Equals("countWorldObjectByName"))
+                if (actionTask.Equals("countCollectableByName"))
                 {
-                    var buildingName = task.Type;
-
-                    quest.Progress[index] = GetWorld().CountBuildingByName(buildingName);
+                    quest.Progress[index] = Player!.CountCollectableByName(task.Type);
                 }
-
-                if (task.Action.Equals("harvestByClass")
-                    || task.Action.Equals("harvestResidenceByName")
-                    || task.Action.Equals("startContractByClass")
-                    || task.Action.Equals("clearByClass")
-                    || task.Action.Equals("harvestPlotByName")
-                    || task.Action.Equals("placeByClass")
-                   )
-                {
-                    var buildingName = task.Type;
-                    var amount = int.Parse(task.Total);
-
-                    if (buildingName.Equals(itemName))
-                    {
-                        quest.Progress[index] += 1;
-                    }
-                }
-
-                index++;
             }
         }
     }

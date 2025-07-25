@@ -26,7 +26,7 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService
 
         if (user is null) throw new Exception("Can't to find user with UserId");
 
-        user.HandleQuestProgress(actionType);
+        user.HandleQuestsProgress(actionType);
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);

@@ -50,7 +50,7 @@ internal sealed partial class PerformAction
         obj.PlantTime = (double)building["plantTime"];
         obj.State = (string)building["state"];
 
-        user.HandleQuestProgress();
+        user.HandleQuestsProgress("openBusinessByName", itemName: obj.ItemName);
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);

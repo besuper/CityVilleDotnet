@@ -73,10 +73,7 @@ internal sealed partial class PerformAction
         // TODO: Check coins, goods, energy, etc...
         // Add population
 
-        user.HandleQuestProgress();
-        user.HandleQuestProgress(itemName: itemName);
-        user.HandleQuestProgress(itemName: className);
-
+        user.HandleQuestsProgress("placeByClass", className: obj.ClassName);
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);

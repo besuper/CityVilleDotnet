@@ -28,19 +28,19 @@ public class CityVilleResponse
         PacketData = data;
         return this;
     }
-    
+
     public CityVilleResponse ErrorMessage(string errorData)
     {
         ErrorData = errorData;
         return this;
     }
-    
+
     public CityVilleResponse GameData(object data)
     {
         Metadata["gamedata"] = data;
         return this;
     }
-    
+
     public CityVilleResponse PushData(object data)
     {
         Metadata["pushdata"] = data;

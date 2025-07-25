@@ -36,14 +36,14 @@ internal sealed partial class PerformAction
                 return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
             }
         }
-        
+
         var secureRands = user.Player!.CollectDoobersRewards(obj.ItemName);
 
         world.RemoveBuilding(obj);
 
         context.Set<WorldObject>().Remove(obj);
 
-        user.HandleQuestProgress(itemName: obj.ClassName); // Wilderness
+        user.HandleQuestsProgress("clearByClass", className: obj.ClassName); // Wilderness
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);

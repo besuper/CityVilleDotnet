@@ -2,6 +2,7 @@
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
+using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +38,7 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
         {
             await PerformPlace(user, @params, userId, cancellationToken);
 
-            return GatewayService.CreateEmptyResponse();
+            return new CityVilleResponse().MetaData(CreateQuestComponentResponse(user));
         }
 
         if (actionType == "sell")
@@ -51,7 +52,7 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
         {
             await PerformBuild(user, @params, userId, cancellationToken);
 
-            return GatewayService.CreateEmptyResponse();
+            return new CityVilleResponse().MetaData(CreateQuestComponentResponse(user));
         }
 
         if (actionType == "finish")
@@ -75,7 +76,7 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
         {
             await PerformStartContract(user, @params, userId, cancellationToken);
 
-            return GatewayService.CreateEmptyResponse();
+            return new CityVilleResponse().MetaData(CreateQuestComponentResponse(user));
         }
 
         if (actionType == "clear")
@@ -84,5 +85,15 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
         }
 
         return GatewayService.CreateEmptyResponse();
+    }
+    
+    public static ASObject CreateQuestComponentResponse(User user)
+    {
+        var quests = new ASObject
+        {
+            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()))
+        };
+
+        return quests;
     }
 }
