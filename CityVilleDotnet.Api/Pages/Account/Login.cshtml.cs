@@ -19,12 +19,12 @@ public class LoginModel(SignInManager<ApplicationUser> signInManager) : PageMode
             ModelState.AddModelError(string.Empty, ErrorMessage);
         }
 
-        ReturnUrl = returnUrl ?? Url.Content("Game");
+        ReturnUrl = returnUrl ?? "/Game";
     }
 
     public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
     {
-        returnUrl = returnUrl ?? Url.Content("Game");
+        returnUrl = returnUrl ?? "/Game";
 
         if (!ModelState.IsValid)
         {
@@ -38,7 +38,7 @@ public class LoginModel(SignInManager<ApplicationUser> signInManager) : PageMode
 
         if (result.Succeeded)
         {
-            return LocalRedirect(returnUrl);
+            return RedirectToPage(returnUrl);
         }
 
         ModelState.AddModelError(string.Empty, "Invalid username or password.");

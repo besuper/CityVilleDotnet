@@ -20,7 +20,7 @@ public class RegisterModel(
 
     public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
     {
-        returnUrl = returnUrl ?? Url.Content("Game");
+        returnUrl = returnUrl ?? "/Game";
 
         if (!ModelState.IsValid)
         {
