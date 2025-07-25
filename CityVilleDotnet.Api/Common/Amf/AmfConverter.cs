@@ -32,18 +32,12 @@ public static class AmfConverter
     {
         var result = new ASObject();
 
-        if (obj is null)
-            return result;
-
         var type = obj.GetType();
         var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
         foreach (var property in properties)
         {
-            if (property.GetCustomAttribute<JsonIgnoreAttribute>() != null)
-            {
-                continue;
-            }
+            if (property.GetCustomAttribute<JsonIgnoreAttribute>() != null) continue;
 
             var jsonPropertyNameAttr = property.GetCustomAttribute<JsonPropertyNameAttribute>();
             var propertyName = jsonPropertyNameAttr != null
@@ -51,6 +45,13 @@ public static class AmfConverter
                 : property.Name;
 
             var value = property.GetValue(obj);
+
+            if (value is null)
+            {
+                result[propertyName] = null;
+                continue;
+            }
+
             result[propertyName] = Convert(value);
         }
 

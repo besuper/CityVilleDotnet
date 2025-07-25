@@ -7,7 +7,7 @@ public class AmfService
     public AmfService()
     {
     }
-    public virtual async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public virtual Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
         throw new Exception("Not implemented");
     }
