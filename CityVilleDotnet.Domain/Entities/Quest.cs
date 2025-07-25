@@ -5,11 +5,10 @@ namespace CityVilleDotnet.Domain.Entities;
 
 public class Quest
 {
-    public Quest(string name, int complete, int[] progress, int[] purchased, QuestType questType)
+    public Quest(string name, int[] progress, int[] purchased, QuestType questType)
     {
         Id = Guid.NewGuid();
         Name = name;
-        Complete = complete;
         Progress = progress;
         Purchased = purchased;
         QuestType = questType;
@@ -19,21 +18,19 @@ public class Quest
     {
     }
 
-    [JsonIgnore] public Guid Id { get; private set; }
+    public Guid Id { get; private set; }
 
-    [JsonPropertyName("name")] public string Name { get; set; }
+    public string Name { get; set; }
 
-    [JsonPropertyName("complete")] public int Complete { get; set; }
+    public int[] Progress { get; set; }
 
-    [JsonPropertyName("progress")] public int[] Progress { get; set; }
+    public int[] Purchased { get; set; }
 
-    [JsonPropertyName("purchased")] public int[] Purchased { get; set; }
+    public QuestType QuestType { get; set; }
 
-    [JsonIgnore] public QuestType QuestType { get; set; }
-
-    public static Quest Create(string name, int complete, int length, QuestType questType)
+    public static Quest Create(string name, int length, QuestType questType)
     {
-        return new Quest(name, complete, new int[length], new int[length], questType);
+        return new Quest(name,new int[length], new int[length], questType);
     }
 
     public bool IsCompleted()
@@ -56,7 +53,7 @@ public class Quest
         return completed;
     }
 
-    public void ClaimRewards(User user)
+    public void ClaimRewards(Player player)
     {
         var questItem = QuestSettingsManager.Instance.GetItem(Name);
         
@@ -66,32 +63,32 @@ public class Quest
         {
             if (reward.Gold is not null)
             {
-                user.Player.AddCoins(int.Parse(reward.Gold));
+                player.AddCoins(int.Parse(reward.Gold));
             }
 
             if (reward.Xp is not null)
             {
-                user.Player.AddXp(int.Parse(reward.Xp));
+                player.AddXp(int.Parse(reward.Xp));
             }
 
             if (reward.Goods is not null)
             {
-                user.Player.AddGoods(int.Parse(reward.Goods));
+                player.AddGoods(int.Parse(reward.Goods));
             }
 
             if (reward.Item is not null)
             {
-                user.Player?.AddItem(reward.Item);
+                player.AddItem(reward.Item);
             }
 
             if (reward.ItemUnlock is not null)
             {
-                user.Player.SetSeenFlag(reward.ItemUnlock);
+                player.SetSeenFlag(reward.ItemUnlock);
             }
 
             if (reward.Energy is not null)
             {
-                user.Player.AddEnergy(int.Parse(reward.Energy));
+                player.AddEnergy(int.Parse(reward.Energy));
             }
         }
     }
@@ -110,7 +107,7 @@ public class Quest
             if (sequelItem is null) continue;
 
             // TODO: Add support for pending tasks
-            var newQuest = Quest.Create(sequelItem.Name, 0, sequelItem.Tasks.Tasks.Count, QuestType.Active);
+            var newQuest = Create(sequelItem.Name, sequelItem.Tasks.Tasks.Count, QuestType.Active);
 
             sequels.Add(newQuest);
         }

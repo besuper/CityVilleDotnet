@@ -11,6 +11,8 @@ public class QuestConfiguration : IEntityTypeConfiguration<Quest>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id)
             .ValueGeneratedNever();
+        
+        builder.Property(x => x.Name).HasMaxLength(64);
 
         builder.Property(x => x.QuestType).HasConversion<string>();
     }

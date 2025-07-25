@@ -68,7 +68,7 @@ public class User
     public void SetupNewPlayer(ApplicationUser user)
     {
         // Setup first quest
-        Quests.Add(Quest.Create("q_rename_city", 0, 1, QuestType.Active));
+        Quests.Add(Quest.Create("q_rename_city", 1, QuestType.Active));
     }
 
     public World GetWorld()
@@ -176,7 +176,7 @@ public class User
             if (item.IsCompleted())
             {
                 item.QuestType = QuestType.Completed;
-                item.ClaimRewards(this);
+                item.ClaimRewards(Player!);
 
                 newQuests = item.StartSequels();
             }

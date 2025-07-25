@@ -2,6 +2,7 @@
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +39,7 @@ internal sealed class RequestManualQuest(CityVilleDbContext context, ILogger<Req
             return new CityVilleResponse().Data(new ASObject { { "questStarted", 0 } });
         }
 
-        var newQuest = Quest.Create(questName, 0, quest.Tasks.Tasks.Count, QuestType.Active);
+        var newQuest = Quest.Create(questName, quest.Tasks.Tasks.Count, QuestType.Active);
         user.Quests.Add(newQuest);
 
         await context.SaveChangesAsync(cancellationToken);
@@ -47,7 +48,7 @@ internal sealed class RequestManualQuest(CityVilleDbContext context, ILogger<Req
 
         var quests = new ASObject
         {
-            { "QuestComponent", AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active)) }
+            { "QuestComponent", AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto())) }
         };
 
         return new CityVilleResponse().Data(new ASObject { { "questStarted", 1 } }).MetaData(quests);
