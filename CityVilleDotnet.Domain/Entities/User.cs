@@ -1,6 +1,5 @@
 ﻿using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.GameEntities;
-using FluorineFx;
 
 namespace CityVilleDotnet.Domain.Entities;
 
@@ -108,7 +107,7 @@ public class User
                         case "neighborVisit":
                         case "onValidCityName":
                             quest.Progress[index] += 1;
-                            continue;
+                            break;
                         case "harvestByClass":
                         case "startContractByClass":
                         case "placeByClass":
@@ -121,7 +120,7 @@ public class User
                             if (task.Type.Equals(className))
                                 quest.Progress[index] += 1;
 
-                            continue;
+                            break;
                         }
                         case "harvestResidenceByName":
                         case "harvestPlotByName":
@@ -134,44 +133,45 @@ public class User
                             if (task.Type.Equals(itemName) || (splitType is not null && splitType.Contains(itemName)))
                                 quest.Progress[index] += 1;
 
-                            continue;
+                            break;
                         }
                     }
                 }
 
                 // Here we can check global values like counting population or buildings
 
-                // FIXME: countConstructionOrBuildingByName
-                if (actionTask.Equals("countWorldObjectByName") || actionTask.Equals("countConstructionOrBuildingByName"))
+                switch (actionTask)
                 {
-                    if (splitType is null)
+                    // FIXME: countConstructionOrBuildingByName
+                    case "countWorldObjectByName":
+                    case "countConstructionOrBuildingByName":
                     {
-                        quest.Progress[index] = GetWorld().CountBuildingByName(task.Type);
-                    }
-                    else
-                    {
-                        //bus_toyota1_zyngage,bus_toyota1_zyngage_2,bus_toyota1_zyngage_3
-                        quest.Progress[index] = splitType.Sum(x => GetWorld().CountBuildingByName(x));
-                    }
-
-                    continue;
-                }
-
-                if (actionTask.Equals("countPlayerResourceByType"))
-                {
-                    switch (task.Type)
-                    {
-                        case "population":
+                        if (splitType is null)
                         {
-                            quest.Progress[index] = GetWorld().GetCurrentPopulation();
-                            continue;
+                            quest.Progress[index] = GetWorld().CountBuildingByName(task.Type);
                         }
-                    }
-                }
+                        else
+                        {
+                            //bus_toyota1_zyngage,bus_toyota1_zyngage_2,bus_toyota1_zyngage_3
+                            quest.Progress[index] = splitType.Sum(x => GetWorld().CountBuildingByName(x));
+                        }
 
-                if (actionTask.Equals("countCollectableByName"))
-                {
-                    quest.Progress[index] = Player!.CountCollectableByName(task.Type);
+                        continue;
+                    }
+                    case "countPlayerResourceByType":
+                        quest.Progress[index] = task.Type switch
+                        {
+                            // population,ghost
+                            "population" => GetWorld().GetCurrentPopulation(),
+                            "coin" => Player!.Gold,
+                            "goods" => Player!.Goods,
+                            _ => 0
+                        };
+
+                        break;
+                    case "countCollectableByName":
+                        quest.Progress[index] = Player!.CountCollectableByName(task.Type);
+                        break;
                 }
             }
         }

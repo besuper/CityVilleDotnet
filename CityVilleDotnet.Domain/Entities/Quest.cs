@@ -30,7 +30,7 @@ public class Quest
 
     public static Quest Create(string name, int length, QuestType questType)
     {
-        return new Quest(name,new int[length], new int[length], questType);
+        return new Quest(name, new int[length], new int[length], questType);
     }
 
     public bool IsCompleted()
@@ -56,40 +56,28 @@ public class Quest
     public void ClaimRewards(Player player)
     {
         var questItem = QuestSettingsManager.Instance.GetItem(Name);
-        
+
         if (questItem?.ResourceModifiers?.Rewards is null) return;
 
         foreach (var reward in questItem.ResourceModifiers.Rewards)
         {
             if (reward.Gold is not null)
-            {
                 player.AddCoins(int.Parse(reward.Gold));
-            }
 
             if (reward.Xp is not null)
-            {
                 player.AddXp(int.Parse(reward.Xp));
-            }
 
             if (reward.Goods is not null)
-            {
                 player.AddGoods(int.Parse(reward.Goods));
-            }
 
             if (reward.Item is not null)
-            {
                 player.AddItem(reward.Item);
-            }
 
             if (reward.ItemUnlock is not null)
-            {
                 player.SetSeenFlag(reward.ItemUnlock);
-            }
 
             if (reward.Energy is not null)
-            {
                 player.AddEnergy(int.Parse(reward.Energy));
-            }
         }
     }
 
@@ -97,7 +85,7 @@ public class Quest
     {
         var sequels = new List<Quest>();
         var questItem = QuestSettingsManager.Instance.GetItem(Name);
-        
+
         if (questItem?.Sequels?.Sequels is null) return sequels;
 
         foreach (var sequel in questItem.Sequels.Sequels)

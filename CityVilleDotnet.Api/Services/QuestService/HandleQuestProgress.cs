@@ -1,6 +1,5 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Domain.Entities;
-using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
@@ -18,6 +17,7 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService
         var actionType = (string)@params[0];
 
         var user = await context.Set<User>()
+            .AsSplitQuery()
             .Include(x => x.Quests)
             .Include(x => x.Player)
             .Include(x => x.World)

@@ -22,21 +22,23 @@ public class OnTradeIn(CityVilleDbContext context) : AmfService
         if (collection is null)
             throw new Exception($"Can't find collection {collectionName}");
 
-        var user = await context.Set<User>()
+        var player = await context.Set<User>()
             .AsSplitQuery()
             .Include(x => x.Player)
             .ThenInclude(x => x!.Collections)
             .ThenInclude(x => x!.Items)
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .Where(x => x.UserId == userId)
+            .Select(x => x.Player)
+            .FirstOrDefaultAsync(cancellationToken);
 
-        if (user?.Player is null)
+        if (player is null)
             throw new Exception("Can't find user");
 
-        if (user.Player.HasCompletedCollection(collection))
+        if (player.HasCompletedCollection(collection))
         {
-            var removeItems = user.Player.CompleteCollection(collection);
+            var removeItems = player.CompleteCollection(collection);
 
             context.Set<CollectionItem>().RemoveRange(removeItems);
         }
