@@ -30,6 +30,8 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .Include(x => x.Player)
             .ThenInclude(x => x!.Collections)
             .ThenInclude(x => x.Items)
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.Licenses)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (user is null)
@@ -37,7 +39,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             // Create a new player
             var appUser = await context.Set<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId.ToString(), cancellationToken) ?? throw new Exception("Can't find ApplicationUser with UserId");
             var jsonContent = await File.ReadAllTextAsync("Resources/startWorld.json", cancellationToken);
-
+            
             var defaultWorld = JsonSerializer.Deserialize<WorldDto>(jsonContent) ?? throw new Exception("WorldDto can't be null");
 
             user = User.CreateNewPlayer(defaultWorld, appUser);

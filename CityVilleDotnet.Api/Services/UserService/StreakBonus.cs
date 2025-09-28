@@ -20,7 +20,7 @@ public class StreakBonus(CityVilleDbContext context, ILogger<StreakBonus> logger
         var amount = (int)data["amount"];
         var maxesReached = (int)data["maxesReached"];
 
-        logger.LogInformation("Streak bonus {Amount} coins [{MaxesReached}]", amount, maxesReached);
+        logger.LogDebug("Streak bonus {Amount} coins [{MaxesReached}]", amount, maxesReached);
 
         user.AddCoins(amount);
 

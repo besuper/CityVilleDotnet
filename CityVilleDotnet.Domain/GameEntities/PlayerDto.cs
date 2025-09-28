@@ -51,7 +51,7 @@ public class PlayerDto
     [JsonPropertyName("completedCollections")]
     public ASObject CompletedCollections { get; set; } = new();
 
-    [JsonPropertyName("licenses")] public Dictionary<object, object> Licenses { get; set; } = new Dictionary<object, object>();
+    [JsonPropertyName("licenses")] public ASObject Licenses { get; set; } = new();
 
     [JsonPropertyName("rollCounter")] public int RollCounter { get; set; } = 0;
 }
@@ -89,7 +89,7 @@ public static class PlayerDtoMapper
             },
             LastTrackingTimestamp = model.LastTrackingTimestamp,
             Level = model.Level,
-            Licenses = model.Licenses,
+            Licenses = new ASObject(model.Licenses.ToDictionary(x => x.Name, x => (object)x.Amount)),
             Neighbors = [],
             Options = new OptionsDto
             {

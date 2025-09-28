@@ -30,7 +30,7 @@ public class Player
     public List<SeenFlag> SeenFlags { get; set; } = new();
     public int ExpansionsPurchased { get; private set; }
     public List<Collection> Collections { get; set; } = [];
-    public Dictionary<object, object> Licenses { get; set; } = [];
+    public List<LicenseItem> Licenses { get; set; } = [];
     public int RollCounter { get; private set; }
     public bool IsNew { get; private set; } = true;
     public bool FirstDay { get; private set; } = true;
@@ -132,6 +132,12 @@ public class Player
         var currentNewEnergy = Math.Min(Energy + (int)toRecover, EnergyMax);
         var timeSinceLastRegen = elapsedTime % timeToRegen;
         var timeUntilNextRegen = timeToRegen - timeSinceLastRegen;
+
+        if (timeSinceLastRegen < 0)
+        {
+            currentNewEnergy = EnergyMax;
+            timeSinceLastRegen = 0;
+        }
 
         return new Energy(currentNewEnergy, timeToRegen, timeUntilNextRegen, timeSinceLastRegen);
     }
@@ -503,10 +509,29 @@ public class Player
 
         return toRemove;
     }
-    
+
     public int CountCollectableByName(string itemName)
     {
         return Collections.Sum(x => x.Items.Count(y => y.Name == itemName));
     }
-    
+
+    public void AddLicense(string licenseName)
+    {
+        var license = Licenses.FirstOrDefault(x => x.Name == licenseName);
+
+        if (license is null)
+            Licenses.Add(new LicenseItem(licenseName, 1));
+        else
+            license.Add(1);
+    }
+
+    public LicenseItem? DeleteLicense(string licenseName)
+    {
+        var license = Licenses.FirstOrDefault(x => x.Name == licenseName);
+
+        if (license is null) return null;
+
+        Licenses.Remove(license);
+        return license;
+    }
 }
