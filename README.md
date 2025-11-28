@@ -1,5 +1,5 @@
 # CityVille .NET
-> A .NET 8 backend recreation of the classic CityVille game
+> A .NET 10 backend recreation of the classic CityVille game
 
 **Alpha Status**: This project is currently in alpha development. The game is playable but many features are still being implemented.
 
@@ -15,7 +15,7 @@
 
 ### Prerequisites
 -   Docker & Docker Compose
--   .NET 8 SDK (for development)
+-   .NET 10 SDK (for development)
 
 ### Quick Start
 
@@ -77,7 +77,6 @@ CityVilleDotnet/
 ├── CityVilleDotnet.Persistence/  # Data access layer
 ├── docker-compose.yml            # Docker configuration
 └── Dockerfile                    # Container build instructions
-
 ```
 
 ## License
