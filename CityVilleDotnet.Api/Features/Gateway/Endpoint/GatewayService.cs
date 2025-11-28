@@ -26,7 +26,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
         if (user is null)
         {
-            await SendUnauthorizedAsync(ct);
+            await Send.UnauthorizedAsync(ct);
             return;
         }
 
@@ -69,7 +69,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
             if (objectUid is null)
             {
-                await SendUnauthorizedAsync(ct);
+                await Send.UnauthorizedAsync(ct);
                 return;
             }
 

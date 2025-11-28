@@ -11,7 +11,7 @@ internal sealed class WildernessData : Endpoint<WildernessDataRequest>
 
     public override async Task HandleAsync(WildernessDataRequest req, CancellationToken ct)
     {
-        await SendRedirectAsync("/assets/wilderness/WildernessData/WildernessClientData14.txt");
+        await Send.RedirectAsync("/assets/wilderness/WildernessData/WildernessClientData14.txt");
     }
 }
 

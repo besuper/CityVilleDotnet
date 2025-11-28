@@ -11,6 +11,6 @@ internal sealed class RecordStats : EndpointWithoutRequest
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        await SendOkAsync(ct);
+        await Send.OkAsync(cancellation: ct);
     }
 }
