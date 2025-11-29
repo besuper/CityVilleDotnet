@@ -8,7 +8,6 @@ using CityVilleDotnet.Api.Common.Amf;
 using Microsoft.AspNetCore.Identity;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Common.Settings;
-using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Enums;
 
 namespace CityVilleDotnet.Api.Features.Gateway.Endpoint;
@@ -115,7 +114,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
                     if (response is null)
                     {
-                        logger.LogDebug("Something went wrong while processing the request.");
+                        logger.LogError("Something went wrong while processing the request.");
 
                         response = CreateEmptyResponse();
                     }

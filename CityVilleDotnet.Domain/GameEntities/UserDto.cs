@@ -6,6 +6,7 @@ namespace CityVilleDotnet.Domain.GameEntities;
 public class UserDto
 {
     [JsonPropertyName("userInfo")] public required UserInfoDto UserInfo { get; set; }
+    [JsonPropertyName("franchises")] public List<FranchiseDto> Franchises { get; set; } = new();
 }
 
 public static class UserDtoMapper
@@ -26,8 +27,9 @@ public static class UserDtoMapper
                 Player = player,
                 World = model.World?.ToDto(),
                 Username = model.Player.Username,
-                WorldName = model.World.WorldName
-            }
+                WorldName = model.World.WorldName,
+            },
+            Franchises = model.Player.Franchises.Select(x => x.ToDto()).ToList(),
         };
     }
 }

@@ -12,9 +12,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Id)
             .ValueGeneratedNever();
 
-        // TODO: Implement franchises
-        builder.Ignore(x => x.Franchises);
-
         builder.HasOne(x => x.Player);
         builder.HasOne(x => x.World);
 

@@ -52,6 +52,7 @@ public class PlayerDto
     public ASObject CompletedCollections { get; set; } = new();
 
     [JsonPropertyName("licenses")] public ASObject Licenses { get; set; } = new();
+    
 
     [JsonPropertyName("rollCounter")] public int RollCounter { get; set; } = 0;
 }

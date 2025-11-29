@@ -31,6 +31,7 @@ public class Player
     public int ExpansionsPurchased { get; private set; }
     public List<Collection> Collections { get; set; } = [];
     public List<LicenseItem> Licenses { get; set; } = [];
+    public List<Franchise> Franchises { get; set; } = [];
     public int RollCounter { get; private set; }
     public bool IsNew { get; private set; } = true;
     public bool FirstDay { get; private set; } = true;
@@ -533,5 +534,19 @@ public class Player
 
         Licenses.Remove(license);
         return license;
+    }
+
+    public void UpdateFranchiseName(string franchiseType, string franchiseName)
+    {
+        var franchise = Franchises.FirstOrDefault(x => x.FranchiseType == franchiseType);
+
+        if (franchise is null)
+        {
+            franchise = new Franchise(franchiseType, franchiseName);
+            
+            Franchises.Add(franchise);
+        }
+        
+        franchise.SetFranchiseName(franchiseName);
     }
 }

@@ -11,7 +11,6 @@ public class User
     public List<Quest> Quests { get; } = [];
     public Player? Player { get; private set; }
     public World? World { get; set; }
-    public List<object> Franchises { get; set; } = [];
     public List<Friend> Friends { get; } = [];
 
     public static User CreateNewPlayer(WorldDto defaultValue, ApplicationUser user)

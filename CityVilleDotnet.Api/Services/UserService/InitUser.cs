@@ -32,6 +32,9 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .ThenInclude(x => x.Items)
             .Include(x => x.Player)
             .ThenInclude(x => x!.Licenses)
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.Franchises)
+            .ThenInclude(x => x.Locations)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (user is null)
