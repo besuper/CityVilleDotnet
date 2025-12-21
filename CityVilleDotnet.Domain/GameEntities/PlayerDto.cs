@@ -1,6 +1,7 @@
 ﻿using CityVilleDotnet.Domain.Entities;
 using System.Text.Json.Serialization;
 using CityVilleDotnet.Common.Utils;
+using CityVilleDotnet.Domain.EnumExtensions;
 using FluorineFx;
 
 namespace CityVilleDotnet.Domain.GameEntities;
@@ -53,7 +54,8 @@ public class PlayerDto
 
     [JsonPropertyName("licenses")] public ASObject Licenses { get; set; } = new();
     
-
+    [JsonPropertyName("Orders")] public ASObject Orders { get; set; } = new();
+    
     [JsonPropertyName("rollCounter")] public int RollCounter { get; set; } = 0;
 }
 
@@ -104,6 +106,64 @@ public static class PlayerDtoMapper
             Xp = model.Xp,
             SocialLevel = model.SocialLevel,
             SocialXp = model.SocialXp,
+            Orders = BuildOrdersAsObject(model)
         };
     }
+    
+    private static ASObject BuildOrdersAsObject(Player model)
+    {
+        var root = new ASObject();
+
+        // TODO: Add VisitorHelp and TrainOrder
+        foreach (var order in model.LotOrders)
+        {
+            var orderTypeKey = order.OrderType.ToDescriptionString();              // "order_lot"
+            var transmissionKey = order.TransmissionStatus.ToDescriptionString();  // "sent"/"received"
+            var stateKey = order.OrderState.ToDescriptionString();                 // "pending"/"accepted"/"denied"
+            
+            var isReceived = transmissionKey == "received";
+            var otherUserId = isReceived ? $"{order.SenderId}:{order.SenderId}" : $"{order.RecipientId}:{order.RecipientId}";
+            
+            if (!root.ContainsKey(orderTypeKey))
+                root[orderTypeKey] = new ASObject();
+            
+            var byTransmission = (ASObject)root[orderTypeKey]!;
+
+            if (!byTransmission.ContainsKey(transmissionKey))
+                byTransmission[transmissionKey] = new ASObject();
+            
+            var byState = (ASObject)byTransmission[transmissionKey]!;
+
+            if (!byState.ContainsKey(stateKey))
+                byState[stateKey] = new ASObject();
+            
+            var byOtherUser = (ASObject)byState[stateKey]!;
+
+            if (!byOtherUser.ContainsKey(otherUserId))
+                byOtherUser[otherUserId] = new ASObject();
+            
+            var orderParams = new ASObject
+            {
+                ["senderID"] = order.SenderId,
+                ["recipientID"] = order.RecipientId,
+                ["timeSent"] = order.TimeSent,
+                ["lastTimeReminded"] = order.LastTimeReminded,
+                ["orderType"] = orderTypeKey,
+                ["orderState"] = stateKey,
+                ["transmissionStatus"] = transmissionKey,
+
+                ["lotId"] = order.LotId,
+                ["resourceType"] = order.ResourceType,
+                ["orderResourceName"] = order.OrderResourceName,
+                ["constructionCount"] = order.ConstructionCount,
+                ["offsetX"] = order.OffsetX,
+                ["offsetY"] = order.OffsetY
+            };
+
+            byOtherUser[otherUserId] = orderParams;
+        }
+
+        return root;
+    }
+
 }

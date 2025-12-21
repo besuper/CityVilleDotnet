@@ -18,6 +18,7 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
             .AsSplitQuery()
             .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
             .Include(x => x.Player)

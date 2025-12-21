@@ -4,6 +4,7 @@ using CityVilleDotnet.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CityVilleDotnet.Persistence.Migrations
 {
     [DbContext(typeof(CityVilleDbContext))]
-    partial class CityVilleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251207132628_AddFranchiseLocationWorldObject")]
+    partial class AddFranchiseLocationWorldObject
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -194,14 +197,14 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<int>("StarRating")
                         .HasColumnType("int");
 
-                    b.Property<long>("TimeLastCollected")
-                        .HasColumnType("bigint");
+                    b.Property<int>("TimeLastCollected")
+                        .HasColumnType("int");
 
-                    b.Property<long>("TimeLastOperated")
-                        .HasColumnType("bigint");
+                    b.Property<int>("TimeLastOperated")
+                        .HasColumnType("int");
 
-                    b.Property<long>("TimeLastSupplied")
-                        .HasColumnType("bigint");
+                    b.Property<int>("TimeLastSupplied")
+                        .HasColumnType("int");
 
                     b.Property<string>("Uid")
                         .IsRequired()

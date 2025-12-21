@@ -12,12 +12,14 @@ public class ItemsContainer
 public class GameItem
 {
     [XmlAttribute("name")] public required string Name { get; set; }
+    [XmlAttribute("type")] public required string Type { get; set; }
     [XmlAttribute("height")] public string? Height { get; set; }
     [XmlAttribute("width")] public string? Width { get; set; }
 
     [XmlElement("requiredLevel")] public int? RequiredLevel { get; set; }
 
     [XmlElement("requiredPopulation")] public int? RequiredPopulation { get; set; }
+    [XmlElement("headquarters")] public string? HeadquartersName { get; set; }
 
     [XmlElement("populationYield")] public int? PopulationYield { get; set; }
 

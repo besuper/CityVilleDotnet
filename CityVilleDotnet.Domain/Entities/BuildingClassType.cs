@@ -9,5 +9,6 @@ public enum BuildingClassType
     Wilderness,
     Municipal,
     Storage,
-    ConstructionSite
+    ConstructionSite,
+    LotSite
 }

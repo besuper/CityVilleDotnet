@@ -1,18 +1,34 @@
 ﻿using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Domain.EnumExtensions;
 
 namespace CityVilleDotnet.Domain.Entities;
 
 public class World
 {
     public Guid Id { get; set; }
-    public required string WorldName { get; set; }
-    public int SizeX { get; set; } = 36;
-    public int SizeY { get; set; } = 36;
+    public string WorldName { get; private set; }
+    public int SizeX { get; set; }
+    public int SizeY { get; set; }
     public int Population { get; set; }
     public int PopulationCap { get; set; }
     public int PotentialPopulation { get; set; }
-    public required List<MapRect> MapRects { get; set; }
-    public required List<WorldObject> Objects { get; set; }
+    public List<MapRect> MapRects { get; set; } = [];
+    public List<WorldObject> Objects { get; set; } = [];
+    
+    public World() { }
+
+    public World(string worldName, int sizeX, int sizeY, int population, int populationCap, int potentialPopulation, List<MapRect> mapRects, List<WorldObject> objects)
+    {
+        Id = Guid.NewGuid();
+        WorldName = worldName;
+        SizeX = sizeX;
+        SizeY = sizeY;
+        Population = population;
+        PopulationCap = populationCap;
+        PotentialPopulation = potentialPopulation;
+        MapRects = mapRects;
+        Objects = objects;
+    }
 
     public void AddBuilding(WorldObject obj)
     {
@@ -104,5 +120,21 @@ public class World
         WorldName = newName;
 
         return newName;
+    }
+
+    public void ReplaceBuildingFromLotOrder(LotOrder lotOrder)
+    {
+        var building = Objects.FirstOrDefault(x => x.WorldFlatId == lotOrder.LotId);
+
+        if (building is null) return;
+        if (building.ClassName != nameof(BuildingClassType.LotSite)) throw new Exception("Building is not a LotSite");
+        
+        var gameItem = GameSettingsManager.Instance.GetItem(lotOrder.ResourceType);
+
+        if(gameItem is null) throw new Exception("Item not found");
+        
+        building.ItemName = lotOrder.ResourceType;
+        building.ClassName = gameItem.Type;
+        building.State = "closed";
     }
 }

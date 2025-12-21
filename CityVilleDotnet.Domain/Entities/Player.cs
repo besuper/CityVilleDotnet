@@ -37,6 +37,7 @@ public class Player
     public bool FirstDay { get; private set; } = true;
     public int CreationTimestamp { get; private set; }
     public string Username { get; private set; }
+    public List<LotOrder> LotOrders { get; set; } = [];
 
     public Player(string username)
     {
@@ -548,5 +549,10 @@ public class Player
         }
         
         franchise.SetFranchiseName(franchiseName);
+    }
+
+    public void AddLotOrder(LotOrder lotOrder)
+    {
+        LotOrders.Add(lotOrder);
     }
 }

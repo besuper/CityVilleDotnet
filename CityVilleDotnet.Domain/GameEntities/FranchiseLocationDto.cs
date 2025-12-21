@@ -18,13 +18,13 @@ public class FranchiseLocationDto
     [JsonPropertyName("obj_id")] public required string ObjectId { get; set; }
 
     [JsonPropertyName("time_last_collected")]
-    public int TimeLastCollected { get; set; }
+    public long TimeLastCollected { get; set; }
 
     [JsonPropertyName("time_last_operated")]
-    public int TimeLastOperated { get; set; }
+    public long TimeLastOperated { get; set; }
 
     [JsonPropertyName("time_last_supplied")]
-    public int TimeLastSupplied { get; set; }
+    public long TimeLastSupplied { get; set; }
 }
 
 public static class FranchiseLocationDtoMapper

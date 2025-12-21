@@ -15,52 +15,47 @@ public class User
 
     public static User CreateNewPlayer(WorldDto defaultValue, ApplicationUser user)
     {
+        var mapRects = defaultValue.MapRects.Select(x => new MapRect()
+        {
+            Id = Guid.NewGuid(),
+            Height = x.Height,
+            Width = x.Width,
+            X = x.X,
+            Y = x.Y,
+        }).ToList();
+
+        var objects = defaultValue.Objects.Select(x => new WorldObject()
+        {
+            Id = Guid.NewGuid(),
+            Builds = x.Builds,
+            BuildTime = x.BuildTime,
+            ClassName = x.ClassName,
+            ContractName = x.ContractName,
+            Deleted = x.Deleted,
+            Direction = x.Direction,
+            FinishedBuilds = x.FinishedBuilds,
+            ItemName = x.ItemName,
+            PlantTime = x.PlantTime,
+            X = x.Position.X,
+            Y = x.Position.Y,
+            Z = x.Position.Z,
+            Stage = x.Stage,
+            State = x.State,
+            TargetBuildingClass = x.TargetBuildingClass,
+            TargetBuildingName = x.TargetBuildingName,
+            TempId = x.TempId,
+            WorldFlatId = x.WorldFlatId,
+        }).ToList();
+        
+        var world = new World("", 36, 36, 2, 0, 0, mapRects, objects);
+        
         return new User
         {
             Id = Guid.NewGuid(),
             UserId = Guid.Parse(user.Id),
             AppUser = user,
             Player = new Player(user.UserName!),
-            World = new World
-            {
-                Id = Guid.NewGuid(),
-                Population = 2,
-                PopulationCap = 0,
-                PotentialPopulation = 0,
-                SizeX = 36,
-                SizeY = 36,
-                WorldName = "",
-                MapRects = defaultValue.MapRects.Select(x => new MapRect()
-                {
-                    Id = Guid.NewGuid(),
-                    Height = x.Height,
-                    Width = x.Width,
-                    X = x.X,
-                    Y = x.Y,
-                }).ToList(),
-                Objects = defaultValue.Objects.Select(x => new WorldObject()
-                {
-                    Id = Guid.NewGuid(),
-                    Builds = x.Builds,
-                    BuildTime = x.BuildTime,
-                    ClassName = x.ClassName,
-                    ContractName = x.ContractName,
-                    Deleted = x.Deleted,
-                    Direction = x.Direction,
-                    FinishedBuilds = x.FinishedBuilds,
-                    ItemName = x.ItemName,
-                    PlantTime = x.PlantTime,
-                    X = x.Position.X,
-                    Y = x.Position.Y,
-                    Z = x.Position.Z,
-                    Stage = x.Stage,
-                    State = x.State,
-                    TargetBuildingClass = x.TargetBuildingClass,
-                    TargetBuildingName = x.TargetBuildingName,
-                    TempId = x.TempId,
-                    WorldFlatId = x.WorldFlatId,
-                }).ToList()
-            }
+            World = world
         };
     }
 

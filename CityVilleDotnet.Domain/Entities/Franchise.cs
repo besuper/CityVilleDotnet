@@ -19,4 +19,17 @@ public class Franchise
     {
         FranchiseName = franchiseName;
     }
+
+    public FranchiseLocation AddLocation(LotOrder order)
+    {
+        var newLocation = new FranchiseLocation
+        {
+            Uid = order.RecipientId,
+            ObjectId = $"{order.LotId}"
+        };
+        
+        Locations.Add(newLocation);
+
+        return newLocation;
+    }
 }

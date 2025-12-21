@@ -49,6 +49,7 @@ public class WorldObject
     public int? Stage { get; set; }
     public int? FinishedBuilds { get; set; }
     public int? Builds { get; set; }
+    public FranchiseLocation? FranchiseLocation { get; private set; }
 
     public void SetAsConstructionSite(string itemName)
     {
@@ -102,7 +103,7 @@ public class WorldObject
         {
             if (ContractName is null)
                 throw new Exception("Contract name is null, can't harvest");
-            
+
             var gameItem = GameSettingsManager.Instance.GetItem(ContractName);
 
             if (gameItem is not null)
@@ -132,5 +133,26 @@ public class WorldObject
         }
 
         return coinYield;
+    }
+
+    public void OpenBusiness(double buildTime, double plantTime)
+    {
+        if (ClassName != nameof(BuildingClassType.Business)) throw new Exception("Can't open other than business building, class name is: " + ClassName + "");
+        if (State == "open") throw new Exception("Building is already open");
+
+        // TODO: Manage these from server not client
+        BuildTime = buildTime;
+        PlantTime = plantTime;
+        State = "open";
+
+        if (FranchiseLocation is not null)
+        {
+            FranchiseLocation.TimeLastSupplied = ServerUtils.GetCurrentTime();
+        }
+    }
+    
+    public void SetFranchiseLocation(FranchiseLocation franchiseLocation)
+    {
+        FranchiseLocation = franchiseLocation;
     }
 }

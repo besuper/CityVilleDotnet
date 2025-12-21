@@ -9,8 +9,8 @@ public class FranchiseLocation
     public int CommodityMax { get; set; }
     public int CustomersServed { get; set; }
     public int MoneyCollected { get; set; }
-    public required string ObjectId { get; set; }
-    public int TimeLastCollected { get; set; }
-    public int TimeLastOperated { get; set; }
-    public int TimeLastSupplied { get; set; }
+    public required string ObjectId { get; set; } // LotId that is WorldFlatId
+    public long TimeLastCollected { get; set; }
+    public long TimeLastOperated { get; set; }
+    public long TimeLastSupplied { get; set; }
 }
