@@ -17,7 +17,7 @@ namespace CityVilleDotnet.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.0")
+                .HasAnnotation("ProductVersion", "10.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -604,10 +604,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<int?>("Stage")
                         .HasColumnType("int");
 
-                    b.Property<string>("State")
-                        .IsRequired()
+                    b.Property<int>("State")
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                        .HasColumnType("int");
 
                     b.Property<string>("TargetBuildingClass")
                         .HasMaxLength(64)
@@ -618,6 +617,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasColumnType("nvarchar(64)");
 
                     b.Property<int>("TempId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Visits")
                         .HasColumnType("int");
 
                     b.Property<int>("WorldFlatId")

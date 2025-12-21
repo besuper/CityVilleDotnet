@@ -1,4 +1,6 @@
 ﻿using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.EnumExtensions;
+using CityVilleDotnet.Domain.Enums;
 using FluorineFx;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
@@ -26,7 +28,7 @@ internal sealed partial class PerformAction
 
         obj.ContractName = contractName;
         obj.PlantTime = plantTime is null ? 0 : (double)plantTime;
-        obj.State = state;
+        obj.State = EnumExtensions.ParseFromDescription<WorldObjectState>(state);
 
         user.HandleQuestsProgress("startContractByClass", className: obj.ClassName);
         user.CheckCompletedQuests();

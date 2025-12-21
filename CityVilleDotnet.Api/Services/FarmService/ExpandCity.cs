@@ -2,6 +2,7 @@
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -70,7 +71,7 @@ public class ExpandCity(CityVilleDbContext context) : AmfService
                 TempId = -1,
                 ItemName = (string)tree["itemName"],
                 ClassName = "Wilderness",
-                State = "static",
+                State = WorldObjectState.Static,
                 Direction = (int)tree["dir"],
                 Deleted = false,
                 X = (int)tree["x"],

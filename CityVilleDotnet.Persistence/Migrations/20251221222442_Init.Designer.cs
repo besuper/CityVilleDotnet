@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CityVilleDotnet.Persistence.Migrations
 {
     [DbContext(typeof(CityVilleDbContext))]
-    [Migration("20250928171558_AddLicenses")]
-    partial class AddLicenses
+    [Migration("20251221222442_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.14")
+                .HasAnnotation("ProductVersion", "10.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -136,6 +136,87 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.ToTable("CollectionItem");
                 });
 
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Franchise", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FranchiseName")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<string>("FranchiseType")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<Guid?>("PlayerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TimeLastCollected")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("Franchise");
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.FranchiseLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CommodityLeft")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CommodityMax")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CustomersServed")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FranchiseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MoneyCollected")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ObjectId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StarRating")
+                        .HasColumnType("int");
+
+                    b.Property<long>("TimeLastCollected")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TimeLastOperated")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TimeLastSupplied")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Uid")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FranchiseId");
+
+                    b.ToTable("FranchiseLocation");
+                });
+
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Friend", b =>
                 {
                     b.Property<Guid>("Id")
@@ -206,6 +287,64 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.HasIndex("PlayerId");
 
                     b.ToTable("LicenseItem");
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.LotOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ConstructionCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LastTimeReminded")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LotId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OffsetX")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OffsetY")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrderResourceName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderState")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("PlayerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RecipientId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResourceType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TimeSent")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransmissionStatus")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("LotOrder");
                 });
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.MapRect", b =>
@@ -325,11 +464,11 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
-                    b.Property<string>("Progress")
+                    b.PrimitiveCollection<string>("Progress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Purchased")
+                    b.PrimitiveCollection<string>("Purchased")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -454,6 +593,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<int?>("FinishedBuilds")
                         .HasColumnType("int");
 
+                    b.Property<int?>("FranchiseLocationId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ItemName")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -465,10 +607,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<int?>("Stage")
                         .HasColumnType("int");
 
-                    b.Property<string>("State")
-                        .IsRequired()
+                    b.Property<int>("State")
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                        .HasColumnType("int");
 
                     b.Property<string>("TargetBuildingClass")
                         .HasMaxLength(64)
@@ -479,6 +620,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasColumnType("nvarchar(64)");
 
                     b.Property<int>("TempId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Visits")
                         .HasColumnType("int");
 
                     b.Property<int>("WorldFlatId")
@@ -497,6 +641,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FranchiseLocationId");
 
                     b.HasIndex("WorldId");
 
@@ -651,6 +797,20 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasForeignKey("CollectionId");
                 });
 
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Franchise", b =>
+                {
+                    b.HasOne("CityVilleDotnet.Domain.Entities.Player", null)
+                        .WithMany("Franchises")
+                        .HasForeignKey("PlayerId");
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.FranchiseLocation", b =>
+                {
+                    b.HasOne("CityVilleDotnet.Domain.Entities.Franchise", null)
+                        .WithMany("Locations")
+                        .HasForeignKey("FranchiseId");
+                });
+
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Friend", b =>
                 {
                     b.HasOne("CityVilleDotnet.Domain.Entities.User", "FriendUser")
@@ -681,6 +841,13 @@ namespace CityVilleDotnet.Persistence.Migrations
                 {
                     b.HasOne("CityVilleDotnet.Domain.Entities.Player", null)
                         .WithMany("Licenses")
+                        .HasForeignKey("PlayerId");
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.LotOrder", b =>
+                {
+                    b.HasOne("CityVilleDotnet.Domain.Entities.Player", null)
+                        .WithMany("LotOrders")
                         .HasForeignKey("PlayerId");
                 });
 
@@ -728,9 +895,15 @@ namespace CityVilleDotnet.Persistence.Migrations
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.WorldObject", b =>
                 {
+                    b.HasOne("CityVilleDotnet.Domain.Entities.FranchiseLocation", "FranchiseLocation")
+                        .WithMany()
+                        .HasForeignKey("FranchiseLocationId");
+
                     b.HasOne("CityVilleDotnet.Domain.Entities.World", null)
                         .WithMany("Objects")
                         .HasForeignKey("WorldId");
+
+                    b.Navigation("FranchiseLocation");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -789,13 +962,22 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Navigation("Items");
                 });
 
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Franchise", b =>
+                {
+                    b.Navigation("Locations");
+                });
+
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Player", b =>
                 {
                     b.Navigation("Collections");
 
+                    b.Navigation("Franchises");
+
                     b.Navigation("InventoryItems");
 
                     b.Navigation("Licenses");
+
+                    b.Navigation("LotOrders");
 
                     b.Navigation("SeenFlags");
                 });

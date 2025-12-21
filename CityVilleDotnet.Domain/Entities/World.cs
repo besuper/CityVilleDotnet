@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.EnumExtensions;
+using CityVilleDotnet.Domain.Enums;
 
 namespace CityVilleDotnet.Domain.Entities;
 
@@ -135,6 +136,6 @@ public class World
         
         building.ItemName = lotOrder.ResourceType;
         building.ClassName = gameItem.Type;
-        building.State = "closed";
+        building.State = WorldObjectState.Closed;
     }
 }

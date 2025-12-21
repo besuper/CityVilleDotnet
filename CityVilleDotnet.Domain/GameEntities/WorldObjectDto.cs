@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Domain.Entities;
 using System.Text.Json.Serialization;
+using CityVilleDotnet.Domain.EnumExtensions;
 
 namespace CityVilleDotnet.Domain.GameEntities;
 
@@ -41,6 +42,9 @@ public class WorldObjectDto
     [JsonPropertyName("finishedBuilds")] public int? FinishedBuilds { get; set; }
 
     [JsonPropertyName("builds")] public int? Builds { get; set; }
+    [JsonPropertyName("visits")] public int? Visits { get; set; }
+    
+    // TODO: Add franchise_info from Business->loadObject
 }
 
 public static class WorldObjectDtoMapper
@@ -57,9 +61,9 @@ public static class WorldObjectDtoMapper
             BuildTime = model.BuildTime,
             PlantTime = model.PlantTime,
             Stage = model.Stage,
-            State = model.State,
+            State = model.State.ToDescriptionString(),
             Direction = model.Direction,
-            Position = new WorldObjectPositionDto()
+            Position = new WorldObjectPositionDto
             {
                 X = model.X,
                 Y = model.Y,
@@ -70,6 +74,7 @@ public static class WorldObjectDtoMapper
             TargetBuildingName = model.TargetBuildingName,
             FinishedBuilds = model.FinishedBuilds,
             Builds = model.Builds,
+            Visits = model.Visits
         };
     }
 }

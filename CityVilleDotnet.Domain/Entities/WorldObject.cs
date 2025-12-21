@@ -1,11 +1,12 @@
 ﻿using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
+using CityVilleDotnet.Domain.Enums;
 
 namespace CityVilleDotnet.Domain.Entities;
 
 public class WorldObject
 {
-    public WorldObject(string itemName, string className, string? contractName, bool deleted, int tempId, string state, int direction, double? buildTime, double? plantTime, int x, int y, int z, int worldFlatId)
+    public WorldObject(string itemName, string className, string? contractName, bool deleted, int tempId, WorldObjectState state, int direction, double? buildTime, double? plantTime, int x, int y, int z, int worldFlatId)
     {
         Id = Guid.NewGuid();
         ItemName = itemName;
@@ -38,7 +39,7 @@ public class WorldObject
     public int TempId { get; set; }
     public double? BuildTime { get; set; }
     public double? PlantTime { get; set; }
-    public string State { get; set; }
+    public WorldObjectState State { get; set; }
     public int Direction { get; set; }
     public int X { get; set; }
     public int Y { get; set; }
@@ -50,6 +51,7 @@ public class WorldObject
     public int? FinishedBuilds { get; set; }
     public int? Builds { get; set; }
     public FranchiseLocation? FranchiseLocation { get; private set; }
+    public int? Visits { get; private set; }
 
     public void SetAsConstructionSite(string itemName)
     {
@@ -87,12 +89,12 @@ public class WorldObject
 
     public bool HasGrown()
     {
-        return State == "planted" && PlantTime <= ServerUtils.GetCurrentTime();
+        return State == WorldObjectState.Planted && PlantTime <= ServerUtils.GetCurrentTime();
     }
 
     public void SetReadyToHarvest()
     {
-        State = "grown";
+        State = WorldObjectState.Grown;
     }
 
     public int Harvest()
@@ -109,7 +111,7 @@ public class WorldObject
             if (gameItem is not null)
                 coinYield = gameItem.CoinYield ?? 0;
 
-            State = "plowed";
+            State = WorldObjectState.Plowed;
         }
         else
         {
@@ -122,14 +124,22 @@ public class WorldObject
         // Update state to planted if it was grown
         if (HasGrown()) SetReadyToHarvest();
 
-        // Close business
-        if (State == "open") State = "closed";
-
         // If ready to harvest, update state to planted
-        if (State == "grown")
+        if (State == WorldObjectState.Grown)
         {
-            State = "planted";
+            State = WorldObjectState.Planted;
             PlantTime = ServerUtils.GetCurrentTime();
+        }
+
+        if (ClassName == "Business")
+        {
+            if (State != WorldObjectState.ClosedHarvestable)
+            {
+                throw new Exception("Can't harvest business building that is not harvestable");
+            }
+
+            State = WorldObjectState.Closed;
+            Visits = 0;
         }
 
         return coinYield;
@@ -138,21 +148,49 @@ public class WorldObject
     public void OpenBusiness(double buildTime, double plantTime)
     {
         if (ClassName != nameof(BuildingClassType.Business)) throw new Exception("Can't open other than business building, class name is: " + ClassName + "");
-        if (State == "open") throw new Exception("Building is already open");
+        if (State == WorldObjectState.Open || State == WorldObjectState.ClosedHarvestable) throw new Exception("Building is already open");
 
         // TODO: Manage these from server not client
+        Visits = 0;
         BuildTime = buildTime;
         PlantTime = plantTime;
-        State = "open";
+        State = WorldObjectState.Open;
 
         if (FranchiseLocation is not null)
         {
             FranchiseLocation.TimeLastSupplied = ServerUtils.GetCurrentTime();
         }
     }
-    
+
     public void SetFranchiseLocation(FranchiseLocation franchiseLocation)
     {
         FranchiseLocation = franchiseLocation;
+    }
+
+    public void UpdateVisits(int visits)
+    {
+        if (ClassName != "Business") throw new Exception("Can't update visits on non business building");
+        if (State != WorldObjectState.Open) throw new Exception("Can't update visits on non open business building");
+
+        var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
+
+        if (gameItem is null)
+        {
+            throw new Exception("Can't find game item for business building");
+        }
+
+        var maxVisits = gameItem.CommodityRequired;
+
+        if (maxVisits is null)
+        {
+            throw new Exception("Can't find max visits for business building");
+        }
+
+        Visits += visits;
+
+        if (Visits >= maxVisits)
+        {
+            State = WorldObjectState.ClosedHarvestable;
+        }
     }
 }

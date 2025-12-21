@@ -1,5 +1,7 @@
 ﻿using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.EnumExtensions;
+using CityVilleDotnet.Domain.Enums;
 using FluorineFx;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
@@ -35,7 +37,7 @@ internal sealed partial class PerformAction
             null,
             (bool)building["deleted"],
             (int)building["tempId"],
-            (string)building["state"],
+            EnumExtensions.ParseFromDescription<WorldObjectState>((string)building["state"]),
             (int)building["direction"],
             (double?)buildTime,
             (double?)plantTime,

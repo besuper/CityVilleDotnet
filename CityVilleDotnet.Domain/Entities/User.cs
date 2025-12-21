@@ -1,4 +1,5 @@
 ﻿using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 
 namespace CityVilleDotnet.Domain.Entities;
@@ -40,7 +41,7 @@ public class User
             Y = x.Position.Y,
             Z = x.Position.Z,
             Stage = x.Stage,
-            State = x.State,
+            State = EnumExtensions.EnumExtensions.ParseFromDescription<WorldObjectState>(x.State),
             TargetBuildingClass = x.TargetBuildingClass,
             TargetBuildingName = x.TargetBuildingName,
             TempId = x.TempId,
