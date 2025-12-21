@@ -22,6 +22,7 @@ public class WorldObject
         X = x;
         Y = y;
         Z = z;
+        NeverOpened = true;
     }
 
     public WorldObject()
@@ -52,6 +53,7 @@ public class WorldObject
     public int? Builds { get; set; }
     public FranchiseLocation? FranchiseLocation { get; private set; }
     public int? Visits { get; private set; }
+    public bool NeverOpened { get; private set; }
 
     public void SetAsConstructionSite(string itemName)
     {
@@ -155,6 +157,7 @@ public class WorldObject
         BuildTime = buildTime;
         PlantTime = plantTime;
         State = WorldObjectState.Open;
+        NeverOpened = false;
 
         if (FranchiseLocation is not null)
         {

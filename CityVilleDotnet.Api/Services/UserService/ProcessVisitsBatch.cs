@@ -10,6 +10,7 @@ internal sealed class ProcessVisitsBatch(CityVilleDbContext context, ILogger<Pro
 {
     public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
+        // TODO: Add offline simulation
         if (@params.Length != 2) throw new Exception("Invalid params count");
 
         var idsArray = @params[0] as object[];

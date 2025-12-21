@@ -43,6 +43,7 @@ public class WorldObjectDto
 
     [JsonPropertyName("builds")] public int? Builds { get; set; }
     [JsonPropertyName("visits")] public int? Visits { get; set; }
+    [JsonPropertyName("neverOpened")] public bool NeverOpened { get; set; }
     
     // TODO: Add franchise_info from Business->loadObject
 }
@@ -74,7 +75,8 @@ public static class WorldObjectDtoMapper
             TargetBuildingName = model.TargetBuildingName,
             FinishedBuilds = model.FinishedBuilds,
             Builds = model.Builds,
-            Visits = model.Visits
+            Visits = model.Visits,
+            NeverOpened = model.NeverOpened
         };
     }
 }
