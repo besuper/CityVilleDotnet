@@ -4,6 +4,7 @@ using CityVilleDotnet.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CityVilleDotnet.Persistence.Migrations
 {
     [DbContext(typeof(CityVilleDbContext))]
-    partial class CityVilleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251221232213_UpdateFranchiseNameMaxLength")]
+    partial class UpdateFranchiseNameMaxLength
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -597,6 +600,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
+
+                    b.Property<bool>("NeverOpened")
+                        .HasColumnType("bit");
 
                     b.Property<double?>("PlantTime")
                         .HasColumnType("float");
