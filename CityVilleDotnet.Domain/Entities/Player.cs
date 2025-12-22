@@ -109,6 +109,11 @@ public class Player
     {
         return InventoryItems.Sum(x => x.Amount);
     }
+    
+    public int CountInventoryItem(string itemName)
+    {
+        return InventoryItems.Where(x => x.Name == itemName).Sum(x => x.Amount);
+    }
 
     public bool HasItem(string itemName)
     {
@@ -554,5 +559,30 @@ public class Player
     public void AddLotOrder(LotOrder lotOrder)
     {
         LotOrders.Add(lotOrder);
+    }
+
+    public int GetNextPermitCost()
+    {
+        var expansionData = GetExpansionData();
+
+        return expansionData != null ? expansionData[2] : 1;
+    }
+
+    public int[]? GetExpansionData()
+    {
+        var nextNum = ExpansionsPurchased + 1;
+        
+        foreach (var expansion in GameSettingsManager.Instance.GetExpansions())
+        {
+            var expansionNum = int.Parse(expansion.Num);
+
+            // TODO: Support "MAX" num
+            if (expansionNum == nextNum)
+            {
+                return [int.Parse(expansion.Level), int.Parse(expansion.Permits), int.Parse(expansion.Cost)];
+            }
+        }
+
+        return null;
     }
 }

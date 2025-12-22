@@ -26,6 +26,7 @@ public class GameItem
     [XmlElement("populationCapYield")] public int? PopulationCapYield { get; set; }
 
     [XmlElement("cost")] public int? Cost { get; set; }
+    [XmlElement("unlock")] public string? Unlock { get; set; }
     [XmlElement("unlockCost")] public int? UnlockCost { get; set; }
     [XmlElement("cash")] public int? Cash { get; set; }
     [XmlElement("growTime")] public double? GrowTime { get; set; }

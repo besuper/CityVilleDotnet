@@ -15,4 +15,5 @@ public class GameSettings
 
     [XmlElement("randomModifierTables")] public required RandomModifierTables Modifiers { get; set; }
     [XmlElement("collections")] public required CollectionContainer Collections { get; set; }
+    [XmlElement("expansions")] public required ExpansionsContainer Expansions { get; set; }
 }

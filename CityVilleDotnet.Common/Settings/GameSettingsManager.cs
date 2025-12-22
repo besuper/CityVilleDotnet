@@ -15,6 +15,7 @@ public class GameSettingsManager
     private List<LevelItem> _levels = [];
     private List<ReputationItem> _reputationLevels = [];
     private List<CollectionSetting> _collections = [];
+    private List<ExpansionSetting> _expansions = [];
     private bool _isInitialized;
 
     private GameSettingsManager()
@@ -84,6 +85,7 @@ public class GameSettingsManager
             }
 
             _collections = gameSettings.Collections.Collections;
+            _expansions = gameSettings.Expansions.Expansions;
         }
 
         logger.LogInformation("Loaded gameSettings.xml with {ItemsCount} items", _items.Count);
@@ -91,6 +93,7 @@ public class GameSettingsManager
         logger.LogInformation("Loaded {ReputationLevelsCount} social levels", _reputationLevels.Count);
         logger.LogInformation("Loaded {RandomModifiersCount} random modifiers", _randomModifiers.Count);
         logger.LogInformation("Loaded {CollectionsCount} collections", _collections.Count);
+        logger.LogInformation("Loaded {ExpansionsCount} expansions", _expansions.Count);
 
         _isInitialized = true;
     }
@@ -153,5 +156,10 @@ public class GameSettingsManager
             throw new InvalidOperationException("GameSettingsManager not initialized");
 
         return _collections.FirstOrDefault(x => x.Name == collectionName);
+    }
+    
+    public IReadOnlyCollection<ExpansionSetting> GetExpansions()
+    {
+        return _expansions.AsReadOnly();
     }
 }
