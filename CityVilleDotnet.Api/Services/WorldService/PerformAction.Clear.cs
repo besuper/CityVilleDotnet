@@ -20,7 +20,7 @@ internal sealed partial class PerformAction
         var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
         var world = user.GetWorld();
 
-        var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]) ?? throw new Exception($"Can't find building");
+        var obj = world.GetBuildingByCoord(Convert.ToInt32(position["x"]), Convert.ToInt32(position["y"]), Convert.ToInt32(position["z"])) ?? throw new Exception($"Can't find building");
 
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
 

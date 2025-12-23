@@ -17,8 +17,8 @@ public class StreakBonus(CityVilleDbContext context, ILogger<StreakBonus> logger
             .FirstOrDefaultAsync(cancellationToken) ?? throw new Exception("Can't to find user with UserId");
 
         var data = (Dictionary<string, object>)@params[0];
-        var amount = (int)data["amount"];
-        var maxesReached = (int)data["maxesReached"];
+        var amount = Convert.ToInt32(data["amount"]);
+        var maxesReached = Convert.ToInt32(data["maxesReached"]);
 
         logger.LogDebug("Streak bonus {Amount} coins [{MaxesReached}]", amount, maxesReached);
 

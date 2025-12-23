@@ -41,9 +41,9 @@ internal sealed partial class PerformAction
             (int)building["direction"],
             (double?)buildTime,
             (double?)plantTime,
-            (int)position["x"],
-            (int)position["y"],
-            (int)position["z"], // TODO: Remove Z coordinate, seems not used in CityVille
+            Convert.ToInt32(position["x"]),
+            Convert.ToInt32(position["y"]),
+            Convert.ToInt32(position["z"]), // TODO: Remove Z coordinate, seems not used in CityVille
             newId
         );
 

@@ -20,7 +20,7 @@ internal sealed partial class PerformAction
         var itemId = (int)building["id"];
         var world = user.GetWorld();
 
-        var obj = world.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]) ?? throw new Exception($"Can't find building with ID {itemId}");
+        var obj = world.GetBuildingByCoord(Convert.ToInt32(position["x"]), Convert.ToInt32(position["y"]), Convert.ToInt32(position["z"])) ?? throw new Exception($"Can't find building with ID {itemId}");
 
         if (obj.Builds is null)
             throw new Exception($"Can't find `builds` {obj}");

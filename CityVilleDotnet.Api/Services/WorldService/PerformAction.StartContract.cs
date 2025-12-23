@@ -21,7 +21,7 @@ internal sealed partial class PerformAction
         var plantTime = building.GetValueOrDefault("plantTime");
         var state = (string)building["state"];
 
-        var obj = user.World?.GetBuildingByCoord((int)position["x"], (int)position["y"], (int)position["z"]);
+        var obj = user.World?.GetBuildingByCoord(Convert.ToInt32(position["x"]), Convert.ToInt32(position["y"]), Convert.ToInt32(position["z"]));
 
         if (obj is null)
             throw new Exception("Can't find building with coords");
