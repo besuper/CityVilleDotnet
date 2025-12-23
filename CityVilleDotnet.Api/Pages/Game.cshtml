@@ -9,6 +9,7 @@
 	<script type="text/javascript" src="jquery.min.js"></script>
 	<script type="text/javascript" src="flash_integration.min.js"></script>
 	<script type="text/javascript" src="swfobject.min.js"></script>
+	<script type="text/javascript" src="ruffle/ruffle.js"></script>
 }
 
 <div class="gamePage">
@@ -37,9 +38,9 @@
 	<div style="width:760px;height:594px;">
 		<div id="flashOuterContainer">
 			<div id="flashContent">
-				<span class="loadingGame">Loading Game...</span><br/>
-				<span class="upgradeFlash">If your game does not load within 10 seconds, you may need to upgrade your version of Flash. Please do so by clicking <a
-						href="https://www.basilisk-browser.org/download.html">here</a></span>
+				<object id="flashapp" name="flashapp" width="760" height="594" type="application/x-shockwave-flash" data="Preloader.swf">
+					<param name="flashvars" value="serverTime=@Model.ServerTime&zySnid=0&zySnuid=@(Model.Uid)&zyUid=@(Model.Uid)&zyAuthHash=@(Model.Uid)&zySig=@(Model.Uid)&app_url=@(Request.Scheme)://@(Request.Host)@(Request.PathBase)/&sn_app_url=&asset_url=.&swfLocation=Game.26346.swf?skipFacebook=true&snapiEnable=1&generateSchema=1&debugMode=true&game_config_url=gameSettings.xml&localization_url=en.xml&quest_url=questSettings.xml&effects_config_url=effectsConfig.xml&flashRevision=26346&preMusic=hashed/54f32a1258f75c007b8ad50b08a90fa4.mp3&preIntro=hashed/b108f1182bc7bf0e13d74b9d350ba28b.mp4" />
+				</object>
 			</div>
 		</div>
 	</div>
@@ -121,27 +122,15 @@
 		}
 	}
 
-	embedGameSwf("Preloader.swf", "760", "594",
-		{
-			"serverTime": @Model.ServerTime,
-			"zySnid": 0,
-			"zySnuid": "@(Model.Uid)",
-			"zyUid": "@(Model.Uid)",
-			"zyAuthHash": "@(Model.Uid)",
-			"zySig": "@(Model.Uid)",
-			"app_url": "",
-			"sn_app_url": "",
-			"asset_url": ".",
-			"swfLocation": "Game.26346.swf?skipFacebook=true",
-			"snapiEnable": 1,
-			"generateSchema": 1,
-			"debugMode": true,
-			"game_config_url": "gameSettings.xml",
-			"localization_url": "en.xml",
-			"quest_url": "questSettings.xml",
-			"effects_config_url": "effectsConfig.xml",
-			"flashRevision": "26346",
-			"preMusic": "hashed\/54f32a1258f75c007b8ad50b08a90fa4.mp3",
-			"preIntro": "hashed\/b108f1182bc7bf0e13d74b9d350ba28b.mp4"
-		});
+	window.RufflePlayer = window.RufflePlayer || {};
+	window.RufflePlayer.config = {
+		allowScriptAccess: true,
+		autoplay: "on",
+		unmuteOverlay: "hidden",
+		logLevel: "warn",
+		polyfills: true,
+		allowFullscreen: true,
+		wmode: "window",
+		// parameters are not working
+	};
 </script>
