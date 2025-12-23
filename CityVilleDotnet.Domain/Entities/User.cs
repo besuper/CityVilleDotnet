@@ -71,6 +71,11 @@ public class User
         return World;
     }
 
+    public bool IsWorldLoaded()
+    {
+        return World != null && World.Objects.Count != 0;
+    }
+
     public void HandleQuestsProgress(string actionType, string? className = null, string? itemName = null)
     {
         foreach (var quest in Quests.Where(x => x.QuestType == QuestType.Active))
@@ -134,6 +139,8 @@ public class User
                 }
 
                 // Here we can check global values like counting population or buildings
+
+                if (!IsWorldLoaded()) return;
 
                 switch (actionTask)
                 {
