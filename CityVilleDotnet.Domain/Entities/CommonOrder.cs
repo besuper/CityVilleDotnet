@@ -7,8 +7,8 @@ public abstract class CommonOrder
     public Guid Id { get; set; }
     public required string SenderId { get; set; }
     public required string RecipientId { get; set; }
-    public int TimeSent { get; set; }
-    public int LastTimeReminded { get; set; }
+    public long TimeSent { get; set; } 
+    public long LastTimeReminded { get; set; }
     public OrderType OrderType { get; set; }
     public OrderState OrderState { get; set; }
     public TransmissionStatus TransmissionStatus { get; set; }

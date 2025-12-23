@@ -20,6 +20,10 @@ public class Friend
 
     public bool Requested { get; set; }
 
+    public int EnergyLeft { get; set; } = 5;
+    
+    public long LastEnergyLeftReset { get; set; } = 0;
+
     public Friend(User user, User friend, bool requested)
     {
         Id = Guid.NewGuid();

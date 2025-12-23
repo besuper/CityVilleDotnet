@@ -162,6 +162,50 @@ public static class PlayerDtoMapper
 
             byOtherUser[otherUserId] = orderParams;
         }
+        
+        foreach (var order in model.VisitorHelpOrders)
+        {
+            var orderTypeKey = order.OrderType.ToDescriptionString();              // "order_lot"
+            var transmissionKey = order.TransmissionStatus.ToDescriptionString();  // "sent"/"received"
+            var stateKey = order.OrderState.ToDescriptionString();                 // "pending"/"accepted"/"denied"
+            
+            var isReceived = transmissionKey == "received";
+            var otherUserId = isReceived ? $"{order.SenderId}:{order.SenderId}" : $"{order.RecipientId}:{order.RecipientId}";
+            
+            if (!root.ContainsKey(orderTypeKey))
+                root[orderTypeKey] = new ASObject();
+            
+            var byTransmission = (ASObject)root[orderTypeKey]!;
+
+            if (!byTransmission.ContainsKey(transmissionKey))
+                byTransmission[transmissionKey] = new ASObject();
+            
+            var byState = (ASObject)byTransmission[transmissionKey]!;
+
+            if (!byState.ContainsKey(stateKey))
+                byState[stateKey] = new ASObject();
+            
+            var byOtherUser = (ASObject)byState[stateKey]!;
+
+            if (!byOtherUser.ContainsKey(otherUserId))
+                byOtherUser[otherUserId] = new ASObject();
+            
+            var orderParams = new ASObject
+            {
+                ["senderID"] = order.SenderId,
+                ["recipientID"] = order.RecipientId,
+                ["timeSent"] = order.TimeSent,
+                ["lastTimeReminded"] = order.LastTimeReminded,
+                ["orderType"] = orderTypeKey,
+                ["orderState"] = stateKey,
+                ["transmissionStatus"] = transmissionKey,
+
+                ["helpTargets"] = order.HelpTargets,
+                ["status"] = order.Status.ToDescriptionString()
+            };
+
+            byOtherUser[otherUserId] = orderParams;
+        }
 
         return root;
     }

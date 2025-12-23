@@ -4,6 +4,7 @@ using CityVilleDotnet.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CityVilleDotnet.Persistence.Migrations
 {
     [DbContext(typeof(CityVilleDbContext))]
-    partial class CityVilleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251223200512_AddEnergyFriend")]
+    partial class AddEnergyFriend
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -300,8 +303,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<int>("ConstructionCount")
                         .HasColumnType("int");
 
-                    b.Property<long>("LastTimeReminded")
-                        .HasColumnType("bigint");
+                    b.Property<int>("LastTimeReminded")
+                        .HasColumnType("int");
 
                     b.Property<int>("LotId")
                         .HasColumnType("int");
@@ -314,8 +317,7 @@ namespace CityVilleDotnet.Persistence.Migrations
 
                     b.Property<string>("OrderResourceName")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OrderState")
                         .HasColumnType("int");
@@ -332,15 +334,14 @@ namespace CityVilleDotnet.Persistence.Migrations
 
                     b.Property<string>("ResourceType")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SenderId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("TimeSent")
-                        .HasColumnType("bigint");
+                    b.Property<int>("TimeSent")
+                        .HasColumnType("int");
 
                     b.Property<int>("TransmissionStatus")
                         .HasColumnType("int");
@@ -537,51 +538,6 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.HasIndex("WorldId");
 
                     b.ToTable("User");
-                });
-
-            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.VisitorHelpOrder", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.PrimitiveCollection<string>("HelpTargets")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("LastTimeReminded")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("OrderState")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderType")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("PlayerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("RecipientId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SenderId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<long>("TimeSent")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("TransmissionStatus")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlayerId");
-
-                    b.ToTable("VisitorHelpOrder");
                 });
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.World", b =>
@@ -946,13 +902,6 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Navigation("World");
                 });
 
-            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.VisitorHelpOrder", b =>
-                {
-                    b.HasOne("CityVilleDotnet.Domain.Entities.Player", null)
-                        .WithMany("VisitorHelpOrders")
-                        .HasForeignKey("PlayerId");
-                });
-
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.WorldObject", b =>
                 {
                     b.HasOne("CityVilleDotnet.Domain.Entities.FranchiseLocation", "FranchiseLocation")
@@ -1040,8 +989,6 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Navigation("LotOrders");
 
                     b.Navigation("SeenFlags");
-
-                    b.Navigation("VisitorHelpOrders");
                 });
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.User", b =>

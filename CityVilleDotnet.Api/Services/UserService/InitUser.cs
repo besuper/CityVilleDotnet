@@ -37,6 +37,8 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .ThenInclude(x => x.Locations)
             .Include(x => x.Player)
             .ThenInclude(x => x!.LotOrders) // FIXME: Limit orders
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.VisitorHelpOrders) // FIXME: Limit orders
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (user is null)

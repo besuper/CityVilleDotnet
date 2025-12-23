@@ -77,9 +77,6 @@ public class PlaceOrder(CityVilleDbContext context) : AmfService
         player.AddLotOrder(lotOrder);
         receiverPlayer.AddLotOrder(receivedLotOrder);
         
-        context.ChangeTracker.DetectChanges();
-        Console.WriteLine(context.ChangeTracker.DebugView.LongView);
-        
         await context.SaveChangesAsync(cancellationToken);
         
         // TODO: Implement return

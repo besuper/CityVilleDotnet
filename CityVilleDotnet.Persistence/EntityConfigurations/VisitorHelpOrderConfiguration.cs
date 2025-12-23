@@ -4,15 +4,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CityVilleDotnet.Persistence.EntityConfigurations;
 
-public class LotOrderConfiguration : IEntityTypeConfiguration<LotOrder>
+public class VisitorHelpOrderConfiguration : IEntityTypeConfiguration<VisitorHelpOrder>
 {
-    public void Configure(EntityTypeBuilder<LotOrder> builder)
+    public void Configure(EntityTypeBuilder<VisitorHelpOrder> builder)
     {
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id)
             .ValueGeneratedNever();
-
-        builder.Property(x => x.ResourceType).HasMaxLength(64);
-        builder.Property(x => x.OrderResourceName).HasMaxLength(64);
     }
 }

@@ -38,6 +38,7 @@ public class Player
     public int CreationTimestamp { get; private set; }
     public string Username { get; private set; }
     public List<LotOrder> LotOrders { get; set; } = [];
+    public List<VisitorHelpOrder> VisitorHelpOrders { get; set; } = [];
 
     public Player(string username)
     {
@@ -559,6 +560,11 @@ public class Player
     public void AddLotOrder(LotOrder lotOrder)
     {
         LotOrders.Add(lotOrder);
+    }
+    
+    public void AddVisitorHelpOrder(VisitorHelpOrder order)
+    {
+        VisitorHelpOrders.Add(order);
     }
 
     public int GetNextPermitCost()
