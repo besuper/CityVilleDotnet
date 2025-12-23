@@ -54,49 +54,197 @@
 }
 
 .main {
-    padding-top: 25px;
+    padding: 25px;
+    background-color: #FEFDFB;
+    border-radius: 0 0 8px 8px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #473C1E;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #BDAB7D;
+}
+
+.section-title:first-of-type {
+    margin-top: 0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #8B7E66;
+    font-style: italic;
 }
 
 .friends {
     display: grid;
-    grid-template-columns: auto auto auto auto;
-    gap: 25px;
-    margin-top: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
 }
 
 .friend {
     display: flex;
-    height: 64px;
+    flex-direction: column;
     gap: 10px;
-    border: 2px solid grey;
-    border-radius: 5px;
-    padding: 10px;
+    border: 2px solid #BDAB7D;
+    border-radius: 8px;
+    padding: 15px;
+    background: linear-gradient(to bottom, #FFF3D9, #FFE6A9);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-    .friend img {
-        width: 64px;
-        height: 64px;
-    }
+.friend:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.friend img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2px solid #BDAB7D;
+    align-self: center;
+}
 
 .friend-content {
     display: flex;
-    flex-grow: 1;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    text-align: center;
+}
+
+.friend-content > div:first-child {
+    font-weight: bold;
+    color: #473C1E;
+    font-size: 14px;
 }
 
 .add-friend {
+    background: linear-gradient(to bottom, #FFF3D9, #FFE6A9);
+    border: 2px solid #BDAB7D;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.add-friend label {
+    font-weight: bold;
+    color: #473C1E;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.add-friend > div {
     display: flex;
-    flex-direction: column;
+    gap: 10px;
+}
+
+.add-friend input[type="text"] {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #BDAB7D;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: white;
+    color: #473C1E;
+}
+
+.add-friend input[type="text"]:focus {
+    outline: none;
+    border-color: #F7D840;
+    box-shadow: 0 0 0 2px rgba(247, 216, 64, 0.2);
+}
+
+.add-friend button {
+    padding: 8px 20px;
+    background: linear-gradient(to bottom, #FFF2B0, #F7D840);
+    border: 2px solid #BDAB7D;
+    border-radius: 4px;
+    color: #473C1E;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.add-friend button:hover {
+    background: linear-gradient(to bottom, #F7D840, #E5C730);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.add-friend button:active {
+    transform: translateY(0);
+}
+
+.interactions {
+    display: flex;
+    gap: 5px;
 }
 
 .interactions a {
     text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 0.2s;
+    border: 1px solid;
 }
 
 .interactions .accept {
-    color: green;
+    color: white;
+    background-color: #4CAF50;
+    border-color: #45a049;
+}
+
+.interactions .accept:hover {
+    background-color: #45a049;
 }
 
 .interactions .reject {
-    color: red;
+    color: white;
+    background-color: #f44336;
+    border-color: #da190b;
+}
+
+.interactions .reject:hover {
+    background-color: #da190b;
+}
+
+.interactions .cancel {
+    color: white;
+    background-color: #ff9800;
+    border-color: #f57c00;
+}
+
+.interactions .cancel:hover {
+    background-color: #f57c00;
+}
+
+.alert {
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    border: 2px solid;
+}
+
+.alert-error {
+    background-color: #ffebee;
+    color: #c62828;
+    border-color: #ef5350;
+}
+
+.alert-success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border-color: #66bb6a;
 }

@@ -12,31 +12,27 @@ namespace CityVilleDotnet.Api.Pages.Friends;
 [Authorize]
 public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbContext dbContext) : PageModel
 {
-    private readonly UserManager<ApplicationUser> _userManager = userManager;
-    private readonly CityVilleDbContext _dbContext = dbContext;
+    public ApplicationUser? CurrentUser { get; set; }
+    public List<FriendDto> Friends { get; set; } = [];
 
-    public ApplicationUser CurrentUser { get; set; }
-    public List<FriendDto> Friends { get; set; }
-
-    [BindProperty]
-    public string Username { get; set; }
+    [BindProperty] public string? Username { get; set; }
 
     public async Task<IActionResult> OnGetAsync(CancellationToken ct)
     {
-        CurrentUser = await _userManager.GetUserAsync(User);
+        var user = await GetCurrentUserAsync(ct);
 
-        if (CurrentUser is null)
+        if (user is null)
             return RedirectToPage("/Account/Login");
 
-        Friends = await _dbContext.Set<User>()
+        CurrentUser = user.AppUser;
+
+        Friends = await dbContext.Set<Friend>()
             .AsNoTracking()
-            .Where(x => x.AppUser!.Id.Equals(CurrentUser.Id))
-            .Include(x => x.AppUser)
-            .Include(x => x.Friends)
-            .ThenInclude(x => x.FriendUser)
+            .Where(x => x.User.AppUser!.Id == CurrentUser.Id)
+            .Include(x => x.FriendUser)
             .ThenInclude(x => x.Player)
-            .SelectMany(x => x.Friends, (_, friend) => friend)
             .Select(x => x.ToDto())
+            .OrderBy(x => x.Level)
             .ToListAsync(ct);
 
         return Page();
@@ -44,34 +40,44 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
     public async Task<IActionResult> OnPostAddFriend(CancellationToken ct)
     {
-        CurrentUser = await _userManager.GetUserAsync(User);
+        if (string.IsNullOrWhiteSpace(Username))
+        {
+            TempData["Error"] = "Username cannot be empty.";
+            return RedirectToPage("/Friends/List");
+        }
 
-        if (CurrentUser is null)
+        var user = await GetCurrentUserAsync(ct);
+
+        if (user?.Player is null)
             return RedirectToPage("/Account/Login");
 
-        var user = await _dbContext.Set<User>()
-            .Include(x => x.Friends)
-            .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.Player)
-            .Include(x => x.Player)
-            .Include(x => x.AppUser)
-            .FirstOrDefaultAsync(x => x.AppUser!.Id.Equals(CurrentUser.Id), ct);
+        CurrentUser = user.AppUser;
 
-        if (user is null)
-            return RedirectToPage("/Account/Login");
+        if (user.Player.Username.Equals(Username, StringComparison.OrdinalIgnoreCase))
+        {
+            TempData["Error"] = "You cannot add yourself as a friend.";
+            return RedirectToPage("/Friends/List");
+        }
 
-        var targetUser = await _dbContext.Set<User>()
+        var targetUser = await dbContext.Set<User>()
             .Include(x => x.Player)
-            .Where(x => x.Player!.Username.Equals(Username))
+            .Where(x => x.Player!.Username == Username)
             .FirstOrDefaultAsync(ct);
 
-        if (targetUser is null) return RedirectToPage("/Friends/List");
-
-        var alreadyFriend = user.Friends.Any(x => x.FriendUser.Player.Username.Equals(Username));
-
-        if (alreadyFriend)
-            // TODO: Show error
+        if (targetUser is null)
+        {
+            TempData["Error"] = "User not found.";
             return RedirectToPage("/Friends/List");
+        }
+
+        var existingFriendship = await dbContext.Set<Friend>()
+            .AnyAsync(x => x.User.Id == user.Id && x.FriendUser.Id == targetUser.Id, ct);
+
+        if (existingFriendship)
+        {
+            TempData["Error"] = "This user is already in your friend list.";
+            return RedirectToPage("/Friends/List");
+        }
 
         var friendship1 = new Friend(targetUser, user, true);
         var friendship2 = new Friend(user, targetUser, false);
@@ -79,42 +85,149 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         targetUser.Friends.Add(friendship1);
         user.Friends.Add(friendship2);
 
-        await _dbContext.SaveChangesAsync(ct);
+        TempData["Success"] = $"Friend request sent to {Username}.";
+
+        await dbContext.SaveChangesAsync(ct);
 
         return RedirectToPage("/Friends/List");
     }
 
     public async Task<IActionResult> OnGetAccept(string userName, CancellationToken ct)
     {
-        CurrentUser = await _userManager.GetUserAsync(User);
+        if (string.IsNullOrWhiteSpace(userName))
+        {
+            TempData["Error"] = "Invalid username.";
+            return RedirectToPage("/Friends/List");
+        }
 
-        if (CurrentUser is null)
-            return RedirectToPage("/Account/Login");
-
-        var user = await _dbContext.Set<User>()
-            .Include(x => x.Friends)
-            .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.Player)
-            .Include(x => x.Player)
-            .Include(x => x.AppUser)
-            .Include(x => x.Friends)
-            .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.Friends)
-            .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.Player)
-            .FirstOrDefaultAsync(x => x.AppUser!.Id.Equals(CurrentUser.Id), ct);
+        var user = await GetCurrentUserAsync(ct);
 
         if (user is null)
             return RedirectToPage("/Account/Login");
 
-        var friendship = user.Friends.FirstOrDefault(x => x.FriendUser.Player.Username.Equals(userName));
-        friendship.Status = FriendshipStatus.Accepted;
+        CurrentUser = user.AppUser;
 
-        var targetFriendship = friendship.FriendUser.Friends.FirstOrDefault(x => x.FriendUser.Player.Username.Equals(user.Player.Username));
+        var friendship = await dbContext.Set<Friend>()
+            .Include(x => x.FriendUser)
+            .ThenInclude(x => x.Player)
+            .FirstOrDefaultAsync(x => x.User.Id == user.Id && x.FriendUser.Player!.Username == userName, ct);
+
+        if (friendship is null)
+        {
+            TempData["Error"] = "Friend request not found.";
+            return RedirectToPage("/Friends/List");
+        }
+
+        var targetFriendship = await dbContext.Set<Friend>()
+            .FirstOrDefaultAsync(x => x.User.Id == friendship.FriendUser.Id && x.FriendUser.Id == user.Id, ct);
+
+        if (targetFriendship is null)
+        {
+            TempData["Error"] = "Error accepting friend request.";
+            return RedirectToPage("/Friends/List");
+        }
+
+        friendship.Status = FriendshipStatus.Accepted;
         targetFriendship.Status = FriendshipStatus.Accepted;
 
-        await _dbContext.SaveChangesAsync(ct);
+        TempData["Success"] = $"You are now friends with {userName}.";
+
+        await dbContext.SaveChangesAsync(ct);
 
         return RedirectToPage("/Friends/List");
+    }
+
+    public async Task<IActionResult> OnGetReject(string userName, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(userName))
+        {
+            TempData["Error"] = "Invalid username.";
+            return RedirectToPage("/Friends/List");
+        }
+
+        var user = await GetCurrentUserAsync(ct);
+
+        if (user is null)
+            return RedirectToPage("/Account/Login");
+
+        CurrentUser = user.AppUser;
+
+        var friendship = await dbContext.Set<Friend>()
+            .Include(x => x.FriendUser)
+            .ThenInclude(x => x.Player)
+            .FirstOrDefaultAsync(x => x.User.Id == user.Id && x.FriendUser.Player!.Username == userName, ct);
+
+        if (friendship is null)
+        {
+            TempData["Error"] = "Friend request not found.";
+            return RedirectToPage("/Friends/List");
+        }
+
+        var targetFriendship = await dbContext.Set<Friend>()
+            .FirstOrDefaultAsync(x => x.User.Id == friendship.FriendUser.Id && x.FriendUser.Id == user.Id, ct);
+
+        dbContext.Set<Friend>().Remove(friendship);
+
+        if (targetFriendship is not null)
+        {
+            dbContext.Set<Friend>().Remove(targetFriendship);
+        }
+
+        TempData["Success"] = $"Friend request from {userName} rejected.";
+
+        await dbContext.SaveChangesAsync(ct);
+        return RedirectToPage("/Friends/List");
+    }
+
+    public async Task<IActionResult> OnGetCancel(string userName, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(userName))
+        {
+            TempData["Error"] = "Invalid username.";
+            return RedirectToPage("/Friends/List");
+        }
+
+        var user = await GetCurrentUserAsync(ct);
+
+        if (user is null)
+            return RedirectToPage("/Account/Login");
+
+        CurrentUser = user.AppUser;
+
+        var friendship = await dbContext.Set<Friend>()
+            .Include(x => x.FriendUser)
+            .ThenInclude(x => x.Player)
+            .FirstOrDefaultAsync(x => x.User.Id == user.Id && x.FriendUser.Player!.Username == userName, ct);
+
+        if (friendship is null)
+        {
+            TempData["Error"] = "Friend request not found.";
+            return RedirectToPage("/Friends/List");
+        }
+
+        var targetFriendship = await dbContext.Set<Friend>()
+            .FirstOrDefaultAsync(x => x.User.Id == friendship.FriendUser.Id && x.FriendUser.Id == user.Id, ct);
+
+        dbContext.Set<Friend>().Remove(friendship);
+
+        if (targetFriendship is not null) dbContext.Set<Friend>().Remove(targetFriendship);
+
+        TempData["Success"] = $"Friend request to {userName} cancelled.";
+
+        await dbContext.SaveChangesAsync(ct);
+        return RedirectToPage("/Friends/List");
+    }
+
+    private async Task<User?> GetCurrentUserAsync(CancellationToken ct)
+    {
+        CurrentUser = await userManager.GetUserAsync(User);
+
+        if (CurrentUser is null)
+            return null;
+
+        return await dbContext.Set<User>()
+            .Include(x => x.AppUser)
+            .Include(x => x.Player)
+            .FirstOrDefaultAsync(x => x.AppUser!.Id == CurrentUser.Id, ct);
     }
 }

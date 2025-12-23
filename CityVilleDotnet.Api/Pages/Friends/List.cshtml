@@ -6,9 +6,9 @@
 @model CityVilleDotnet.Api.Pages.Friends.ListModel
 
 @section Header {
-<script type="text/javascript" src="/jquery.min.js"></script>
-<script type="text/javascript" src="/flash_integration.min.js"></script>
-<script type="text/javascript" src="/swfobject.min.js"></script>
+	<script type="text/javascript" src="/jquery.min.js"></script>
+	<script type="text/javascript" src="/flash_integration.min.js"></script>
+	<script type="text/javascript" src="/swfobject.min.js"></script>
 }
 
 <div class="gamePage">
@@ -25,7 +25,7 @@
 
 		<div class="tab-content">
 			<div class="tab">
-				<a href="#" title="Username">@Model.CurrentUser.UserName</a>
+				<a href="#" title="Username">@Model.CurrentUser?.UserName</a>
 			</div>
 
 			<div class="tab">
@@ -34,51 +34,90 @@
 		</div>
 	</div>
 
-	<div style="width:760px;height:594px;" class="main">
+	<div class="main">
+		@if (TempData["Error"] != null)
+		{
+			<div class="alert alert-error">@TempData["Error"]</div>
+		}
+		@if (TempData["Success"] != null)
+		{
+			<div class="alert alert-success">@TempData["Success"]</div>
+		}
+
 		<form asp-page-handler="AddFriend" method="post" class="add-friend">
-			<label>Add friend</label>
+			<label>Add Friend</label>
 			<div>
-				<input type="text" asp-for="Username" />
-				<button type="submit">Add</button>
+				<input type="text" asp-for="Username" placeholder="Enter username..."/>
+				<button type="submit">Add Friend</button>
 			</div>
 		</form>
 
-		<p>Friends</p>
-		<hr />
+		<h2 class="section-title">Friends
+			(@Model.Friends.Count(x => x.Status == Domain.Entities.FriendshipStatus.Accepted))</h2>
 
-		<div class="friends">
-			@foreach (var item in Model.Friends.Where(x => x.Status == Domain.Entities.FriendshipStatus.Accepted))
-			{
-				<div class="friend">
-					<img src="/blank.png" />
-					<div class="friend-content">
-						<div>@item.UserName</div>
-						<div>X</div>
-					</div>
-				</div>
-			}
-		</div>
+		@{
+			var acceptedFriends = Model.Friends.Where(x => x.Status == Domain.Entities.FriendshipStatus.Accepted).ToList();
+		}
 
-		<p>Pending</p>
-		<hr />
-
-		<div class="friends">
-			@foreach (var item in Model.Friends.Where(x => x.Status == Domain.Entities.FriendshipStatus.Pending))
-			{
-				<div class="friend">
-					<img src="/blank.png" />
-					<div class="friend-content">
-						<div>@item.UserName</div>
-						<div class="interactions">
-							@if (item.Requested)
-							{
-								<a class="accept" asp-page-handler="Accept" asp-route-userName="@item.UserName">V</a>
-							}
-							<a class="reject" asp-page-handler="Reject" asp-route-userName="@item.UserName">X</a>
+		@if (acceptedFriends.Any())
+		{
+			<div class="friends">
+				@foreach (var item in acceptedFriends)
+				{
+					<div class="friend">
+						<img src="/blank.png" alt="@item.UserName's avatar"/>
+						<div class="friend-content">
+							<div>@item.UserName</div>
+							<div>Level @item.Level</div>
 						</div>
 					</div>
-				</div>
-			}
-		</div>
+				}
+			</div>
+		}
+		else
+		{
+			<div class="empty-state">No friends yet. Add some friends to get started!</div>
+		}
+
+		<h2 class="section-title">Pending Requests
+			(@Model.Friends.Count(x => x.Status == Domain.Entities.FriendshipStatus.Pending))</h2>
+
+		@{
+			var pendingFriends = Model.Friends.Where(x => x.Status == Domain.Entities.FriendshipStatus.Pending).ToList();
+		}
+
+		@if (pendingFriends.Any())
+		{
+			<div class="friends">
+				@foreach (var item in pendingFriends)
+				{
+					<div class="friend">
+						<img src="/blank.png" alt="@item.UserName's avatar"/>
+						<div class="friend-content">
+							<div>@item.UserName</div>
+							<div>Level @item.Level</div>
+							<div class="interactions">
+								@if (!item.Requested)
+								{
+									<a class="cancel" asp-page-handler="Cancel" asp-route-userName="@item.UserName"
+									   title="Cancel friend request">Cancel</a>
+								}
+								else
+								{
+									<a class="accept" asp-page-handler="Accept" asp-route-userName="@item.UserName"
+									   title="Accept friend request">Accept</a>
+									<a class="reject" asp-page-handler="Reject" asp-route-userName="@item.UserName"
+									   title="Reject friend request">Reject</a>
+								}
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		}
+		else
+		{
+			<div class="empty-state">No pending friend requests.</div>
+		}
 	</div>
 </div>
