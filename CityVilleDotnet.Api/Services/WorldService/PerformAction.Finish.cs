@@ -17,7 +17,7 @@ internal sealed partial class PerformAction
         }
 
         var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
-        var itemId = (int)building["id"];
+        var itemId = Convert.ToInt32(building["id"]);
         var world = user.GetWorld();
 
         var obj = world.GetBuildingByCoord(Convert.ToInt32(position["x"]), Convert.ToInt32(position["y"]), Convert.ToInt32(position["z"])) ?? throw new Exception($"Can't find building with ID {itemId}");

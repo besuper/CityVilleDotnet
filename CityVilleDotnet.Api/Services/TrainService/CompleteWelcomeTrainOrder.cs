@@ -21,6 +21,7 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
         var trainInfo = @params[0] as ASObject ?? throw new Exception("trainInfo is null");
 
         var user = await context.Set<User>()
+            .AsSplitQuery()
             .Include(x => x.Quests)
             .Include(x => x.Player)
             // FIXME: This should not be here
@@ -33,7 +34,7 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
         if (user?.Player is null)
             throw new Exception("Unable to find user with UserId");
 
-        var amount = (int)trainInfo["amountFinal"];
+        var amount = Convert.ToInt32(trainInfo["amountFinal"]);
 
         user.Player.AddGoods(amount);
         user.HandleQuestsProgress("welcomeTrain");

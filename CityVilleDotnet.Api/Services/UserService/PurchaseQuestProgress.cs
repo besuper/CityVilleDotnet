@@ -21,7 +21,7 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't to find user with UserId");
 
         var questName = (string)@params[0];
-        var taskIndex = (int)@params[1];
+        var taskIndex = Convert.ToInt32(@params[1]);
 
         logger.LogInformation("Quest {QuestName} at {TaskIndex} is purchased", questName, taskIndex);
 
