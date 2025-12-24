@@ -80,7 +80,6 @@ public class User
     {
         foreach (var quest in Quests.Where(x => x.QuestType == QuestType.Active))
         {
-            // FIXME: Optimize this, it is called too often
             var questItem = QuestSettingsManager.Instance.GetItem(quest.Name);
 
             if (questItem is null) continue;
@@ -90,6 +89,8 @@ public class User
             foreach (var task in questItem.Tasks.Tasks)
             {
                 index++;
+                
+                if (quest.Progress[index] + quest.Purchased[index] >= int.Parse(task.Total)) continue;
 
                 var actionTask = task.Action;
                 var taskType = task.Type;
@@ -138,9 +139,24 @@ public class User
                     }
                 }
 
+                // All the quest that require both action and type to match
+                if (actionTask.Equals(actionType) && taskType.Equals(className))
+                {
+                    if (actionTask.Equals("visitorHelp"))
+                    {
+                        switch (className)
+                        {
+                            case "businessSendTour":
+                            case "residenceCollectRent":
+                                quest.Progress[index] += 1;
+                                break;
+                        }
+                    }
+                }
+                
                 // Here we can check global values like counting population or buildings
 
-                if (!IsWorldLoaded()) return;
+                if (!IsWorldLoaded()) continue;
 
                 switch (actionTask)
                 {

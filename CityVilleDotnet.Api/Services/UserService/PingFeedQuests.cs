@@ -14,10 +14,13 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
             .AsSplitQuery()
             .Include(x => x.Quests)
             .Include(x => x.Player)
+            .ThenInclude(x => x!.Collections)
+            .ThenInclude(x => x.Items)
             .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't to find user with UserId");
 
+        user.HandleQuestsProgress("");
         user.CheckCompletedQuests();
 
         var rep = new ASObject

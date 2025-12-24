@@ -1,4 +1,5 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.Extensions;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
@@ -21,11 +22,23 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
         logger.LogInformation($"Received visitor help from {userId}: {name} {type}");
 
         var recipientId = Convert.ToInt32(helpParams["recipientID"]);
-        var helpTargets = helpParams["helpTargets"] as object[];
+        var helpTargets = helpParams.GetObjectArray("helpTargets");
 
         if (helpTargets is null) throw new Exception("Can't find help targets");
+        
+        var currentUser = await context.Set<User>()
+            .AsSplitQuery()
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.VisitorHelpOrders)
+            .Include(x => x.Friends)
+            .ThenInclude(x => x.FriendUser)
+            .ThenInclude(x => x.Player)
+            .ThenInclude(x => x!.VisitorHelpOrders)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
-        // TODO: Find out how to use helpParams, and send the help
+        if (currentUser?.Player is null)
+            throw new Exception($"Can't find user with userId {userId}");
 
         var reputation = 0;
         var coins = 0;
@@ -52,19 +65,8 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
             default:
                 throw new Exception($"Not implemented help type {type}");
         }
-
-        var currentUser = await context.Set<User>()
-            .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.VisitorHelpOrders)
-            .Include(x => x.Friends)
-            .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.Player)
-            .ThenInclude(x => x!.VisitorHelpOrders)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
-
-        if (currentUser?.Player is null)
-            throw new Exception($"Can't find user with userId {userId}");
+        
+        currentUser.HandleQuestsProgress("visitorHelp", type);
 
         var targetFriend = currentUser.Friends.FirstOrDefault(x => x.FriendUser.Player!.Snuid == recipientId);
 
