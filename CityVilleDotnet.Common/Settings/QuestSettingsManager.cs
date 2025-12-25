@@ -34,24 +34,35 @@ public class QuestSettingsManager
         if (_isInitialized)
             return;
 
+        if (!File.Exists("wwwroot/questSettings.xml"))
+        {
+            logger.LogError("Missing file assets (wwwroot/questSettings.xml)");
+            return;
+        }
+
         var serializer = new XmlSerializer(typeof(GameQuests));
 
         using (var fileStream = new FileStream("wwwroot/questSettings.xml", FileMode.Open))
         {
-            var gameSettings = (GameQuests)serializer.Deserialize(fileStream);
+            var content = serializer.Deserialize(fileStream);
 
-            if (gameSettings?.Quests is not null)
+            if (content is null)
             {
-                foreach (var item in gameSettings.Quests)
-                {
-                    _items[item.Name] = item;
+                logger.LogError("Can't deserialize questSettings.xml file");
+                return;
+            }
 
-                    foreach (var task in item.Tasks.Tasks)
+            var gameSettings = (GameQuests)content;
+
+            foreach (var item in gameSettings.Quests)
+            {
+                _items[item.Name] = item;
+
+                foreach (var task in item.Tasks.Tasks)
+                {
+                    if (!TaskActions.Contains(task.Action))
                     {
-                        if (!TaskActions.Contains(task.Action))
-                        {
-                            TaskActions.Add(task.Action);
-                        }
+                        TaskActions.Add(task.Action);
                     }
                 }
             }

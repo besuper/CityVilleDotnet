@@ -47,20 +47,31 @@ public class GameSettingsManager
         if (_isInitialized)
             return;
 
+        if (!File.Exists("wwwroot/gameSettings.xml"))
+        {
+            logger.LogError("Missing file assets (wwwroot/gameSettings.xml)");
+            return;
+        }
+
         var serializer = new XmlSerializer(typeof(GameSettings.GameSettings));
 
         using (var fileStream = new FileStream("wwwroot/gameSettings.xml", FileMode.Open))
         {
-            var gameSettings = (GameSettings.GameSettings)serializer.Deserialize(fileStream);
+            var content = serializer.Deserialize(fileStream);
 
-            if (gameSettings?.Items?.Items is not null)
+            if (content is null)
             {
-                foreach (var item in gameSettings.Items.Items)
+                logger.LogError("Can't deserialize gameSettings.xml file");
+                return;
+            }
+
+            var gameSettings = (GameSettings.GameSettings)content;
+
+            foreach (var item in gameSettings.Items.Items)
+            {
+                if (item?.Name is not null)
                 {
-                    if (item.Name is not null)
-                    {
-                        _items[item.Name] = item;
-                    }
+                    _items[item.Name] = item;
                 }
             }
 
@@ -157,7 +168,7 @@ public class GameSettingsManager
 
         return _collections.FirstOrDefault(x => x.Name == collectionName);
     }
-    
+
     public IReadOnlyCollection<ExpansionSetting> GetExpansions()
     {
         return _expansions.AsReadOnly();
