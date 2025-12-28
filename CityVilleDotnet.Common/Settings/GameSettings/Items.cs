@@ -13,6 +13,7 @@ public class GameItem
 {
     [XmlAttribute("name")] public required string Name { get; set; }
     [XmlAttribute("type")] public required string Type { get; set; }
+    [XmlAttribute("sellSendsToInventory")] public string? SellSendsToInventory { get; set; }
     [XmlAttribute("height")] public string? Height { get; set; }
     [XmlAttribute("width")] public string? Width { get; set; }
 

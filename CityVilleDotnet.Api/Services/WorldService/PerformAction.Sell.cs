@@ -1,4 +1,5 @@
-﻿using CityVilleDotnet.Domain.Entities;
+﻿using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Domain.Entities;
 using FluorineFx;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
@@ -21,10 +22,20 @@ internal sealed partial class PerformAction
 
         if (obj is null) throw new Exception("Can't find building");
 
+        var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
+
+        if (gameItem is null) throw new Exception($"Can't find item with name {obj.ItemName}");
+
         world.RemoveBuilding(obj);
         context.Set<WorldObject>().Remove(obj);
-        
-        // TODO: Implement sellSendsToInventory
+
+        if (gameItem.SellSendsToInventory is not null)
+        {
+            if (bool.TryParse(gameItem.SellSendsToInventory, out var result) && result)
+            {
+                user.Player!.AddItem(obj.ItemName);
+            }
+        }
 
         await context.SaveChangesAsync(cancellationToken);
     }
