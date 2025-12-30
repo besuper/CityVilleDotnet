@@ -10,6 +10,7 @@ using Serilog;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using CityVilleDotnet.Api.Middleware;
 using CityVilleDotnet.Common.Global;
 
 var builder = WebApplication.CreateBuilder();
@@ -63,6 +64,7 @@ builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Confi
 var app = builder.Build();
 
 app.UseStaticFiles();
+app.UseMiddleware<FallbackAssetMiddleware>();
 app.MapRazorPages();
 app.UseRouting();
 app.UseAuthentication();
