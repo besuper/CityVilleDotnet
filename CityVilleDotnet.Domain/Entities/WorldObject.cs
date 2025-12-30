@@ -51,17 +51,21 @@ public class WorldObject
     public int? Stage { get; set; }
     public int? FinishedBuilds { get; set; }
     public int? Builds { get; set; }
+    public int? RequiredStages { get; set; }
+    public ConstructionState? CurrentState { get; set; }
     public FranchiseLocation? FranchiseLocation { get; private set; }
     public int? Visits { get; private set; }
     public bool NeverOpened { get; private set; }
 
-    public void SetAsConstructionSite(string itemName)
+    public void SetAsConstructionSite(string itemName, int maxStages)
     {
         Stage = 0;
         FinishedBuilds = 0;
         Builds = 0;
+        RequiredStages = maxStages;
         TargetBuildingName = ItemName;
         TargetBuildingClass = ClassName;
+        CurrentState = ConstructionState.Idle;
 
         ItemName = itemName;
         ClassName = nameof(BuildingClassType.ConstructionSite);
@@ -72,6 +76,11 @@ public class WorldObject
         Builds += 1;
         Stage += 1;
         FinishedBuilds = Builds;
+
+        if (FinishedBuilds >= RequiredStages)
+        {
+            CurrentState = ConstructionState.AtGate;
+        }
     }
 
     public void FinishConstruction()
@@ -87,6 +96,8 @@ public class WorldObject
         Builds = null;
         TargetBuildingName = null;
         TargetBuildingClass = null;
+        CurrentState = null;
+        RequiredStages = null;
     }
 
     public bool HasGrown()

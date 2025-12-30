@@ -58,7 +58,12 @@ internal sealed partial class PerformAction
 
             if (gameItem.Construction is not null)
             {
-                obj.SetAsConstructionSite(gameItem.Construction);
+                var constructionItem = GameSettingsManager.Instance.GetItem(gameItem.Construction);
+
+                if (constructionItem?.NumberOfStages is null)
+                    throw new Exception($"Construction item not found with {gameItem.Construction}");
+                
+                obj.SetAsConstructionSite(gameItem.Construction, constructionItem.NumberOfStages.Value);
             }
         }
 

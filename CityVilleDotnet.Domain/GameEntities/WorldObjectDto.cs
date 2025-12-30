@@ -1,6 +1,8 @@
 ﻿using CityVilleDotnet.Domain.Entities;
 using System.Text.Json.Serialization;
 using CityVilleDotnet.Domain.EnumExtensions;
+using CityVilleDotnet.Domain.Enums;
+using FluorineFx;
 
 namespace CityVilleDotnet.Domain.GameEntities;
 
@@ -36,15 +38,18 @@ public class WorldObjectDto
 
     [JsonPropertyName("targetBuildingName")]
     public string? TargetBuildingName { get; set; }
-
+    
     [JsonPropertyName("stage")] public int? Stage { get; set; }
+    [JsonPropertyName("currentState")] public int? CurrentState { get; set; }
 
     [JsonPropertyName("finishedBuilds")] public int? FinishedBuilds { get; set; }
 
     [JsonPropertyName("builds")] public int? Builds { get; set; }
     [JsonPropertyName("visits")] public int? Visits { get; set; }
     [JsonPropertyName("neverOpened")] public bool NeverOpened { get; set; }
-    
+    // TODO: Implement Gates
+    //[JsonPropertyName("gates")] public List<object>? Gates { get; set; }
+
     // TODO: Add franchise_info from Business->loadObject
 }
 
@@ -61,6 +66,7 @@ public static class WorldObjectDtoMapper
             TempId = model.TempId,
             BuildTime = model.BuildTime,
             PlantTime = model.PlantTime,
+            CurrentState = model.CurrentState is null ? (int)ConstructionState.Idle : (int)model.CurrentState,
             Stage = model.Stage,
             State = model.State.ToDescriptionString(),
             Direction = model.Direction,
@@ -76,7 +82,7 @@ public static class WorldObjectDtoMapper
             FinishedBuilds = model.FinishedBuilds,
             Builds = model.Builds,
             Visits = model.Visits,
-            NeverOpened = model.NeverOpened
+            NeverOpened = model.NeverOpened,
         };
     }
 }

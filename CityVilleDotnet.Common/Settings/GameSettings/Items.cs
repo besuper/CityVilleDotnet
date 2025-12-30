@@ -47,6 +47,12 @@ public class GameItem
 
     [XmlElement("randomModifiers")] public RandomModifiers? RandomModifiers { get; set; }
     [XmlElement("energyCost")] public EnergyCost? EnergyCost { get; set; }
+    [XmlElement("gates")] public required GatesContainer Gates { get; set; }
+
+    public List<GatesItem> GetGates()
+    {
+        return Gates.Gates ?? [];
+    }
 }
 
 [Serializable]
@@ -58,4 +64,36 @@ public class EnergyCost
     [XmlAttribute("open")] public string? Open { get; set; }
     [XmlAttribute("clean")] public string? Clean { get; set; }
     [XmlAttribute("clear")] public string? Clear { get; set; }
+}
+
+[Serializable]
+public class GatesContainer
+{
+    [XmlElement("gate")] public required List<GatesItem>? Gates { get; set; }
+}
+
+[Serializable]
+public class GatesItem
+{
+    [XmlAttribute("name")] public string? Name { get; set; }
+    [XmlAttribute("type")] public string? Type { get; set; }
+    [XmlAttribute("instructions")] public string? Instructions { get; set; }
+    [XmlElement("key")] public required List<GateKey?> Keys { get; set; }
+}
+
+[Serializable]
+public class GateKey
+{
+    [XmlAttribute("name")] public required string Name { get; set; }
+    [XmlAttribute("viral")] public string? Viral { get; set; }
+    [XmlAttribute("amount")] public int Amount { get; set; }
+    [XmlAttribute("cashCost")] public string? CashCost { get; set; }
+    [XmlElement("member")] public List<MemberKey>? Members { get; set; }
+}
+
+[Serializable]
+public class MemberKey
+{
+    [XmlAttribute("name")] public required string Name { get; set; }
+    [XmlAttribute("amount")] public int Amount { get; set; }
 }
