@@ -63,6 +63,9 @@ To run the game with proper assets:
     ├── assets/
     ├── hashed/
     └── Game.26346.swf
+    └── Preloader.swf
+    └── gameSettings.xml
+    └── questSettings.xml
     ```
 
 
