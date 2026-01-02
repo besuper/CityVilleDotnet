@@ -24,7 +24,7 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
         var questName = (string)@params[0];
         var taskIndex = Convert.ToInt32(@params[1]);
 
-        logger.LogInformation("Quest {QuestName} at {TaskIndex} is purchased", questName, taskIndex);
+        logger.LogDebug("Quest {QuestName} at {TaskIndex} is purchased", questName, taskIndex);
 
         var currentQuest = user.Quests.FirstOrDefault(x => x.Name == questName && x.QuestType == QuestType.Active);
 

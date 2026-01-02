@@ -20,7 +20,7 @@ public class SetSeenFlag(CityVilleDbContext context, ILogger<SetSeenFlag> logger
 
         var flagName = (string)@params[0] ?? throw new Exception("Flag name can't be null");
 
-        logger.LogInformation("Set seen flag for {FlagName}", flagName);
+        logger.LogDebug("Set seen flag for {FlagName}", flagName);
 
         player.SetSeenFlag(flagName);
 

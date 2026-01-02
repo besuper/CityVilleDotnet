@@ -33,7 +33,7 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
 
         var actionType = @params[0] as string;
 
-        logger.LogInformation("PerformAction type {ActionType}", actionType);
+        logger.LogDebug("PerformAction type {ActionType}", actionType);
 
         if (actionType == "place")
         {

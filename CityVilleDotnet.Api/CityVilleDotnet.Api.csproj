@@ -42,4 +42,15 @@
 	  </Compile>
 	</ItemGroup>
 
+	<ItemGroup>
+		<Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
+		<Content Update="wwwroot\*.xml" CopyToPublishDirectory="Never" />
+		<Content Update="wwwroot\flash_integration.min.js" CopyToPublishDirectory="Never" />
+		<Content Update="wwwroot\swfobject.min.js" CopyToPublishDirectory="Never" />
+		<Content Update="wwwroot\ZYFrameManager.min.js" CopyToPublishDirectory="Never" />
+		<Content Update="wwwroot\**\*.swf" CopyToPublishDirectory="Never" />
+
+		<Content Update="wwwroot\assets\**\*" CopyToPublishDirectory="Never" />
+	</ItemGroup>
+
 </Project>

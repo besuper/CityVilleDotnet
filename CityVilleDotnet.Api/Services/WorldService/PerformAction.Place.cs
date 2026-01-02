@@ -15,7 +15,7 @@ internal sealed partial class PerformAction
 
         foreach (var item in building)
         {
-            logger.LogInformation("{ItemKey} = {ItemValue}", item.Key, item.Value);
+            logger.LogDebug("{ItemKey} = {ItemValue}", item.Key, item.Value);
         }
 
         // TODO: Implement components
@@ -30,7 +30,7 @@ internal sealed partial class PerformAction
 
         var newId = world.GetAvailableBuildingId();
 
-        logger.LogInformation("Using new ID {NewId}", newId);
+        logger.LogDebug("Using new ID {NewId}", newId);
 
         var obj = new WorldObject(
             itemName,
@@ -48,7 +48,7 @@ internal sealed partial class PerformAction
             newId
         );
 
-        logger.LogInformation("x: {PositionX} y: {PositionY} z: {PositionZ}", obj.X, obj.Y, obj.Z);
+        logger.LogDebug("x: {PositionX} y: {PositionY} z: {PositionZ}", obj.X, obj.Y, obj.Z);
 
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
 
