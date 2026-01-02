@@ -1,4 +1,5 @@
-﻿using CityVilleDotnet.Common.Settings;
+﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
@@ -8,7 +9,7 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 internal sealed partial class PerformAction
 {
-    private async Task PerformPlace(User user, object[] @params, Guid userId, CancellationToken cancellationToken)
+    private async Task<CityVilleResponse> PerformPlace(User user, object[] @params, Guid userId, CancellationToken cancellationToken)
     {
         var building = @params[1] as ASObject ?? throw new Exception("Building can't be null when action type is place");
 
@@ -84,5 +85,10 @@ internal sealed partial class PerformAction
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
+        
+        return new CityVilleResponse().MetaData(CreateQuestComponentResponse(user)).Data(new ASObject
+        {
+            ["id"] = obj.WorldFlatId
+        });
     }
 }

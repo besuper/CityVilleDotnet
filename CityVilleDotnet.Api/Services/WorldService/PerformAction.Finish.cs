@@ -37,6 +37,9 @@ internal sealed partial class PerformAction
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse().MetaData(CreateQuestComponentResponse(user));
+        return new CityVilleResponse().MetaData(CreateQuestComponentResponse(user)).Data(new ASObject
+        {
+            ["id"] = obj.WorldFlatId
+        });
     }
 }

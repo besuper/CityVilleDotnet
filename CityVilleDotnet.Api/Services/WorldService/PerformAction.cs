@@ -37,9 +37,7 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
 
         if (actionType == "place")
         {
-            await PerformPlace(user, @params, userId, cancellationToken);
-
-            return new CityVilleResponse().MetaData(CreateQuestComponentResponse(user));
+            return await PerformPlace(user, @params, userId, cancellationToken);
         }
 
         if (actionType == "sell")
