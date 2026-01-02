@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CityVilleDotnet.Persistence.Migrations
 {
     [DbContext(typeof(CityVilleDbContext))]
-    [Migration("20251221231337_AddNeverOpenedBusiness")]
-    partial class AddNeverOpenedBusiness
+    [Migration("20260102154638_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,8 +92,11 @@ namespace CityVilleDotnet.Persistence.Migrations
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Collection", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Completed")
                         .HasColumnType("int");
@@ -115,14 +118,17 @@ namespace CityVilleDotnet.Persistence.Migrations
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.CollectionItem", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Amount")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("CollectionId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("CollectionId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -146,8 +152,8 @@ namespace CityVilleDotnet.Persistence.Migrations
 
                     b.Property<string>("FranchiseName")
                         .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("nvarchar(16)");
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("FranchiseType")
                         .IsRequired()
@@ -222,8 +228,14 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("EnergyLeft")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("FriendUserId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("LastEnergyLeftReset")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("Requested")
                         .HasColumnType("bit");
@@ -245,8 +257,11 @@ namespace CityVilleDotnet.Persistence.Migrations
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.InventoryItem", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Amount")
                         .HasColumnType("int");
@@ -268,8 +283,11 @@ namespace CityVilleDotnet.Persistence.Migrations
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.LicenseItem", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Amount")
                         .HasColumnType("int");
@@ -291,14 +309,17 @@ namespace CityVilleDotnet.Persistence.Migrations
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.LotOrder", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ConstructionCount")
                         .HasColumnType("int");
 
-                    b.Property<int>("LastTimeReminded")
-                        .HasColumnType("int");
+                    b.Property<long>("LastTimeReminded")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("LotId")
                         .HasColumnType("int");
@@ -311,7 +332,8 @@ namespace CityVilleDotnet.Persistence.Migrations
 
                     b.Property<string>("OrderResourceName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<int>("OrderState")
                         .HasColumnType("int");
@@ -328,14 +350,15 @@ namespace CityVilleDotnet.Persistence.Migrations
 
                     b.Property<string>("ResourceType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("SenderId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TimeSent")
-                        .HasColumnType("int");
+                    b.Property<long>("TimeSent")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("TransmissionStatus")
                         .HasColumnType("int");
@@ -349,8 +372,11 @@ namespace CityVilleDotnet.Persistence.Migrations
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.MapRect", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Height")
                         .HasColumnType("int");
@@ -358,8 +384,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<int>("Width")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("WorldId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("WorldId")
+                        .HasColumnType("int");
 
                     b.Property<int>("X")
                         .HasColumnType("int");
@@ -456,8 +482,11 @@ namespace CityVilleDotnet.Persistence.Migrations
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Quest", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -472,9 +501,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("QuestType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("QuestType")
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -488,8 +516,11 @@ namespace CityVilleDotnet.Persistence.Migrations
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.SeenFlag", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Key")
                         .IsRequired()
@@ -520,8 +551,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("WorldId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("WorldId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -534,10 +565,61 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.ToTable("User");
                 });
 
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.VisitorHelpOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.PrimitiveCollection<string>("HelpTargets")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("LastTimeReminded")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("OrderState")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("PlayerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RecipientId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<long>("TimeSent")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("TransmissionStatus")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("VisitorHelpOrder");
+                });
+
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.World", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Population")
                         .HasColumnType("int");
@@ -566,8 +648,11 @@ namespace CityVilleDotnet.Persistence.Migrations
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.WorldObject", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<double?>("BuildTime")
                         .HasColumnType("float");
@@ -575,14 +660,16 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<int?>("Builds")
                         .HasColumnType("int");
 
-                    b.Property<string>("ClassName")
-                        .IsRequired()
+                    b.Property<int>("ClassName")
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("int");
 
                     b.Property<string>("ContractName")
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
+
+                    b.Property<int?>("CurrentState")
+                        .HasColumnType("int");
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
@@ -607,6 +694,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<double?>("PlantTime")
                         .HasColumnType("float");
 
+                    b.Property<int?>("RequiredStages")
+                        .HasColumnType("int");
+
                     b.Property<int?>("Stage")
                         .HasColumnType("int");
 
@@ -614,9 +704,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("int");
 
-                    b.Property<string>("TargetBuildingClass")
+                    b.Property<int?>("TargetBuildingClass")
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("int");
 
                     b.Property<string>("TargetBuildingName")
                         .HasMaxLength(64)
@@ -631,8 +721,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<int>("WorldFlatId")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("WorldId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("WorldId")
+                        .HasColumnType("int");
 
                     b.Property<int>("X")
                         .HasColumnType("int");
@@ -896,6 +986,13 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Navigation("World");
                 });
 
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.VisitorHelpOrder", b =>
+                {
+                    b.HasOne("CityVilleDotnet.Domain.Entities.Player", null)
+                        .WithMany("VisitorHelpOrders")
+                        .HasForeignKey("PlayerId");
+                });
+
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.WorldObject", b =>
                 {
                     b.HasOne("CityVilleDotnet.Domain.Entities.FranchiseLocation", "FranchiseLocation")
@@ -983,6 +1080,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Navigation("LotOrders");
 
                     b.Navigation("SeenFlags");
+
+                    b.Navigation("VisitorHelpOrders");
                 });
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.User", b =>

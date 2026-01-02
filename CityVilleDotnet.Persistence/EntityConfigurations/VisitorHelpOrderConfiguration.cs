@@ -9,7 +9,6 @@ public class VisitorHelpOrderConfiguration : IEntityTypeConfiguration<VisitorHel
     public void Configure(EntityTypeBuilder<VisitorHelpOrder> builder)
     {
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id)
-            .ValueGeneratedNever();
+        builder.Property(x => x.Id).ValueGeneratedOnAdd();
     }
 }

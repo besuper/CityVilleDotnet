@@ -33,7 +33,7 @@ internal sealed partial class PerformAction
 
         var obj = new WorldObject(
             itemName,
-            className,
+            Enum.Parse<BuildingClassType>(className),
             null,
             (bool)building["deleted"],
             Convert.ToInt32(building["tempId"]),
@@ -80,7 +80,7 @@ internal sealed partial class PerformAction
         // TODO: Check coins, goods, energy, etc...
         // Add population
 
-        user.HandleQuestsProgress("placeByClass", className: obj.ClassName);
+        user.HandleQuestsProgress("placeByClass", className: obj.ClassName.ToString());
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);

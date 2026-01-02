@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 
 namespace CityVilleDotnet.Domain.GameEntities;
 

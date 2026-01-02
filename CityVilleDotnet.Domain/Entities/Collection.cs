@@ -2,7 +2,7 @@
 
 public class Collection
 {
-    public Guid Id { get; private set; }
+    public int Id { get; private set; }
     public string Name { get; private set; }
     public int Completed { get; private set; } = 0;
 
@@ -14,7 +14,6 @@ public class Collection
 
     public Collection(string name)
     {
-        Id = Guid.NewGuid();
         Name = name;
     }
 

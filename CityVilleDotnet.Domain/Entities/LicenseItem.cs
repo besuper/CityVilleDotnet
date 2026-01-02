@@ -2,7 +2,7 @@
 
 public class LicenseItem
 {
-    public Guid Id { get; private set; }
+    public int Id { get; private set; }
     
     public string Name { get; private set; }
     
@@ -10,7 +10,6 @@ public class LicenseItem
     
     public LicenseItem(string name, int amount)
     {
-        Id = Guid.NewGuid();
         Name = name;
         Amount = amount;
     }

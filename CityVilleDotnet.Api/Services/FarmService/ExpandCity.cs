@@ -63,7 +63,6 @@ public class ExpandCity(CityVilleDbContext context) : AmfService
 
         var newMapRect = new MapRect
         {
-            Id = Guid.NewGuid(),
             X = x.Value,
             Y = y.Value,
             Height = int.Parse(item.Height), // FIXME: Change these value to the right type when loading the settings
@@ -81,11 +80,10 @@ public class ExpandCity(CityVilleDbContext context) : AmfService
         {
             var newTree = new WorldObject
             {
-                Id = Guid.NewGuid(),
                 WorldFlatId = world.GetAvailableBuildingId(),
                 TempId = -1,
                 ItemName = (string)tree["itemName"],
-                ClassName = "Wilderness",
+                ClassName = BuildingClassType.Wilderness,
                 State = WorldObjectState.Static,
                 Direction = (int)tree["dir"],
                 Deleted = false,

@@ -95,7 +95,6 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
         {
             senderHelpOrder = new VisitorHelpOrder
             {
-                Id = Guid.NewGuid(),
                 SenderId = (string)helpParams["senderID"],
                 RecipientId = (string)helpParams["recipientID"],
                 Status = VisitorHelpStatus.Unclaimed,
@@ -124,7 +123,6 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
         {
             receiveHelpOrder = new VisitorHelpOrder
             {
-                Id = Guid.NewGuid(),
                 SenderId = (string)helpParams["senderID"],
                 RecipientId = (string)helpParams["recipientID"],
                 Status = VisitorHelpStatus.Unclaimed,

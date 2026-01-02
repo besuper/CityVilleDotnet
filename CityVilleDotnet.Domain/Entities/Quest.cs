@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Common.Settings;
 using System.Text.Json.Serialization;
+using CityVilleDotnet.Domain.Enums;
 
 namespace CityVilleDotnet.Domain.Entities;
 
@@ -7,7 +8,6 @@ public class Quest
 {
     public Quest(string name, int[] progress, int[] purchased, QuestType questType)
     {
-        Id = Guid.NewGuid();
         Name = name;
         Progress = progress;
         Purchased = purchased;
@@ -18,7 +18,7 @@ public class Quest
     {
     }
 
-    public Guid Id { get; private set; }
+    public int Id { get; private set; }
 
     public string Name { get; set; }
 

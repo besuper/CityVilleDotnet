@@ -30,7 +30,7 @@ internal sealed partial class PerformAction
         obj.PlantTime = plantTime is null ? 0 : (double)plantTime;
         obj.State = EnumExtensions.ParseFromDescription<WorldObjectState>(state);
 
-        user.HandleQuestsProgress("startContractByClass", className: obj.ClassName);
+        user.HandleQuestsProgress("startContractByClass", className: obj.ClassName.ToString());
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);

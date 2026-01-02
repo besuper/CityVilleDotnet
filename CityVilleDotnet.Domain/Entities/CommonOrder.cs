@@ -4,7 +4,7 @@ namespace CityVilleDotnet.Domain.Entities;
 
 public abstract class CommonOrder
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public required string SenderId { get; set; }
     public required string RecipientId { get; set; }
     public long TimeSent { get; set; } 

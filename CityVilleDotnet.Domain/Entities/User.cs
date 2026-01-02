@@ -18,7 +18,6 @@ public class User
     {
         var mapRects = defaultValue.MapRects.Select(x => new MapRect()
         {
-            Id = Guid.NewGuid(),
             Height = x.Height,
             Width = x.Width,
             X = x.X,
@@ -27,10 +26,9 @@ public class User
 
         var objects = defaultValue.Objects.Select(x => new WorldObject()
         {
-            Id = Guid.NewGuid(),
             Builds = x.Builds,
             BuildTime = x.BuildTime,
-            ClassName = x.ClassName,
+            ClassName = Enum.Parse<BuildingClassType>(x.ClassName),
             ContractName = x.ContractName,
             Deleted = x.Deleted,
             Direction = x.Direction,
@@ -42,7 +40,7 @@ public class User
             Z = x.Position.Z,
             Stage = x.Stage,
             State = EnumExtensions.EnumExtensions.ParseFromDescription<WorldObjectState>(x.State),
-            TargetBuildingClass = x.TargetBuildingClass,
+            TargetBuildingClass = x.TargetBuildingClass is null ? null : Enum.Parse<BuildingClassType>(x.TargetBuildingClass),
             TargetBuildingName = x.TargetBuildingName,
             TempId = x.TempId,
             WorldFlatId = x.WorldFlatId,

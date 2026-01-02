@@ -6,9 +6,8 @@ namespace CityVilleDotnet.Domain.Entities;
 
 public class WorldObject
 {
-    public WorldObject(string itemName, string className, string? contractName, bool deleted, int tempId, WorldObjectState state, int direction, double? buildTime, double? plantTime, int x, int y, int z, int worldFlatId)
+    public WorldObject(string itemName, BuildingClassType className, string? contractName, bool deleted, int tempId, WorldObjectState state, int direction, double? buildTime, double? plantTime, int x, int y, int z, int worldFlatId)
     {
-        Id = Guid.NewGuid();
         ItemName = itemName;
         ClassName = className;
         ContractName = contractName;
@@ -29,9 +28,9 @@ public class WorldObject
     {
     }
 
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public string ItemName { get; set; }
-    public string ClassName { get; set; }
+    public BuildingClassType ClassName { get; set; }
     public string? ContractName { get; set; }
 
     /*[JsonPropertyName("components")]
@@ -46,7 +45,7 @@ public class WorldObject
     public int Y { get; set; }
     public int? Z { get; set; }
     public int WorldFlatId { get; set; }
-    public string? TargetBuildingClass { get; set; }
+    public BuildingClassType? TargetBuildingClass { get; set; }
     public string? TargetBuildingName { get; set; }
     public int? Stage { get; set; }
     public int? FinishedBuilds { get; set; }
@@ -68,7 +67,7 @@ public class WorldObject
         CurrentState = ConstructionState.Idle;
 
         ItemName = itemName;
-        ClassName = nameof(BuildingClassType.ConstructionSite);
+        ClassName = BuildingClassType.ConstructionSite;
     }
 
     public void AddConstructionStage()
@@ -89,7 +88,7 @@ public class WorldObject
             throw new Exception("Can't finish build");
 
         ItemName = TargetBuildingName;
-        ClassName = TargetBuildingClass;
+        ClassName = TargetBuildingClass.Value;
 
         Stage = null;
         FinishedBuilds = null;
@@ -114,7 +113,7 @@ public class WorldObject
     {
         var coinYield = 0;
 
-        if (ClassName == nameof(BuildingClassType.Plot))
+        if (ClassName == BuildingClassType.Plot)
         {
             if (ContractName is null)
                 throw new Exception("Contract name is null, can't harvest");
@@ -144,7 +143,7 @@ public class WorldObject
             PlantTime = ServerUtils.GetCurrentTime();
         }
 
-        if (ClassName == "Business")
+        if (ClassName == BuildingClassType.Business)
         {
             if (State != WorldObjectState.ClosedHarvestable)
             {
@@ -160,7 +159,7 @@ public class WorldObject
 
     public void OpenBusiness(double buildTime, double plantTime)
     {
-        if (ClassName != nameof(BuildingClassType.Business)) throw new Exception("Can't open other than business building, class name is: " + ClassName + "");
+        if (ClassName != BuildingClassType.Business) throw new Exception("Can't open other than business building, class name is: " + ClassName + "");
         if (State == WorldObjectState.Open || State == WorldObjectState.ClosedHarvestable) throw new Exception("Building is already open");
 
         // TODO: Manage these from server not client
@@ -183,7 +182,7 @@ public class WorldObject
 
     public void UpdateVisits(int visits)
     {
-        if (ClassName != "Business") throw new Exception("Can't update visits on non business building");
+        if (ClassName != BuildingClassType.Business) throw new Exception("Can't update visits on non business building");
         if (State != WorldObjectState.Open) throw new Exception("Can't update visits on non open business building");
 
         var gameItem = GameSettingsManager.Instance.GetItem(ItemName);

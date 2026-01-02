@@ -9,8 +9,7 @@ public class SeenFlagConfiguration : IEntityTypeConfiguration<SeenFlag>
     public void Configure(EntityTypeBuilder<SeenFlag> builder)
     {
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id)
-            .ValueGeneratedNever();
+        builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
         builder.Property(x => x.Key).HasMaxLength(32);
     }

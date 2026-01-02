@@ -87,7 +87,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                 name: "World",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     WorldName = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
                     SizeX = table.Column<int>(type: "int", nullable: false),
                     SizeY = table.Column<int>(type: "int", nullable: false),
@@ -210,7 +211,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                 name: "Collection",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     Completed = table.Column<int>(type: "int", nullable: false),
                     PlayerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
@@ -233,7 +235,7 @@ namespace CityVilleDotnet.Persistence.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FranchiseType = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
-                    FranchiseName = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
+                    FranchiseName = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     TimeLastCollected = table.Column<int>(type: "int", nullable: false),
                     PlayerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
@@ -251,7 +253,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                 name: "InventoryItem",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     Amount = table.Column<int>(type: "int", nullable: false),
                     PlayerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
@@ -270,7 +273,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                 name: "LicenseItem",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     Amount = table.Column<int>(type: "int", nullable: false),
                     PlayerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
@@ -289,18 +293,19 @@ namespace CityVilleDotnet.Persistence.Migrations
                 name: "LotOrder",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     LotId = table.Column<int>(type: "int", nullable: false),
-                    ResourceType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OrderResourceName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ResourceType = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    OrderResourceName = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     ConstructionCount = table.Column<int>(type: "int", nullable: false),
                     OffsetX = table.Column<int>(type: "int", nullable: true),
                     OffsetY = table.Column<int>(type: "int", nullable: true),
                     PlayerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     SenderId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RecipientId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TimeSent = table.Column<int>(type: "int", nullable: false),
-                    LastTimeReminded = table.Column<int>(type: "int", nullable: false),
+                    TimeSent = table.Column<long>(type: "bigint", nullable: false),
+                    LastTimeReminded = table.Column<long>(type: "bigint", nullable: false),
                     OrderType = table.Column<int>(type: "int", nullable: false),
                     OrderState = table.Column<int>(type: "int", nullable: false),
                     TransmissionStatus = table.Column<int>(type: "int", nullable: false)
@@ -319,7 +324,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                 name: "SeenFlag",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Key = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
                     PlayerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
@@ -334,15 +340,43 @@ namespace CityVilleDotnet.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "VisitorHelpOrder",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    HelpTargets = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PlayerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    SenderId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RecipientId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TimeSent = table.Column<long>(type: "bigint", nullable: false),
+                    LastTimeReminded = table.Column<long>(type: "bigint", nullable: false),
+                    OrderType = table.Column<int>(type: "int", nullable: false),
+                    OrderState = table.Column<int>(type: "int", nullable: false),
+                    TransmissionStatus = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VisitorHelpOrder", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VisitorHelpOrder_Player_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "Player",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MapRect",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     X = table.Column<int>(type: "int", nullable: false),
                     Y = table.Column<int>(type: "int", nullable: false),
                     Width = table.Column<int>(type: "int", nullable: false),
                     Height = table.Column<int>(type: "int", nullable: false),
-                    WorldId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    WorldId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -362,7 +396,7 @@ namespace CityVilleDotnet.Persistence.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     PlayerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    WorldId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    WorldId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -388,10 +422,11 @@ namespace CityVilleDotnet.Persistence.Migrations
                 name: "CollectionItem",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     Amount = table.Column<int>(type: "int", nullable: false),
-                    CollectionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    CollectionId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -439,7 +474,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FriendUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    Requested = table.Column<bool>(type: "bit", nullable: false)
+                    Requested = table.Column<bool>(type: "bit", nullable: false),
+                    EnergyLeft = table.Column<int>(type: "int", nullable: false),
+                    LastEnergyLeftReset = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -462,11 +499,12 @@ namespace CityVilleDotnet.Persistence.Migrations
                 name: "Quest",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     Progress = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Purchased = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    QuestType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    QuestType = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
@@ -483,9 +521,10 @@ namespace CityVilleDotnet.Persistence.Migrations
                 name: "WorldObject",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     ItemName = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
-                    ClassName = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    ClassName = table.Column<int>(type: "int", maxLength: 64, nullable: false),
                     ContractName = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
                     Deleted = table.Column<bool>(type: "bit", nullable: false),
                     TempId = table.Column<int>(type: "int", nullable: false),
@@ -497,14 +536,17 @@ namespace CityVilleDotnet.Persistence.Migrations
                     Y = table.Column<int>(type: "int", nullable: false),
                     Z = table.Column<int>(type: "int", nullable: true),
                     WorldFlatId = table.Column<int>(type: "int", nullable: false),
-                    TargetBuildingClass = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    TargetBuildingClass = table.Column<int>(type: "int", maxLength: 64, nullable: true),
                     TargetBuildingName = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
                     Stage = table.Column<int>(type: "int", nullable: true),
                     FinishedBuilds = table.Column<int>(type: "int", nullable: true),
                     Builds = table.Column<int>(type: "int", nullable: true),
+                    RequiredStages = table.Column<int>(type: "int", nullable: true),
+                    CurrentState = table.Column<int>(type: "int", nullable: true),
                     FranchiseLocationId = table.Column<int>(type: "int", nullable: true),
                     Visits = table.Column<int>(type: "int", nullable: true),
-                    WorldId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    NeverOpened = table.Column<bool>(type: "bit", nullable: false),
+                    WorldId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -636,6 +678,11 @@ namespace CityVilleDotnet.Persistence.Migrations
                 column: "WorldId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_VisitorHelpOrder_PlayerId",
+                table: "VisitorHelpOrder",
+                column: "PlayerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_WorldObject_FranchiseLocationId",
                 table: "WorldObject",
                 column: "FranchiseLocationId");
@@ -687,6 +734,9 @@ namespace CityVilleDotnet.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "SeenFlag");
+
+            migrationBuilder.DropTable(
+                name: "VisitorHelpOrder");
 
             migrationBuilder.DropTable(
                 name: "WorldObject");

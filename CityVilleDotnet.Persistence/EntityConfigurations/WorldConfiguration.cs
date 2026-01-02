@@ -9,8 +9,7 @@ public class WorldConfiguration : IEntityTypeConfiguration<World>
     public void Configure(EntityTypeBuilder<World> builder)
     {
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id)
-            .ValueGeneratedNever();
+        builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
         builder.Property(x => x.SizeX);
         builder.Property(x => x.SizeY);

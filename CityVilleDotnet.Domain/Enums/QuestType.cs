@@ -1,4 +1,4 @@
-﻿namespace CityVilleDotnet.Domain.Entities;
+﻿namespace CityVilleDotnet.Domain.Enums;
 
 public enum QuestType
 {

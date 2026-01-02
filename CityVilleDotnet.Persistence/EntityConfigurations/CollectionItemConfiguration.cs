@@ -9,8 +9,7 @@ public class CollectionItemConfiguration : IEntityTypeConfiguration<CollectionIt
     public void Configure(EntityTypeBuilder<CollectionItem> builder)
     {
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id)
-            .ValueGeneratedNever();
+        builder.Property(x => x.Id).ValueGeneratedOnAdd();
         
         builder.Property(x => x.Name).HasMaxLength(64);
     }

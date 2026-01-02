@@ -2,7 +2,7 @@
 
 public class InventoryItem
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     public string Name { get; set; }
 
@@ -13,7 +13,6 @@ public class InventoryItem
 
     public InventoryItem(string itemName, int amount = 1)
     {
-        Id = Guid.NewGuid();
         Name = itemName;
         Amount = amount;
     }

@@ -9,8 +9,7 @@ public class WorldObjectConfiguration : IEntityTypeConfiguration<WorldObject>
     public void Configure(EntityTypeBuilder<WorldObject> builder)
     {
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id)
-            .ValueGeneratedNever();
+        builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
         builder.Property(x => x.ItemName).HasMaxLength(64);
         builder.Property(x => x.ClassName).HasMaxLength(64);

@@ -44,7 +44,6 @@ public class PlaceOrder(CityVilleDbContext context) : AmfService
         
         var lotOrder = new LotOrder
         {
-            Id = Guid.NewGuid(),
             LotId = lotId,
             SenderId = senderId,
             RecipientId = recipientId,
@@ -60,7 +59,6 @@ public class PlaceOrder(CityVilleDbContext context) : AmfService
         
         var receivedLotOrder = new LotOrder
         {
-            Id = Guid.NewGuid(),
             LotId = lotId,
             SenderId = senderId,
             RecipientId = recipientId,

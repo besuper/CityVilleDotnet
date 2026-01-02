@@ -2,7 +2,7 @@
 
 public class CollectionItem(string name, int amount)
 {
-    public Guid Id { get; private set; } = Guid.NewGuid();
+    public int Id { get; set; }
     public string Name { get; private set; } = name;
     public int Amount { get; private set; } = amount;
     

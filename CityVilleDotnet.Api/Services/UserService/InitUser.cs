@@ -5,6 +5,7 @@ using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using CityVilleDotnet.Domain.Enums;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 

@@ -60,7 +60,7 @@ public static class WorldObjectDtoMapper
         return new WorldObjectDto()
         {
             ItemName = model.ItemName,
-            ClassName = model.ClassName,
+            ClassName = model.ClassName.ToString(),
             ContractName = model.ContractName,
             Deleted = model.Deleted,
             TempId = model.TempId,
@@ -77,7 +77,7 @@ public static class WorldObjectDtoMapper
                 Z = model.Z ?? 0
             },
             WorldFlatId = model.WorldFlatId,
-            TargetBuildingClass = model.TargetBuildingClass,
+            TargetBuildingClass = model.TargetBuildingClass?.ToString(),
             TargetBuildingName = model.TargetBuildingName,
             FinishedBuilds = model.FinishedBuilds,
             Builds = model.Builds,

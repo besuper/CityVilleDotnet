@@ -6,7 +6,7 @@ namespace CityVilleDotnet.Domain.Entities;
 
 public class World
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public string WorldName { get; private set; }
     public int SizeX { get; set; }
     public int SizeY { get; set; }
@@ -20,7 +20,6 @@ public class World
 
     public World(string worldName, int sizeX, int sizeY, int population, int populationCap, int potentialPopulation, List<MapRect> mapRects, List<WorldObject> objects)
     {
-        Id = Guid.NewGuid();
         WorldName = worldName;
         SizeX = sizeX;
         SizeY = sizeY;
@@ -128,14 +127,14 @@ public class World
         var building = Objects.FirstOrDefault(x => x.WorldFlatId == lotOrder.LotId);
 
         if (building is null) return;
-        if (building.ClassName != nameof(BuildingClassType.LotSite)) throw new Exception("Building is not a LotSite");
+        if (building.ClassName != BuildingClassType.LotSite) throw new Exception("Building is not a LotSite");
         
         var gameItem = GameSettingsManager.Instance.GetItem(lotOrder.ResourceType);
 
         if(gameItem is null) throw new Exception("Item not found");
         
         building.ItemName = lotOrder.ResourceType;
-        building.ClassName = gameItem.Type;
+        building.ClassName = Enum.Parse<BuildingClassType>(gameItem.Type);
         building.State = WorldObjectState.Closed;
     }
 }

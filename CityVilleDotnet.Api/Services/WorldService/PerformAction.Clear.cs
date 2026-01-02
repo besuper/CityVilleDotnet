@@ -43,7 +43,7 @@ internal sealed partial class PerformAction
 
         context.Set<WorldObject>().Remove(obj);
 
-        user.HandleQuestsProgress("clearByClass", className: obj.ClassName); // Wilderness
+        user.HandleQuestsProgress("clearByClass", className: obj.ClassName.ToString()); // Wilderness
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
