@@ -1,6 +1,10 @@
 version: 2
 updates:
   - package-ecosystem: "nuget"
-    directory: "/"
+    directories: 
+      - "/CityVilleDotnet.Api"
+      - "/CityVilleDotnet.Common"
+      - "/CityVilleDotnet.Domain"
+      - "/CityVilleDotnet.Persistence"
     schedule:
       interval: "weekly"
