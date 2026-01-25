@@ -26,6 +26,11 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         CurrentUser = user.AppUser;
 
+        if (CurrentUser.IsGuest)
+        {
+            return RedirectToPage("/Game");
+        }
+
         Friends = await dbContext.Set<User>()
             .AsNoTracking()
             .Where(x => x.AppUser!.Id.Equals(CurrentUser.Id))
@@ -50,10 +55,15 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         var user = await GetCurrentUserAsync(ct);
 
-        if (user?.Player is null)
+        if (user?.Player is null || user.AppUser is null)
             return RedirectToPage("/Account/Login");
 
         CurrentUser = user.AppUser;
+        
+        if (CurrentUser.IsGuest)
+        {
+            return RedirectToPage("/Game");
+        }
 
         if (user.Player.Username.Equals(Username, StringComparison.OrdinalIgnoreCase))
         {
@@ -104,10 +114,15 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         var user = await GetCurrentUserAsync(ct);
 
-        if (user is null)
+        if (user?.AppUser is null)
             return RedirectToPage("/Account/Login");
 
         CurrentUser = user.AppUser;
+        
+        if (CurrentUser.IsGuest)
+        {
+            return RedirectToPage("/Game");
+        }
 
         var friendship = await dbContext.Set<Friend>()
             .Include(x => x.FriendUser)
@@ -149,10 +164,15 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         var user = await GetCurrentUserAsync(ct);
 
-        if (user is null)
+        if (user?.AppUser is null)
             return RedirectToPage("/Account/Login");
 
         CurrentUser = user.AppUser;
+        
+        if (CurrentUser.IsGuest)
+        {
+            return RedirectToPage("/Game");
+        }
 
         var friendship = await dbContext.Set<Friend>()
             .Include(x => x.FriendUser)
@@ -191,10 +211,15 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         var user = await GetCurrentUserAsync(ct);
 
-        if (user is null)
+        if (user?.AppUser is null)
             return RedirectToPage("/Account/Login");
 
         CurrentUser = user.AppUser;
+        
+        if (CurrentUser.IsGuest)
+        {
+            return RedirectToPage("/Game");
+        }
 
         var friendship = await dbContext.Set<Friend>()
             .Include(x => x.FriendUser)

@@ -5,12 +5,13 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CityVilleDotnet.Api.Pages.Account;
 
-public class LoginModel(SignInManager<ApplicationUser> signInManager) : PageModel
+public class LoginModel(SignInManager<ApplicationUser> signInManager, IConfiguration configuration) : PageModel
 {
     [BindProperty] public required LoginInputModel Input { get; set; }
     [TempData] public string? ErrorMessage { get; set; }
 
     public string ReturnUrl { get; set; } = "/Game";
+    public bool EnableGuests => configuration.GetValue<bool>("enableGuests");
 
     public void OnGet(string? returnUrl = null)
     {

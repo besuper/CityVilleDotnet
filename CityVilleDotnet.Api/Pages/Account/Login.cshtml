@@ -35,6 +35,13 @@
                 <button id="login-submit" type="submit" class="w-100 btn btn-primary btn-lg">
                     Login
                 </button>
+                
+                @if (Model.EnableGuests)
+                {
+                    <a class="w-100 btn btn-primary btn-lg mt-2" href="/Guest">
+                        Play as a guest
+                    </a>
+                }
             </form>
 
             <div class="mt-3 text-center">
