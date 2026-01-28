@@ -28,7 +28,9 @@ public class FallbackAssetMiddleware
                 ".png" => "image/png",
                 ".jpg" or ".jpeg" => "image/jpeg",
                 ".gif" => "image/gif",
+                ".mp3" => "audio/mpeg",
                 ".swf" => "application/x-shockwave-flash",
+                ".css" => "text/css",
                 _ => null
             };
 

@@ -53,10 +53,11 @@ public class PlayerDto
     public ASObject CompletedCollections { get; set; } = new();
 
     [JsonPropertyName("licenses")] public ASObject Licenses { get; set; } = new();
-    
+
     [JsonPropertyName("Orders")] public ASObject Orders { get; set; } = new();
-    
+
     [JsonPropertyName("rollCounter")] public int RollCounter { get; set; } = 0;
+    [JsonPropertyName("featureData")] public ASObject FeatureData { get; set; }
 }
 
 public static class PlayerDtoMapper
@@ -86,7 +87,8 @@ public static class PlayerDtoMapper
             LastEnergyCheck = model.GetLastCheckEnergyTimestamp(),
             ExpansionsPurchased = model.ExpansionsPurchased,
             Gold = model.Gold,
-            Inventory = new InventoryDto {
+            Inventory = new InventoryDto
+            {
                 Count = model.CountIventoryItems(),
                 Items = new ASObject(model.InventoryItems.ToDictionary(x => x.Name, x => (object)x.Amount))
             },
@@ -106,10 +108,11 @@ public static class PlayerDtoMapper
             Xp = model.Xp,
             SocialLevel = model.SocialLevel,
             SocialXp = model.SocialXp,
-            Orders = BuildOrdersAsObject(model)
+            Orders = BuildOrdersAsObject(model),
+            FeatureData = new ASObject(new Dictionary<string, object>()) // Enable or disable some features for the player
         };
     }
-    
+
     private static ASObject BuildOrdersAsObject(Player model)
     {
         var root = new ASObject();
@@ -117,31 +120,31 @@ public static class PlayerDtoMapper
         // TODO: Add VisitorHelp and TrainOrder
         foreach (var order in model.LotOrders)
         {
-            var orderTypeKey = order.OrderType.ToDescriptionString();              // "order_lot"
-            var transmissionKey = order.TransmissionStatus.ToDescriptionString();  // "sent"/"received"
-            var stateKey = order.OrderState.ToDescriptionString();                 // "pending"/"accepted"/"denied"
-            
+            var orderTypeKey = order.OrderType.ToDescriptionString(); // "order_lot"
+            var transmissionKey = order.TransmissionStatus.ToDescriptionString(); // "sent"/"received"
+            var stateKey = order.OrderState.ToDescriptionString(); // "pending"/"accepted"/"denied"
+
             var isReceived = transmissionKey == "received";
             var otherUserId = isReceived ? $"{order.SenderId}:{order.SenderId}" : $"{order.RecipientId}:{order.RecipientId}";
-            
+
             if (!root.ContainsKey(orderTypeKey))
                 root[orderTypeKey] = new ASObject();
-            
+
             var byTransmission = (ASObject)root[orderTypeKey]!;
 
             if (!byTransmission.ContainsKey(transmissionKey))
                 byTransmission[transmissionKey] = new ASObject();
-            
+
             var byState = (ASObject)byTransmission[transmissionKey]!;
 
             if (!byState.ContainsKey(stateKey))
                 byState[stateKey] = new ASObject();
-            
+
             var byOtherUser = (ASObject)byState[stateKey]!;
 
             if (!byOtherUser.ContainsKey(otherUserId))
                 byOtherUser[otherUserId] = new ASObject();
-            
+
             var orderParams = new ASObject
             {
                 ["senderID"] = order.SenderId,
@@ -162,34 +165,34 @@ public static class PlayerDtoMapper
 
             byOtherUser[otherUserId] = orderParams;
         }
-        
+
         foreach (var order in model.VisitorHelpOrders)
         {
-            var orderTypeKey = order.OrderType.ToDescriptionString();              // "order_lot"
-            var transmissionKey = order.TransmissionStatus.ToDescriptionString();  // "sent"/"received"
-            var stateKey = order.OrderState.ToDescriptionString();                 // "pending"/"accepted"/"denied"
-            
+            var orderTypeKey = order.OrderType.ToDescriptionString(); // "order_lot"
+            var transmissionKey = order.TransmissionStatus.ToDescriptionString(); // "sent"/"received"
+            var stateKey = order.OrderState.ToDescriptionString(); // "pending"/"accepted"/"denied"
+
             var isReceived = transmissionKey == "received";
             var otherUserId = isReceived ? $"{order.SenderId}:{order.SenderId}" : $"{order.RecipientId}:{order.RecipientId}";
-            
+
             if (!root.ContainsKey(orderTypeKey))
                 root[orderTypeKey] = new ASObject();
-            
+
             var byTransmission = (ASObject)root[orderTypeKey]!;
 
             if (!byTransmission.ContainsKey(transmissionKey))
                 byTransmission[transmissionKey] = new ASObject();
-            
+
             var byState = (ASObject)byTransmission[transmissionKey]!;
 
             if (!byState.ContainsKey(stateKey))
                 byState[stateKey] = new ASObject();
-            
+
             var byOtherUser = (ASObject)byState[stateKey]!;
 
             if (!byOtherUser.ContainsKey(otherUserId))
                 byOtherUser[otherUserId] = new ASObject();
-            
+
             var orderParams = new ASObject
             {
                 ["senderID"] = order.SenderId,
@@ -209,5 +212,4 @@ public static class PlayerDtoMapper
 
         return root;
     }
-
 }

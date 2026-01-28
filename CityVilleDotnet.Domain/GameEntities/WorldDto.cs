@@ -19,6 +19,12 @@ public class WorldDto
 
     [JsonPropertyName("objects")]
     public List<WorldObjectDto> Objects { get; set; }
+    
+    [JsonPropertyName("lastExpansionTier")]
+    public int LastExpansionTier { get; set; }
+
+    [JsonPropertyName("world_id")]
+    public required string WorldId { get; set; }
 }
 
 public static class WorldDtoMapper
@@ -36,7 +42,9 @@ public static class WorldDtoMapper
                 PopulationCap = model.PopulationCap,
                 PotentialPopulation = model.PotentialPopulation,
             },
-            Objects = model.Objects.Select(x => x.ToDto()).ToList()
+            Objects = model.Objects.Select(x => x.ToDto()).ToList(),
+            LastExpansionTier = 0,
+            WorldId = "world_main"
         };
     }
 }
