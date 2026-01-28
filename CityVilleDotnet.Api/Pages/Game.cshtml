@@ -38,8 +38,32 @@
 	<div style="width:760px;height:594px;">
 		<div id="flashOuterContainer">
 			<div id="flashContent">
-				<object id="flashapp" name="flashapp" width="754" height="594" type="application/x-shockwave-flash" data="Preloader.swf">
-					<param name="flashvars" value="serverTime=@Model.ServerTime&zySnid=0&zySnuid=@(Model.Uid)&zyUid=@(Model.Uid)&zyAuthHash=@(Model.Uid)&zySig=@(Model.Uid)&app_url=@(Request.Scheme)://@(Request.Host)@(Request.PathBase)/&sn_app_url=&asset_url=.&swfLocation=Game.26346.swf?skipFacebook=true&snapiEnable=1&generateSchema=1&debugMode=true&game_config_url=gameSettings.xml&localization_url=en.xml&quest_url=questSettings.xml&effects_config_url=effectsConfig.xml&flashRevision=26346&preMusic=hashed/54f32a1258f75c007b8ad50b08a90fa4.mp3&preIntro=hashed/b108f1182bc7bf0e13d74b9d350ba28b.mp4" />
+				@* Preloader doesnt work for now *@
+				<object data="Game.26346.swf
+?serverTime=@Model.ServerTime
+&zySnid=0
+&zySnuid=@(Model.Uid)
+&zyUid=@(Model.Uid)
+&zyAuthHash=@(Model.Uid)
+&zySig=@(Model.Uid)
+&game_config_url=http://localhost:5222/gameSettings.xml
+&quest_url=http://localhost:5222/questSettings.xml
+&zcache_gameswf_gamesettings=false
+&effects_config_url=http://localhost:5222/effectsConfig.xml
+&font_mapper_url=http://localhost:5222/FontMapper.swf
+&localization_url=http://localhost:5222/lang/locale_en_US.swf
+&bootstrap_config_url=http://localhost:5222/bootstrap.xml
+&amf_settings_url=http://localhost:5222/settings.amf.z
+&embedded_art_url=http://localhost:5222/EmbeddedArt.swf
+&hashed_asset_prefix=http://localhost:5222
+&static_asset_prefix=http://localhost:5222
+&asset_urls=http://localhost:5222
+&app_url=http://localhost:5222/
+&app_fb_proxy_url=
+&flashRevision=26346
+&asset_url=http://localhost:5222/assets/
+&generateSchema=1
+&sn_app_url=&snapiEnable=1" width="760" height="594" allowFullscreen="true">
 				</object>
 			</div>
 		</div>
@@ -47,36 +71,6 @@
 </div>
 
 <script>
-	var g_preBlurbs = ["Fluffing Clouds", "Installing Parks", "Opening Schools", "Commencing Commerce", "Building Playgrounds", "Redirecting Traffic", "Sweeping Sidewalks", "Skip Intro", "Build the City of Your Dreams!"];
-	var g_experiments = [{"name": "cv_example_test", "variant": false}, {
-		"name": "cv_market_auto_close",
-		"variant": "1"
-	}, {"name": "cv_gift_flash_fork", "variant": 1}, {
-		"name": "city_delete_requests",
-		"variant": 1
-	}, {"name": "cv_invite_friends_mfs", "variant": false}, {
-		"name": "cv_invite_friends_mfs_height",
-		"variant": 3
-	}, {"name": "cv_crew_popup_mfs", "variant": false}, {
-		"name": "cv_email_farmville_friends",
-		"variant": false
-	}, {"name": "cv_increment_dashboard_count_async", "variant": false}, {
-		"name": "cv_d2_inviteneighbor_prompt",
-		"variant": false
-	}, {"name": "cv_ftv_with_marketing", "variant": false}, {
-		"name": "cv_doober_tracking",
-		"variant": false
-	}, {"name": "cv_show_share", "variant": false}, {
-		"name": "cv_city_cash_seld_id",
-		"variant": 3
-	}, {"name": "cv_addfriend_lhs", "variant": "1"}, {
-		"name": "cv_coin_package_conversion_test",
-		"variant": false
-	}, {"name": "cv_nps_survey", "variant": false}, {
-		"name": "cv_survey_overlay_test",
-		"variant": false
-	}, {"name": "cv_recommendfriendsNonCity", "variant": false}, {"name": "cv_quest_manager", "variant": false}];
-
 	function getUserInfo() {
 		console.log("getUserInfo called");
 
@@ -106,7 +100,20 @@
 		console.log("Game is loaded " + seen + ", " + popp + ", " + canvas);
 	}
 
-	window.ZYFrameManager = {
+	function getAssetOverrides() {
+		console.log("getAssetOverrides called");
+		return {};
+	}
+
+	function getRuntimeVars() {
+		console.log("getRuntimeVars called");
+
+		return {
+			"WEATHER": "{\"forecast\":[1,1,1,1,1,1,1,1,1,1,1,1,1]}"
+		};
+	}
+
+	ZYFrameManager = {
 		"reloadApp": function () {
 			console.log("Reload App");
 			window.location.reload();
@@ -120,6 +127,7 @@
 		"switchToTab": function (a) {
 			console.log("Switch To Tab" + a);
 		}
+
 	}
 
 	window.RufflePlayer = window.RufflePlayer || {};
