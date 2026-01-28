@@ -1,24 +1,13 @@
 namespace CityVilleDotnet.Api.Middleware;
 
-public class FallbackAssetMiddleware
+public class FallbackAssetMiddleware(
+    RequestDelegate next,
+    IWebHostEnvironment env,
+    ILogger<FallbackAssetMiddleware> logger)
 {
-    private readonly RequestDelegate _next;
-    private readonly IWebHostEnvironment _env;
-    private readonly ILogger<FallbackAssetMiddleware> _logger;
-
-    public FallbackAssetMiddleware(
-        RequestDelegate next,
-        IWebHostEnvironment env,
-        ILogger<FallbackAssetMiddleware> logger)
-    {
-        _next = next;
-        _env = env;
-        _logger = logger;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
-        await _next(context);
+        await next(context);
 
         if (context.Response.StatusCode == 404 && context.Request.Path.StartsWithSegments("/assets"))
         {
@@ -37,25 +26,27 @@ public class FallbackAssetMiddleware
             if (contentType != null)
             {
                 var defaultFile = Path.Combine(
-                    _env.WebRootPath,
+                    env.WebRootPath,
                     "assets",
                     $"default{extension}"
                 );
 
                 if (File.Exists(defaultFile))
                 {
-                    _logger.LogWarning(
+                    logger.LogWarning(
                         "Asset not found: {RequestPath}, serving default fallback: {DefaultFile}",
                         context.Request.Path,
                         defaultFile);
 
                     context.Response.StatusCode = 200;
                     context.Response.ContentType = contentType;
+                    context.Response.Headers.CacheControl = "public, max-age=2592000"; // 1 month
+                    context.Response.Headers.Expires = DateTime.UtcNow.AddMonths(1).ToString("R");
                     await context.Response.SendFileAsync(defaultFile);
                 }
                 else
                 {
-                    _logger.LogWarning(
+                    logger.LogWarning(
                         "Asset not found: {RequestPath}, but no default fallback exists at: {DefaultFile}",
                         context.Request.Path,
                         defaultFile);
