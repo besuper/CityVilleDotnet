@@ -32,6 +32,9 @@ public class PlayerDto
     [JsonPropertyName("level")] public int Level { get; set; } = 1;
 
     [JsonPropertyName("xp")] public int Xp { get; set; } = 0;
+    [JsonPropertyName("lightLevel")] public int LightLevel { get; set; } = 0;
+    [JsonPropertyName("paidEnergy")] public int PaidEnergy { get; set; } = 0;
+    [JsonPropertyName("m_energyModifiers")] public List<object> EnergyModifiers { get; set; } 
 
     [JsonPropertyName("socialLevel")] public int SocialLevel { get; set; } = 1;
 
@@ -109,7 +112,10 @@ public static class PlayerDtoMapper
             SocialLevel = model.SocialLevel,
             SocialXp = model.SocialXp,
             Orders = BuildOrdersAsObject(model),
-            FeatureData = new ASObject(new Dictionary<string, object>()) // Enable or disable some features for the player
+            FeatureData = new ASObject(new Dictionary<string, object>()), // Enable or disable some features for the player
+            LightLevel = 0, // TODO
+            PaidEnergy = 0, // TODO
+            EnergyModifiers = new List<object>() // TODO
         };
     }
 
