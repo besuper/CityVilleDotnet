@@ -13,18 +13,60 @@ internal sealed class ProcessVisitsBatch(CityVilleDbContext context, ILogger<Pro
     public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
         // TODO: Add offline simulation
-        if (@params.Length != 2) throw new Exception("Invalid params count");
+        var content = @params[0] as ASObject;
 
-        var idsArray = @params.GetObjectArray(0);
-        var countsArray = @params.GetObjectArray(1);
+        if (content is null) throw new Exception("ProcessVisitsBatch content is null");
 
-        if (idsArray is null || countsArray is null) throw new Exception("Invalid params");
+        // Key => ID
+        // Value => visits count
+        var visits = new Dictionary<int, int>();
 
-        var ids = idsArray.Select(Convert.ToInt32).ToArray();
-        var counts = countsArray.Select(Convert.ToInt32).ToArray();
-        
-        if (ids.Length != counts.Length) throw new Exception("Invalid params count");
-        
+        foreach (var (key, value) in content)
+        {
+            if (key is null || value is null) continue;
+
+            if (int.TryParse(key, out var id))
+            {
+                var dictValue = value as ASObject;
+
+                if (dictValue is null) continue;
+
+                foreach (var (action, actionInformations) in dictValue)
+                {
+                    logger.LogDebug($"Add count for ID {id} with ACTION {action}");
+
+                    var dictActionInformations = actionInformations as ASObject;
+
+                    if (dictActionInformations is null)
+                    {
+                        logger.LogDebug($"Action information is not a dictionary?");
+                        continue;
+                    }
+
+                    if (dictActionInformations.TryGetValue("count", out var flatCount))
+                    {
+                        var count = int.Parse(flatCount.ToString());
+
+                        if (visits.ContainsKey(id))
+                        {
+                            visits[id] += count;
+                        }
+                        else
+                        {
+                            visits[id] = count;
+                        }
+                    }
+                    else
+                    {
+                        logger.LogDebug($"Unable to find count inside dict {dictActionInformations}");
+                    }
+                }
+            }
+        }
+
+        var ids = visits.Keys.ToList();
+        var counts = visits.Values.ToList();
+
         var user = await context.Set<User>()
             .AsSplitQuery()
             .Include(x => x.World)
