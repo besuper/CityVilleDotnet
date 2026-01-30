@@ -3,6 +3,8 @@
 
 **Alpha Status**: This project is currently in alpha development. The game is playable but many features are still being implemented.
 
+Note: this branch only support 2011 version of the game. To check progress of the 2012 version check [here](https://github.com/besuper/CityVilleDotnet/tree/2012)
+
 ## Features
 
 -   Simple building system - build, farm and expand your city
