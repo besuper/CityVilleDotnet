@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 
@@ -8,11 +9,14 @@ public class QuestDto
 {
     [JsonPropertyName("name")] public required string Name { get; set; }
 
-    [JsonPropertyName("complete")] public int Complete { get; set; }
+    [JsonPropertyName("complete")] public bool Complete { get; set; }
 
     [JsonPropertyName("progress")] public required int[] Progress { get; set; }
 
     [JsonPropertyName("purchased")] public required int[] Purchased { get; set; }
+    [JsonPropertyName("expired")] public bool Expired { get; set; }
+    [JsonPropertyName("activatedTime")] public long ActivatedTime { get; set; }
+    [JsonPropertyName("isNew")] public bool IsNew { get; set; }
 }
 
 public static class QuestDtoMapper
@@ -22,9 +26,12 @@ public static class QuestDtoMapper
         return new QuestDto()
         {
             Name = model.Name,
-            Complete = model.QuestType == QuestType.Completed ? 1 : 0,
+            Complete = model.QuestType == QuestType.Completed,
             Progress = model.Progress,
-            Purchased = model.Purchased
+            Purchased = model.Purchased,
+            Expired = false,
+            ActivatedTime = ServerUtils.GetCurrentTime(),
+            IsNew = true
         };
     }
 }
