@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Domain.Entities;
 using System.Text.Json.Serialization;
+using FluorineFx;
 
 namespace CityVilleDotnet.Domain.GameEntities;
 
@@ -38,9 +39,22 @@ public static class WorldDtoMapper
             MapRects = model.MapRects.Select(x => x.ToDto()).ToList(),
             CitySim = new CitySimDto()
             {
-                Population = model.Population,
-                PopulationCap = model.PopulationCap,
-                PotentialPopulation = model.PotentialPopulation,
+                PopulationSummary = new PopulationSummaryDto()
+                {
+                    Segments = new ASObject(new Dictionary<string, object>()
+                    {
+                        // TODO: Support multiple population types
+                        {"citizen", new Dictionary<string, object>()
+                        {
+                            {"id", "citizen"},
+                            {"minimum", 0},
+                            {"yield", model.Population * 10},
+                            {"maximum", model.PopulationCap * 10},
+                            {"capacity", model.PopulationCap * 10},
+                            {"potential", model.PotentialPopulation * 10}
+                        }}
+                    })
+                }
             },
             Objects = model.Objects.Select(x => x.ToDto()).ToList(),
             LastExpansionTier = 0,
