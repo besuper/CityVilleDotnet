@@ -8,12 +8,12 @@ public class GameSettings
 {
     [XmlElement("items")] public required ItemsContainer Items { get; set; }
 
-    [XmlElement("levels")] public required LevelsContainer Levels { get; set; }
+    [XmlElement("levels_cv_level_regrade_var_0")] public required LevelsContainer Levels { get; set; }
     [XmlElement("reputation")] public required ReputationContainer Reputation { get; set; }
 
     [XmlElement("farming")] public required FarmingSettings Farming { get; set; }
 
     [XmlElement("randomModifierTables")] public required RandomModifierTables Modifiers { get; set; }
     [XmlElement("collections")] public required CollectionContainer Collections { get; set; }
-    [XmlElement("expansions")] public required ExpansionsContainer Expansions { get; set; }
+    [XmlElement("expansionRequirements")] public required ExpansionsGate Expansions { get; set; }
 }

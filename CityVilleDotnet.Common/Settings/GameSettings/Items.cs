@@ -17,7 +17,14 @@ public class GameItem
     [XmlAttribute("height")] public string? Height { get; set; }
     [XmlAttribute("width")] public string? Width { get; set; }
 
-    [XmlElement("requiredLevel")] public int? RequiredLevel { get; set; }
+    [XmlElement("requiredLevel")]
+    public string? RequiredLevelString
+    {
+        get => RequiredLevel?.ToString();
+        set => RequiredLevel = string.IsNullOrEmpty(value) ? 0 : int.Parse(value);
+    }
+
+    [XmlIgnore] public int? RequiredLevel { get; set; }
 
     [XmlElement("requiredPopulation")] public int? RequiredPopulation { get; set; }
     [XmlElement("headquarters")] public string? HeadquartersName { get; set; }
@@ -28,8 +35,26 @@ public class GameItem
 
     [XmlElement("cost")] public int? Cost { get; set; }
     [XmlElement("unlock")] public string? Unlock { get; set; }
-    [XmlElement("unlockCost")] public int? UnlockCost { get; set; }
-    [XmlElement("cash")] public int? Cash { get; set; }
+
+    // Support empty tag <unlockCost/>
+    [XmlElement("unlockCost")]
+    public string? UnlockCostString
+    {
+        get => UnlockCost?.ToString();
+        set => UnlockCost = string.IsNullOrEmpty(value) ? 0 : int.Parse(value);
+    }
+
+    [XmlIgnore] public int? UnlockCost { get; set; }
+
+    [XmlElement("cash")]
+    public string? CashString
+    {
+        get => Cash?.ToString();
+        set => Cash = string.IsNullOrEmpty(value) ? 0 : int.Parse(value);
+    }
+
+    [XmlIgnore] public int? Cash { get; set; }
+
     [XmlElement("growTime")] public double? GrowTime { get; set; }
 
     [XmlElement("coinYield")] public int? CoinYield { get; set; }

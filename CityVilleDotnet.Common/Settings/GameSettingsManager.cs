@@ -55,9 +55,12 @@ public class GameSettingsManager
 
         var serializer = new XmlSerializer(typeof(GameSettings.GameSettings));
 
-        using (var fileStream = new FileStream("wwwroot/gameSettings.xml", FileMode.Open))
+        var xmlContent = File.ReadAllText("wwwroot/gameSettings.xml");
+        xmlContent = xmlContent.Replace("&gt;", "");
+
+        using (var stringReader = new StringReader(xmlContent))
         {
-            var content = serializer.Deserialize(fileStream);
+            var content = serializer.Deserialize(stringReader);
 
             if (content is null)
             {
@@ -96,7 +99,8 @@ public class GameSettingsManager
             }
 
             _collections = gameSettings.Collections.Collections;
-            _expansions = gameSettings.Expansions.Expansions;
+            // TODO: Support other expansions gates
+            _expansions = gameSettings.Expansions.ExpansionGates.FirstOrDefault(x => x.Name == "population")!.Expansions.Expansions;
         }
 
         logger.LogInformation("Loaded gameSettings.xml with {ItemsCount} items", _items.Count);

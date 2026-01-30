@@ -3,6 +3,19 @@
 namespace CityVilleDotnet.Common.Settings.GameSettings;
 
 [Serializable]
+public class ExpansionsGate
+{
+    [XmlElement("expansionGates")] public required List<ExpansionsGateContainer> ExpansionGates { get; set; }
+}
+
+[Serializable]
+public class ExpansionsGateContainer
+{
+    [XmlAttribute("name")] public required string Name { get; set; }
+    [XmlElement("expansions")] public required ExpansionsContainer Expansions { get; set; }
+}
+
+[Serializable]
 public class ExpansionsContainer
 {
     [XmlElement("expansion")] public required List<ExpansionSetting> Expansions { get; set; }
