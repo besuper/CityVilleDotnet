@@ -24,4 +24,8 @@ public class UserInfoDto
 
     [JsonPropertyName("world")]
     public WorldDto? World { get; set; }
+
+    [JsonPropertyName("world_summary")] public List<object> WorldSummary { get; set; } = [];
+
+
 }

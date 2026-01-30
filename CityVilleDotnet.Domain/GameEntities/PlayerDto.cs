@@ -60,7 +60,8 @@ public class PlayerDto
     [JsonPropertyName("Orders")] public ASObject Orders { get; set; } = new();
 
     [JsonPropertyName("rollCounter")] public int RollCounter { get; set; } = 0;
-    [JsonPropertyName("featureData")] public ASObject FeatureData { get; set; }
+    [JsonPropertyName("featureData")] public required ASObject FeatureData { get; set; }
+    [JsonPropertyName("npc_cloud_visible")] public bool ShowNpcCloud { get; set; }
 }
 
 public static class PlayerDtoMapper
@@ -112,10 +113,11 @@ public static class PlayerDtoMapper
             SocialLevel = model.SocialLevel,
             SocialXp = model.SocialXp,
             Orders = BuildOrdersAsObject(model),
-            FeatureData = new ASObject(new Dictionary<string, object>()), // Enable or disable some features for the player
             LightLevel = 0, // TODO
             PaidEnergy = 0, // TODO
-            EnergyModifiers = new List<object>() // TODO
+            EnergyModifiers = new List<object>(), // TODO
+            FeatureData = new ASObject(new Dictionary<string, object>()),
+            ShowNpcCloud = true
         };
     }
 
