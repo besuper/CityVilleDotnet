@@ -12,14 +12,6 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
-        // TODO
-        // amountFinal
-        // orderCommodity (ex: goods)
-        // orderAction (ex: buy)
-        // timeSent (ex: 174545896)
-
-        var trainInfo = @params[0] as ASObject ?? throw new Exception("trainInfo is null");
-
         var user = await context.Set<User>()
             .AsSplitQuery()
             .Include(x => x.Quests)
@@ -34,7 +26,8 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
         if (user?.Player is null)
             throw new Exception("Unable to find user with UserId");
 
-        var amount = Convert.ToInt32(trainInfo["amountFinal"]);
+        // FIXME: Don't use hard coded value (use welcomeTrainQuestAmount from game settings)
+        var amount = Convert.ToInt32(250);
 
         user.Player.AddGoods(amount);
         user.HandleQuestsProgress("welcomeTrain");
