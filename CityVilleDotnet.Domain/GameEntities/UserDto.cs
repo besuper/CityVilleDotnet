@@ -30,6 +30,35 @@ public static class UserDtoMapper
                 World = model.World?.ToDto(),
                 Username = model.Player.Username,
                 WorldName = model.World.WorldName,
+                // TODO: Use correct values
+                // This fix null in setFinishedWorldFTUE after tutorial
+                WorldSummary = new ASObject(new Dictionary<string, object>()
+                {
+                    {
+                        "world_main", new ASObject(new Dictionary<string, object>()
+                        {
+                            { "world_id", "world_main" },
+                            { "ftueCompleted", !model.Player.IsNew },
+                            { "items_by_name", new ASObject() },
+                            { "construction_items", new ASObject() },
+                            { "malls_items", new ASObject() },
+                            { "incentivized_expansion", new ASObject() },
+                            { "numberOfExpansions", 0 },
+                            { "number_of_business", 0 },
+                            { "populationSummary", new ASObject() { { "segments", new ASObject() } } },
+                            {
+                                "appraisalSummary", new ASObject()
+                                {
+                                    { "id", null },
+                                    { "yield", 0 },
+                                    { "capacity", 0 },
+                                    { "potential", 0 },
+                                }
+                            },
+                            { "commoditySummary", new ASObject() { { "commodity", new ASObject() } } },
+                        })
+                    }
+                })
             },
             Franchises = model.Player.Franchises.Select(x => x.ToDto()).ToList(),
             FeatureData = new ASObject(new Dictionary<string, object>()
@@ -48,7 +77,7 @@ public static class UserDtoMapper
                 { "goal", false },
                 { "weather", new ASObject() },
                 { "leaderboards", new ASObject() },
-                
+
                 // Prey groups
                 // FIXME: load them from gameSettings
                 { "copsNBandits", new ASObject { { "workers", new ASObject() } } },

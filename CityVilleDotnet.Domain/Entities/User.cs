@@ -46,7 +46,7 @@ public class User
             WorldFlatId = x.WorldFlatId,
         }).ToList();
         
-        var world = new World("", 36, 36, 30, 0, 50, 120, 0, mapRects, objects);
+        var world = new World("", 36, 36, 30, 0, 50, 0, 0, mapRects, objects);
         
         return new User
         {
