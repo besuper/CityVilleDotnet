@@ -16,4 +16,5 @@ public class GameSettings
     [XmlElement("randomModifierTables")] public required RandomModifierTables Modifiers { get; set; }
     [XmlElement("collections")] public required CollectionContainer Collections { get; set; }
     [XmlElement("expansionRequirements")] public required ExpansionsGate Expansions { get; set; }
+    [XmlElement("citysim")] public required CitySim CitySim { get; set; }
 }

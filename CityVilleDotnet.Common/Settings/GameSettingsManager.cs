@@ -16,6 +16,7 @@ public class GameSettingsManager
     private List<ReputationItem> _reputationLevels = [];
     private List<CollectionSetting> _collections = [];
     private List<ExpansionSetting> _expansions = [];
+    private GameSettings.GameSettings? _gameSettings = null;
     private bool _isInitialized;
 
     private GameSettingsManager()
@@ -68,9 +69,9 @@ public class GameSettingsManager
                 return;
             }
 
-            var gameSettings = (GameSettings.GameSettings)content;
+            _gameSettings = (GameSettings.GameSettings)content;
 
-            foreach (var item in gameSettings.Items.Items)
+            foreach (var item in _gameSettings.Items.Items)
             {
                 if (item?.Name is not null)
                 {
@@ -78,7 +79,7 @@ public class GameSettingsManager
                 }
             }
 
-            foreach (var item in gameSettings.Modifiers.Table)
+            foreach (var item in _gameSettings.Modifiers.Table)
             {
                 _randomModifiers[item.Name] = item;
 
@@ -88,19 +89,19 @@ public class GameSettingsManager
                 }
             }
 
-            _levels = gameSettings.Levels.Levels;
-            _reputationLevels = gameSettings.Reputation.Levels;
+            _levels = _gameSettings.Levels.Levels;
+            _reputationLevels = _gameSettings.Reputation.Levels;
 
-            _settings = gameSettings.Farming.ToDictionary();
+            _settings = _gameSettings.Farming.ToDictionary();
 
-            foreach (var collection in gameSettings.Collections.Collections)
+            foreach (var collection in _gameSettings.Collections.Collections)
             {
                 collection.TradeInRewards.OnDeserialized();
             }
 
-            _collections = gameSettings.Collections.Collections;
+            _collections = _gameSettings.Collections.Collections;
             // TODO: Support other expansions gates
-            _expansions = gameSettings.Expansions.ExpansionGates.FirstOrDefault(x => x.Name == "population")!.Expansions.Expansions;
+            _expansions = _gameSettings.Expansions.ExpansionGates.FirstOrDefault(x => x.Name == "population")!.Expansions.Expansions;
         }
 
         logger.LogInformation("Loaded gameSettings.xml with {ItemsCount} items", _items.Count);
@@ -176,5 +177,10 @@ public class GameSettingsManager
     public IReadOnlyCollection<ExpansionSetting> GetExpansions()
     {
         return _expansions.AsReadOnly();
+    }
+
+    public GameSettings.GameSettings GetSettings()
+    {
+        return _gameSettings!;
     }
 }

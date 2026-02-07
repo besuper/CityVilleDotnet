@@ -12,19 +12,23 @@ public class World
     public int SizeY { get; set; }
     public int Population { get; set; }
     public int PopulationCap { get; set; }
+    public int PopulationMin { get; set; }
+    public int PopulationMax { get; set; }
     public int PotentialPopulation { get; set; }
     public List<MapRect> MapRects { get; set; } = [];
     public List<WorldObject> Objects { get; set; } = [];
     
     public World() { }
 
-    public World(string worldName, int sizeX, int sizeY, int population, int populationCap, int potentialPopulation, List<MapRect> mapRects, List<WorldObject> objects)
+    public World(string worldName, int sizeX, int sizeY, int population, int populationMin, int populationMax, int populationCap, int potentialPopulation, List<MapRect> mapRects, List<WorldObject> objects)
     {
         WorldName = worldName;
         SizeX = sizeX;
         SizeY = sizeY;
         Population = population;
         PopulationCap = populationCap;
+        PopulationMin = populationMin;
+        PopulationMax = populationMax;
         PotentialPopulation = potentialPopulation;
         MapRects = mapRects;
         Objects = objects;
@@ -37,39 +41,38 @@ public class World
 
     public int GetCurrentPopulation()
     {
-        return Population * 10;
+        return Population;
     }
 
-    public void CalculateCurrentPopulation()
+    public void CalculatePopulation()
     {
-        var population = 0;
+        var currentPopulation = 0;
+        var potentialPopulation = 0;
+        var minPopulation = 0;
+        var maxPopulation = 0;
+        var populationCap = 0;
 
         foreach (var item in Objects)
         {
             var gameItem = GameSettingsManager.Instance.GetItem(item.ItemName);
 
-            if (gameItem is null) continue;
+            if (gameItem?.Population is null) continue;
 
-            population += 10 * gameItem.PopulationYield ?? 0;
+            var itemMin = gameItem.Population.Min ?? 0;
+            var itemMax = gameItem.Population.Max ?? 0;
+            var itemCap = gameItem.Population.Cap ?? 0;
+
+            populationCap += itemCap;
+            minPopulation += itemMin;
+            maxPopulation += itemMax;
+            currentPopulation += itemMin;
         }
 
-        Population = population / 10;
-    }
-
-    public void CalculatePopulationCap()
-    {
-        var population = GameSettingsManager.Instance.GetInt("InitPopulationCap") * 10;
-
-        foreach (var item in Objects)
-        {
-            var gameItem = GameSettingsManager.Instance.GetItem(item.ItemName);
-
-            if (gameItem is null) continue;
-
-            population += 10 * gameItem.PopulationCapYield ?? 0;
-        }
-
-        PopulationCap = population / 10;
+        PopulationCap = populationCap;
+        Population = currentPopulation;
+        PopulationMin = minPopulation;
+        PopulationMax = maxPopulation;
+        PotentialPopulation = potentialPopulation;
     }
 
     public WorldObject? GetBuildingByCoord(int x, int y, int z)

@@ -28,10 +28,8 @@ public class GameItem
 
     [XmlElement("requiredPopulation")] public int? RequiredPopulation { get; set; }
     [XmlElement("headquarters")] public string? HeadquartersName { get; set; }
-
-    [XmlElement("populationYield")] public int? PopulationYield { get; set; }
-
-    [XmlElement("populationCapYield")] public int? PopulationCapYield { get; set; }
+    
+    [XmlElement("population")] public PopulationItem? Population { get; set; }
 
     [XmlElement("cost")] public int? Cost { get; set; }
     [XmlElement("unlock")] public string? Unlock { get; set; }
@@ -121,4 +119,35 @@ public class MemberKey
 {
     [XmlAttribute("name")] public required string Name { get; set; }
     [XmlAttribute("amount")] public int Amount { get; set; }
+}
+
+[Serializable]
+public class PopulationItem
+{
+    [XmlAttribute("min")]
+    public string? MinString
+    {
+        get => Min?.ToString();
+        set => Min = string.IsNullOrEmpty(value) ? 0 : int.Parse(value);
+    }
+
+    [XmlIgnore] public int? Min { get; set; }
+    
+    [XmlAttribute("max")]
+    public string? MaxString
+    {
+        get => Max?.ToString();
+        set => Max = string.IsNullOrEmpty(value) ? 0 : int.Parse(value);
+    }
+
+    [XmlIgnore] public int? Max { get; set; }
+    
+    [XmlAttribute("cap")]
+    public string? CapString
+    {
+        get => Cap?.ToString();
+        set => Cap = string.IsNullOrEmpty(value) ? 0 : int.Parse(value);
+    }
+
+    [XmlIgnore] public int? Cap { get; set; }
 }

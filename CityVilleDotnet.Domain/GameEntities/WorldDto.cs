@@ -47,11 +47,11 @@ public static class WorldDtoMapper
                         {"citizen", new Dictionary<string, object>()
                         {
                             {"id", "citizen"},
-                            {"minimum", 0},
-                            {"yield", model.Population * 10},
-                            {"maximum", model.PopulationCap * 10},
-                            {"capacity", model.PopulationCap * 10},
-                            {"potential", model.PotentialPopulation * 10}
+                            {"minimum", model.PopulationMin}, // Calculte from <population min
+                            {"yield", model.Population}, // Current population min or max (base on the level)
+                            {"maximum", model.PopulationMax}, // Calculte from <population max
+                            {"capacity", model.PopulationCap}, // Calculate from <population cap
+                            {"potential", model.PotentialPopulation} // idk
                         }}
                     })
                 }

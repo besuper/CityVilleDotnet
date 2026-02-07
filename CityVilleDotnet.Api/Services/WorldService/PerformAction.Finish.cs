@@ -29,8 +29,7 @@ internal sealed partial class PerformAction
 
         obj.FinishConstruction();
 
-        world.CalculateCurrentPopulation();
-        world.CalculatePopulationCap();
+        world.CalculatePopulation();
 
         user.HandleQuestsProgress(""); // Empty actionType to force recheck counts
         user.CheckCompletedQuests();
