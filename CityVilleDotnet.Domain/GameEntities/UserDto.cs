@@ -76,7 +76,7 @@ public static class UserDtoMapper
                 { "rollCall", false },
                 { "goal", false },
                 { "weather", new ASObject() },
-                { "leaderboards", new ASObject() },
+                { "leaderboards", new ASObject { { "summaries", new ASObject() } } },
 
                 // Prey groups
                 // FIXME: load them from gameSettings
