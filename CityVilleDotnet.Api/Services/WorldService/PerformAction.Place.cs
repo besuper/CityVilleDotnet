@@ -28,10 +28,8 @@ internal sealed partial class PerformAction
         var plantTime = building.GetValueOrDefault("plantTime");
         var world = user.GetWorld();
 
-        var newId = world.GetAvailableBuildingId();
-
-        logger.LogDebug("Using new ID {NewId}", newId);
-
+        var objId = (int)building["id"];
+        
         var obj = new WorldObject(
             itemName,
             Enum.Parse<BuildingClassType>(className),
@@ -45,7 +43,7 @@ internal sealed partial class PerformAction
             Convert.ToInt32(position["x"]),
             Convert.ToInt32(position["y"]),
             Convert.ToInt32(position["z"]), // TODO: Remove Z coordinate, seems not used in CityVille
-            newId
+            objId
         );
 
         logger.LogDebug("x: {PositionX} y: {PositionY} z: {PositionZ}", obj.X, obj.Y, obj.Z);
