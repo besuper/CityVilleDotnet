@@ -18,6 +18,8 @@ public class WorldObjectConfiguration : IEntityTypeConfiguration<WorldObject>
         builder.Property(x => x.State).HasMaxLength(32);
         builder.Property(x => x.ContractName).IsRequired(false).HasMaxLength(64);
 
+        builder.HasIndex(x => new { x.Id, x.WorldFlatId }).IsUnique();
+
         builder.HasOne(x => x.FranchiseLocation);
     }
 }
