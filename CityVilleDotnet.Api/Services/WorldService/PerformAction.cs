@@ -82,6 +82,11 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
         {
             return await PerformClear(user, @params, userId, cancellationToken);
         }
+        
+        if (actionType == "upgradeBuilding")
+        {
+            return await UpgradeBuilding(user, @params, userId, cancellationToken);
+        }
 
         return GatewayService.CreateEmptyResponse();
     }

@@ -30,6 +30,7 @@ public class GameItem
     [XmlElement("headquarters")] public string? HeadquartersName { get; set; }
     
     [XmlElement("population")] public PopulationItem? Population { get; set; }
+    [XmlElement("upgrade")] public UpgradeItem? Upgrade { get; set; }
 
     [XmlElement("cost")] public int? Cost { get; set; }
     [XmlElement("unlock")] public string? Unlock { get; set; }
@@ -150,4 +151,11 @@ public class PopulationItem
     }
 
     [XmlIgnore] public int? Cap { get; set; }
+}
+ 
+[Serializable]
+public class UpgradeItem
+{
+    [XmlAttribute("item")] public required string Name { get; set; }
+    [XmlAttribute("cashcost")] public string? CashCost { get; set; }
 }

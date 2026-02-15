@@ -206,4 +206,9 @@ public class WorldObject
             State = WorldObjectState.ClosedHarvestable;
         }
     }
+
+    public void UpgradeBuilding(string newItemName)
+    {
+        ItemName = newItemName;
+    }
 }
