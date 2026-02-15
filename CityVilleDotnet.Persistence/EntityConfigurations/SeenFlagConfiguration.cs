@@ -11,6 +11,6 @@ public class SeenFlagConfiguration : IEntityTypeConfiguration<SeenFlag>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
-        builder.Property(x => x.Key).HasMaxLength(32);
+        builder.Property(x => x.Key).HasMaxLength(64);
     }
 }
