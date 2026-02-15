@@ -422,7 +422,7 @@ public class Player
                                     }
 
                                     break;
-                                case "food":
+                                case "food" or "goods":
                                     AddGoods((int)value.Sum(x => x.Amount));
                                     StaticLogger.Current.LogDebug("Found food {FoodAmount}", value.Sum(x => x.Amount));
                                     break;
