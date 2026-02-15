@@ -46,7 +46,7 @@ internal sealed partial class PerformAction
 
         user.Player.RemoveGoods(gameItem.CommodityRequired.Value);
         
-        obj.OpenBusiness(Convert.ToDouble(building["buildTime"]), Convert.ToDouble(building["plantTime"]));
+        obj.OpenBusiness();
 
         user.HandleQuestsProgress("openBusinessByName", itemName: obj.ItemName);
         user.CheckCompletedQuests();

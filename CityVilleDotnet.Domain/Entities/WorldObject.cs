@@ -157,15 +157,13 @@ public class WorldObject
         return coinYield;
     }
 
-    public void OpenBusiness(double buildTime, double plantTime)
+    public void OpenBusiness()
     {
         if (ClassName != BuildingClassType.Business) throw new Exception("Can't open other than business building, class name is: " + ClassName + "");
         if (State == WorldObjectState.Open || State == WorldObjectState.ClosedHarvestable) throw new Exception("Building is already open");
 
-        // TODO: Manage these from server not client
         Visits = 0;
-        BuildTime = buildTime;
-        PlantTime = plantTime;
+        PlantTime = ServerUtils.GetCurrentTime();
         State = WorldObjectState.Open;
         NeverOpened = false;
 
@@ -188,16 +186,12 @@ public class WorldObject
         var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
 
         if (gameItem is null)
-        {
             throw new Exception("Can't find game item for business building");
-        }
 
         var maxVisits = gameItem.CommodityRequired;
 
         if (maxVisits is null)
-        {
             throw new Exception("Can't find max visits for business building");
-        }
 
         Visits += visits;
 
