@@ -1,0 +1,18 @@
+FluorineFx Strong Name Key Readme
+
+The FluorineFx release builds are strongly named using the fluorine.snk key file. 
+This file is not distributed as part of the FluorineFx source or binary downloads. See the FluorineFx documentation for more details.
+
+Before you can build your own release builds you will need to generate a strong name key that identifies your assemblies.
+
+Generating your own strong name key.
+
+Run the SN utility from the .NET Framework SDK as follows:
+
+	sn -k fluorine.snk
+
+A new strong name key pair will be created and written to the fluorine.snk file.
+
+If sn.exe is not available on your workstation (generally found in C:\Program Files\Microsoft SDKs\Windows\v6.0A\Bin), you will need to download the Windows SDK 6.0a.
+
+

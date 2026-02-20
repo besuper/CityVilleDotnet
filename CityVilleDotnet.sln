@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CityVilleDotnet.Persistence
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CityVilleDotnet.Common", "CityVilleDotnet.Common\CityVilleDotnet.Common.csproj", "{FD5E956F-2288-4671-833B-D07584EABB01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluorineFX", "FluorineFX\FluorineFX.csproj", "{10431CD3-B9C8-45C9-A585-185F50FAE8DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{FD5E956F-2288-4671-833B-D07584EABB01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD5E956F-2288-4671-833B-D07584EABB01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD5E956F-2288-4671-833B-D07584EABB01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10431CD3-B9C8-45C9-A585-185F50FAE8DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10431CD3-B9C8-45C9-A585-185F50FAE8DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10431CD3-B9C8-45C9-A585-185F50FAE8DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10431CD3-B9C8-45C9-A585-185F50FAE8DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <DefineConstants>$(DefineConstants);FXCLIENT</DefineConstants>
+        <Logging>false</Logging>
+        <DefineConstants Condition="'$(Logging)'">$(DefineConstants);LOGGING</DefineConstants>
+        <NoWarn Condition=" '$(Logging)' == 'false' ">$(NoWarn);CS0168</NoWarn>
+        <NoWarn>$(NoWarn);SYSLIB0003</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup Label="Usings">
+        <Using Include="FluorineFx.Reflection.Lightweight.ConstructorInvoker" Alias="ConstructorInvoker"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Logging)'">
+        <PackageReference Include="log4net" Version="3.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="System.CodeDom" Version="10.0.0"/>
+        <PackageReference Include="System.Security.Permissions" Version="10.0.0"/>
+
+        <Using Remove="System.Net.Http"/>
+    </ItemGroup>
+</Project>
