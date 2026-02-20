@@ -85,7 +85,7 @@ public class ExpandCity(CityVilleDbContext context) : AmfService
                 ItemName = (string)tree["itemName"],
                 ClassName = BuildingClassType.Wilderness,
                 State = WorldObjectState.Static,
-                Direction = (int)tree["dir"],
+                Direction = 0,
                 Deleted = false,
                 X = (int)tree["x"],
                 Y = (int)tree["y"]

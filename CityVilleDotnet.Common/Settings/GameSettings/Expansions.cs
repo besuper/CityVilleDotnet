@@ -27,7 +27,7 @@ public class ExpansionSetting
 {
     [XmlAttribute("num")] public required string Num { get; set; }
     [XmlAttribute("level")] public required string Level { get; set; }
-    [XmlAttribute("permits")] public required string Permits { get; set; }
-    [XmlAttribute("cost")] public required string Cost { get; set; }
+    [XmlAttribute("permits2")] public required string Permits { get; set; }
+    [XmlAttribute("cost2")] public required string Cost { get; set; }
     [XmlAttribute("goldMultiplier")] public required string GoldMultiplier { get; set; }
 }
