@@ -1,12 +1,14 @@
-﻿using CityVilleDotnet.Common.Settings;
+﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using FluorineFx;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
 internal sealed partial class PerformAction
 {
-    private async Task PerformBuild(User user, object[] @params, Guid userId, CancellationToken cancellationToken)
+    private async Task<CityVilleResponse> PerformBuild(User user, object[] @params, Guid userId, CancellationToken cancellationToken)
     {
         var building = @params[1] as ASObject ?? throw new Exception("Building can't be null when action type is place");
 
@@ -37,14 +39,14 @@ internal sealed partial class PerformAction
             if (!user.Player!.RemoveEnergy(energyCost))
             {
                 // FIXME: Return error response
-                return;
+                return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
             }
         }else if (gameItem.EnergyCostPerBuild is not null)
         {
             if (!user.Player!.RemoveEnergy(gameItem.EnergyCostPerBuild.Value))
             {
                 // FIXME: Return error response
-                return;
+                return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
             }
         } 
 
@@ -56,5 +58,10 @@ internal sealed partial class PerformAction
         }
 
         await context.SaveChangesAsync(cancellationToken);
+        
+        return new CityVilleResponse().MetaData(CreateQuestComponentResponse(user)).Data(new ASObject
+        {
+            { "id", obj.WorldFlatId }
+        });
     }
 }

@@ -180,8 +180,13 @@ public class WorldObject
 
     public void UpdateVisits(int visits)
     {
-        if (ClassName != BuildingClassType.Business) throw new Exception("Can't update visits on non business building");
-        if (State != WorldObjectState.Open) throw new Exception("Can't update visits on non open business building");
+        if (ClassName != BuildingClassType.Business) throw new Exception($"Can't update visits on non business building {Id} {ClassName} {State}");
+        if (State != WorldObjectState.Open)
+        {
+            if (State == WorldObjectState.ClosedHarvestable) return; // If client get out of sync and try to send processVisit while visits are completed, just ignore
+
+            throw new Exception($"Can't update visits on non open business building {Id} {ClassName} {State}");
+        }
 
         var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
 

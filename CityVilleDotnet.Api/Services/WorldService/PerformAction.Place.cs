@@ -22,17 +22,17 @@ internal sealed partial class PerformAction
         // ignore components for now
 
         var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
-        var className = (string)building["className"];
+        var className = Enum.Parse<BuildingClassType>((string)building["className"]);
         var itemName = (string)building["itemName"];
         var buildTime = building.GetValueOrDefault("buildTime");
         var plantTime = building.GetValueOrDefault("plantTime");
         var world = user.GetWorld();
 
-        var objId = (int)building["id"];
-        
+        var objId = world.GetAvailableBuildingId();
+
         var obj = new WorldObject(
             itemName,
-            Enum.Parse<BuildingClassType>(className),
+            className,
             null,
             (bool)building["deleted"],
             Convert.ToInt32(building["tempId"]),
@@ -61,7 +61,7 @@ internal sealed partial class PerformAction
 
                 if (constructionItem?.NumberOfStages is null)
                     throw new Exception($"Construction item not found with {gameItem.Construction}");
-                
+
                 obj.SetAsConstructionSite(gameItem.Construction, constructionItem.NumberOfStages.Value);
             }
         }
@@ -83,10 +83,10 @@ internal sealed partial class PerformAction
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
-        
+
         return new CityVilleResponse().MetaData(CreateQuestComponentResponse(user)).Data(new ASObject
         {
-            ["id"] = obj.WorldFlatId
+            { "id", obj.WorldFlatId }
         });
     }
 }

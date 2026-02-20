@@ -80,7 +80,6 @@ internal sealed class ProcessVisitsBatch(CityVilleDbContext context, ILogger<Pro
 
             if (index == -1)
             {
-                logger.LogError("Can't find count for object {WorldFlatId}", obj.WorldFlatId);
                 continue;
             }
 
