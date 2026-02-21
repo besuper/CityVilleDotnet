@@ -79,6 +79,11 @@ public class World
     {
         return Objects.FirstOrDefault(w => w.X == x && w.Y == y && (w.Z ?? 0) == z);
     }
+    
+    public WorldObject? GetBuildingById(int id)
+    {
+        return Objects.FirstOrDefault(w => w.WorldFlatId == id);
+    }
 
     public int CountBuildingByName(string name)
     {

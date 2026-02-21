@@ -210,4 +210,13 @@ public class WorldObject
     {
         ItemName = newItemName;
     }
+
+    public void MoveTo(int x, int y, int z, int direction)
+    {
+        // TODO: Check if position is free
+        X = x;
+        Y = y;
+        Z = z;
+        Direction = direction;
+    }
 }
