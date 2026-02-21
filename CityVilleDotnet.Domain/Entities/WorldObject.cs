@@ -55,6 +55,7 @@ public class WorldObject
     public FranchiseLocation? FranchiseLocation { get; private set; }
     public int? Visits { get; private set; }
     public bool NeverOpened { get; private set; }
+    public int? UpgradeActionCount { get; private set; }
 
     public void SetAsConstructionSite(string itemName, int maxStages)
     {
@@ -124,6 +125,7 @@ public class WorldObject
                 coinYield = gameItem.CoinYield ?? 0;
 
             State = WorldObjectState.Plowed;
+            UpgradeActionCount = (UpgradeActionCount ?? 0) + 1;
         }
         else
         {
@@ -166,6 +168,7 @@ public class WorldObject
         PlantTime = ServerUtils.GetCurrentTime();
         State = WorldObjectState.Open;
         NeverOpened = false;
+        UpgradeActionCount = (UpgradeActionCount ?? 0) + 1;
 
         if (FranchiseLocation is not null)
         {

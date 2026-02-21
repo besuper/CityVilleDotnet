@@ -46,6 +46,8 @@ public class WorldObjectDto
 
     [JsonPropertyName("builds")] public int? Builds { get; set; }
     [JsonPropertyName("visits")] public int? Visits { get; set; }
+    [JsonPropertyName("harvestCounter")] public int HarvestCounter { get; set; }
+    [JsonPropertyName("upgradeActionCount")] public int UpgradeActionCount { get; set; }
     [JsonPropertyName("neverOpened")] public bool NeverOpened { get; set; }
     // TODO: Implement Gates
     //[JsonPropertyName("gates")] public List<object>? Gates { get; set; }
@@ -83,6 +85,8 @@ public static class WorldObjectDtoMapper
             Builds = model.Builds,
             Visits = model.Visits,
             NeverOpened = model.NeverOpened,
+            HarvestCounter = model.UpgradeActionCount ?? 0, // This is for Plot
+            UpgradeActionCount = model.UpgradeActionCount ?? 0, // This is for Business
         };
     }
 }
