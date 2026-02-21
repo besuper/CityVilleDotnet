@@ -46,7 +46,8 @@ public class Friend
             FirstName = FriendUser.Player.Username,
             Name = FriendUser.Player.Username,
             Picture = "blank.png",
-            Gender = "M"
+            Gender = "M",
+            Locale = "EN"
         };
     }
 }

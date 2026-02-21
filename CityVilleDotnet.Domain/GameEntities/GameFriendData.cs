@@ -25,4 +25,7 @@ public class GameFriendData
 
     [JsonPropertyName("sex")]
     public string Gender { get; set; }
+    
+    [JsonPropertyName("locale")]
+    public string Locale { get; set; }
 }

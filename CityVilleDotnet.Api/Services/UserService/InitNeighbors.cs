@@ -13,12 +13,14 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
     public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
+            .AsNoTracking()
             .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
             .ThenInclude(x => x.FriendUser)
             .ThenInclude(x => x.Player)
+            .Include(x => x.Player)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
-        if (user is null)
+        if (user?.Player is null)
             throw new Exception($"User {userId} not found");
 
         var neighborList = user.Friends.Select(friend => friend.ToNeighborDto()).ToList();
@@ -27,12 +29,14 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
         {
             Uid = "-1",
             Fake = 1,
-            Level = 5 // FriendBarSlot::updateSlot
+            Level = user.Player.Level + 1, // FriendBarSlot::updateSlot
+            Xp = user.Player.Xp + 10
         });
 
         var response = new ASObject
         {
-            ["neighbors"] = AmfConverter.Convert(neighborList)
+            ["neighbors"] = AmfConverter.Convert(neighborList.OrderByDescending(x => x.Xp).ToList()),
+            ["neighborMax"] = 5,
         };
 
         return new CityVilleResponse().Data(response);
