@@ -35,67 +35,37 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
 
         logger.LogDebug("PerformAction type {ActionType}", actionType);
 
-        if (actionType == "place")
+        switch (actionType)
         {
-            return await PerformPlace(user, @params, userId, cancellationToken);
+            case "place":
+                return await PerformPlace(user, @params, userId, cancellationToken);
+            case "sell":
+                await PerformSell(user, @params, userId, cancellationToken);
+
+                return GatewayService.CreateEmptyResponse();
+            case "build":
+                return await PerformBuild(user, @params, userId, cancellationToken);
+            case "finish":
+                return await PerformFinish(user, @params, userId, cancellationToken);
+            case "openBusiness":
+                return await PerformOpenBusiness(user, @params, userId, cancellationToken);
+            case "harvest":
+                return await PerformHarvest(user, @params, userId, cancellationToken);
+            case "startContract":
+                await PerformStartContract(user, @params, userId, cancellationToken);
+
+                return new CityVilleResponse().MetaData(CreateQuestComponentResponse(user));
+            case "clear":
+                return await PerformClear(user, @params, userId, cancellationToken);
+            case "upgradeBuilding":
+                return await UpgradeBuilding(user, @params, userId, cancellationToken);
+            case "move":
+                return await PerformMove(user, @params, userId, cancellationToken);
+            default:
+                return GatewayService.CreateEmptyResponse();
         }
-
-        if (actionType == "sell")
-        {
-            await PerformSell(user, @params, userId, cancellationToken);
-
-            return GatewayService.CreateEmptyResponse();
-        }
-
-        if (actionType == "build")
-        {
-            await PerformBuild(user, @params, userId, cancellationToken);
-
-            return new CityVilleResponse().MetaData(CreateQuestComponentResponse(user));
-        }
-
-        if (actionType == "finish")
-        {
-            return await PerformFinish(user, @params, userId, cancellationToken);
-        }
-
-        if (actionType == "openBusiness")
-        {
-            var response = await PerformOpenBusiness(user, @params, userId, cancellationToken);
-
-            return response ?? GatewayService.CreateEmptyResponse();
-        }
-
-        if (actionType == "harvest")
-        {
-            return await PerformHarvest(user, @params, userId, cancellationToken);
-        }
-
-        if (actionType == "startContract")
-        {
-            await PerformStartContract(user, @params, userId, cancellationToken);
-
-            return new CityVilleResponse().MetaData(CreateQuestComponentResponse(user));
-        }
-
-        if (actionType == "clear")
-        {
-            return await PerformClear(user, @params, userId, cancellationToken);
-        }
-        
-        if (actionType == "upgradeBuilding")
-        {
-            return await UpgradeBuilding(user, @params, userId, cancellationToken);
-        }
-        
-        if (actionType == "move")
-        {
-            return await PerformMove(user, @params, userId, cancellationToken);
-        }
-
-        return GatewayService.CreateEmptyResponse();
     }
-    
+
     public static ASObject CreateQuestComponentResponse(User user)
     {
         var quests = new ASObject

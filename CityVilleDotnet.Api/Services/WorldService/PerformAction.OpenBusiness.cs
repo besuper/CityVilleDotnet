@@ -8,7 +8,7 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 internal sealed partial class PerformAction
 {
-    private async Task<CityVilleResponse?> PerformOpenBusiness(User user, object[] @params, Guid userId, CancellationToken cancellationToken)
+    private async Task<CityVilleResponse> PerformOpenBusiness(User user, object[] @params, Guid userId, CancellationToken cancellationToken)
     {
         var building = @params[1] as ASObject ?? throw new Exception("Building can't be null");
 
@@ -53,6 +53,6 @@ internal sealed partial class PerformAction
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return null;
+        return new CityVilleResponse();
     }
 }
