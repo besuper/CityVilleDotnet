@@ -54,6 +54,11 @@ internal sealed partial class PerformAction
         if (obj.ClassName == BuildingClassType.Plot)
         {
             user.HandleQuestsProgress("harvestPlotByName", itemName: obj.ItemName);
+
+            if (gameItem.HasMasteries())
+            {
+                user.Player.IncrementMastery(gameItem.Name);
+            }
         }
 
         if (obj.ClassName == BuildingClassType.Business)

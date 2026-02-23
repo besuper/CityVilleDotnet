@@ -92,7 +92,18 @@ public static class UserDtoMapper
                 { "poll", new ASObject() },
                 { "itemCounts", new ASObject() },
                 { "rollCall", false },
-                { "goal", false },
+                {
+                    "goal", new ASObject
+                    {
+                        {
+                            "mastery", model.Player.Masteries.ToDictionary(x => x.ItemName, x => new ASObject
+                            {
+                                { "count", x.Count },
+                                { "level", x.Level },
+                            })
+                        }
+                    }
+                },
                 { "weather", new ASObject() },
                 {
                     "leaderboards", new ASObject

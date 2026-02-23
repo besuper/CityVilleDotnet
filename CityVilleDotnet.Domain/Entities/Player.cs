@@ -39,6 +39,7 @@ public class Player
     public string Username { get; private set; }
     public List<LotOrder> LotOrders { get; set; } = [];
     public List<VisitorHelpOrder> VisitorHelpOrders { get; set; } = [];
+    public List<Mastery> Masteries { get; set; } = [];
 
     public Player(string username)
     {
@@ -110,7 +111,7 @@ public class Player
     {
         return InventoryItems.Sum(x => x.Amount);
     }
-    
+
     public int CountInventoryItem(string itemName)
     {
         return InventoryItems.Where(x => x.Name == itemName).Sum(x => x.Amount);
@@ -550,10 +551,10 @@ public class Player
         if (franchise is null)
         {
             franchise = new Franchise(franchiseType, franchiseName);
-            
+
             Franchises.Add(franchise);
         }
-        
+
         franchise.SetFranchiseName(franchiseName);
     }
 
@@ -561,7 +562,7 @@ public class Player
     {
         LotOrders.Add(lotOrder);
     }
-    
+
     public void AddVisitorHelpOrder(VisitorHelpOrder order)
     {
         VisitorHelpOrders.Add(order);
@@ -577,7 +578,7 @@ public class Player
     public int[]? GetExpansionData()
     {
         var nextNum = ExpansionsPurchased + 1;
-        
+
         foreach (var expansion in GameSettingsManager.Instance.GetExpansions())
         {
             var expansionNum = int.Parse(expansion.Num);
@@ -590,5 +591,18 @@ public class Player
         }
 
         return null;
+    }
+
+    public void IncrementMastery(string itemName)
+    {
+        var mastery = Masteries.FirstOrDefault(x => x.ItemName == itemName);
+
+        if (mastery is null)
+        {
+            mastery = new Mastery(itemName);
+            Masteries.Add(mastery);
+        }
+
+        mastery.AddCount();
     }
 }

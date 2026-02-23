@@ -27,6 +27,8 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
             .Include(x => x.Player)
             .ThenInclude(x => x!.Collections)
             .ThenInclude(x => x.Items)
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.Masteries)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
 
         if (user.Player is null) throw new Exception("Player not found for user");

@@ -72,10 +72,16 @@ public class GameItem
     [XmlElement("randomModifiers")] public RandomModifiers? RandomModifiers { get; set; }
     [XmlElement("energyCost")] public EnergyCost? EnergyCost { get; set; }
     [XmlElement("gates")] public required GatesContainer Gates { get; set; }
+    [XmlElement("mastery")] public required List<MasteryItem> MasteryItems { get; set; }
 
     public List<GatesItem> GetGates()
     {
         return Gates.Gates ?? [];
+    }
+
+    public bool HasMasteries()
+    {
+        return MasteryItems.Count > 0;
     }
 }
 
@@ -158,4 +164,10 @@ public class UpgradeItem
 {
     [XmlAttribute("item")] public required string Name { get; set; }
     [XmlAttribute("cashcost")] public string? CashCost { get; set; }
+}
+
+[Serializable]
+public class MasteryItem
+{
+    [XmlAttribute("level")] public required string Level { get; set; }
 }
