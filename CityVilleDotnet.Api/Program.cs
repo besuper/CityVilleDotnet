@@ -65,8 +65,8 @@ var app = builder.Build();
 
 app.UseStaticFiles();
 app.UseMiddleware<FallbackAssetMiddleware>();
-app.MapRazorPages();
 app.UseRouting();
+app.MapRazorPages();
 app.UseAuthentication();
 app.UseAuthorization();
 

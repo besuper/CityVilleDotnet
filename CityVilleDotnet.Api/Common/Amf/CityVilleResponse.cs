@@ -55,7 +55,7 @@ public class CityVilleResponse
             ["errorData"] = ErrorData ?? string.Empty,
             ["metadata"] = Metadata,
             ["data"] = PacketData,
-            ["serverTime"] = DateTime.Now.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds
+            ["serverTime"] = DateTimeOffset.Now.ToUnixTimeSeconds()
         };
     }
 

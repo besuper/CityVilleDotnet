@@ -7,23 +7,16 @@ namespace CityVilleDotnet.Api.Common.Amf;
 
 public static class AmfConverter
 {
-    public static object? Convert(object obj)
+    public static object? Convert(object? obj)
     {
         if (obj is null)
             return null;
 
-        if (obj is ASObject)
+        if (obj is ASObject || IsSimpleType(obj.GetType()))
             return obj;
-
-        if (IsSimpleType(obj.GetType()))
-        {
-            return obj;
-        }
 
         if (obj is IEnumerable arrayList)
-        {
-            return ConvertToArrayList(arrayList);
-        }
+            return ConvertToList(arrayList);
 
         return ConvertToAsObject(obj);
     }
@@ -58,9 +51,9 @@ public static class AmfConverter
         return result;
     }
 
-    private static ArrayList ConvertToArrayList(IEnumerable collection)
+    private static List<object?> ConvertToList(IEnumerable collection)
     {
-        var result = new ArrayList();
+        var result = new List<object?>();
 
         foreach (var item in collection)
         {
@@ -74,7 +67,7 @@ public static class AmfConverter
             }
             else if (item is IEnumerable enumerable)
             {
-                result.Add(ConvertToArrayList(enumerable));
+                result.Add(ConvertToList(enumerable));
             }
             else
             {
