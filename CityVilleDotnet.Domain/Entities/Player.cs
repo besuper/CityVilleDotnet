@@ -307,7 +307,7 @@ public class Player
 
     public void RemoveCoins(int amount)
     {
-        Gold += amount;
+        Gold -= amount;
     }
 
     public void RemoveGoods(int amount)
