@@ -13,5 +13,9 @@ public class LotOrderConfiguration : IEntityTypeConfiguration<LotOrder>
 
         builder.Property(x => x.ResourceType).HasMaxLength(64);
         builder.Property(x => x.OrderResourceName).HasMaxLength(64);
+
+        builder.HasIndex(x => x.SenderId);
+        builder.HasIndex(x => x.RecipientId);
+        builder.HasIndex(x => new { x.OrderState, x.TransmissionStatus });
     }
 }

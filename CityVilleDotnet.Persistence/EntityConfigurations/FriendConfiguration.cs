@@ -14,5 +14,7 @@ public class FriendConfiguration : IEntityTypeConfiguration<Friend>
 
         builder.HasOne(x => x.User).WithMany(x => x.Friends).OnDelete(DeleteBehavior.Cascade);
         builder.HasOne(x => x.FriendUser).WithMany().OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(x => x.Status);
     }
 }

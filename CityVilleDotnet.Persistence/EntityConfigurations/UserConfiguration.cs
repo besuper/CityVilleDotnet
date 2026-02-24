@@ -18,5 +18,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasOne(x => x.AppUser);
         builder.HasMany(x => x.Quests);
         builder.HasMany(x => x.Friends);
+
+        builder.HasIndex(x => x.UserId);
     }
 }

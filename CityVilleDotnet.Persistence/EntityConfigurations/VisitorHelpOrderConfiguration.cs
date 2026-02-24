@@ -10,5 +10,9 @@ public class VisitorHelpOrderConfiguration : IEntityTypeConfiguration<VisitorHel
     {
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
+
+        builder.HasIndex(x => x.SenderId);
+        builder.HasIndex(x => x.RecipientId);
+        builder.HasIndex(x => new { x.OrderState, x.TransmissionStatus });
     }
 }
