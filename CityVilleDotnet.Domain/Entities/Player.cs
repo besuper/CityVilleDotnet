@@ -153,8 +153,6 @@ public class Player
 
     public bool RemoveEnergy(int amount)
     {
-        StaticLogger.Current.LogDebug("Removing {Amount} energy from player {PlayerId}", amount, Id);
-
         var currentEnergy = CalculateCurrentEnergy();
         if (currentEnergy.CurrentNewEnergy < amount) return false;
 

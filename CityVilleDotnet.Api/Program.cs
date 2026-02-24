@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using CityVilleDotnet.Api.Middleware;
 using CityVilleDotnet.Common.Global;
+using CityVilleDotnet.Common.Utils;
 
 var builder = WebApplication.CreateBuilder();
 
@@ -78,6 +79,8 @@ StaticLogger.Configure(app.Services.GetRequiredService<ILoggerFactory>());
 using var scope = app.Services.CreateScope();
 await using var context = scope.ServiceProvider.GetRequiredService<CityVilleDbContext>();
 await context.Database.MigrateAsync();
+
+ServerUtils.CheckRequiredFiles(scope.ServiceProvider.GetRequiredService<ILogger<Program>>());
 
 GameSettingsManager.Instance.Initialize(scope.ServiceProvider.GetRequiredService<ILogger<GameSettingsManager>>());
 QuestSettingsManager.Instance.Initialize(scope.ServiceProvider.GetRequiredService<ILogger<QuestSettingsManager>>());
