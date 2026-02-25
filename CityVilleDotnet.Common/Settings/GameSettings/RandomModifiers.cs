@@ -15,6 +15,15 @@ public class RandomModifier
     [XmlAttribute("type")] public required string Type { get; set; }
 
     [XmlAttribute("tableName")] public required string TableName { get; set; }
+
+    [XmlIgnore] public bool AllowOnBuild { get; set; }
+
+    [XmlAttribute("allowOnBuild")]
+    private string? AllowOnBuildString
+    {
+        get => AllowOnBuild.ToString().ToLower();
+        set => AllowOnBuild = string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
+    }
 }
 
 [Serializable]
@@ -29,6 +38,15 @@ public class RandomModifierTable
     [XmlAttribute("type")] public required string Type { get; set; }
 
     [XmlAttribute("name")] public required string Name { get; set; }
+
+    [XmlIgnore] public int RollRange { get; set; } = 99;
+
+    [XmlAttribute("rollRange")]
+    private string? RollRangeString
+    {
+        get => RollRange.ToString();
+        set => RollRange = string.IsNullOrEmpty(value) ? 99 : int.Parse(value);
+    }
 
     [XmlElement("roll")] public required List<Roll> Rolls { get; set; }
 }

@@ -2,6 +2,7 @@
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Settings.GameSettings;
 using CityVilleDotnet.Common.Utils;
+using CityVilleDotnet.Domain.Enums;
 using Microsoft.Extensions.Logging;
 
 namespace CityVilleDotnet.Domain.Entities;
@@ -337,26 +338,34 @@ public class Player
     }
 
     // From Player::processRandomModifiersFromConfig
-    public List<int> CollectDoobersRewards(string itemName, List<string>? allowedDooberTypes = null)
+    public List<int> CollectDoobersRewards(string itemName, BuildingClassType classType)
     {
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
 
         if (gameItem?.RandomModifiers?.Modifiers is null) return [];
 
+        // From Player::processRandomModifiers
+        var modifiers = gameItem.RandomModifiers.Modifiers;
+        
+        if (classType == BuildingClassType.ConstructionSite)
+        {
+            modifiers = modifiers.Where(m => m.AllowOnBuild || m.Type == "xp").ToList();
+        }
+
         var secureRands = new List<int>();
 
-        foreach (var itemModifier in gameItem.RandomModifiers.Modifiers)
+        foreach (var itemModifier in modifiers)
         {
             IncrementRollCounter();
 
             var debugName = gameItem.Name;
-            var secureRand = SecureRand.GenerateRand(0, 99, RollCounter, Uid);
+            var modifierTable = GameSettingsManager.Instance.GetRandomModifier(itemModifier.TableName);
+            var rollRange = modifierTable?.RollRange ?? 99;
+            var secureRand = SecureRand.GenerateRand(0, rollRange, RollCounter, Uid);
 
             StaticLogger.Current.LogDebug("SecureRand for {DebugName}: rollCounter={PlayerRollCounter} => {SecureRand}", debugName, RollCounter, secureRand);
 
             secureRands.Add(secureRand);
-
-            var modifierTable = GameSettingsManager.Instance.GetRandomModifier(itemModifier.TableName);
 
             if (modifierTable is null) continue;
 
@@ -380,13 +389,6 @@ public class Player
 
                         foreach (var (key, value) in roll.Rewards)
                         {
-                            // FIXME: Implement a better skip
-                            if (allowedDooberTypes is not null && !allowedDooberTypes.Contains(key))
-                            {
-                                StaticLogger.Current.LogDebug("Skipping doober type {Key} as it is not allowed", key);
-                                continue;
-                            }
-
                             StaticLogger.Current.LogDebug("TYPE : {Key}", key);
 
                             switch (key)

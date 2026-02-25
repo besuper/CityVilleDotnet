@@ -54,7 +54,7 @@ internal sealed partial class PerformAction
 
         if (obj.Stage != gameItem.NumberOfStages)
         {
-            user.Player!.CollectDoobersRewards(obj.ItemName, ["xp"]);
+            user.Player!.CollectDoobersRewards(obj.ItemName, obj.ClassName);
         }
 
         await context.SaveChangesAsync(cancellationToken);

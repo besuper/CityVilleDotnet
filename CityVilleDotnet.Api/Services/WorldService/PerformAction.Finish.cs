@@ -25,14 +25,15 @@ internal sealed partial class PerformAction
         if (obj.Builds is null)
             throw new Exception($"Can't find `builds` {obj}");
 
-        user.Player!.CollectDoobersRewards(obj.ItemName);
-
         obj.FinishConstruction();
 
         world.CalculatePopulation();
 
         user.HandleQuestsProgress(""); // Empty actionType to force recheck counts
         user.CheckCompletedQuests();
+
+        // Make sure to call doobers after finishing construction
+        user.Player!.CollectDoobersRewards(obj.ItemName, obj.ClassName);
 
         await context.SaveChangesAsync(cancellationToken);
 
