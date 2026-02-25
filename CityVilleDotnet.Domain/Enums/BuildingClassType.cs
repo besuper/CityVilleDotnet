@@ -18,5 +18,6 @@ public enum BuildingClassType
     Sidewalk = 13,
     Landmark = 14,
     Factory = 15,
-    Headquarter = 16
+    Headquarter = 16,
+    Pier = 17
 }
