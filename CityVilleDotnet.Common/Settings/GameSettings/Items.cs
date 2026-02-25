@@ -28,7 +28,7 @@ public class GameItem
 
     [XmlElement("requiredPopulation")] public int? RequiredPopulation { get; set; }
     [XmlElement("headquarters")] public string? HeadquartersName { get; set; }
-    
+
     [XmlElement("population")] public PopulationItem? Population { get; set; }
     [XmlElement("upgrade")] public UpgradeItem? Upgrade { get; set; }
 
@@ -139,7 +139,7 @@ public class PopulationItem
     }
 
     [XmlIgnore] public int? Min { get; set; }
-    
+
     [XmlAttribute("max")]
     public string? MaxString
     {
@@ -148,7 +148,7 @@ public class PopulationItem
     }
 
     [XmlIgnore] public int? Max { get; set; }
-    
+
     [XmlAttribute("cap")]
     public string? CapString
     {
@@ -158,7 +158,7 @@ public class PopulationItem
 
     [XmlIgnore] public int? Cap { get; set; }
 }
- 
+
 [Serializable]
 public class UpgradeItem
 {
@@ -169,5 +169,21 @@ public class UpgradeItem
 [Serializable]
 public class MasteryItem
 {
-    [XmlAttribute("level")] public required string Level { get; set; }
+    [XmlIgnore] public int? Level { get; set; }
+
+    [XmlAttribute("level")]
+    private string? LevelString
+    {
+        get => Level?.ToString();
+        set => Level = string.IsNullOrEmpty(value) ? null : int.Parse(value);
+    }
+
+    [XmlIgnore] public int? RequiredCount { get; set; }
+
+    [XmlAttribute("req")]
+    private string? Req
+    {
+        get => RequiredCount?.ToString();
+        set => RequiredCount = string.IsNullOrEmpty(value) ? null : int.Parse(value);
+    }
 }

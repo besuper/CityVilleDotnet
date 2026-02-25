@@ -593,6 +593,8 @@ public class Player
 
     public void IncrementMastery(string itemName)
     {
+        // TODO: Implement bonusMultiplier with doobers collect
+
         var mastery = Masteries.FirstOrDefault(x => x.ItemName == itemName);
 
         if (mastery is null)
@@ -602,5 +604,21 @@ public class Player
         }
 
         mastery.AddCount();
+
+        var gameItem = GameSettingsManager.Instance.GetItem(itemName);
+
+        if (gameItem is null) return;
+
+        foreach (var masteryItem in gameItem.MasteryItems)
+        {
+            if (masteryItem.RequiredCount is null || masteryItem.Level is null) continue;
+            
+            if (mastery.Count >= masteryItem.RequiredCount && mastery.Level != masteryItem.Level)
+            {
+                // TODO: Give rewards or implement MasteryRewardTransaction 
+                mastery.LevelUp(masteryItem.Level.Value);
+                break;
+            }
+        }
     }
 }
