@@ -72,7 +72,13 @@ public class GameItem
     [XmlElement("randomModifiers")] public RandomModifiers? RandomModifiers { get; set; }
     [XmlElement("energyCost")] public EnergyCost? EnergyCost { get; set; }
     [XmlElement("gates")] public required GatesContainer Gates { get; set; }
+    [XmlElement("keyword")] public List<string> Keywords { get; set; } = [];
     [XmlElement("mastery")] public required List<MasteryItem> MasteryItems { get; set; }
+
+    public bool HasKeyword(string keyword)
+    {
+        return Keywords.Contains(keyword);
+    }
 
     public List<GatesItem> GetGates()
     {
