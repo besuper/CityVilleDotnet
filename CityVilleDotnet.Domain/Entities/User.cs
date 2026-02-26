@@ -91,8 +91,10 @@ public class User
                 if (quest.Progress[index] + quest.Purchased[index] >= int.Parse(task.Total)) continue;
 
                 var actionTask = task.Action;
-                var taskType = task.Type;
-                var splitType = taskType.Contains(',') ? taskType.Split(',') : null;
+                var taskType = task.Type ?? "";
+                var splitType =  taskType.Contains(',') ? taskType.Split(',') : null;
+
+                var gameItem = itemName is not null ? GameSettingsManager.Instance.GetItem(itemName) : null;
 
                 // When user performs an action
                 if (!string.IsNullOrEmpty(actionType) && actionTask.Equals(actionType))
@@ -134,6 +136,17 @@ public class User
 
                             break;
                         }
+                        case "placeByKeyword":
+                            if (itemName is null)
+                                throw new Exception("Can't validate placeByKeyword action without itemName");
+                            
+                            if(gameItem is null)
+                                throw new Exception("Can't validate placeByKeyword action without gameItem");
+
+                            if (gameItem.HasKeyword(task.Type))
+                                quest.Progress[index] += 1;
+                            
+                            break;
                     }
                 }
 
@@ -172,6 +185,11 @@ public class User
                             quest.Progress[index] = splitType.Sum(x => GetWorld().CountBuildingByName(x));
                         }
 
+                        continue;
+                    }
+                    case "countWorldObjectByRegEx":
+                    {
+                        quest.Progress[index] = GetWorld().CountBuildingByRegex(task.Type);
                         continue;
                     }
                     case "countPlayerResourceByType":

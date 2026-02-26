@@ -1,4 +1,5 @@
-﻿using CityVilleDotnet.Common.Settings;
+﻿using System.Text.RegularExpressions;
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 
@@ -88,6 +89,12 @@ public class World
     public int CountBuildingByName(string name)
     {
         return Objects.Count(x => x.ItemName.Equals(name));
+    }
+
+    public int CountBuildingByRegex(string pattern)
+    {
+        var regex = new Regex(pattern);
+        return Objects.Count(x => regex.IsMatch(x.ItemName));
     }
 
     public int CountOpenedBuildingByName(string name)
