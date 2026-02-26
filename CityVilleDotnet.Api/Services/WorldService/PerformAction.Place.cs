@@ -50,20 +50,17 @@ internal sealed partial class PerformAction
 
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
 
-        if (gameItem is not null)
+        if (gameItem is null)
+            throw new Exception("Can't build building not registered in XML file");
+
+        if (gameItem.Construction is not null)
         {
-            if (gameItem.Cost is not null)
-                user.Player!.RemoveCoins(gameItem.Cost.Value);
+            var constructionItem = GameSettingsManager.Instance.GetItem(gameItem.Construction);
 
-            if (gameItem.Construction is not null)
-            {
-                var constructionItem = GameSettingsManager.Instance.GetItem(gameItem.Construction);
+            if (constructionItem?.NumberOfStages is null)
+                throw new Exception($"Construction item not found with {gameItem.Construction}");
 
-                if (constructionItem?.NumberOfStages is null)
-                    throw new Exception($"Construction item not found with {gameItem.Construction}");
-
-                obj.SetAsConstructionSite(gameItem.Construction, constructionItem.NumberOfStages.Value);
-            }
+            obj.SetAsConstructionSite(gameItem.Construction, constructionItem.NumberOfStages.Value);
         }
 
         world.AddBuilding(obj);
@@ -74,6 +71,11 @@ internal sealed partial class PerformAction
 
             if (removedItem is not null)
                 context.Set<InventoryItem>().Remove(removedItem);
+        }
+        else
+        {
+            if (gameItem.Cost is not null)
+                user.Player!.RemoveCoins(gameItem.Cost.Value);
         }
 
         // TODO: Check coins, goods, energy, etc...
