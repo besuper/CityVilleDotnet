@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using System.Globalization;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace CityVilleDotnet.Common.Settings.GameSettings;
@@ -69,7 +70,7 @@ public class Roll
                 var rewardType = element.Name;
                 var amountAttribute = element.GetAttribute("amount");
 
-                var amount = amountAttribute == "" ? 0 : double.Parse(amountAttribute);
+                var amount = amountAttribute == "" ? 0 : double.Parse(amountAttribute, CultureInfo.InvariantCulture);
                 var name = element.GetAttribute("name");
 
                 if (!Rewards.ContainsKey(rewardType))
