@@ -51,6 +51,9 @@
 		<Content Update="wwwroot\**\*.swf" CopyToPublishDirectory="Never" />
 
 		<Content Update="wwwroot\assets\**\*" CopyToPublishDirectory="Never" />
+		<Content Update="wwwroot\assets\default.png" CopyToPublishDirectory="PreserveNewest" />
+		<Content Update="wwwroot\assets\default.css" CopyToPublishDirectory="PreserveNewest" />
+		<Content Update="wwwroot\assets\default.mp3" CopyToPublishDirectory="PreserveNewest" />
 	</ItemGroup>
 
 </Project>
