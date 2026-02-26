@@ -24,5 +24,6 @@ public enum BuildingClassType
     Bridge = 19,
     PowerStation = 20,
     Hotel = 21,
-    CraftingCenter = 22
+    CraftingCenter = 22,
+    DockHouse = 23
 }
