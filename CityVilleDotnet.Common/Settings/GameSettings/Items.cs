@@ -72,6 +72,9 @@ public class GameItem
     [XmlElement("randomModifiers")] public RandomModifiers? RandomModifiers { get; set; }
     [XmlElement("energyCost")] public EnergyCost? EnergyCost { get; set; }
     [XmlElement("gates")] public required GatesContainer Gates { get; set; }
+    [XmlElement("sizeX")] public int? SizeX { get; set; }
+    [XmlElement("sizeY")] public int? SizeY { get; set; }
+    [XmlElement("bridgeparts")] public BridgePartsContainer? BridgeParts { get; set; }
     [XmlElement("keyword")] public List<string> Keywords { get; set; } = [];
     [XmlElement("mastery")] public required List<MasteryItem> MasteryItems { get; set; }
 
@@ -89,6 +92,20 @@ public class GameItem
     {
         return MasteryItems.Count > 0;
     }
+}
+
+[Serializable]
+public class BridgePartsContainer
+{
+    [XmlElement("part")] public required List<BridgePartItem> Parts { get; set; }
+}
+
+[Serializable]
+public class BridgePartItem
+{
+    [XmlAttribute("type")] public required string Type { get; set; }
+    [XmlAttribute("x")] public int X { get; set; }
+    [XmlAttribute("y")] public int Y { get; set; }
 }
 
 [Serializable]

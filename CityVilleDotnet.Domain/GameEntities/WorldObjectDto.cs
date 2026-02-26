@@ -1,4 +1,5 @@
-﻿using CityVilleDotnet.Domain.Entities;
+﻿using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Domain.Entities;
 using System.Text.Json.Serialization;
 using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
@@ -38,7 +39,7 @@ public class WorldObjectDto
 
     [JsonPropertyName("targetBuildingName")]
     public string? TargetBuildingName { get; set; }
-    
+
     [JsonPropertyName("stage")] public int? Stage { get; set; }
     [JsonPropertyName("currentState")] public int? CurrentState { get; set; }
 
@@ -47,8 +48,13 @@ public class WorldObjectDto
     [JsonPropertyName("builds")] public int? Builds { get; set; }
     [JsonPropertyName("visits")] public int? Visits { get; set; }
     [JsonPropertyName("harvestCounter")] public int HarvestCounter { get; set; }
-    [JsonPropertyName("upgradeActionCount")] public int UpgradeActionCount { get; set; }
+
+    [JsonPropertyName("upgradeActionCount")]
+    public int UpgradeActionCount { get; set; }
+
     [JsonPropertyName("neverOpened")] public bool NeverOpened { get; set; }
+
+    [JsonPropertyName("endPosition")] public WorldObjectPositionDto? EndPosition { get; set; }
     // TODO: Implement Gates
     //[JsonPropertyName("gates")] public List<object>? Gates { get; set; }
 
@@ -59,7 +65,7 @@ public static class WorldObjectDtoMapper
 {
     public static WorldObjectDto ToDto(this WorldObject model)
     {
-        return new WorldObjectDto()
+        var dto = new WorldObjectDto()
         {
             ItemName = model.ItemName,
             ClassName = model.ClassName.ToString(),
@@ -88,5 +94,22 @@ public static class WorldObjectDtoMapper
             HarvestCounter = model.UpgradeActionCount ?? 0, // This is for Plot
             UpgradeActionCount = model.UpgradeActionCount ?? 0, // This is for Business
         };
+
+        if (model.ClassName == BuildingClassType.Bridge)
+        {
+            var item = GameSettingsManager.Instance.GetItem(model.ItemName);
+            var rightPart = item?.BridgeParts?.Parts.FirstOrDefault(p => p.Type == "right");
+
+            if (rightPart != null)
+            {
+                dto.EndPosition = new WorldObjectPositionDto
+                {
+                    X = rightPart.X,
+                    Y = rightPart.Y
+                };
+            }
+        }
+
+        return dto;
     }
 }
