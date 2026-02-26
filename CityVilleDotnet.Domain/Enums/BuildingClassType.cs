@@ -19,5 +19,10 @@ public enum BuildingClassType
     Landmark = 14,
     Factory = 15,
     Headquarter = 16,
-    Pier = 17
+    Pier = 17,
+    SocialBusiness = 18,
+    Bridge = 19,
+    PowerStation = 20,
+    Hotel = 21,
+    CraftingCenter = 22
 }
