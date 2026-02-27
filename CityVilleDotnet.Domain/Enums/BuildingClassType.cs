@@ -27,5 +27,15 @@ public enum BuildingClassType
     CraftingCenter = 22,
     DockHouse = 23,
     HarvestableShip = 24,
-    Skyscraper = 25
+    Skyscraper = 25,
+    Wonder = 26,
+    Garden = 27,
+    Mall = 28,
+    University = 29,
+    MunicipalCenter = 30,
+    FerryShip = 31,
+    BusStop = 32,
+    BusStation = 33,
+    Subway = 34,
+    Airplane = 35
 }
