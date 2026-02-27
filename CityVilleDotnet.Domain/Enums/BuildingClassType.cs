@@ -37,5 +37,6 @@ public enum BuildingClassType
     BusStop = 32,
     BusStation = 33,
     Subway = 34,
-    Airplane = 35
+    Airplane = 35,
+    ZooEnclosure = 36
 }
