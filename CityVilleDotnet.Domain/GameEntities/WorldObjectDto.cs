@@ -101,6 +101,10 @@ public static class WorldObjectDtoMapper
         if (model.ClassName == BuildingClassType.Bridge)
         {
             var item = GameSettingsManager.Instance.GetItem(model.ItemName);
+
+            if (item?.DerivesFrom is not null)
+                item = GameSettingsManager.Instance.GetItem(item.DerivesFrom);
+
             var rightPart = item?.BridgeParts?.Parts.FirstOrDefault(p => p.Type == "right");
 
             if (rightPart != null)
@@ -114,7 +118,7 @@ public static class WorldObjectDtoMapper
         }
 
         // TODO: Receive visits like a normal business, but no startContract, GameMechanic transaction instead
-        if (model.ClassName == BuildingClassType.SocialBusiness)
+        if (model.ClassName == BuildingClassType.SocialBusiness || model.ClassName == BuildingClassType.Hotel)
         {
             var item = GameSettingsManager.Instance.GetItem(model.ItemName);
 

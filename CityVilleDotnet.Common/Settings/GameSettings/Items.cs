@@ -12,6 +12,7 @@ public class ItemsContainer
 public class GameItem
 {
     [XmlAttribute("name")] public required string Name { get; set; }
+    [XmlAttribute("derivesFrom")] public string? DerivesFrom { get; set; }
     [XmlAttribute("type")] public required string Type { get; set; }
     [XmlAttribute("sellSendsToInventory")] public string? SellSendsToInventory { get; set; }
     [XmlAttribute("height")] public string? Height { get; set; }
