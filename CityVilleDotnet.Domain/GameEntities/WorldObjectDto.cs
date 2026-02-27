@@ -26,7 +26,7 @@ public class WorldObjectDto
 
     [JsonPropertyName("plantTime")] public double? PlantTime { get; set; }
 
-    [JsonPropertyName("state")] public string State { get; set; }
+    [JsonPropertyName("state")] public required string State { get; set; }
 
     [JsonPropertyName("direction")] public int Direction { get; set; }
 
@@ -55,6 +55,8 @@ public class WorldObjectDto
     [JsonPropertyName("neverOpened")] public bool NeverOpened { get; set; }
 
     [JsonPropertyName("endPosition")] public WorldObjectPositionDto? EndPosition { get; set; }
+
+    [JsonPropertyName("mechanicData")] public ASObject? MechanicData { get; set; }
     // TODO: Implement Gates
     //[JsonPropertyName("gates")] public List<object>? Gates { get; set; }
 
@@ -95,6 +97,7 @@ public static class WorldObjectDtoMapper
             UpgradeActionCount = model.UpgradeActionCount ?? 0, // This is for Business
         };
 
+        // FIXME: Not enough (not sure if it is the right way to implement this)
         if (model.ClassName == BuildingClassType.Bridge)
         {
             var item = GameSettingsManager.Instance.GetItem(model.ItemName);
@@ -108,6 +111,25 @@ public static class WorldObjectDtoMapper
                     Y = rightPart.Y
                 };
             }
+        }
+
+        // TODO: Receive visits like a normal business, but no startContract, GameMechanic transaction instead
+        if (model.ClassName == BuildingClassType.SocialBusiness)
+        {
+            var item = GameSettingsManager.Instance.GetItem(model.ItemName);
+
+            dto.MechanicData = new ASObject
+            {
+                {
+                    "harvestState", model.State == WorldObjectState.Open
+                        ? new ASObject
+                        {
+                            { "customers", model.Visits },
+                            { "customersReq", item?.CustomerCapacity ?? 0 }
+                        }
+                        : null
+                }
+            };
         }
 
         return dto;
