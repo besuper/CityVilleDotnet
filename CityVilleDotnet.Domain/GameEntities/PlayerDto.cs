@@ -82,7 +82,8 @@ public static class PlayerDtoMapper
             {
                 Storage = new StorageDto
                 {
-                    Goods = model.Goods
+                    Goods = model.Goods,
+                    PremiumGoods = model.PremiumGoods
                 }
             },
             CompletedCollections = new ASObject(model.Collections.Where(x => x.Completed > 0).ToDictionary(x => x.Name, x => (object)x.Completed)),

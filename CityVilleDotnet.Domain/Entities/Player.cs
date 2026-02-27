@@ -20,6 +20,7 @@ public class Player
     public List<InventoryItem> InventoryItems { get; set; } = [];
     public int Gold { get; private set; }
     public int Goods { get; private set; }
+    public int PremiumGoods { get; private set; }
     public int Cash { get; private set; }
     public int Level { get; private set; } = 1;
     public int Xp { get; private set; }
@@ -50,6 +51,7 @@ public class Player
         Energy = 12;
         EnergyMax = 12;
         Goods = 100;
+        PremiumGoods = 0;
         Username = username;
         CreationTimestamp = (int)ServerUtils.GetCurrentTime();
     }
@@ -314,9 +316,19 @@ public class Player
         Goods -= amount;
     }
 
+    public void RemovePremiumGoods(int amount)
+    {
+        PremiumGoods -= amount;
+    }
+
     public void AddGoods(int amount)
     {
         Goods += amount;
+    }
+
+    public void AddPremiumGoods(int amount)
+    {
+        PremiumGoods += amount;
     }
 
     public void SetSeenFlag(string flag)
@@ -346,7 +358,7 @@ public class Player
 
         // From Player::processRandomModifiers
         var modifiers = gameItem.RandomModifiers.Modifiers;
-        
+
         if (classType == BuildingClassType.ConstructionSite)
         {
             modifiers = modifiers.Where(m => m.AllowOnBuild || m.Type == "xp").ToList();
@@ -427,6 +439,10 @@ public class Player
                                     AddGoods((int)value.Sum(x => x.Amount));
                                     StaticLogger.Current.LogDebug("Found food {FoodAmount}", value.Sum(x => x.Amount));
                                     break;
+                                case "premium_goods":
+                                    AddPremiumGoods((int)value.Sum(x => x.Amount));
+                                    StaticLogger.Current.LogDebug("Found premium goods {FoodAmount}", value.Sum(x => x.Amount));
+                                    break;
                             }
                         }
 
@@ -496,6 +512,10 @@ public class Player
                 case "goods":
                     AddGoods(reward.Sum(x => int.Parse(x.Amount ?? "0")));
                     StaticLogger.Current.LogDebug("Added goods {GoodsAmount}", reward.Sum(x => int.Parse(x.Amount ?? "0")));
+                    break;
+                case "premium_goods":
+                    AddPremiumGoods(reward.Sum(x => int.Parse(x.Amount ?? "0")));
+                    StaticLogger.Current.LogDebug("Added premium goods {GoodsAmount}", reward.Sum(x => int.Parse(x.Amount ?? "0")));
                     break;
                 case "energy":
                     AddEnergy(reward.Sum(x => int.Parse(x.Amount ?? "0")));
@@ -614,7 +634,7 @@ public class Player
         foreach (var masteryItem in gameItem.MasteryItems)
         {
             if (masteryItem.RequiredCount is null || masteryItem.Level is null) continue;
-            
+
             if (mastery.Count >= masteryItem.RequiredCount && mastery.Level != masteryItem.Level)
             {
                 // TODO: Give rewards or implement MasteryRewardTransaction 
