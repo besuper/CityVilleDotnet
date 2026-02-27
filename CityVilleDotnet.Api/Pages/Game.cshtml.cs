@@ -35,7 +35,7 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             .ThenInclude(x => x.Player)
             .Include(x => x.Player)
             .FirstOrDefaultAsync(x => x.AppUser!.Id.Equals(currentUser.Id));
-        
+
         ServerTime = ServerUtils.GetCurrentTime();
 
         if (user?.Player is not null)
@@ -51,5 +51,47 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         }
 
         return Page();
+    }
+
+    public string BuildFlashVars()
+    {
+        var flashVars = new Dictionary<string, string>()
+        {
+            ["serverTime"] = $"{ServerTime}",
+            ["swfLocation"] = "Game.2012.swf",
+            ["zySnid"] = "0",
+            ["zySnuid"] = $"{Uid}",
+            ["zyUid"] = $"{Uid}",
+            ["zyAuthHash"] = $"{Uid}",
+            ["zySig"] = $"{Uid}",
+            ["zcache_gameswf_gamesettings"] = "false",
+            ["static_asset_prefix"] = "",
+            ["app_fb_proxy_url"] = "",
+            ["flashRevision"] = "26346",
+            ["generateSchema"] = "1",
+            ["sn_app_url"] = "",
+            ["snapiEnable"] = "1",
+            ["game_config_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/gameSettings.xml",
+            ["quest_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/questSettings.xml",
+            ["effects_config_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/effectsConfig.xml",
+            ["font_mapper_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/FontMapper.swf",
+            ["localization_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/lang/locale_en_US.swf",
+            ["bootstrap_config_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/bootstrap.xml",
+            ["amf_settings_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/settings.amf.z",
+            ["embedded_art_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/EmbeddedArt.swf",
+            ["static_asset_urls"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/",
+            ["asset_urls"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/",
+            ["app_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/",
+            ["asset_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/",
+            ["preloaded_asset_urls"] =
+                $"{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/road/city/city04_SE.png,{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/road/city/city04_SW.png,{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/dialogs/MarketAssets.swf",
+        };
+
+        foreach (var param in Request.Query)
+        {
+            flashVars[param.Key] = param.Value.ToString();
+        }
+
+        return string.Join("&", flashVars.Select(kvp => $"{kvp.Key}={kvp.Value}"));
     }
 }
