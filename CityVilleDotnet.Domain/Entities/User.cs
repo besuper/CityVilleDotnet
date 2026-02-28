@@ -127,6 +127,7 @@ public class User
                         case "harvestPlotByName":
                         case "openBusinessByName":
                         case "harvestBusinessByName":
+                        case "placeBuildingByName":
                         {
                             if (itemName is null)
                                 throw new Exception("Can't validate byName action without itemName");

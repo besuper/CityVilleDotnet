@@ -82,6 +82,8 @@ internal sealed partial class PerformAction
         // Add population
 
         user.HandleQuestsProgress("placeByClass", className: obj.ClassName.ToString());
+        user.HandleQuestsProgress("placeBuildingByName", itemName: itemName);
+        user.HandleQuestsProgress("placeByKeyword", itemName: itemName);
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
