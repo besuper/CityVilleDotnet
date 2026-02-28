@@ -61,7 +61,7 @@ public static class AmfConverter
             {
                 result.Add(null);
             }
-            else if (IsSimpleType(item.GetType()))
+            else if (item is ASObject || IsSimpleType(item.GetType()))
             {
                 result.Add(item);
             }
