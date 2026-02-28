@@ -108,6 +108,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           ref: '2012'
+          fetch-depth: 0
 
       - name: Download all artifacts
         uses: actions/download-artifact@v7
@@ -117,13 +118,50 @@ jobs:
       - name: Display structure
         run: ls -R artifacts
 
+      - name: Generate changelog
+        id: changelog
+        env:
+          REPO: ${{ github.repository }}
+          VERSION: ${{ needs.check-changes.outputs.version }}
+        run: |
+          LAST_TAG=$(git tag --sort=-creatordate | grep '^v2012-' | head -n 1 || true)
+          if [ -z "$LAST_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"%H %s (%aN)" HEAD)
+          else
+            COMMITS=$(git log --pretty=format:"%H %s (%aN)" "$LAST_TAG"..HEAD)
+          fi
+
+          CHANGELOG=""
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            HASH=$(echo "$line" | cut -d' ' -f1)
+            SHORT_HASH=$(echo "$HASH" | cut -c1-7)
+            MESSAGE=$(echo "$line" | cut -d' ' -f2-)
+            CHANGELOG="${CHANGELOG}* ${MESSAGE} in ${SHORT_HASH}
+          "
+          done <<< "$COMMITS"
+
+          if [ -n "$LAST_TAG" ]; then
+            FULL_CHANGELOG="**Full Changelog**: https://github.com/${REPO}/compare/${LAST_TAG}...v${VERSION}"
+          else
+            FULL_CHANGELOG="**Full Changelog**: https://github.com/${REPO}/commits/v${VERSION}"
+          fi
+
+          {
+            echo "CHANGELOG<<EOF"
+            echo "## What's Changed"
+            echo "${CHANGELOG}"
+            echo "${FULL_CHANGELOG}"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
       - name: Create pre-release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.check-changes.outputs.version }}
           target_commitish: '2012'
           name: "CityVilleDotnet - v${{ needs.check-changes.outputs.version }}"
-          generate_release_notes: true
+          body: ${{ steps.changelog.outputs.CHANGELOG }}
           draft: false
           prerelease: true
           files: |
