@@ -61,7 +61,11 @@ public class PlayerDto
 
     [JsonPropertyName("rollCounter")] public int RollCounter { get; set; } = 0;
     [JsonPropertyName("featureData")] public required ASObject FeatureData { get; set; }
-    [JsonPropertyName("npc_cloud_visible")] public bool ShowNpcCloud { get; set; }
+
+    [JsonPropertyName("npc_cloud_visible")]
+    public bool ShowNpcCloud { get; set; }
+
+    [JsonPropertyName("fastbuild")] public bool FastBuild { get; set; } = true;
 }
 
 public static class PlayerDtoMapper
