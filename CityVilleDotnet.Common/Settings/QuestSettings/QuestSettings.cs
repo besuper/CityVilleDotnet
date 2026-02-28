@@ -19,6 +19,24 @@ public class QuestItem
     [XmlElement("sequels")] public SequelsContainer? Sequels { get; set; }
 
     [XmlElement("resourceModifiers")] public ResourceModifiers? ResourceModifiers { get; set; }
+
+    [XmlIgnore] public int? RequiredLevel { get; set; }
+
+    [XmlAttribute("level_block")]
+    public string? RequiredLevelString
+    {
+        get => RequiredLevel?.ToString();
+        set => RequiredLevel = string.IsNullOrEmpty(value) ? null : int.Parse(value);
+    }
+
+    [XmlIgnore] public int? RequiredPopulation { get; set; }
+
+    [XmlAttribute("population_block")]
+    public string? RequiredPopulationString
+    {
+        get => RequiredPopulation?.ToString();
+        set => RequiredPopulation = string.IsNullOrEmpty(value) ? null : int.Parse(value);
+    }
 }
 
 [Serializable]

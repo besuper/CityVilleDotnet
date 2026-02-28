@@ -26,9 +26,10 @@ public class RequestManualQuests(CityVilleDbContext context, ILogger<RequestManu
             .Include(x => x.Quests)
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
+            .Include(x => x.World)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
-        if (user?.Player is null)
+        if (user?.Player is null || user.World is null)
             throw new Exception($"User {userId} not found");
 
         var results = new List<ASObject>();
@@ -59,6 +60,9 @@ public class RequestManualQuests(CityVilleDbContext context, ILogger<RequestManu
                 });
                 continue;
             }
+
+            if (questItem.RequiredLevel is not null && user.Player.Level < questItem.RequiredLevel) continue;
+            if (questItem.RequiredPopulation is not null && user.World.Population < questItem.RequiredPopulation) continue;
 
             var newQuest = Quest.Create(questName, questItem.Tasks.Tasks.Count, QuestType.Active);
             user.Quests.Add(newQuest);
