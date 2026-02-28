@@ -18,8 +18,10 @@ public class World
     public int PotentialPopulation { get; set; }
     public List<MapRect> MapRects { get; set; } = [];
     public List<WorldObject> Objects { get; set; } = [];
-    
-    public World() { }
+
+    public World()
+    {
+    }
 
     public World(string worldName, int sizeX, int sizeY, int population, int populationMin, int populationMax, int populationCap, int potentialPopulation, List<MapRect> mapRects, List<WorldObject> objects)
     {
@@ -80,7 +82,7 @@ public class World
     {
         return Objects.FirstOrDefault(w => w.X == x && w.Y == y && (w.Z ?? 0) == z);
     }
-    
+
     public WorldObject? GetBuildingById(int id)
     {
         return Objects.FirstOrDefault(w => w.WorldFlatId == id);
@@ -143,13 +145,22 @@ public class World
 
         if (building is null) return;
         if (building.ClassName != BuildingClassType.LotSite) throw new Exception("Building is not a LotSite");
-        
+
         var gameItem = GameSettingsManager.Instance.GetItem(lotOrder.ResourceType);
 
-        if(gameItem is null) throw new Exception("Item not found");
-        
+        if (gameItem is null) throw new Exception("Item not found");
+
         building.ItemName = lotOrder.ResourceType;
         building.ClassName = Enum.Parse<BuildingClassType>(gameItem.Type);
         building.State = WorldObjectState.Closed;
+    }
+
+    public void CleanTempIDs()
+    {
+        // Avoid IDs conflict after refresh
+        foreach (var obj in Objects)
+        {
+            obj.TempId = -1;
+        }
     }
 }

@@ -78,6 +78,12 @@ internal sealed partial class PerformAction
                 user.Player!.RemoveCoins(gameItem.Cost.Value);
         }
 
+        // Set TempId to current clientId to fix harvest
+        if (className == BuildingClassType.Business)
+        {
+            obj.TempId = (int)building["id"];
+        }
+
         // TODO: Check coins, goods, energy, etc...
         // Add population
 

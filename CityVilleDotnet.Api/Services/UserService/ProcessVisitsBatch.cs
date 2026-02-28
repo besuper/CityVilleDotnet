@@ -70,18 +70,20 @@ internal sealed class ProcessVisitsBatch(CityVilleDbContext context, ILogger<Pro
         var user = await context.Set<User>()
             .AsSplitQuery()
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects.Where(w => w.ClassName == BuildingClassType.Business && ids.Contains(w.WorldFlatId)))
+            .ThenInclude(x => x!.Objects.Where(w => w.ClassName == BuildingClassType.Business && (ids.Contains(w.WorldFlatId) || ids.Contains(w.TempId))))
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
 
-        // FIXME: If we supply a newly placed franchise, the client will use old id
         foreach (var obj in user.GetWorld().Objects)
         {
             var index = ids.IndexOf(obj.WorldFlatId);
 
             if (index == -1)
             {
-                continue;
+                // Not found with current server ID, check with clientId
+                index = ids.IndexOf(obj.TempId);
             }
+
+            if (index == -1) continue;
 
             var newCount = counts[index];
             obj.UpdateVisits(newCount);

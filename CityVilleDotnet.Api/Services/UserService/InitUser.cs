@@ -49,7 +49,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             // Create a new player
             var appUser = await context.Set<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId.ToString(), cancellationToken) ?? throw new Exception("Can't find ApplicationUser with UserId");
             var jsonContent = await File.ReadAllTextAsync("Resources/startWorld.json", cancellationToken);
-            
+
             var defaultWorld = JsonSerializer.Deserialize<WorldDto>(jsonContent) ?? throw new Exception("WorldDto can't be null");
 
             user = User.CreateNewPlayer(defaultWorld, appUser);
@@ -63,15 +63,19 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             throw new Exception("Player not initialized correctly");
 
         // Handle energy regeneration
-        var player = await context.Set<User>()
+        var trackedUser = await context.Set<User>()
             .Where(x => x.UserId == userId)
-            .Select(x => x.Player)
+            .Include(x => x.Player)
+            .Include(x => x.World)
+            .ThenInclude(x => x!.Objects.Where(y => y.TempId != -1))
             .FirstOrDefaultAsync(cancellationToken);
 
-        if (player is null)
+        if (trackedUser?.Player is null || trackedUser.World is null)
             throw new Exception("Player not found for user");
 
-        player.UpdateEnergy();
+        trackedUser.Player.UpdateEnergy();
+        trackedUser.World.CleanTempIDs();
+
         user.Player.UpdateEnergy(); // This will not save
 
         await context.SaveChangesAsync(cancellationToken);
