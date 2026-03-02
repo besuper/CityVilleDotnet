@@ -10,7 +10,7 @@
 -   User account management and authentication
 -   Basic friend system - add, visit and manage friends
 -   Support for user inventory
--   <strike>Embedded [ruffle](https://ruffle.rs/) flash emulator - no need to install Flash</strike>
+-   Embedded [ruffle](https://ruffle.rs/) flash emulator - no need to install Flash
 
 ## Getting Started
 
