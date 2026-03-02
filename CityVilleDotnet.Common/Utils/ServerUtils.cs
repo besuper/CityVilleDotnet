@@ -6,6 +6,7 @@ public static class ServerUtils
 {
     private static readonly List<string> RequiredFiles =
     [
+        "wwwroot/Preloader.swf",
         "wwwroot/gameSettings.xml",
         "wwwroot/questSettings.xml",
         "wwwroot/effectsConfig.xml",
