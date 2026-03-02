@@ -12,13 +12,15 @@ using CityVilleDotnet.Common.Utils;
 namespace CityVilleDotnet.Api.Pages;
 
 [Authorize]
-public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbContext dbContext) : PageModel
+public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbContext dbContext, IConfiguration configuration) : PageModel
 {
     public string FriendList { get; set; } = "[]";
     public string Uid { get; set; } = "333";
     public string UserName { get; set; } = "Steve";
     public int Level { get; set; } = 1;
     public long ServerTime { get; set; } = 0;
+    
+    public bool EnableCheat => configuration.GetValue<bool>("enableCheat");
 
     public async Task<IActionResult> OnGetAsync()
     {
@@ -49,6 +51,9 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         {
             UserName = currentUser.UserName ?? "Unknown";
         }
+
+        ViewData["PlayerName"] = UserName;
+        ViewData["PlayerLevel"] = Level;
 
         return Page();
     }

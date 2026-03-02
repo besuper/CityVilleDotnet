@@ -1,4 +1,13 @@
-﻿div.tabs {
+﻿body { font-family: 'Plus Jakarta Sans', sans-serif; }
+.font-outfit { font-family: 'Outfit', sans-serif; }
+
+.show > [data-toggle] .cv-chevron { transform: rotate(180deg); }
+.cv-chevron { transition: transform 0.2s; }
+
+.cv-hover { transition: background 0.15s; }
+.cv-hover:hover { background: rgba(0,0,0,0.04); }
+
+div.tabs {
     display: flex;
     justify-content: space-between;
     border-bottom: 4px solid #ffe8af;

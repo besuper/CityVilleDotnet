@@ -225,6 +225,29 @@ public class Player
         return currentTimeSeconds - timeSinceLastRegenSeconds;
     }
 
+    public void SetGold(int amount) => Gold = amount;
+    public void SetCash(int amount) => Cash = amount;
+    public void SetGoods(int amount) => Goods = amount;
+    public void SetPremiumGoods(int amount) => PremiumGoods = amount;
+    public void SetXp(int xp)
+    {
+        Xp = xp;
+        ComputeLevel();
+    }
+    public void SetLevel(int level)
+    {
+        Level = level;
+
+        var levelData = GameSettingsManager.Instance.GetLevels()
+            .FirstOrDefault(x => int.Parse(x.Num) == level);
+
+        if (levelData is not null)
+        {
+            EnergyMax = int.Parse(levelData.EnergyMax);
+            Xp = Math.Max(Xp, int.Parse(levelData.RequiredXp));
+        }
+    }
+
     public void RemoveCash(int amount)
     {
         Cash -= amount;

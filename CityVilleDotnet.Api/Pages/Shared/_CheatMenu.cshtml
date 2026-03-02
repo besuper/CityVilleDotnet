@@ -1,0 +1,128 @@
+<div class="card mt-3">
+	<div class="card-header">
+		Cheat menu
+	</div>
+	<div id="cheatPanel">
+		<div class="card-body">
+			<div id="cheatAlert" class="alert d-none" role="alert"></div>
+
+			<h6 class="mb-2">Resources</h6>
+			
+			<div class="row g-2 mb-2">
+				<div class="col">
+					<label class="form-label form-label-sm mb-0">Gold</label>
+					<input type="number" class="form-control form-control-sm" id="cheatGold">
+				</div>
+				<div class="col">
+					<label class="form-label form-label-sm mb-0">Cash</label>
+					<input type="number" class="form-control form-control-sm" id="cheatCash">
+				</div>
+				<div class="col">
+					<label class="form-label form-label-sm mb-0">XP</label>
+					<input type="number" class="form-control form-control-sm" id="cheatXp">
+				</div>
+			</div>
+			
+			<div class="row g-2 mb-2">
+				<div class="col">
+					<label class="form-label form-label-sm mb-0">Level</label>
+					<input type="number" class="form-control form-control-sm" id="cheatLevel">
+				</div>
+				<div class="col">
+					<label class="form-label form-label-sm mb-0">Goods</label>
+					<input type="number" class="form-control form-control-sm" id="cheatGoods">
+				</div>
+				<div class="col">
+					<label class="form-label form-label-sm mb-0">Premium Goods</label>
+					<input type="number" class="form-control form-control-sm" id="cheatPremiumGoods">
+				</div>
+			</div>
+
+			<button class="btn btn-primary btn-sm" onclick="updateResources()">Update resources</button>
+
+			<hr>
+
+			<h6 class="mb-2">Inventory</h6>
+			
+			<div class="row g-2 mb-2">
+				<div class="col">
+					<label class="form-label form-label-sm mb-0">Item name</label>
+					<input type="text" class="form-control form-control-sm" id="cheatItemName"
+					       placeholder="e.g. decorative_light">
+				</div>
+				
+				<div class="col-3">
+					<label class="form-label form-label-sm mb-0">Amount</label>
+					<input type="number" class="form-control form-control-sm" id="cheatItemAmount" value="1" min="1">
+				</div>
+			</div>
+			
+			<button class="btn btn-primary btn-sm" onclick="addInventoryItem()">Add item</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	function showCheatAlert(message, type) {
+		const alert = document.getElementById('cheatAlert');
+		alert.textContent = message;
+		alert.className = 'alert alert-' + type;
+		setTimeout(function () {
+			alert.className = 'alert d-none';
+		}, 3000);
+	}
+
+	function updateResources() {
+		const body = {};
+		const gold = document.getElementById('cheatGold').value;
+		const cash = document.getElementById('cheatCash').value;
+		const xp = document.getElementById('cheatXp').value;
+		const level = document.getElementById('cheatLevel').value;
+		const goods = document.getElementById('cheatGoods').value;
+		const premiumGoods = document.getElementById('cheatPremiumGoods').value;
+
+		if (gold !== '') body.gold = parseInt(gold);
+		if (cash !== '') body.cash = parseInt(cash);
+		if (xp !== '') body.xp = parseInt(xp);
+		if (level !== '') body.level = parseInt(level);
+		if (goods !== '') body.goods = parseInt(goods);
+		if (premiumGoods !== '') body.premiumGoods = parseInt(premiumGoods);
+
+		if (Object.keys(body).length === 0) {
+			showCheatAlert('Fill in at least one field', 'warning');
+			return;
+		}
+
+		fetch('/api/cheat/resources', {
+			method: 'POST',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify(body)
+		}).then(function (r) {
+			if (r.ok) showCheatAlert('Resources updated! Reload the game to see changes.', 'success');
+			else showCheatAlert('Error updating resources', 'danger');
+		}).catch(function () {
+			showCheatAlert('Request failed', 'danger');
+		});
+	}
+
+	function addInventoryItem() {
+		const itemName = document.getElementById('cheatItemName').value.trim();
+		const amount = parseInt(document.getElementById('cheatItemAmount').value) || 1;
+
+		if (!itemName) {
+			showCheatAlert('Enter an item name', 'warning');
+			return;
+		}
+
+		fetch('/api/cheat/inventory', {
+			method: 'POST',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify({itemName: itemName, amount: amount})
+		}).then(function (r) {
+			if (r.ok) showCheatAlert('Item added! Reload the game to see changes.', 'success');
+			else showCheatAlert('Error adding item', 'danger');
+		}).catch(function () {
+			showCheatAlert('Request failed', 'danger');
+		});
+	}
+</script>

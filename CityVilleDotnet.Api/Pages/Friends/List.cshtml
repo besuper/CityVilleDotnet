@@ -7,33 +7,9 @@
 
 @section Header {
 	<script type="text/javascript" src="/jquery.min.js"></script>
-	<script type="text/javascript" src="/flash_integration.min.js"></script>
-	<script type="text/javascript" src="/swfobject.min.js"></script>
 }
 
 <div class="gamePage">
-	<div class="tabs">
-		<div class="tab-content">
-			<div class="tab">
-				<a href="/Game" title="Game">Game</a>
-			</div>
-
-			<div class="tab selected">
-				<a href="/Friends/List" title="Friends">Friends</a>
-			</div>
-		</div>
-
-		<div class="tab-content">
-			<div class="tab">
-				<a href="#" title="Username">@Model.CurrentUser?.UserName</a>
-			</div>
-
-			<div class="tab">
-				<a href="#" title="/logout">Disconnect</a>
-			</div>
-		</div>
-	</div>
-
 	<div class="main">
 		@if (TempData["Error"] != null)
 		{

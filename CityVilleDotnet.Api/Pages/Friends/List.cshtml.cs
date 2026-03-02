@@ -42,6 +42,9 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             .Select(x => x.ToDto())
             .ToListAsync(ct);
 
+        ViewData["PlayerName"] = user.Player?.Username;
+        ViewData["PlayerLevel"] = user.Player?.Level;
+
         return Page();
     }
 
@@ -59,7 +62,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             return RedirectToPage("/Account/Login");
 
         CurrentUser = user.AppUser;
-        
+
         if (CurrentUser.IsGuest)
         {
             return RedirectToPage("/Game");
@@ -99,6 +102,9 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         TempData["Success"] = $"Friend request sent to {Username}.";
 
+        ViewData["PlayerName"] = user.Player?.Username;
+        ViewData["PlayerLevel"] = user.Player?.Level;
+
         await dbContext.SaveChangesAsync(ct);
 
         return RedirectToPage("/Friends/List");
@@ -118,7 +124,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             return RedirectToPage("/Account/Login");
 
         CurrentUser = user.AppUser;
-        
+
         if (CurrentUser.IsGuest)
         {
             return RedirectToPage("/Game");
@@ -149,6 +155,9 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         TempData["Success"] = $"You are now friends with {userName}.";
 
+        ViewData["PlayerName"] = user.Player?.Username;
+        ViewData["PlayerLevel"] = user.Player?.Level;
+
         await dbContext.SaveChangesAsync(ct);
 
         return RedirectToPage("/Friends/List");
@@ -168,7 +177,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             return RedirectToPage("/Account/Login");
 
         CurrentUser = user.AppUser;
-        
+
         if (CurrentUser.IsGuest)
         {
             return RedirectToPage("/Game");
@@ -197,6 +206,9 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         TempData["Success"] = $"Friend request from {userName} rejected.";
 
+        ViewData["PlayerName"] = user.Player?.Username;
+        ViewData["PlayerLevel"] = user.Player?.Level;
+
         await dbContext.SaveChangesAsync(ct);
         return RedirectToPage("/Friends/List");
     }
@@ -215,7 +227,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             return RedirectToPage("/Account/Login");
 
         CurrentUser = user.AppUser;
-        
+
         if (CurrentUser.IsGuest)
         {
             return RedirectToPage("/Game");
@@ -240,6 +252,9 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         if (targetFriendship is not null) dbContext.Set<Friend>().Remove(targetFriendship);
 
         TempData["Success"] = $"Friend request to {userName} cancelled.";
+
+        ViewData["PlayerName"] = user.Player?.Username;
+        ViewData["PlayerLevel"] = user.Player?.Level;
 
         await dbContext.SaveChangesAsync(ct);
         return RedirectToPage("/Friends/List");
