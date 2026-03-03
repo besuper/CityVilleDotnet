@@ -160,7 +160,7 @@ public class Player
         if (currentEnergy.CurrentNewEnergy < amount) return false;
 
         var wasAtMax = Energy >= EnergyMax;
-        Energy = currentEnergy.CurrentNewEnergy - amount;
+        Energy -= amount;
 
         if (wasAtMax && Energy < EnergyMax)
         {
@@ -198,7 +198,7 @@ public class Player
 
         var currentEnergy = CalculateCurrentEnergy();
 
-        Energy = currentEnergy.CurrentNewEnergy + amount;
+        Energy += amount;
 
         StaticLogger.Current.LogDebug("New energy after addition: {NewEnergy}", Energy);
 
