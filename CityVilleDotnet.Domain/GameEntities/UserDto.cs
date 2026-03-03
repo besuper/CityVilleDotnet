@@ -16,7 +16,7 @@ public static class UserDtoMapper
 {
     public static UserDto ToDto(this User model)
     {
-        var player = model.Player?.ToDto();
+        var player = model.Player?.ToDto(model.World);
 
         player.Neighbors = model.Friends.Select(x => x.ToNeighborDto()).ToList();
 

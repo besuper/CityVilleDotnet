@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.EnumExtensions;
+using CityVilleDotnet.Domain.Enums;
 using FluorineFx;
 
 namespace CityVilleDotnet.Domain.GameEntities;
@@ -73,9 +74,9 @@ public class PlayerDto
 
 public static class PlayerDtoMapper
 {
-    public static PlayerDto ToDto(this Player model)
+    public static PlayerDto ToDto(this Player model, World? playerWorld)
     {
-        return new PlayerDto()
+        return new PlayerDto
         {
             Uid = model.Uid,
             Cash = model.Cash,
@@ -116,14 +117,15 @@ public static class PlayerDtoMapper
             PlayerNews = model.PlayerNews,
             RollCounter = model.RollCounter,
             SeenFlags = new ASObject(model.SeenFlags.ToDictionary(x => x.Key, x => (object)true)),
+            // FIXME: Handle that better
             FlagContainer =
             [
-                /*new ASObject
+                new ASObject
                 {
                     ["name"] = "completed_bridge",
-                    ["m_value"] = 0,
+                    ["m_value"] = playerWorld?.Objects.Count(x => x.ClassName == BuildingClassType.Bridge),
                     ["lastModifiedGlobalEngineTime"] = 0
-                }*/
+                }
             ],
             Wishlist = model.Wishlist,
             Xp = model.Xp,
