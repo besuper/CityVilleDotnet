@@ -107,12 +107,12 @@ public static class WorldObjectDtoMapper
 
             var rightPart = item?.BridgeParts?.Parts.FirstOrDefault(p => p.Type == "right");
 
-            if (rightPart != null)
+            if (rightPart?.X != null && rightPart.Y != null)
             {
                 dto.EndPosition = new WorldObjectPositionDto
                 {
-                    X = rightPart.X,
-                    Y = rightPart.Y
+                    X = rightPart.X.Value,
+                    Y = rightPart.Y.Value
                 };
             }
         }

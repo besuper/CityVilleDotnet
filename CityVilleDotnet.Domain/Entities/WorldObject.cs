@@ -83,7 +83,7 @@ public class WorldObject
         }
     }
 
-    public void FinishConstruction()
+    public List<WorldObject> FinishConstruction()
     {
         if (TargetBuildingName is null || TargetBuildingClass is null)
             throw new Exception("Can't finish build");
@@ -98,6 +98,35 @@ public class WorldObject
         TargetBuildingClass = null;
         CurrentState = null;
         RequiredStages = null;
+
+        var newObjects = new List<WorldObject>();
+
+        // We need to construct the all bridge parts by ourselves
+        if (ItemName == "bridge_standard")
+        {
+            var item = GameSettingsManager.Instance.GetItem(ItemName);
+
+            if (item?.BridgeParts is null || item.BridgeCenterPart is null || item.BridgeRightPart is null) return [];
+
+            foreach (var part in item.BridgeParts.Parts)
+            {
+                if (part.X is null || part.Y is null) continue;
+
+                var partItemName = part.Type switch
+                {
+                    "center" => item.BridgeCenterPart,
+                    "right" => item.BridgeRightPart,
+                    _ => "bridge_left"
+                };
+
+                var newObject = new WorldObject(partItemName, BuildingClassType.BridgePart, null, false, 0, WorldObjectState.Open, 0, null, null, part.X.Value, part.Y.Value, 0, 1);
+
+                newObject.State = WorldObjectState.Static;
+                newObjects.Add(newObject);
+            }
+        }
+
+        return newObjects;
     }
 
     public bool HasGrown()

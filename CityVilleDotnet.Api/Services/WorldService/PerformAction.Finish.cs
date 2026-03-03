@@ -25,8 +25,14 @@ internal sealed partial class PerformAction
         if (obj.Builds is null)
             throw new Exception($"Can't find `builds` {obj}");
 
-        obj.FinishConstruction();
+        var createdObjects = obj.FinishConstruction();
 
+        foreach (var newObject in createdObjects)
+        {
+            newObject.WorldFlatId = world.GetAvailableBuildingId();
+            world.AddBuilding(newObject);
+        }
+        
         world.CalculatePopulation();
 
         user.HandleQuestsProgress(""); // Empty actionType to force recheck counts

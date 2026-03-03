@@ -30,6 +30,10 @@ public class GameItem
     [XmlElement("requiredPopulation")] public int? RequiredPopulation { get; set; }
     [XmlElement("headquarters")] public string? HeadquartersName { get; set; }
 
+    [XmlElement("leftPart")] public string? BridgeLeftPart { get; set; }
+    [XmlElement("centerPart")] public string? BridgeCenterPart { get; set; }
+    [XmlElement("rightPart")] public string? BridgeRightPart { get; set; }
+
     [XmlElement("population")] public PopulationItem? Population { get; set; }
     [XmlElement("upgrade")] public UpgradeItem? Upgrade { get; set; }
 
@@ -106,8 +110,23 @@ public class BridgePartsContainer
 public class BridgePartItem
 {
     [XmlAttribute("type")] public required string Type { get; set; }
-    [XmlAttribute("x")] public int X { get; set; }
-    [XmlAttribute("y")] public int Y { get; set; }
+    [XmlIgnore] public int? X { get; set; }
+
+    [XmlAttribute("x")]
+    public string? XString
+    {
+        get => X?.ToString();
+        set => X = string.IsNullOrEmpty(value) ? null : int.Parse(value);
+    }
+
+    [XmlIgnore] public int? Y { get; set; }
+
+    [XmlAttribute("y")]
+    public string? YString
+    {
+        get => Y?.ToString();
+        set => Y = string.IsNullOrEmpty(value) ? null : int.Parse(value);
+    }
 }
 
 [Serializable]

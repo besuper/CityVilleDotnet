@@ -34,7 +34,9 @@ public class PlayerDto
     [JsonPropertyName("xp")] public int Xp { get; set; } = 0;
     [JsonPropertyName("lightLevel")] public int LightLevel { get; set; } = 0;
     [JsonPropertyName("paidEnergy")] public int PaidEnergy { get; set; } = 0;
-    [JsonPropertyName("m_energyModifiers")] public List<object> EnergyModifiers { get; set; } 
+
+    [JsonPropertyName("m_energyModifiers")]
+    public List<object> EnergyModifiers { get; set; }
 
     [JsonPropertyName("socialLevel")] public int SocialLevel { get; set; } = 1;
 
@@ -46,6 +48,7 @@ public class PlayerDto
     [JsonPropertyName("lastEnergyCheck")] public int LastEnergyCheck { get; set; } = 0;
 
     [JsonPropertyName("seenFlags")] public ASObject SeenFlags { get; set; } = new ASObject();
+    [JsonPropertyName("flagContainer")] public required List<ASObject> FlagContainer { get; set; }
 
     [JsonPropertyName("expansionsPurchased")]
     public int ExpansionsPurchased { get; set; } = 0;
@@ -113,6 +116,15 @@ public static class PlayerDtoMapper
             PlayerNews = model.PlayerNews,
             RollCounter = model.RollCounter,
             SeenFlags = new ASObject(model.SeenFlags.ToDictionary(x => x.Key, x => (object)true)),
+            FlagContainer =
+            [
+                /*new ASObject
+                {
+                    ["name"] = "completed_bridge",
+                    ["m_value"] = 0,
+                    ["lastModifiedGlobalEngineTime"] = 0
+                }*/
+            ],
             Wishlist = model.Wishlist,
             Xp = model.Xp,
             SocialLevel = model.SocialLevel,
