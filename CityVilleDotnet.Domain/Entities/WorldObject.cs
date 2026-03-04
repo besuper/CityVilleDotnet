@@ -143,11 +143,8 @@ public class WorldObject
     {
         var coinYield = 0;
 
-        if (ClassName == BuildingClassType.Plot)
+        if (ContractName is not null)
         {
-            if (ContractName is null)
-                throw new Exception("Contract name is null, can't harvest");
-
             var gameItem = GameSettingsManager.Instance.GetItem(ContractName);
 
             if (gameItem is not null)
@@ -167,7 +164,7 @@ public class WorldObject
         // Update state to planted if it was grown
         if (HasGrown()) SetReadyToHarvest();
 
-        // If ready to harvest, update state to planted
+        // This is harvesting Residence
         if (State == WorldObjectState.Grown)
         {
             State = WorldObjectState.Planted;
