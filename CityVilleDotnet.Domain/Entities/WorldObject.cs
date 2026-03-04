@@ -248,4 +248,21 @@ public class WorldObject
         Z = z;
         Direction = direction;
     }
+
+    public void StartContract(string contractName, WorldObjectState state)
+    {
+        ContractName = contractName;
+        PlantTime = ServerUtils.GetCurrentTime();
+        State = state;
+
+        // Why don't ships work like plots?
+        // plowed means ready
+        // planted, planted
+        // grown, grown
+        // but receive plowed in start contract transaction
+        if (ClassName == BuildingClassType.HarvestableShip)
+        {
+            State = WorldObjectState.Planted;
+        }
+    }
 }

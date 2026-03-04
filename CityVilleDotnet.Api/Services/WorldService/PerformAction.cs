@@ -54,9 +54,7 @@ internal sealed partial class PerformAction(CityVilleDbContext context, ILogger<
             case "harvest":
                 return await PerformHarvest(user, @params, userId, cancellationToken);
             case "startContract":
-                await PerformStartContract(user, @params, userId, cancellationToken);
-
-                return new CityVilleResponse().MetaData(CreateQuestComponentResponse(user));
+                return await PerformStartContract(user, @params, userId, cancellationToken);
             case "clear":
                 return await PerformClear(user, @params, userId, cancellationToken);
             case "upgradeBuilding":
