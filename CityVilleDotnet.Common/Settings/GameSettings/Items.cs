@@ -63,6 +63,8 @@ public class GameItem
 
     [XmlElement("coinYield")] public int? CoinYield { get; set; }
 
+    [XmlElement("cashYield")] public int? CashYield { get; set; }
+
     [XmlElement("xpYield")] public int? XpYield { get; set; }
 
     [XmlElement("goodsYield")] public int? GoodsYield { get; set; }

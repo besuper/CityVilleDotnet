@@ -43,7 +43,7 @@ internal sealed partial class PerformAction
             }
         }
 
-        var coinYield = obj.Harvest();
+        var (coinYield, cashYield) = obj.Harvest();
         var secureRands = user.Player!.CollectDoobersRewards(obj.ContractName ?? obj.ItemName, obj.ClassName);
 
         logger.LogDebug("Secure rands {Join}", string.Join(",", secureRands.ToArray()));
@@ -74,13 +74,19 @@ internal sealed partial class PerformAction
 
         user.CheckCompletedQuests();
 
+        var objectPopulation = gameItem.Population?.Min ?? -1;
+        var worldPopulation = world.GetCurrentPopulation();
+
         await context.SaveChangesAsync(cancellationToken);
 
         return new CityVilleResponse().Data(new ASObject
         {
             ["retCoinYield"] = coinYield,
+            ["retCashYield"] = cashYield,
             //response["doobers"] = AmfConverter.Convert(new List<int>());
-            ["secureRands"] = AmfConverter.Convert(secureRands)
+            ["secureRands"] = AmfConverter.Convert(secureRands),
+            ["objectPopulation"] = objectPopulation,
+            ["worldPopulation"] = worldPopulation
         }).MetaData(CreateQuestComponentResponse(user));
     }
 }

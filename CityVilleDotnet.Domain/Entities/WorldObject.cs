@@ -139,16 +139,20 @@ public class WorldObject
         State = WorldObjectState.Grown;
     }
 
-    public int Harvest()
+    public (int CoinYield, int CashYield) Harvest()
     {
         var coinYield = 0;
+        var cashYield = 0;
 
         if (ContractName is not null)
         {
             var gameItem = GameSettingsManager.Instance.GetItem(ContractName);
 
             if (gameItem is not null)
+            {
                 coinYield = gameItem.CoinYield ?? 0;
+                cashYield = gameItem.CashYield ?? 0;
+            }
 
             State = WorldObjectState.Plowed;
             UpgradeActionCount = (UpgradeActionCount ?? 0) + 1;
@@ -158,7 +162,10 @@ public class WorldObject
             var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
 
             if (gameItem is not null)
+            {
                 coinYield = gameItem.CoinYield ?? 0;
+                cashYield = gameItem.CashYield ?? 0;
+            }
         }
 
         // Update state to planted if it was grown
@@ -182,7 +189,7 @@ public class WorldObject
             Visits = 0;
         }
 
-        return coinYield;
+        return (coinYield, cashYield);
     }
 
     public void OpenBusiness()
