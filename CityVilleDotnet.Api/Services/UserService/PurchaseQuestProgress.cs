@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQuestProgress> logger) : AmfService
+public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQuestProgress> logger) : AmfService<PurchaseQuestProgressRequest>
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(PurchaseQuestProgressRequest request, Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
@@ -21,18 +21,15 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
             .ThenInclude(x => x!.Objects)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't to find user with UserId");
 
-        var questName = (string)@params[0];
-        var taskIndex = Convert.ToInt32(@params[1]);
+        logger.LogDebug("Quest {QuestName} at {TaskIndex} is purchased", request.QuestName, request.TaskIndex);
 
-        logger.LogDebug("Quest {QuestName} at {TaskIndex} is purchased", questName, taskIndex);
-
-        var currentQuest = user.Quests.FirstOrDefault(x => x.Name == questName && x.QuestType == QuestType.Active);
+        var currentQuest = user.Quests.FirstOrDefault(x => x.Name == request.QuestName && x.QuestType == QuestType.Active);
 
         if (currentQuest is null)
             throw new Exception("Quest not found");
 
         // TODO: Check cashcost from task in QuestSettings
-        currentQuest.PurchaseProgression(taskIndex);
+        currentQuest.PurchaseProgression(request.TaskIndex);
 
         user.CheckCompletedQuests();
 
@@ -43,4 +40,10 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
             ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()))
         });
     }
+}
+
+public class PurchaseQuestProgressRequest
+{
+    [AmfParam(0)] public string QuestName { get; set; } = string.Empty;
+    [AmfParam(1)] public int TaskIndex { get; set; }
 }

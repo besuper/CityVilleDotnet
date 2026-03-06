@@ -22,16 +22,14 @@ public class UpdateEnergy(CityVilleDbContext context, ILogger<UpdateEnergy> logg
         await context.SaveChangesAsync(cancellationToken);
 
         // Global.player.setEnergyFromServer(_loc2_.energy,_loc2_.energyMax,_loc2_.lastEnergyCheck);
+        
+        logger.LogDebug("UpdateEnergy for user {UserId} with new energy {NewEnergy}", userId, player.Energy);
 
-        var response = new ASObject
+        return new CityVilleResponse().GameData(new ASObject
         {
             ["energy"] = player.Energy,
             ["energyMax"] = player.EnergyMax,
             ["lastEnergyCheck"] = player.GetLastCheckEnergyTimestamp()
-        };
-
-        logger.LogDebug("UpdateEnergy for user {UserId} with new energy {NewEnergy}", userId, player.Energy);
-
-        return new CityVilleResponse().GameData(response);
+        });
     }
 }

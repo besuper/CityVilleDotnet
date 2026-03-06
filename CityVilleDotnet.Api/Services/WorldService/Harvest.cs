@@ -1,27 +1,41 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Settings;
-using CityVilleDotnet.Common.Settings.GameSettings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
+using CityVilleDotnet.Domain.GameEntities;
+using CityVilleDotnet.Persistence;
 using FluorineFx;
+using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
-internal sealed partial class PerformAction
+internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest> logger) : AmfService<HarvestRequest>
 {
-    private async Task<CityVilleResponse> PerformHarvest(User user, object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(HarvestRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        var building = @params[1] as ASObject ?? throw new Exception("Building can't be null");
+        var user = await context.Set<User>()
+            .AsSplitQuery()
+            .Include(x => x.World)
+            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.FranchiseLocation)
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.InventoryItems)
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.SeenFlags)
+            .Include(x => x.Quests)
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.Collections)
+            .ThenInclude(x => x.Items)
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.Masteries)
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
 
-        foreach (var item in building)
-        {
-            logger.LogDebug("{ItemKey} = {ItemValue}", item.Key, item.Value);
-        }
+        if (user.Player is null) throw new Exception("Player not found for user");
 
-        var position = building["position"] as ASObject ?? throw new Exception("Can't find position inside building element");
         var world = user.GetWorld();
 
-        var obj = world.GetBuildingByCoord(Convert.ToInt32(position["x"]), Convert.ToInt32(position["y"]), Convert.ToInt32(position["z"])) ?? throw new Exception("Can't find building");
+        var obj = world.GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z) ?? throw new Exception("Can't find building");
 
         var itemName = obj.ClassName == BuildingClassType.Plot ? obj.ContractName : obj.ItemName;
 
@@ -87,6 +101,19 @@ internal sealed partial class PerformAction
             ["secureRands"] = AmfConverter.Convert(secureRands),
             ["objectPopulation"] = objectPopulation,
             ["worldPopulation"] = worldPopulation
-        }).MetaData(CreateQuestComponentResponse(user));
+        }).MetaData(new ASObject
+        {
+            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()))
+        });
     }
+}
+
+public class HarvestRequest
+{
+    [AmfParam(1)] public BuildingHarvestRequest Building { get; set; } = new();
+}
+
+public class BuildingHarvestRequest
+{
+    [AmfParam("position")] public PerformActionPositionRequest Position { get; set; } = new();
 }

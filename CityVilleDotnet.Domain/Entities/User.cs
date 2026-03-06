@@ -46,6 +46,8 @@ public class User
 
     public World GetWorld()
     {
+        if (World is null) throw new Exception("GetWorld called on not loaded world");
+
         return World;
     }
 

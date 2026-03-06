@@ -9,14 +9,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-public class BuyEnergy(CityVilleDbContext context) : AmfService
+public class BuyEnergy(CityVilleDbContext context) : AmfService<BuyEnergyRequest>
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(BuyEnergyRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        var itemName = @params[0] as string;
-
-        if (string.IsNullOrEmpty(itemName)) throw new Exception("Item name can't be null or empty");
-
         var player = await context.Set<User>()
             .Where(x => x.UserId == userId)
             .Select(x => x.Player)
@@ -24,16 +20,16 @@ public class BuyEnergy(CityVilleDbContext context) : AmfService
 
         if (player is null) throw new Exception("Can't find player with UserId");
 
-        var gameItem = GameSettingsManager.Instance.GetItem(itemName);
+        var gameItem = GameSettingsManager.Instance.GetItem(request.ItemName);
 
-        if (gameItem is null) throw new Exception($"Game item {itemName} not found");
+        if (gameItem is null) throw new Exception($"Game item {request.ItemName} not found");
 
         if (gameItem.Cash is null || gameItem.EnergyRewards is null)
-            throw new Exception($"Game item {itemName} does defineds not have cash or energy reward");
+            throw new Exception($"Game item {request.ItemName} does defineds not have cash or energy reward");
 
         if (player.Cash < gameItem.Cash)
             return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
-        
+
         player.RemoveCash(gameItem.Cash.Value);
         player.AddEnergy(gameItem.EnergyRewards.Value);
 
@@ -41,4 +37,9 @@ public class BuyEnergy(CityVilleDbContext context) : AmfService
 
         return GatewayService.CreateEmptyResponse();
     }
+}
+
+public class BuyEnergyRequest
+{
+    [AmfParam(0)] public string ItemName { get; set; } = string.Empty;
 }

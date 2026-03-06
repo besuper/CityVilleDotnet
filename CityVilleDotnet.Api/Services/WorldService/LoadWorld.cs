@@ -7,13 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
-public class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : AmfService
+public class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : AmfService<LoadWorldRequest>
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(LoadWorldRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        var visitUserId = (string)@params[0];
-
-        logger.LogInformation("LoadWorld for user {UserId} visiting {VisitUserId}", userId, visitUserId);
+        logger.LogInformation("LoadWorld for user {UserId} visiting {VisitUserId}", userId, request.TargetUsedId);
 
         var userToLoad = await context.Set<User>()
             .AsNoTracking()
@@ -23,10 +21,10 @@ public class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : 
             .Include(x => x.World)
             .ThenInclude(x => x!.MapRects)
             .Include(x => x.Player)
-            .FirstOrDefaultAsync(x => x.Player!.Uid.ToString() == visitUserId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Player!.Uid.ToString() == request.TargetUsedId, cancellationToken);
 
         if (userToLoad is null)
-            throw new Exception($"Unable to find user with Player.Uid {visitUserId}");
+            throw new Exception($"Unable to find user with Player.Uid {request.TargetUsedId}");
 
         if (userToLoad.UserId.ToString() != userId.ToString())
         {
@@ -53,4 +51,9 @@ public class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : 
 
         return new CityVilleResponse().Data(response);
     }
+}
+
+public class LoadWorldRequest
+{
+    [AmfParam(0)] public string TargetUsedId { get; set; } = string.Empty;
 }

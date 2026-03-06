@@ -8,14 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.QuestService;
 
-public class HandleQuestProgress(CityVilleDbContext context) : AmfService
+public class HandleQuestProgress(CityVilleDbContext context) : AmfService<HandleQuestProgressRequest>
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(HandleQuestProgressRequest request, Guid userId, CancellationToken cancellationToken)
     {
         // params
         // 0: action type (onValidCityName)
-
-        var actionType = (string)@params[0];
 
         var user = await context.Set<User>()
             .AsSplitQuery()
@@ -27,7 +25,7 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService
 
         if (user is null) throw new Exception("Can't to find user with UserId");
 
-        user.HandleQuestsProgress(actionType);
+        user.HandleQuestsProgress(request.ActionType);
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
@@ -39,4 +37,9 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService
 
         return new CityVilleResponse().MetaData(rep);
     }
+}
+
+public class HandleQuestProgressRequest
+{
+    [AmfParam(0)] public string ActionType { get; set; } = string.Empty;
 }

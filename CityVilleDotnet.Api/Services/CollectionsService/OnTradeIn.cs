@@ -8,19 +8,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.CollectionsService;
 
-public class OnTradeIn(CityVilleDbContext context) : AmfService
+public class OnTradeIn(CityVilleDbContext context) : AmfService<OnTradeInRequest>
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(OnTradeInRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        var collectionName = (string)@params[0];
-
-        if (collectionName is null)
-            throw new Exception("Collection name is null");
-
-        var collection = GameSettingsManager.Instance.GetCollectionByName(collectionName);
+        var collection = GameSettingsManager.Instance.GetCollectionByName(request.CollectionName);
 
         if (collection is null)
-            throw new Exception($"Can't find collection {collectionName}");
+            throw new Exception($"Can't find collection {request.CollectionName}");
 
         var player = await context.Set<User>()
             .AsSplitQuery()
@@ -44,4 +39,9 @@ public class OnTradeIn(CityVilleDbContext context) : AmfService
 
         return GatewayService.CreateEmptyResponse();
     }
+}
+
+public class OnTradeInRequest
+{
+    [AmfParam(0)] public string CollectionName { get; set; } = string.Empty;
 }

@@ -14,14 +14,8 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
     public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
-            .AsSplitQuery()
             .Include(x => x.Quests)
             .Include(x => x.Player)
-            // FIXME: This should not be here
-            // Trigger task countWorldObjectByName
-            // Might be fixed with quests rework
-            .Include(x => x.World)
-            .ThenInclude(x => x!.Objects)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (user?.Player is null)

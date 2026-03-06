@@ -6,18 +6,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-public class SetCityName(CityVilleDbContext context) : AmfService
+public class SetCityName(CityVilleDbContext context) : AmfService<SetCityNameRequest>
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(SetCityNameRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        var newName = (string)@params[1] ?? throw new Exception("World name can't be null");
-
         var world = await context.Set<User>()
             .Where(x => x.UserId == userId)
             .Select(x => x.World)
             .FirstOrDefaultAsync(cancellationToken) ?? throw new Exception("Can't to find world with UserId");
 
-        var name = world.SetWorldName(newName);
+        var name = world.SetWorldName(request.CityName);
 
         await context.SaveChangesAsync(cancellationToken);
 
@@ -26,4 +24,9 @@ public class SetCityName(CityVilleDbContext context) : AmfService
             ["name"] = name
         });
     }
+}
+
+public class SetCityNameRequest
+{
+    [AmfParam(1)] public string CityName { get; set; } = string.Empty;
 }

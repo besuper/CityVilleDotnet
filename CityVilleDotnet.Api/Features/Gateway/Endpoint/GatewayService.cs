@@ -5,6 +5,7 @@ using System.Collections;
 using System.Reflection;
 using Humanizer;
 using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Services.QuestService;
 using Microsoft.AspNetCore.Identity;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Common.Settings;
@@ -125,7 +126,14 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
                     @params = taskParams.Append(@params).ToArray();
 
                     packageName = "QuestService";
-                    upperClassName = "HandleQuestProgress";
+                    upperClassName = nameof(HandleQuestProgress);
+                }
+
+                if (packageName == "WorldService" && upperClassName == "PerformAction")
+                {
+                    var actionType = (string)@params[0];
+
+                    upperClassName = actionType.Pascalize();
                 }
 
                 ASObject? response = null;
@@ -184,7 +192,8 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
         var instance = ActivatorUtilities.CreateInstance(serviceProvider, classType);
 
         var method = classType.GetMethod(methodName,
-            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase,
+            [typeof(object[]), typeof(Guid), typeof(CancellationToken)]);
 
         if (method is null)
             throw new Exception("Method not found.");

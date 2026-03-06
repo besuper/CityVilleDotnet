@@ -7,14 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-public class SaveOptions(CityVilleDbContext context) : AmfService
+public class SaveOptions(CityVilleDbContext context) : AmfService<SaveOptionsRequest>
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(SaveOptionsRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        var options = @params[0] as ASObject ?? throw new Exception("Options can't be null");
-        var musicDisabled = options["musicDisabled"] as bool? ?? throw new Exception("musicDisabled can't be null");
-        var sfxDisabled = options["sfxDisabled"] as bool? ?? throw new Exception("sfxDisabled can't be null");
-
         var player = await context.Set<User>()
             .Where(x => x.UserId == userId)
             .Select(x => x.Player)
@@ -22,10 +18,21 @@ public class SaveOptions(CityVilleDbContext context) : AmfService
 
         if (player is null) throw new Exception("Can't find player with UserId");
 
-        player.UpdateSettings(musicDisabled, sfxDisabled);
+        player.UpdateSettings(request.Options.MusicDisabled, request.Options.SfxDisabled);
 
         await context.SaveChangesAsync(cancellationToken);
 
         return GatewayService.CreateEmptyResponse();
     }
+}
+
+public class SaveOptionsParams
+{
+    [AmfParam("musicDisabled")] public bool MusicDisabled { get; set; }
+    [AmfParam("sfxDisabled")] public bool SfxDisabled { get; set; }
+}
+
+public class SaveOptionsRequest
+{
+    [AmfParam(0)] public SaveOptionsParams Options { get; set; } = new();
 }
