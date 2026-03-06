@@ -20,6 +20,8 @@ public class WorldDto
     public int LastExpansionTier { get; set; }
 
     [JsonPropertyName("world_id")] public required string WorldId { get; set; }
+
+    [JsonPropertyName("mostFrequentHelpers")] public ASObject MostFrequentHelpers { get; set; } = new();
 }
 
 public static class WorldDtoMapper
