@@ -3,7 +3,6 @@ using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 using CityVilleDotnet.Domain.GameEntities;
 
 namespace CityVilleDotnet.Api.Services.UserService;
@@ -33,12 +32,10 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
             Xp = user.Player.Xp + 10
         });
 
-        var response = new ASObject
+        return new CityVilleResponse().Data(new ASObject
         {
             ["neighbors"] = AmfConverter.Convert(neighborList.OrderByDescending(x => x.Xp).ToList()),
-            ["neighborMax"] = 5,
-        };
-
-        return new CityVilleResponse().Data(response);
+            ["neighborMax"] = 10,
+        });
     }
 }

@@ -31,7 +31,7 @@ public class Player
     public int TimeBeforeNextEnergy { get; private set; }
     public List<SeenFlag> SeenFlags { get; set; } = new();
     public int ExpansionsPurchased { get; private set; }
-    public List<Collection> Collections { get; set; } = [];
+    public List<Collection> Collections { get; private set; } = [];
     public List<LicenseItem> Licenses { get; set; } = [];
     public List<Franchise> Franchises { get; set; } = [];
     public int RollCounter { get; private set; }
@@ -110,7 +110,7 @@ public class Player
         return null;
     }
 
-    public int CountIventoryItems()
+    public int CountInventoryItems()
     {
         return InventoryItems.Sum(x => x.Amount);
     }
@@ -229,11 +229,13 @@ public class Player
     public void SetCash(int amount) => Cash = amount;
     public void SetGoods(int amount) => Goods = amount;
     public void SetPremiumGoods(int amount) => PremiumGoods = amount;
+
     public void SetXp(int xp)
     {
         Xp = xp;
         ComputeLevel();
     }
+
     public void SetLevel(int level)
     {
         Level = level;
@@ -362,7 +364,7 @@ public class Player
         }
     }
 
-    public void IncrementRollCounter()
+    private void IncrementRollCounter()
     {
         RollCounter++;
     }
@@ -480,7 +482,7 @@ public class Player
         return secureRands;
     }
 
-    public bool HasCompletedCollection(CollectionSetting targetCollection)
+    private bool HasCompletedCollection(CollectionSetting targetCollection)
     {
         var collection = Collections.FirstOrDefault(x => x.Name == targetCollection.Name);
 
@@ -504,7 +506,7 @@ public class Player
 
     public List<CollectionItem> CompleteCollection(CollectionSetting targetCollection)
     {
-        // Should call HasCompletedCollection before this method
+        if (!HasCompletedCollection(targetCollection)) return [];
 
         var collection = Collections.FirstOrDefault(x => x.Name == targetCollection.Name);
 

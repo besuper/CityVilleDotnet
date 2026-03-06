@@ -102,7 +102,7 @@ public static class PlayerDtoMapper
             Gold = model.Gold,
             Inventory = new InventoryDto
             {
-                Count = model.CountIventoryItems(),
+                Count = model.CountInventoryItems(),
                 Items = new ASObject(model.InventoryItems.ToDictionary(x => x.Name, x => (object)x.Amount))
             },
             LastTrackingTimestamp = model.LastTrackingTimestamp,

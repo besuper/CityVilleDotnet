@@ -41,13 +41,14 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .Include(x => x.Player)
             .ThenInclude(x => x!.VisitorHelpOrders) // FIXME: Limit orders
             .Include(x => x.Player)
-            .ThenInclude(x => x.Masteries)
+            .ThenInclude(x => x!.Masteries)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (user is null)
         {
             // Create a new player
             var appUser = await context.Set<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId.ToString(), cancellationToken) ?? throw new Exception("Can't find ApplicationUser with UserId");
+            // FIXME: Use start world inside GameSettings
             var jsonContent = await File.ReadAllTextAsync("Resources/startWorld.json", cancellationToken);
 
             var defaultWorld = JsonSerializer.Deserialize<WorldDto>(jsonContent) ?? throw new Exception("WorldDto can't be null");

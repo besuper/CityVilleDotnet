@@ -1,6 +1,7 @@
 ﻿using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Enums;
+using CityVilleDotnet.Domain.GameEntities;
 
 namespace CityVilleDotnet.Domain.Entities;
 
@@ -35,23 +36,23 @@ public class WorldObject
 
     /*[JsonPropertyName("components")]
     public object? Components { get; set; }*/
-    public bool Deleted { get; set; }
-    public int TempId { get; set; }
-    public double? BuildTime { get; set; }
-    public double? PlantTime { get; set; }
-    public WorldObjectState State { get; set; }
-    public int Direction { get; set; }
-    public int X { get; set; }
-    public int Y { get; set; }
-    public int? Z { get; set; }
-    public int WorldFlatId { get; set; }
-    public BuildingClassType? TargetBuildingClass { get; set; }
-    public string? TargetBuildingName { get; set; }
-    public int? Stage { get; set; }
-    public int? FinishedBuilds { get; set; }
-    public int? Builds { get; set; }
-    public int? RequiredStages { get; set; }
-    public ConstructionState? CurrentState { get; set; }
+    public bool Deleted { get; private set; }
+    public int TempId { get; private set; }
+    public double? BuildTime { get; private set; }
+    public double? PlantTime { get; private set; }
+    public WorldObjectState State { get; private set; }
+    public int Direction { get; private set; }
+    public int X { get; private set; }
+    public int Y { get; private set; }
+    public int? Z { get; private set; }
+    public int WorldFlatId { get; private set; }
+    public BuildingClassType? TargetBuildingClass { get; private set; }
+    public string? TargetBuildingName { get; private set; }
+    public int? Stage { get; private set; }
+    public int? FinishedBuilds { get; private set; }
+    public int? Builds { get; private set; }
+    public int? RequiredStages { get; private set; }
+    public ConstructionState? CurrentState { get; private set; }
     public FranchiseLocation? FranchiseLocation { get; private set; }
     public int? Visits { get; private set; }
     public bool NeverOpened { get; private set; }
@@ -271,5 +272,55 @@ public class WorldObject
         {
             State = WorldObjectState.Planted;
         }
+    }
+
+    public void UpdateWorldFlatId(int id)
+    {
+        if (WorldFlatId != 1) throw new Exception($"Can't modify WorldFlatId {WorldFlatId} to {id}");
+
+        WorldFlatId = id;
+    }
+
+    public WorldObject LoadObject(WorldObjectDto worldObjectDto)
+    {
+        Builds = worldObjectDto.Builds;
+        BuildTime = worldObjectDto.BuildTime;
+        ClassName = Enum.Parse<BuildingClassType>(worldObjectDto.ClassName);
+        ContractName = worldObjectDto.ContractName;
+        Deleted = worldObjectDto.Deleted;
+        Direction = worldObjectDto.Direction;
+        FinishedBuilds = worldObjectDto.FinishedBuilds;
+        ItemName = worldObjectDto.ItemName;
+        PlantTime = worldObjectDto.PlantTime;
+        X = worldObjectDto.Position.X;
+        Y = worldObjectDto.Position.Y;
+        Z = worldObjectDto.Position.Z;
+        Stage = worldObjectDto.Stage;
+        State = EnumExtensions.EnumExtensions.ParseFromDescription<WorldObjectState>(worldObjectDto.State);
+        TargetBuildingClass = worldObjectDto.TargetBuildingClass is null ? null : Enum.Parse<BuildingClassType>(worldObjectDto.TargetBuildingClass);
+        TargetBuildingName = worldObjectDto.TargetBuildingName;
+        TempId = worldObjectDto.TempId;
+        WorldFlatId = worldObjectDto.WorldFlatId;
+
+        return this;
+    }
+
+    public void SetTempId(int id)
+    {
+        if (TempId != -1) throw new Exception("Can't define TempId twice");
+
+        TempId = id;
+    }
+
+    public void CleanTempId()
+    {
+        TempId = -1;
+    }
+
+    public void Close()
+    {
+        if (ClassName != BuildingClassType.Business) throw new Exception($"Can't close non business building {ClassName}");
+
+        State = WorldObjectState.Closed;
     }
 }

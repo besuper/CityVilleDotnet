@@ -81,7 +81,7 @@ internal sealed partial class PerformAction
         // Set TempId to current clientId to fix harvest
         if (className == BuildingClassType.Business)
         {
-            obj.TempId = (int)building["id"];
+            obj.SetTempId((int)building["id"]);
         }
 
         // TODO: Check coins, goods, energy, etc...

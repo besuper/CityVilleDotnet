@@ -152,7 +152,7 @@ public class World
 
         building.ItemName = lotOrder.ResourceType;
         building.ClassName = Enum.Parse<BuildingClassType>(gameItem.Type);
-        building.State = WorldObjectState.Closed;
+        building.Close();
     }
 
     public void CleanTempIDs()
@@ -160,7 +160,7 @@ public class World
         // Avoid IDs conflict after refresh
         foreach (var obj in Objects)
         {
-            obj.TempId = -1;
+            obj.CleanTempId();
         }
     }
 }

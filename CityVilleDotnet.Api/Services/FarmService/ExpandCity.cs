@@ -1,6 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
-using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.FarmService;
 
+// TODO: Reworld this transaction
 public class ExpandCity(CityVilleDbContext context) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
@@ -78,18 +79,21 @@ public class ExpandCity(CityVilleDbContext context) : AmfService
 
         foreach (ASObject tree in trees)
         {
-            var newTree = new WorldObject
-            {
-                WorldFlatId = world.GetAvailableBuildingId(),
-                TempId = -1,
-                ItemName = (string)tree["itemName"],
-                ClassName = BuildingClassType.Wilderness,
-                State = WorldObjectState.Static,
-                Direction = 0,
-                Deleted = false,
-                X = (int)tree["x"],
-                Y = (int)tree["y"]
-            };
+            var newTree = new WorldObject(
+                (string)tree["itemName"],
+                BuildingClassType.Wilderness,
+                null,
+                false,
+                -1,
+                WorldObjectState.Static,
+                0,
+                ServerUtils.GetCurrentTime(),
+                ServerUtils.GetCurrentTime(),
+                (int)tree["x"],
+                (int)tree["y"],
+                0,
+                world.GetAvailableBuildingId()
+            );
 
             world.AddBuilding(newTree);
 

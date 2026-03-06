@@ -29,7 +29,7 @@ internal sealed partial class PerformAction
 
         foreach (var newObject in createdObjects)
         {
-            newObject.WorldFlatId = world.GetAvailableBuildingId();
+            newObject.UpdateWorldFlatId(world.GetAvailableBuildingId());
             world.AddBuilding(newObject);
         }
         

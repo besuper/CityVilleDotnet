@@ -19,13 +19,11 @@ public class SetCityName(CityVilleDbContext context) : AmfService
 
         var name = world.SetWorldName(newName);
 
-        var response = new ASObject
-        {
-            ["name"] = name
-        };
-
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse().Data(response);
+        return new CityVilleResponse().Data(new ASObject
+        {
+            ["name"] = name
+        });
     }
 }

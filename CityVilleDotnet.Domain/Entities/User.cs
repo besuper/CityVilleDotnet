@@ -24,30 +24,10 @@ public class User
             Y = x.Y,
         }).ToList();
 
-        var objects = defaultValue.Objects.Select(x => new WorldObject()
-        {
-            Builds = x.Builds,
-            BuildTime = x.BuildTime,
-            ClassName = Enum.Parse<BuildingClassType>(x.ClassName),
-            ContractName = x.ContractName,
-            Deleted = x.Deleted,
-            Direction = x.Direction,
-            FinishedBuilds = x.FinishedBuilds,
-            ItemName = x.ItemName,
-            PlantTime = x.PlantTime,
-            X = x.Position.X,
-            Y = x.Position.Y,
-            Z = x.Position.Z,
-            Stage = x.Stage,
-            State = EnumExtensions.EnumExtensions.ParseFromDescription<WorldObjectState>(x.State),
-            TargetBuildingClass = x.TargetBuildingClass is null ? null : Enum.Parse<BuildingClassType>(x.TargetBuildingClass),
-            TargetBuildingName = x.TargetBuildingName,
-            TempId = x.TempId,
-            WorldFlatId = x.WorldFlatId,
-        }).ToList();
-        
+        var objects = defaultValue.Objects.Select(x => new WorldObject().LoadObject(x)).ToList();
+
         var world = new World("", 36, 36, 30, 0, 50, 0, 0, mapRects, objects);
-        
+
         return new User
         {
             Id = Guid.NewGuid(),
@@ -87,12 +67,12 @@ public class User
             foreach (var task in questItem.Tasks.Tasks)
             {
                 index++;
-                
+
                 if (quest.Progress[index] + quest.Purchased[index] >= int.Parse(task.Total)) continue;
 
                 var actionTask = task.Action;
                 var taskType = task.Type ?? "";
-                var splitType =  taskType.Contains(',') ? taskType.Split(',') : null;
+                var splitType = taskType.Contains(',') ? taskType.Split(',') : null;
 
                 var gameItem = itemName is not null ? GameSettingsManager.Instance.GetItem(itemName) : null;
 
@@ -140,13 +120,13 @@ public class User
                         case "placeByKeyword":
                             if (itemName is null)
                                 throw new Exception("Can't validate placeByKeyword action without itemName");
-                            
-                            if(gameItem is null)
+
+                            if (gameItem is null)
                                 throw new Exception("Can't validate placeByKeyword action without gameItem");
 
                             if (gameItem.HasKeyword(task.Type))
                                 quest.Progress[index] += 1;
-                            
+
                             break;
                     }
                 }
@@ -165,7 +145,7 @@ public class User
                         }
                     }
                 }
-                
+
                 // Here we can check global values like counting population or buildings
 
                 if (!IsWorldLoaded()) continue;

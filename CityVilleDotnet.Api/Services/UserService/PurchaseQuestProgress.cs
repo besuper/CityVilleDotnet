@@ -37,12 +37,10 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
-        
-        var quests = new ASObject
+
+        return new CityVilleResponse().MetaData(new ASObject
         {
             ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()))
-        };
-
-        return new CityVilleResponse().MetaData(quests);
+        });
     }
 }

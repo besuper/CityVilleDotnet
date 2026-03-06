@@ -1,7 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
-using CityVilleDotnet.Common.Settings.GameSettings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
@@ -30,7 +29,7 @@ public class BuyEnergy(CityVilleDbContext context) : AmfService
         if (gameItem is null) throw new Exception($"Game item {itemName} not found");
 
         if (gameItem.Cash is null || gameItem.EnergyRewards is null)
-            throw new Exception($"Game item {itemName} does not have cash or energy rewards defined");
+            throw new Exception($"Game item {itemName} does defineds not have cash or energy reward");
 
         if (player.Cash < gameItem.Cash)
             return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);

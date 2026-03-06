@@ -1,4 +1,5 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
@@ -26,20 +27,15 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
         if (user?.Player is null)
             throw new Exception("Unable to find user with UserId");
 
-        // FIXME: Don't use hard coded value (use welcomeTrainQuestAmount from game settings)
-        var amount = Convert.ToInt32(250);
-
-        user.Player.AddGoods(amount);
+        user.Player.AddGoods(GameSettingsManager.Instance.GetInt("WelcomeTrainQuestAmount"));
         user.HandleQuestsProgress("welcomeTrain");
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 
-        var quests = new ASObject
+        return new CityVilleResponse().MetaData(new ASObject
         {
             ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()))
-        };
-
-        return new CityVilleResponse().MetaData(quests);
+        });
     }
 }

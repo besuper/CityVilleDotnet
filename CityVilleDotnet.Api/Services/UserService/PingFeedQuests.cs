@@ -25,13 +25,11 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
         user.HandleQuestsProgress("");
         user.CheckCompletedQuests();
 
-        var rep = new ASObject
-        {
-            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()).ToList())
-        };
-
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse().MetaData(rep);
+        return new CityVilleResponse().MetaData(new ASObject
+        {
+            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()).ToList())
+        });
     }
 }

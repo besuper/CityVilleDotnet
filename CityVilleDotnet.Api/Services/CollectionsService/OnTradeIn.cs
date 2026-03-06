@@ -36,12 +36,9 @@ public class OnTradeIn(CityVilleDbContext context) : AmfService
         if (player is null)
             throw new Exception("Can't find user");
 
-        if (player.HasCompletedCollection(collection))
-        {
-            var removeItems = player.CompleteCollection(collection);
+        var removeItems = player.CompleteCollection(collection);
 
-            context.Set<CollectionItem>().RemoveRange(removeItems);
-        }
+        context.Set<CollectionItem>().RemoveRange(removeItems);
 
         await context.SaveChangesAsync(cancellationToken);
 

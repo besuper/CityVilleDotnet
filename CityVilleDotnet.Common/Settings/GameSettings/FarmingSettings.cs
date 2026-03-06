@@ -32,4 +32,13 @@ public class FarmingSettings
 
     [XmlAttribute("friendVisitResidenceRepGain")]
     public required string FriendVisitResidenceRepGain { get; set; }
+    
+    [XmlAttribute("welcomeTrainQuestAmount")]
+    public string? WelcomeTrainQuestAmountString
+    {
+        get => WelcomeTrainQuestAmount?.ToString();
+        set => WelcomeTrainQuestAmount = string.IsNullOrEmpty(value) ? null : int.Parse(value);
+    }
+
+    [XmlIgnore] public int? WelcomeTrainQuestAmount { get; set; }
 }
