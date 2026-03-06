@@ -50,7 +50,7 @@ public static class NeighborDtoMapper
             Gold = model.FriendUser.Player.Gold,
             Xp = model.FriendUser.Player.Xp,
             SocialLevel = model.FriendUser.Player.SocialLevel,
-            CityName = "Unknown City",
+            CityName = model.FriendUser.World?.WorldName ?? "Unknown city",
 
             FirstTimeVisit = false,
             RollCall = false,
