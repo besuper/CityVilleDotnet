@@ -27,7 +27,7 @@ internal sealed class Place(CityVilleDbContext context) : AmfService<PlaceReques
             .ThenInclude(x => x!.InventoryItems)
             .Include(x => x.Player)
             .ThenInclude(x => x!.SeenFlags)
-            .Include(x => x.Quests)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.Player)
             .ThenInclude(x => x!.Collections)
             .ThenInclude(x => x.Items)

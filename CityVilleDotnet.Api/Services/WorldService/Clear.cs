@@ -20,7 +20,7 @@ internal sealed class Clear(CityVilleDbContext context) : AmfService<ClearReques
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
-            .Include(x => x.Quests)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.Player)
             .ThenInclude(x => x!.Collections)
             .ThenInclude(x => x.Items)
@@ -49,6 +49,7 @@ internal sealed class Clear(CityVilleDbContext context) : AmfService<ClearReques
 
         var secureRands = user.Player!.CollectDoobersRewards(obj.ItemName, obj.ClassName);
 
+        // TODO: Implement remove franchise
         world.RemoveBuilding(obj);
 
         context.Set<WorldObject>().Remove(obj);
