@@ -7,14 +7,17 @@ using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
-internal sealed class Place(CityVilleDbContext context) : AmfService<PlaceRequest>
+internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : AmfService<PlaceRequest>
 {
     public override async Task<ASObject> HandlePacket(PlaceRequest request, Guid userId, CancellationToken cancellationToken)
     {
+        logger.LogDebug("Received place action {@PlaceRequest}", request);
+
         // TODO: Implement components
         // ignore components for now
 
@@ -61,6 +64,79 @@ internal sealed class Place(CityVilleDbContext context) : AmfService<PlaceReques
 
         if (gameItem is null)
             throw new Exception("Can't build building not registered in XML file");
+
+        // Handle macro buildings (ExplodableMacroObjectMechanic)
+        var explodeToRect = gameItem.GetExplodeToRect();
+
+        if (explodeToRect is not null)
+        {
+            var worldRect = GameSettingsManager.Instance.GetWorldRect(explodeToRect);
+
+            if (worldRect is not null)
+            {
+                foreach (var rectObj in worldRect.Objects.Objects)
+                {
+                    var childItem = GameSettingsManager.Instance.GetItem(rectObj.ItemName);
+                    
+                    if (childItem is null) continue;
+
+                    var childClassName = Enum.Parse<BuildingClassType>(childItem.Type.Pascalize());
+                    
+                    var childObj = new WorldObject(
+                        rectObj.ItemName,
+                        childClassName,
+                        null,
+                        false,
+                        0,
+                        WorldObjectState.Static,
+                        rectObj.Direction,
+                        null,
+                        null,
+                        request.Building.Position.X + rectObj.X,
+                        request.Building.Position.Y + rectObj.Y,
+                        request.Building.Position.Z,
+                        1
+                    );
+
+                    if (rectObj.UseConstructionSite == "true" && childItem.Construction is not null)
+                    {
+                        var csItem = GameSettingsManager.Instance.GetItem(childItem.Construction);
+                        if (csItem is not null)
+                            childObj.SetAsConstructionSite(childItem.Construction, csItem.NumberOfStages ?? 0);
+                    }
+
+                    childObj.UpdateWorldFlatId(world.GetAvailableBuildingId());
+                    world.AddBuilding(childObj);
+                }
+
+                if (user.Player!.HasItem(request.Building.ItemName))
+                {
+                    var removedItem = user.Player.RemoveItem(request.Building.ItemName);
+                    
+                    if (removedItem is not null)
+                        context.Set<InventoryItem>().Remove(removedItem);
+                }
+                else if (gameItem.Cost is not null)
+                {
+                    user.Player!.RemoveCoins(gameItem.Cost.Value);
+                }
+
+                user.HandleQuestsProgress("placeByClass", className: request.Building.ClassName.ToString());
+                user.HandleQuestsProgress("placeBuildingByName", itemName: request.Building.ItemName);
+                user.HandleQuestsProgress("placeByKeyword", itemName: request.Building.ItemName);
+                user.CheckCompletedQuests();
+
+                await context.SaveChangesAsync(cancellationToken);
+
+                return new CityVilleResponse().MetaData(new ASObject
+                {
+                    ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()))
+                }).Data(new ASObject
+                {
+                    { "id", objId }
+                });
+            }
+        }
 
         if (gameItem.Construction is not null)
         {

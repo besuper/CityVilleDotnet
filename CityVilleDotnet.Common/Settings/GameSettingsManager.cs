@@ -11,6 +11,7 @@ public class GameSettingsManager
     private static readonly object Lock = new();
     private readonly Dictionary<string, GameItem?> _items;
     private readonly Dictionary<string, RandomModifierTable> _randomModifiers;
+    private readonly Dictionary<string, WorldRectItem> _worldRects;
     private Dictionary<string, object> _settings;
     private List<LevelItem> _levels = [];
     private List<ReputationItem> _reputationLevels = [];
@@ -22,6 +23,7 @@ public class GameSettingsManager
     {
         _items = new Dictionary<string, GameItem?>();
         _randomModifiers = new Dictionary<string, RandomModifierTable>();
+        _worldRects = new Dictionary<string, WorldRectItem>();
         _settings = new Dictionary<string, object>();
         _isInitialized = false;
     }
@@ -101,6 +103,11 @@ public class GameSettingsManager
             _collections = gameSettings.Collections.Collections;
             // TODO: Support other expansions gates
             _expansions = gameSettings.Expansions.ExpansionGates.FirstOrDefault(x => x.Name == "population")!.Expansions.Expansions;
+
+            foreach (var worldRect in gameSettings.WorldRects.WorldRects)
+            {
+                _worldRects[worldRect.Name] = worldRect;
+            }
         }
 
         logger.LogInformation("Loaded gameSettings.xml with {ItemsCount} items", _items.Count);
@@ -108,6 +115,7 @@ public class GameSettingsManager
         logger.LogInformation("Loaded {ReputationLevelsCount} social levels", _reputationLevels.Count);
         logger.LogInformation("Loaded {RandomModifiersCount} random modifiers", _randomModifiers.Count);
         logger.LogInformation("Loaded {CollectionsCount} collections", _collections.Count);
+        logger.LogInformation("Loaded {WorldRectsCount} world rects", _worldRects.Count);
         logger.LogInformation("Loaded {ExpansionsCount} expansions", _expansions.Count);
 
         _isInitialized = true;
@@ -171,6 +179,14 @@ public class GameSettingsManager
             throw new InvalidOperationException("GameSettingsManager not initialized");
 
         return _collections.FirstOrDefault(x => x.Name == collectionName);
+    }
+
+    public WorldRectItem? GetWorldRect(string name)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return _worldRects.TryGetValue(name, out var rect) ? rect : null;
     }
 
     public IReadOnlyCollection<ExpansionSetting> GetExpansions()

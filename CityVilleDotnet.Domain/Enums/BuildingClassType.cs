@@ -40,5 +40,6 @@ public enum BuildingClassType
     Airplane = 35,
     ZooEnclosure = 36,
     MechanicMapResource = 37,
-    BridgePart = 38
+    BridgePart = 38,
+    TimedHarvestableResource = 39
 }

@@ -79,6 +79,7 @@ public class GameItem
 
     [XmlElement("randomModifiers")] public RandomModifiers? RandomModifiers { get; set; }
     [XmlElement("energyCost")] public EnergyCost? EnergyCost { get; set; }
+    [XmlElement("mechanics")] public MechanicsContainer? Mechanics { get; set; }
     [XmlElement("gates")] public required GatesContainer Gates { get; set; }
     [XmlElement("sizeX")] public int? SizeX { get; set; }
     [XmlElement("sizeY")] public int? SizeY { get; set; }
@@ -99,6 +100,24 @@ public class GameItem
     public bool HasMasteries()
     {
         return MasteryItems.Count > 0;
+    }
+
+    public string? GetExplodeToRect()
+    {
+        if (Mechanics?.GameEventMechanics is null) return null;
+
+        foreach (var gem in Mechanics.GameEventMechanics)
+        {
+            if (gem.Mechanics is null) continue;
+
+            foreach (var m in gem.Mechanics)
+            {
+                if (m.ClassName == "ExplodableMacroObjectMechanic" && m.ExplodeToRect is not null)
+                    return m.ExplodeToRect;
+            }
+        }
+
+        return null;
     }
 }
 
@@ -232,4 +251,57 @@ public class MasteryItem
         get => RequiredCount?.ToString();
         set => RequiredCount = string.IsNullOrEmpty(value) ? null : int.Parse(value);
     }
+}
+
+[Serializable]
+public class MechanicsContainer
+{
+    [XmlElement("gameEventMechanics")] public List<GameEventMechanicsItem>? GameEventMechanics { get; set; }
+}
+
+[Serializable]
+public class GameEventMechanicsItem
+{
+    [XmlAttribute("gameMode")] public string? GameMode { get; set; }
+    [XmlElement("mechanic")] public List<MechanicItem>? Mechanics { get; set; }
+}
+
+[Serializable]
+public class MechanicItem
+{
+    [XmlAttribute("className")] public string? ClassName { get; set; }
+    [XmlAttribute("explodeToRect")] public string? ExplodeToRect { get; set; }
+    [XmlAttribute("macroPrefix")] public string? MacroPrefix { get; set; }
+}
+
+[Serializable]
+public class WorldRectsContainer
+{
+    [XmlElement("worldRect")] public required List<WorldRectItem> WorldRects { get; set; }
+}
+
+[Serializable]
+public class WorldRectItem
+{
+    [XmlAttribute("name")] public required string Name { get; set; }
+    [XmlElement("width")] public int Width { get; set; }
+    [XmlElement("height")] public int Height { get; set; }
+    [XmlElement("objects")] public required WorldRectObjectsContainer Objects { get; set; }
+}
+
+[Serializable]
+public class WorldRectObjectsContainer
+{
+    [XmlElement("object")] public required List<WorldRectObject> Objects { get; set; }
+}
+
+[Serializable]
+public class WorldRectObject
+{
+    [XmlAttribute("id")] public required string Id { get; set; }
+    [XmlAttribute("itemName")] public required string ItemName { get; set; }
+    [XmlAttribute("useConstructionSite")] public string? UseConstructionSite { get; set; }
+    [XmlAttribute("direction")] public int Direction { get; set; }
+    [XmlAttribute("x")] public int X { get; set; }
+    [XmlAttribute("y")] public int Y { get; set; }
 }
