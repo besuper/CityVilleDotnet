@@ -54,6 +54,7 @@
 		<Content Update="wwwroot\assets\default.png" CopyToPublishDirectory="PreserveNewest" />
 		<Content Update="wwwroot\assets\default.css" CopyToPublishDirectory="PreserveNewest" />
 		<Content Update="wwwroot\assets\default.mp3" CopyToPublishDirectory="PreserveNewest" />
+		<Content Update="wwwroot\zcache\ZCache.swf" CopyToPublishDirectory="PreserveNewest" />
 	</ItemGroup>
 
 </Project>

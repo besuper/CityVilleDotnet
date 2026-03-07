@@ -14,12 +14,14 @@ namespace CityVilleDotnet.Api.Pages;
 [Authorize]
 public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbContext dbContext, IConfiguration configuration) : PageModel
 {
+    public static List<string> PreloadAssets = ["road/city/city04_SE.png", "dialogs/MarketAssets.swf", "dialogs/InventoryAssets.swf", "dialogs/QuestAssets.swf", "dialogs/TooltipAssets.swf", "dialogs/PopulationAssets.swf"];
+
     public string FriendList { get; set; } = "[]";
     public string Uid { get; set; } = "333";
     public string UserName { get; set; } = "Steve";
     public int Level { get; set; } = 1;
     public long ServerTime { get; set; } = 0;
-    
+
     public bool EnableCheat => configuration.GetValue<bool>("enableCheat");
 
     public async Task<IActionResult> OnGetAsync()
@@ -69,7 +71,6 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             ["zyUid"] = $"{Uid}",
             ["zyAuthHash"] = $"{Uid}",
             ["zySig"] = $"{Uid}",
-            ["zcache_gameswf_gamesettings"] = "false",
             ["static_asset_prefix"] = "",
             ["app_fb_proxy_url"] = "",
             ["flashRevision"] = "26346",
@@ -88,13 +89,20 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             ["asset_urls"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/",
             ["app_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/",
             ["asset_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/",
-            ["preloaded_asset_urls"] =
-                $"{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/road/city/city04_SE.png,{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/road/city/city04_SW.png,{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/dialogs/MarketAssets.swf",
+            ["preloaded_asset_urls"] = string.Join(",", PreloadAssets.Select(x => $"{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/{x}"))
         };
 
         foreach (var param in Request.Query)
         {
             flashVars[param.Key] = param.Value.ToString();
+        }
+
+        if (!Request.Query.ContainsKey("disableCache"))
+        {
+            flashVars["zcache_gameswf_gamesettings"] = "true";
+            flashVars["zcache_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/zcache/ZCache.swf";
+            flashVars["zcache_namespace"] = "cityville";
+            flashVars["zcache_max_frame_time"] = "12";
         }
 
         return string.Join("&", flashVars.Select(kvp => $"{kvp.Key}={kvp.Value}"));

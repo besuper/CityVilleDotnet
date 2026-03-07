@@ -2,6 +2,7 @@ assets/*
 !assets/default.png
 !assets/default.css
 !assets/default.mp3
+!zcache/ZCache.swf
 hashed/
 effectsConfig.xml
 en.xml
