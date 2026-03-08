@@ -76,6 +76,7 @@ public class GameItem
     [XmlElement("numberOfStages")] public int? NumberOfStages { get; set; }
     [XmlElement("energyCostPerBuild")] public int? EnergyCostPerBuild { get; set; }
     [XmlElement("energyRewards")] public int? EnergyRewards { get; set; }
+    [XmlElement("coinRewards")] public int? CoinRewards { get; set; }
 
     [XmlElement("randomModifiers")] public RandomModifiers? RandomModifiers { get; set; }
     [XmlElement("energyCost")] public EnergyCost? EnergyCost { get; set; }
