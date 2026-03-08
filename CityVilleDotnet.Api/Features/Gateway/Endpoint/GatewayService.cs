@@ -169,7 +169,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
                 emsg = errorResponse;
             }
 
-            var responseMessage = new AMFMessage(0);
+            var responseMessage = new AMFMessage(3);
             responseMessage.AddBody(new AMFBody(responseUri, targetUri, emsg));
 
             using var outputStream = new MemoryStream();
