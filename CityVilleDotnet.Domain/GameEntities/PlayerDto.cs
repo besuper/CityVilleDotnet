@@ -143,7 +143,7 @@ public static class PlayerDtoMapper
     private static ASObject BuildOrdersAsObject(Player model)
     {
         var root = new ASObject();
-
+        
         // TODO: Add VisitorHelp and TrainOrder
         foreach (var order in model.LotOrders)
         {
@@ -152,7 +152,7 @@ public static class PlayerDtoMapper
             var stateKey = order.OrderState.ToDescriptionString(); // "pending"/"accepted"/"denied"
 
             var isReceived = transmissionKey == "received";
-            var otherUserId = isReceived ? $"{order.SenderId}:{order.SenderId}" : $"{order.RecipientId}:{order.RecipientId}";
+            var otherUserId = isReceived ? $"{order.SenderId}" : $"{order.RecipientId}";
 
             if (!root.ContainsKey(orderTypeKey))
                 root[orderTypeKey] = new ASObject();

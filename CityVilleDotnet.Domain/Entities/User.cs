@@ -212,8 +212,8 @@ public class User
         Quests.AddRange(newQuests);
     }
 
-    public List<GameFriendData> GetFriendsData()
+    public List<SocialNetworkUserDto> GetSocialNetworkUserFriendsList(string baseUrl)
     {
-        return Friends.Select(friend => friend.ToFriendData()).ToList();
+        return Friends.Select(friend => friend.ToSocialNetworkUserDto(baseUrl)).ToList();
     }
 }

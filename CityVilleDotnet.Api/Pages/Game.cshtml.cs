@@ -47,7 +47,7 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             Uid = user.Player.Uid;
             UserName = user.Player.Username;
             Level = user.Player.Level;
-            FriendList = JsonSerializer.Serialize(user.GetFriendsData(), new JsonSerializerOptions { WriteIndented = false, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
+            FriendList = JsonSerializer.Serialize(user.GetSocialNetworkUserFriendsList($"{Request.Scheme}://{Request.Host}{Request.PathBase}"), new JsonSerializerOptions { WriteIndented = false, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
         }
         else
         {

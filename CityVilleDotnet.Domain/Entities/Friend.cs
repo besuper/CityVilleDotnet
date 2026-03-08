@@ -1,6 +1,4 @@
-﻿using CityVilleDotnet.Domain.GameEntities;
-
-namespace CityVilleDotnet.Domain.Entities;
+﻿namespace CityVilleDotnet.Domain.Entities;
 
 public enum FriendshipStatus
 {
@@ -35,19 +33,4 @@ public class Friend
     }
 
     public Friend() { }
-
-    public GameFriendData ToFriendData()
-    {
-        return new GameFriendData()
-        {
-            Zid = FriendUser.Player.Snuid,
-            Snuid = FriendUser.Player.Snuid,
-            Snid = FriendUser.Player.Snuid,
-            FirstName = FriendUser.Player.Username,
-            Name = FriendUser.Player.Username,
-            Picture = "blank.png",
-            Gender = "M",
-            Locale = "EN"
-        };
-    }
 }
