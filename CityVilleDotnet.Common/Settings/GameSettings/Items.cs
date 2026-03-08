@@ -78,6 +78,8 @@ public class GameItem
     [XmlElement("energyRewards")] public int? EnergyRewards { get; set; }
     [XmlElement("coinRewards")] public int? CoinRewards { get; set; }
 
+    [XmlElement("commodity")] public CommodityItem? Commodity { get; set; }
+
     [XmlElement("randomModifiers")] public RandomModifiers? RandomModifiers { get; set; }
     [XmlElement("energyCost")] public EnergyCost? EnergyCost { get; set; }
     [XmlElement("mechanics")] public MechanicsContainer? Mechanics { get; set; }
@@ -273,6 +275,13 @@ public class MechanicItem
     [XmlAttribute("className")] public string? ClassName { get; set; }
     [XmlAttribute("explodeToRect")] public string? ExplodeToRect { get; set; }
     [XmlAttribute("macroPrefix")] public string? MacroPrefix { get; set; }
+}
+
+[Serializable]
+public class CommodityItem
+{
+    [XmlAttribute("name")] public required string Name { get; set; }
+    [XmlAttribute("capacity")] public int Capacity { get; set; }
 }
 
 [Serializable]

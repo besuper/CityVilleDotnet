@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Domain.Entities;
 using System.Text.Json.Serialization;
+using CityVilleDotnet.Common.Settings;
 using FluorineFx;
 
 namespace CityVilleDotnet.Domain.GameEntities;
@@ -63,5 +64,38 @@ public static class WorldDtoMapper
                 }
             })
         };
+    }
+    
+    public static ASObject ToCommoditySummaryDto(this World model)
+    {
+        var capacities = new Dictionary<string, int>();
+
+        foreach (var obj in model.Objects)
+        {
+            var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
+            
+            if (gameItem?.Commodity is null || gameItem.Commodity.Capacity <= 0)
+                continue;
+
+            var name = gameItem.Commodity.Name;
+            
+            if (capacities.TryGetValue(name, out var existing))
+                capacities[name] = existing + gameItem.Commodity.Capacity;
+            else
+                capacities[name] = gameItem.Commodity.Capacity;
+        }
+
+        var commodityObj = new ASObject();
+        
+        foreach (var (name, capacity) in capacities)
+        {
+            commodityObj[name] = new ASObject
+            {
+                { "id", name },
+                { "capacity", capacity }
+            };
+        }
+
+        return new ASObject { { "commodity", commodityObj } };
     }
 }

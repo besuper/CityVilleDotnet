@@ -65,7 +65,7 @@ public static class UserDtoMapper
                                     { "potential", 0 },
                                 }
                             },
-                            { "commoditySummary", new ASObject { { "commodity", new ASObject() } } },
+                            { "commoditySummary", model.World.ToCommoditySummaryDto() },
                         })
                     }
                 })

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
-public class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : AmfService<LoadWorldRequest>
+public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : AmfService<LoadWorldRequest>
 {
     public override async Task<ASObject> HandlePacket(LoadWorldRequest request, Guid userId, CancellationToken cancellationToken)
     {
