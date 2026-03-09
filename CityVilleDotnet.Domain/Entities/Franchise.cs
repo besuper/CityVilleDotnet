@@ -20,14 +20,20 @@ public class Franchise
         FranchiseName = franchiseName;
     }
 
-    public FranchiseLocation AddLocation(LotOrder order)
+    public FranchiseLocation AddLocation(LotOrder order, int commodityReq)
     {
         var newLocation = new FranchiseLocation
         {
             Uid = order.RecipientId,
-            ObjectId = $"{order.LotId}"
+            ObjectId = $"{order.LotId}",
+            FranchiseName = FranchiseName,
+            StarRating = 1,
+            TimeLastOperated = 0, // When receiver opened the business
+            TimeLastSupplied = 0, // When sender supplied the business
+            TimeLastCollected = 0, // When sender collected the business
+            CommodityMax = commodityReq
         };
-        
+
         Locations.Add(newLocation);
 
         return newLocation;

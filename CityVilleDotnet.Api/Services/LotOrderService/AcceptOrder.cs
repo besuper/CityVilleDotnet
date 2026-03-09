@@ -1,4 +1,4 @@
-﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
@@ -9,78 +9,93 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.LotOrderService;
 
-// TODO: Rework this transaction
-public class AcceptOrder(CityVilleDbContext context) : AmfService
+public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderRequest>
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(
+        AcceptOrderRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        var senderId = (string)@params[0];
-
         var receiveUser = await context.Set<User>()
             .AsSplitQuery()
             .Include(x => x.Player)
-            .ThenInclude(x => x!.LotOrders.Where(o => o.OrderState == OrderState.Pending && o.TransmissionStatus == TransmissionStatus.Received && o.SenderId == senderId))
+            .ThenInclude(x => x!.LotOrders.Where(o =>
+                o.OrderState == OrderState.Pending
+                && o.TransmissionStatus == TransmissionStatus.Received
+                && o.SenderId == request.SenderId
+                && o.LotId == request.LotId))
             .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
-        if (receiveUser?.Player is null || receiveUser?.World is null) throw new Exception("Can't find player with UserId");
+        if (receiveUser?.Player is null || receiveUser.World is null)
+            throw new Exception("Can't find player with UserId");
 
-        if (receiveUser.Player.LotOrders.Count > 1) throw new Exception("Can't accept order, more than one order pending");
+        var lotOrder = receiveUser.Player.LotOrders.FirstOrDefault();
 
-        var lotOrder = receiveUser.Player.LotOrders.FirstOrDefault(x => x.SenderId == senderId);
-
-        if (lotOrder is null) throw new Exception("Can't find order with senderId");
+        if (lotOrder is null)
+            throw new Exception($"Can't find pending received order from sender {request.SenderId} for lot {request.LotId}");
 
         var senderPlayer = await context.Set<User>()
             .AsSplitQuery()
             .Include(x => x.Player)
-            .ThenInclude(x => x!.LotOrders.Where(o => o.OrderState == OrderState.Pending && o.TransmissionStatus == TransmissionStatus.Sent && o.LotId == lotOrder.LotId))
+            .ThenInclude(x => x!.LotOrders.Where(o =>
+                o.OrderState == OrderState.Pending
+                && o.TransmissionStatus == TransmissionStatus.Sent
+                && o.LotId == request.LotId))
             .Include(x => x.Player)
-            .ThenInclude(x => x!.Franchises.Where(f => f.FranchiseType == lotOrder.ResourceType && f.FranchiseName == lotOrder.OrderResourceName))
+            .ThenInclude(x => x!.Franchises.Where(f =>
+                f.FranchiseType == lotOrder.ResourceType
+                && f.FranchiseName == lotOrder.OrderResourceName))
             .ThenInclude(x => x.Locations)
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
-            .Where(x => x.Player!.Uid == senderId)
+            .Where(x => x.Player!.Uid == request.SenderId)
             .Select(x => x.Player)
             .FirstOrDefaultAsync(cancellationToken);
 
-        if (senderPlayer is null) throw new Exception("Can't find sender player");
+        if (senderPlayer is null)
+            throw new Exception("Can't find sender player");
 
-        if (senderPlayer.LotOrders.Count > 1) throw new Exception("Can't accept order, more than one order pending");
+        var senderLotOrder = senderPlayer.LotOrders.FirstOrDefault();
 
-        var senderLorOrder = senderPlayer.LotOrders.FirstOrDefault(x => x.LotId == lotOrder.LotId);
-
-        if (senderLorOrder is null) throw new Exception("Can't find order with lotId");
+        if (senderLotOrder is null)
+            throw new Exception($"Can't find sender's pending sent order for lot {request.LotId}");
 
         var senderFranchise = senderPlayer.Franchises.FirstOrDefault();
 
-        if (senderFranchise is null) throw new Exception("Can't find sender franchise");
+        if (senderFranchise is null)
+            throw new Exception("Can't find sender franchise");
 
         var newBuilding = receiveUser.World.Objects.FirstOrDefault(x => x.WorldFlatId == lotOrder.LotId);
 
-        if (newBuilding is null) throw new Exception("Can't find building with WorldFlatId");
+        if (newBuilding is null)
+            throw new Exception($"Can't find building with WorldFlatId {lotOrder.LotId}");
 
         var gameItem = GameSettingsManager.Instance.GetItem(lotOrder.ResourceType);
 
-        if (gameItem is null) throw new Exception($"Game item {lotOrder.ResourceType} not found");
-        if (gameItem.HeadquartersName is null) throw new Exception($"Game item {lotOrder.ResourceType} does not have HeadquartersName defined");
+        if (gameItem is null)
+            throw new Exception($"Game item {lotOrder.ResourceType} not found");
+        if (gameItem.HeadquartersName is null)
+            throw new Exception($"Game item {lotOrder.ResourceType} does not have HeadquartersName defined");
 
-        // FIXME: Accept or delete the request ?
-        senderLorOrder.Accept();
+        senderLotOrder.Accept();
         lotOrder.Accept();
 
-        // FIXME: Building will be replaced, franchise owner will have a franchise in menu, but the franchise will not be correctly linked
         receiveUser.World.ReplaceBuildingFromLotOrder(lotOrder);
 
-        var newLocation = senderFranchise.AddLocation(lotOrder);
-        newBuilding.SetFranchiseLocation(newLocation);
-        
+        var newLocation = senderFranchise.AddLocation(lotOrder, gameItem.CommodityRequired ?? 1);
+        newBuilding.SetFranchiseLocation(newLocation, request.SenderId);
+
         senderPlayer.AddItem(gameItem.HeadquartersName);
 
         await context.SaveChangesAsync(cancellationToken);
 
         return GatewayService.CreateEmptyResponse();
     }
+}
+
+public class AcceptOrderRequest
+{
+    [AmfParam(0)] public string SenderId { get; set; } = string.Empty;
+    [AmfParam(1)] public int LotId { get; set; }
 }

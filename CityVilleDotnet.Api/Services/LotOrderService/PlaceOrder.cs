@@ -8,8 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.LotOrderService;
 
-// TODO: Rework this transaction
-public class PlaceOrder(CityVilleDbContext context) : AmfService<PlaceOrderRequest>
+public sealed class PlaceOrder(CityVilleDbContext context) : AmfService<PlaceOrderRequest>
 {
     public override async Task<ASObject> HandlePacket(PlaceOrderRequest request, Guid userId, CancellationToken cancellationToken)
     {
@@ -69,7 +68,6 @@ public class PlaceOrder(CityVilleDbContext context) : AmfService<PlaceOrderReque
 
         await context.SaveChangesAsync(cancellationToken);
 
-        // TODO: Implement return
         return GatewayService.CreateEmptyResponse();
     }
 }

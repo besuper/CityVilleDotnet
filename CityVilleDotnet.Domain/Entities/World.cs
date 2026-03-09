@@ -2,6 +2,7 @@
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
+using Humanizer;
 
 namespace CityVilleDotnet.Domain.Entities;
 
@@ -151,7 +152,7 @@ public class World
         if (gameItem is null) throw new Exception("Item not found");
 
         building.ItemName = lotOrder.ResourceType;
-        building.ClassName = Enum.Parse<BuildingClassType>(gameItem.Type);
+        building.ClassName = Enum.Parse<BuildingClassType>(gameItem.Type.Pascalize());
         building.Close();
     }
 

@@ -10,6 +10,7 @@ public class FranchiseLocation
     public int CustomersServed { get; set; }
     public int MoneyCollected { get; set; }
     public required string ObjectId { get; set; } // LotId that is WorldFlatId
+    public string FranchiseName { get; set; } = string.Empty;
     public long TimeLastCollected { get; set; }
     public long TimeLastOperated { get; set; }
     public long TimeLastSupplied { get; set; }

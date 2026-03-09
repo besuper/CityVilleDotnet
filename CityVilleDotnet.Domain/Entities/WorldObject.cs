@@ -54,6 +54,7 @@ public class WorldObject
     public int? RequiredStages { get; private set; }
     public ConstructionState? CurrentState { get; private set; }
     public FranchiseLocation? FranchiseLocation { get; private set; }
+    public string? ItemOwner { get; private set; }
     public int? Visits { get; private set; }
     public bool NeverOpened { get; private set; }
     public int? UpgradeActionCount { get; private set; }
@@ -206,13 +207,14 @@ public class WorldObject
 
         if (FranchiseLocation is not null)
         {
-            FranchiseLocation.TimeLastSupplied = ServerUtils.GetCurrentTime();
+            FranchiseLocation.TimeLastOperated = ServerUtils.GetCurrentTime();
         }
     }
 
-    public void SetFranchiseLocation(FranchiseLocation franchiseLocation)
+    public void SetFranchiseLocation(FranchiseLocation franchiseLocation, string itemOwner)
     {
         FranchiseLocation = franchiseLocation;
+        ItemOwner = itemOwner;
     }
 
     public void UpdateVisits(int visits)
