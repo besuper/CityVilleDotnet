@@ -145,7 +145,7 @@ public static class PlayerDtoMapper
         var root = new ASObject();
         
         // TODO: Add VisitorHelp and TrainOrder
-        foreach (var order in model.LotOrders)
+        foreach (var order in model.LotOrders.Where(x => x.OrderState == OrderState.Pending))
         {
             var orderTypeKey = order.OrderType.ToDescriptionString(); // "order_lot"
             var transmissionKey = order.TransmissionStatus.ToDescriptionString(); // "sent"/"received"
