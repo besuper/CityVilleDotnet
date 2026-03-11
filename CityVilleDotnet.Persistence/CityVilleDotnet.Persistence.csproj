@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Humanizer.Core" Version="3.0.10" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 
