@@ -10,7 +10,7 @@ public class FranchiseDto
 
     [JsonPropertyName("franchise_name")] public required string FranchiseName { get; set; }
 
-    [JsonPropertyName("locations")] public required ASObject Locations { get; set; }
+    [JsonPropertyName("locations")] public required Dictionary<string, FranchiseLocationDto> Locations { get; set; }
 
     [JsonPropertyName("time_last_collected")]
     public int TimeLastCollected { get; set; }
@@ -25,7 +25,7 @@ public static class FranchiseDtoMapper
             FranchiseType = model.FranchiseType,
             FranchiseName = model.FranchiseName,
             TimeLastCollected = model.TimeLastCollected,
-            Locations = new ASObject(model.Locations.ToDictionary(x => x.Uid, object (x) => x.ToDto()))
+            Locations = model.Locations.ToDictionary(x => x.Uid, x => x.ToDto())
         };
     }
 }

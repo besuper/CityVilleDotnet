@@ -12,6 +12,10 @@ public static class AmfConverter
         if (obj is null)
             return null;
 
+        // Convert Dictionary with DTOs instead of only creating a new ASObject
+        if (obj is IDictionary dict && IsStringKeyedDictionary(obj.GetType()))
+            return ConvertDictionary(dict);
+
         if (obj is ASObject || IsSimpleType(obj.GetType()))
             return obj;
 
@@ -19,6 +23,25 @@ public static class AmfConverter
             return ConvertToList(arrayList);
 
         return ConvertToAsObject(obj);
+    }
+
+    private static ASObject ConvertDictionary(IDictionary dict)
+    {
+        var result = new ASObject();
+
+        foreach (DictionaryEntry entry in dict)
+        {
+            result[(string)entry.Key] = Convert(entry.Value);
+        }
+
+        return result;
+    }
+
+    private static bool IsStringKeyedDictionary(Type type)
+    {
+        return type.IsGenericType
+               && type.GetGenericTypeDefinition() == typeof(Dictionary<,>)
+               && type.GetGenericArguments()[0] == typeof(string);
     }
 
     private static ASObject ConvertToAsObject(object obj)

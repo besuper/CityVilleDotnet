@@ -11,8 +11,7 @@ namespace CityVilleDotnet.Api.Services.LotOrderService;
 
 public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderRequest>
 {
-    public override async Task<ASObject> HandlePacket(
-        AcceptOrderRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(AcceptOrderRequest request, Guid userId, CancellationToken cancellationToken)
     {
         var receiveUser = await context.Set<User>()
             .AsSplitQuery()
