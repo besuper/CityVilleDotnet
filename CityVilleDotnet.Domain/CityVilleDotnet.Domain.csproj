@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.4" />
     <ProjectReference Include="..\CityVilleDotnet.Common\CityVilleDotnet.Common.csproj" />
     <ProjectReference Include="..\FluorineFX\FluorineFX.csproj" />
   </ItemGroup>
