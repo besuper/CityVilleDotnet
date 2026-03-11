@@ -20,4 +20,6 @@ public enum WorldObjectState
     Grown = 6,
     [Description("plowed")]
     Plowed = 7,
+    [Description("base")]
+    Base = 8,
 }

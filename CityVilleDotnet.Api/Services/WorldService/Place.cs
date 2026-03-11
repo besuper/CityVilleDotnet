@@ -42,24 +42,6 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
 
         var world = user.GetWorld();
 
-        var objId = world.GetAvailableBuildingId();
-
-        var obj = new WorldObject(
-            request.Building.ItemName,
-            request.Building.ClassName,
-            null,
-            request.Building.Deleted,
-            request.Building.TempId,
-            request.Building.State,
-            request.Building.Direction,
-            ServerUtils.GetCurrentTime(),
-            ServerUtils.GetCurrentTime(),
-            request.Building.Position.X,
-            request.Building.Position.Y,
-            request.Building.Position.Z,
-            objId
-        );
-
         var gameItem = GameSettingsManager.Instance.GetItem(request.Building.ItemName);
 
         if (gameItem is null)
@@ -77,11 +59,11 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
                 foreach (var rectObj in worldRect.Objects.Objects)
                 {
                     var childItem = GameSettingsManager.Instance.GetItem(rectObj.ItemName);
-                    
+
                     if (childItem is null) continue;
 
                     var childClassName = Enum.Parse<BuildingClassType>(childItem.Type.Pascalize());
-                    
+
                     var childObj = new WorldObject(
                         rectObj.ItemName,
                         childClassName,
@@ -112,7 +94,7 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
                 if (user.Player!.HasItem(request.Building.ItemName))
                 {
                     var removedItem = user.Player.RemoveItem(request.Building.ItemName);
-                    
+
                     if (removedItem is not null)
                         context.Set<InventoryItem>().Remove(removedItem);
                 }
@@ -131,12 +113,27 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
                 return new CityVilleResponse().MetaData(new ASObject
                 {
                     ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()))
-                }).Data(new ASObject
-                {
-                    { "id", objId }
                 });
             }
         }
+
+        var objId = world.GetAvailableBuildingId();
+
+        var obj = new WorldObject(
+            request.Building.ItemName,
+            request.Building.ClassName,
+            null,
+            request.Building.Deleted,
+            request.Building.TempId,
+            request.Building.State,
+            request.Building.Direction,
+            ServerUtils.GetCurrentTime(),
+            ServerUtils.GetCurrentTime(),
+            request.Building.Position.X,
+            request.Building.Position.Y,
+            request.Building.Position.Z,
+            objId
+        );
 
         if (gameItem.Construction is not null)
         {
