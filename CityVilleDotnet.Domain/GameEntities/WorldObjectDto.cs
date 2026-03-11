@@ -60,7 +60,16 @@ public class WorldObjectDto
     // TODO: Implement Gates
     //[JsonPropertyName("gates")] public List<object>? Gates { get; set; }
 
-    // TODO: Add franchise_info from Business->loadObject
+    [JsonPropertyName("itemOwner")] public string? ItemOwner { get; set; }
+
+    [JsonPropertyName("franchise_info")] public FranchiseInfoDto? FranchiseInfo { get; set; }
+}
+
+public class FranchiseInfoDto
+{
+    [JsonPropertyName("star_rating")] public int StarRating { get; set; }
+    [JsonPropertyName("commodity_left")] public int CommodityLeft { get; set; }
+    [JsonPropertyName("franchise_name")] public string FranchiseName { get; set; } = string.Empty;
 }
 
 public static class WorldObjectDtoMapper
@@ -95,6 +104,15 @@ public static class WorldObjectDtoMapper
             NeverOpened = model.NeverOpened,
             HarvestCounter = model.UpgradeActionCount ?? 0, // This is for Plot
             UpgradeActionCount = model.UpgradeActionCount ?? 0, // This is for Business
+            ItemOwner = model.ItemOwner,
+            FranchiseInfo = model.FranchiseLocation is not null
+                ? new FranchiseInfoDto
+                {
+                    StarRating = model.FranchiseLocation.StarRating,
+                    CommodityLeft = model.FranchiseLocation.CommodityLeft,
+                    FranchiseName = model.FranchiseLocation.FranchiseName
+                }
+                : null,
         };
 
         // FIXME: Not enough (not sure if it is the right way to implement this)
