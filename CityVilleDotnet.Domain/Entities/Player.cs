@@ -668,4 +668,21 @@ public class Player
             }
         }
     }
+
+    public void CollectFranchisesDailyBonus(string franchiseType)
+    {
+        var franchise = Franchises.FirstOrDefault(x => x.FranchiseType == franchiseType);
+
+        if (franchise is null) throw new Exception($"Can't find franchise with type {franchiseType}");
+
+        // TODO: Implement bonus based on index 1 => 25 coins, 2 => 50 coins ...
+        var baseBonus = GameSettingsManager.Instance.GetInt("Franchise1DailyBonus");
+
+        var currentTime = (long)ServerUtils.GetCurrentTimeSeconds();
+
+        // TODO: Add server check
+        franchise.TimeLastCollected = currentTime;
+        
+        AddCoins(baseBonus * franchise.Locations.Count);
+    }
 }

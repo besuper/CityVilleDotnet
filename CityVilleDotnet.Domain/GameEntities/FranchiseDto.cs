@@ -13,7 +13,7 @@ public class FranchiseDto
     [JsonPropertyName("locations")] public required Dictionary<string, FranchiseLocationDto> Locations { get; set; }
 
     [JsonPropertyName("time_last_collected")]
-    public int TimeLastCollected { get; set; }
+    public long TimeLastCollected { get; set; }
 }
 
 public static class FranchiseDtoMapper

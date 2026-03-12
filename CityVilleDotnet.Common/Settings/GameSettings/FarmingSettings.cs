@@ -33,6 +33,9 @@ public class FarmingSettings
     [XmlAttribute("friendVisitResidenceRepGain")]
     public required string FriendVisitResidenceRepGain { get; set; }
     
+    [XmlAttribute("franchise1DailyBonus")]
+    public required int Franchise1DailyBonus { get; set; }
+    
     [XmlAttribute("welcomeTrainQuestAmount")]
     public string? WelcomeTrainQuestAmountString
     {
