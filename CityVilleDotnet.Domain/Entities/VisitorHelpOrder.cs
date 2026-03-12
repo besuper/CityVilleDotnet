@@ -6,4 +6,13 @@ public class VisitorHelpOrder : CommonOrder
 {
     public VisitorHelpStatus Status { get; set; }
     public required int[] HelpTargets { get; set; }
+
+    public void RemoveTarget(int target)
+    {
+        var targets = HelpTargets.ToList();
+
+        targets.Remove(target);
+
+        HelpTargets = targets.ToArray();
+    }
 }
