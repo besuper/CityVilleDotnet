@@ -23,7 +23,7 @@ public static class ServerUtils
         return DateTimeOffset.Now.ToUnixTimeMilliseconds();
     }
 
-    public static double GetCurrentTimeSeconds()
+    public static long GetCurrentTimeSeconds()
     {
         return DateTimeOffset.Now.ToUnixTimeSeconds();
     }

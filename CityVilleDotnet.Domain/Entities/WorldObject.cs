@@ -207,7 +207,7 @@ public class WorldObject
 
         if (FranchiseLocation is not null)
         {
-            FranchiseLocation.TimeLastOperated = ServerUtils.GetCurrentTime();
+            FranchiseLocation.TimeLastOperated = ServerUtils.GetCurrentTimeSeconds();
         }
     }
 
