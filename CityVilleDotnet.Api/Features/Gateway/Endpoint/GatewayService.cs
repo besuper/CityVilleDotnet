@@ -134,6 +134,17 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
                     var actionType = (string)@params[0];
 
                     upperClassName = actionType.Pascalize();
+
+                    logger.LogDebug("Parameters {Objects}", (object?)@params);
+                }
+
+                if (packageName == "GameMechanicService" && upperClassName == "PerformMechanicAction")
+                {
+                    var mechanicType = (string)@params[1];
+
+                    upperClassName = mechanicType.Pascalize();
+
+                    logger.LogDebug("Parameters {Objects}", (object?)@params);
                 }
 
                 ASObject? response = null;
