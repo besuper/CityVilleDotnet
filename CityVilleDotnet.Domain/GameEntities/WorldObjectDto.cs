@@ -143,7 +143,7 @@ public static class WorldObjectDtoMapper
             dto.MechanicData = new ASObject
             {
                 {
-                    "harvestState", model.State == WorldObjectState.Open
+                    "harvestState", model.State == WorldObjectState.Open || model.State == WorldObjectState.ClosedHarvestable
                         ? new ASObject
                         {
                             { "customers", model.Visits },
