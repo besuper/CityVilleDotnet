@@ -41,5 +41,6 @@ public enum BuildingClassType
     ZooEnclosure = 36,
     MechanicMapResource = 37,
     BridgePart = 38,
-    TimedHarvestableResource = 39
+    TimedHarvestableResource = 39,
+    ItemStorage = 40
 }
