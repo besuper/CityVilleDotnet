@@ -55,17 +55,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
             var header = content[0] as ASObject;
             var amfContent = content[1] as object;
-            object[]? parsedAmfContent = null;
-
-            // RUFFLE: it seems that ruffle send a dict with "0" => value, "1" => value, instead of an array
-            if (amfContent is IDictionary)
-            {
-                parsedAmfContent = ((Dictionary<string, object>)amfContent).Values.ToArray();
-            }
-            else
-            {
-                parsedAmfContent = content[1] as object[];
-            }
+            object[]? parsedAmfContent = content[1] as object[];
 
             if (parsedAmfContent is null || parsedAmfContent.Length == 0)
             {
@@ -90,17 +80,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
             foreach (ASObject item in parsedAmfContent)
             {
-                object[]? @params = null;
-                
-                // RUFFLE: params is also a dict instead of an array
-                if (item["params"] is IDictionary)
-                {
-                    @params = ((Dictionary<string, object>)item["params"]).Values.ToArray();
-                }
-                else
-                {
-                    @params = item["params"] as object[];
-                }
+                object[]? @params = item["params"] as object[];
 
                 var functionName = item["functionName"] as string;
                 var sequence = item["sequence"];
