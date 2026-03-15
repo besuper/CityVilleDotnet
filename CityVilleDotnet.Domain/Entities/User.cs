@@ -1,6 +1,8 @@
-﻿using CityVilleDotnet.Common.Settings;
+﻿using CityVilleDotnet.Common.Global;
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
+using Microsoft.Extensions.Logging;
 
 namespace CityVilleDotnet.Domain.Entities;
 
@@ -58,6 +60,8 @@ public class User
 
     public void HandleQuestsProgress(string actionType, string? className = null, string? itemName = null)
     {
+        StaticLogger.Current.LogDebug("Handle quest actionType = {ActionType}, className = {ClassName}, itemName = {ItemName}", actionType, className, itemName);
+
         foreach (var quest in Quests.Where(x => x.QuestType == QuestType.Active))
         {
             var questItem = QuestSettingsManager.Instance.GetItem(quest.Name);
@@ -110,6 +114,7 @@ public class User
                         case "openBusinessByName":
                         case "harvestBusinessByName":
                         case "placeBuildingByName":
+                        case "sendTourNeighborBusinessByName":
                         {
                             if (itemName is null)
                                 throw new Exception("Can't validate byName action without itemName");
@@ -130,21 +135,12 @@ public class User
                                 quest.Progress[index] += 1;
 
                             break;
-                    }
-                }
-
-                // All the quest that require both action and type to match
-                if (actionTask.Equals(actionType) && taskType.Equals(className))
-                {
-                    if (actionTask.Equals("visitorHelp"))
-                    {
-                        switch (className)
-                        {
-                            case "businessSendTour":
-                            case "residenceCollectRent":
+                        case "visitorHelp":
+                            // plotHarvest, businessSendTour, ...
+                            if (task.Type == className)
                                 quest.Progress[index] += 1;
-                                break;
-                        }
+
+                            break;
                     }
                 }
 

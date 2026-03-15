@@ -172,6 +172,17 @@ public abstract class AmfService<TRequest> : AmfService where TRequest : new()
         if (targetType == typeof(bool)) return Convert.ToBoolean(value);
         if (targetType == typeof(string)) return Convert.ToString(value);
 
+        if (targetType.IsArray && value is Array sourceArray)
+        {
+            var elementType = targetType.GetElementType()!;
+            var typedArray = Array.CreateInstance(elementType, sourceArray.Length);
+            
+            for (var i = 0; i < sourceArray.Length; i++)
+                typedArray.SetValue(ConvertValue(sourceArray.GetValue(i), elementType), i);
+            
+            return typedArray;
+        }
+
         return value;
     }
 
