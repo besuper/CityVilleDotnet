@@ -89,7 +89,9 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             ["asset_urls"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/",
             ["app_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/",
             ["asset_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/",
-            ["preloaded_asset_urls"] = string.Join(",", PreloadAssets.Select(x => $"{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/{x}"))
+            ["preloaded_asset_urls"] = string.Join(",", PreloadAssets.Select(x => $"{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/{x}")),
+            ["pollTimeSeconds"] = "1",
+            ["locale"] = "en_US",
         };
 
         foreach (var param in Request.Query)
