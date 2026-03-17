@@ -325,4 +325,19 @@ public class WorldObject
 
         State = WorldObjectState.Closed;
     }
+
+    public string GetItemName()
+    {
+        var itemName = ItemName;
+
+        if (ClassName == BuildingClassType.ConstructionSite)
+        {
+            itemName = TargetBuildingName;
+
+            if (itemName is null)
+                throw new Exception("TargetBuildingName can't be null with ConstructionSite");
+        }
+
+        return itemName;
+    }
 }
