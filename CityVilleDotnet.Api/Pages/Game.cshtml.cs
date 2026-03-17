@@ -64,6 +64,9 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
     {
         var flashVars = new Dictionary<string, string>()
         {
+            ["optimizePreloader"] = "true",
+            ["preImageCopy"] = "",
+            ["preImageUrl"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/Loader_europeandistrict_507.png",
             ["serverTime"] = $"{ServerTime}",
             ["swfLocation"] = "Game.2012.swf",
             ["zySnid"] = "0",
