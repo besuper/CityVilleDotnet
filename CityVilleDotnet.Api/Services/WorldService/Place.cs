@@ -169,7 +169,7 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
         // TODO: Check coins, goods, energy, etc...
         // Add population
 
-        user.HandleQuestsProgress("placeByClass", className: obj.ClassName.ToString());
+        user.HandleQuestsProgress("placeByClass", className: request.Building.ClassName.ToString());
         user.HandleQuestsProgress("placeBuildingByName", itemName: request.Building.ItemName);
         user.HandleQuestsProgress("placeByKeyword", itemName: request.Building.ItemName);
         user.CheckCompletedQuests();
