@@ -330,14 +330,41 @@ public class WorldObject
     {
         var itemName = ItemName;
 
-        if (ClassName == BuildingClassType.ConstructionSite)
+        switch (ClassName)
         {
-            itemName = TargetBuildingName;
+            case BuildingClassType.ConstructionSite:
+            {
+                itemName = TargetBuildingName;
 
-            if (itemName is null)
-                throw new Exception("TargetBuildingName can't be null with ConstructionSite");
+                if (itemName is null)
+                    throw new Exception("TargetBuildingName can't be null with ConstructionSite");
+                break;
+            }
+            case BuildingClassType.Plot:
+            {
+                itemName = ContractName;
+
+                if (itemName is null)
+                    throw new Exception("ContractName can't be null with Plot");
+                break;
+            }
         }
 
         return itemName;
+    }
+
+    public BuildingClassType GetClassName()
+    {
+        var className = ClassName;
+
+        if (ClassName == BuildingClassType.ConstructionSite)
+        {
+            if (TargetBuildingClass is null)
+                throw new Exception("TargetBuildingClass can't be null with ConstructionSite");
+
+            className = TargetBuildingClass.Value;
+        }
+
+        return className;
     }
 }

@@ -37,7 +37,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
 
         var obj = world.GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z) ?? throw new Exception("Can't find building");
 
-        var itemName = obj.ClassName == BuildingClassType.Plot ? obj.ContractName : obj.ItemName;
+        var itemName = obj.GetItemName();
 
         if (itemName is null)
             throw new Exception("Item name is null, can't harvest");
@@ -57,17 +57,18 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
             }
         }
 
+        var className = obj.GetClassName();
         var (coinYield, cashYield) = obj.Harvest();
-        var secureRands = user.Player!.CollectDoobersRewards(obj.ContractName ?? obj.ItemName, obj.ClassName);
+        var secureRands = user.Player!.CollectDoobersRewards(itemName, className);
 
         logger.LogDebug("Secure rands {Join}", string.Join(",", secureRands.ToArray()));
         logger.LogDebug("Secure rands {SecureRandsCount}", secureRands.Count);
 
-        user.HandleQuestsProgress("harvestByClass", className: obj.ClassName.ToString());
+        user.HandleQuestsProgress("harvestByClass", className: className.ToString());
 
         if (obj.ClassName == BuildingClassType.Plot)
         {
-            user.HandleQuestsProgress("harvestPlotByName", itemName: obj.ItemName);
+            user.HandleQuestsProgress("harvestPlotByName", itemName: itemName);
 
             if (gameItem.HasMasteries())
             {
@@ -77,13 +78,13 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
 
         if (obj.ClassName == BuildingClassType.Business)
         {
-            user.HandleQuestsProgress("harvestBusinessByName", itemName: obj.ItemName);
-            user.HandleQuestsProgress("harvestBusinessByClass", className: obj.ClassName.ToString());
+            user.HandleQuestsProgress("harvestBusinessByName", itemName: itemName);
+            user.HandleQuestsProgress("harvestBusinessByClass", className: className.ToString());
         }
 
         if (obj.ClassName == BuildingClassType.Residence)
         {
-            user.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);
+            user.HandleQuestsProgress("harvestResidenceByName", itemName: itemName);
         }
 
         user.CheckCompletedQuests();
