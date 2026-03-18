@@ -240,7 +240,7 @@ public class MasteryItem
     [XmlIgnore] public int? Level { get; set; }
 
     [XmlAttribute("level")]
-    private string? LevelString
+    public string? LevelString
     {
         get => Level?.ToString();
         set => Level = string.IsNullOrEmpty(value) ? null : int.Parse(value);
@@ -249,7 +249,7 @@ public class MasteryItem
     [XmlIgnore] public int? RequiredCount { get; set; }
 
     [XmlAttribute("req")]
-    private string? Req
+    public string? Req
     {
         get => RequiredCount?.ToString();
         set => RequiredCount = string.IsNullOrEmpty(value) ? null : int.Parse(value);
