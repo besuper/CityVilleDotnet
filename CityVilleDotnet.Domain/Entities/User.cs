@@ -13,7 +13,7 @@ public class User
     public ApplicationUser? AppUser { get; private set; }
     public List<Quest> Quests { get; } = [];
     public Player? Player { get; private set; }
-    public World? World { get; set; }
+    public World? World { get; private set; }
     public List<Friend> Friends { get; } = [];
 
     public static User CreateNewPlayer(WorldDto defaultValue, ApplicationUser user)

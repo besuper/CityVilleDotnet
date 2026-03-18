@@ -1,6 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using CityVilleDotnet.Common.Settings;
-using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using Humanizer;
 
@@ -10,8 +9,8 @@ public class World
 {
     public int Id { get; set; }
     public string WorldName { get; private set; }
-    public int SizeX { get; set; }
-    public int SizeY { get; set; }
+    public int SizeX { get; private set; }
+    public int SizeY { get; private set; }
     public int Population { get; set; }
     public int PopulationCap { get; set; }
     public int PopulationMin { get; set; }
@@ -98,11 +97,6 @@ public class World
     {
         var regex = new Regex(pattern);
         return Objects.Count(x => regex.IsMatch(x.ItemName));
-    }
-
-    public int CountOpenedBuildingByName(string name)
-    {
-        return Objects.Count(x => x.ItemName.Equals(name) && x.State.Equals("open"));
     }
 
     public int GetAvailableBuildingId()

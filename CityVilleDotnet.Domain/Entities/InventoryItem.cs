@@ -8,9 +8,8 @@ public class InventoryItem
 
     public int Amount { get; set; }
 
-    public InventoryItem()
-    { }
-
+    private InventoryItem() {}
+    
     public InventoryItem(string itemName, int amount = 1)
     {
         Name = itemName;

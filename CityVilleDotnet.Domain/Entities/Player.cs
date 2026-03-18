@@ -69,16 +69,6 @@ public class Player
         collection.AddItem(itemName, amount);
     }
 
-    public CollectionItem? RemoveItemFromCollection(string collectionName, string itemName, int amount = 1)
-    {
-        var collection = Collections.FirstOrDefault(x => x.Name == collectionName);
-
-        if (collection is null)
-            throw new Exception($"Collection not found: {collectionName}");
-
-        return collection.RemoveItem(itemName, amount);
-    }
-
     public void AddItem(string itemName, int amount = 1)
     {
         var item = InventoryItems.FirstOrDefault(x => x.Name == itemName);
