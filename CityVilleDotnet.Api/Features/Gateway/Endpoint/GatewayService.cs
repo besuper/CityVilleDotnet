@@ -1,7 +1,7 @@
 ﻿using FastEndpoints;
 using FluorineFx.IO;
 using FluorineFx;
-using System.Collections;
+using System.Collections.Frozen;
 using System.Reflection;
 using Humanizer;
 using CityVilleDotnet.Api.Common.Amf;
@@ -15,6 +15,16 @@ namespace CityVilleDotnet.Api.Features.Gateway.Endpoint;
 
 internal sealed class GatewayService(UserManager<ApplicationUser> userManager, IServiceProvider serviceProvider, ILogger<GatewayService> logger) : EndpointWithoutRequest
 {
+    private static FrozenDictionary<string, Type> _handlerTypes = FrozenDictionary<string, Type>.Empty;
+
+    public static void InitializeHandlers(Assembly assembly)
+    {
+        _handlerTypes = assembly.GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(AmfService)))
+            .Where(t => t.FullName is not null)
+            .ToFrozenDictionary(t => t.FullName!);
+    }
+
     public override void Configure()
     {
         Post("/flashservices/gateway.php");
@@ -53,8 +63,6 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
                 return;
             }
 
-            var header = content[0] as ASObject;
-            var amfContent = content[1] as object;
             object[]? parsedAmfContent = content[1] as object[];
 
             if (parsedAmfContent is null || parsedAmfContent.Length == 0)
@@ -63,29 +71,17 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
                 return;
             }
 
-            logger.LogDebug("Request header received: {Header}", header);
-
-            var responses = new ArrayList();
-            var objectUid = header?["zyUid"];
-
-            if (objectUid is null)
-            {
-                await Send.UnauthorizedAsync(ct);
-                return;
-            }
-
-            var uid = int.Parse((string)objectUid);
+            var responses = new List<ASObject>();
 
             ASObject? errorResponse = null;
 
             foreach (ASObject item in parsedAmfContent)
             {
-                object[]? @params = item["params"] as object[];
-
+                var parameters = item["params"] as object[];
                 var functionName = item["functionName"] as string;
                 var sequence = item["sequence"];
 
-                if (@params is null || functionName is null || sequence is null)
+                if (parameters is null || functionName is null || sequence is null)
                 {
                     logger.LogWarning("Received incomplete request item: {Item}", item);
                     continue;
@@ -103,7 +99,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
                     var taskParams = new object[] { className };
 
-                    @params = taskParams.Append(@params).ToArray();
+                    parameters = taskParams.Append(parameters).ToArray();
 
                     packageName = "QuestService";
                     upperClassName = nameof(HandleQuestProgress);
@@ -111,39 +107,39 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
                 if (packageName == "WorldService" && upperClassName == "PerformAction")
                 {
-                    var actionType = (string)@params[0];
+                    var actionType = (string)parameters[0];
 
                     upperClassName = actionType.Pascalize();
 
-                    logger.LogDebug("Parameters {Objects}", (object?)@params);
+                    logger.LogDebug("Parameters {Objects}", (object?)parameters);
                 }
 
                 if (packageName == "GameMechanicService" && upperClassName == "PerformMechanicAction")
                 {
-                    var mechanicType = (string)@params[1];
+                    var mechanicType = (string)parameters[1];
 
                     upperClassName = mechanicType.Pascalize();
 
-                    logger.LogDebug("Parameters {Objects}", (object?)@params);
+                    logger.LogDebug("Parameters {Objects}", (object?)parameters);
                 }
 
                 ASObject? response = null;
 
                 try
                 {
-                    response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{packageName}.{upperClassName}", "HandlePacket", @params, Guid.Parse(user.Id), ct);
+                    response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{packageName}.{upperClassName}", parameters, Guid.Parse(user.Id), ct);
 
                     if (response is null)
                     {
                         logger.LogError("Something went wrong while processing the request.");
-                        logger.LogDebug("Parameters {Objects}", (object?)@params);
+                        logger.LogDebug("Parameters {Objects}", (object?)parameters);
 
                         response = CreateEmptyResponse();
                     }
                 }
                 catch (Exception e)
                 {
-                    logger.LogError(e, "Error processing request for function {FunctionName} with params {@Params}", functionName, @params);
+                    logger.LogError(e, "Error processing request for function {FunctionName} with params {@Params}", functionName, parameters);
 
                     response = new CityVilleResponse().Error(GameErrorType.InvalidData).ErrorMessage(e.Message).ToObject();
 
@@ -172,28 +168,14 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
         }
     }
 
-    private async Task<ASObject?> InvokeHandlePacketAsync(string className, string methodName, object parameter, Guid userId, CancellationToken cancellationToken)
+    private async Task<ASObject?> InvokeHandlePacketAsync(string className, object parameter, Guid userId, CancellationToken cancellationToken)
     {
-        var assembly = Assembly.GetExecutingAssembly();
-        var classType = assembly.GetTypes()
-            .FirstOrDefault(t => t.FullName == className);
-
-        if (classType is null)
+        if (!_handlerTypes.TryGetValue(className, out var classType))
             return null;
 
-        var instance = ActivatorUtilities.CreateInstance(serviceProvider, classType);
+        var instance = (AmfService)serviceProvider.GetRequiredService(classType);
 
-        var method = classType.GetMethod(methodName,
-            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase,
-            [typeof(object[]), typeof(Guid), typeof(CancellationToken)]);
-
-        if (method is null)
-            throw new Exception("Method not found.");
-
-        if (method.ReturnType != typeof(Task<ASObject>))
-            throw new Exception("The method does not match the expected return type.");
-
-        return await (Task<ASObject>)method.Invoke(instance, [parameter, userId, cancellationToken])!;
+        return await instance.HandlePacket((object[])parameter, userId, cancellationToken);
     }
 
     public static ASObject CreateEmptyResponse()

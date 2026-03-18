@@ -1,4 +1,5 @@
 using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
@@ -53,12 +54,15 @@ builder.Services.Configure<JsonOptions>(options => { options.JsonSerializerOptio
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(o => o.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
 
-var serviceTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(AmfService)));
+var executingAssembly = Assembly.GetExecutingAssembly();
+var serviceTypes = executingAssembly.GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(AmfService)));
 
 foreach (var type in serviceTypes)
 {
     builder.Services.AddScoped(type);
 }
+
+GatewayService.InitializeHandlers(executingAssembly);
 
 builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
