@@ -42,5 +42,7 @@ public enum BuildingClassType
     MechanicMapResource = 37,
     BridgePart = 38,
     TimedHarvestableResource = 39,
-    ItemStorage = 40
+    ItemStorage = 40,
+    BasePier = 41,
+    TimedBusiness = 42
 }
