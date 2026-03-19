@@ -327,7 +327,7 @@ public class WorldObject
 
     public void Close()
     {
-        if (ClassName != BuildingClassType.Business && ClassName != BuildingClassType.SocialBusiness) throw new Exception($"Can't close non business building {ClassName}");
+        if (ClassName != BuildingClassType.Business && ClassName != BuildingClassType.SocialBusiness) return;
 
         State = WorldObjectState.Closed;
     }
