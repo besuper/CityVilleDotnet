@@ -98,7 +98,16 @@ public static class UserDtoMapper
             Franchises = model.Player.Franchises.Select(x => x.ToDto()).ToList(),
             FeatureData = new ASObject(new Dictionary<string, object>()
             {
-                { "cityAtNight", new ASObject() },
+                {
+                    "cityAtNight", new ASObject()
+                    {
+                        { "nightModeAvailable", true },
+                        { "earlyUnlocked", true },
+                        { "cityLightCount", 0 },
+                        { "active", false },
+                        { "numExpansionsPurchased", model.Player.ExpansionsPurchased },
+                    }
+                },
                 { "remodel", new ASObject() { { "enabled", false } } },
                 { "gardens", new ASObject() },
                 {
@@ -144,7 +153,9 @@ public static class UserDtoMapper
                 { "downtownpolice", new ASObject { { "workers", new ASObject() } } },
                 { "fishing", new ASObject { { "workers", new ASObject() } } },
                 { "area51", new ASObject { { "workers", new ASObject() } } },
-                { "trains", new ASObject { { "workers", new ASObject() } } }
+                { "trains", new ASObject { { "workers", new ASObject() } } },
+                { "factories", new ASObject { { "workers", new ASObject() } } }, // TODO: Implement hiring workers
+                { "detectiveGameWorkerManager", new ASObject { { "workers", new ASObject() } } }
             }), // Enable or disable some features for the user
         };
     }
