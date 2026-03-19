@@ -20,6 +20,10 @@ public static class UserDtoMapper
 
         player.Neighbors = model.Friends.Select(x => x.ToNeighborDto()).ToList();
 
+        var activeQuests = model.Quests
+            .Where(q => q.QuestType == QuestType.Active)
+            .ToList();
+
         return new UserDto()
         {
             UserInfo = new UserInfoDto
@@ -66,6 +70,27 @@ public static class UserDtoMapper
                                 }
                             },
                             { "commoditySummary", model.World.ToCommoditySummaryDto() },
+                            {
+                                "savedQuestSequence", activeQuests
+                                    .Where(q => q.Location == QuestLocation.Sidebar)
+                                    .OrderBy(q => q.Order)
+                                    .Select(q => q.Name)
+                                    .ToList()
+                            },
+                            {
+                                "questManagerQuests", activeQuests
+                                    .Where(q => q.Location == QuestLocation.Menu)
+                                    .OrderBy(q => q.Order)
+                                    .Select(q => q.Name)
+                                    .ToList()
+                            },
+                            {
+                                "hiddenQuests", activeQuests
+                                    .Where(q => q.Location == QuestLocation.Hidden)
+                                    .OrderBy(q => q.Order)
+                                    .Select(q => q.Name)
+                                    .ToList()
+                            },
                         })
                     }
                 })

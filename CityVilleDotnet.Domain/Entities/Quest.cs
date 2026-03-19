@@ -28,6 +28,10 @@ public class Quest
 
     public QuestType QuestType { get; set; }
 
+    public int Order { get; private set; }
+
+    public QuestLocation Location { get; private set; }
+
     public static Quest Create(string name, int length, QuestType questType)
     {
         return new Quest(name, new int[length], new int[length], questType);
@@ -113,5 +117,11 @@ public class Quest
         var requiredAmount = int.Parse(questItem.Tasks.Tasks[index].Total);
 
         Purchased[index] = requiredAmount;
+    }
+
+    public void SetOrder(int order, QuestLocation location)
+    {
+        Order = order;
+        Location = location;
     }
 }

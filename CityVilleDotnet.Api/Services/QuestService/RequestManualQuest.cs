@@ -49,7 +49,7 @@ internal sealed class RequestManualQuest(CityVilleDbContext context, ILogger<Req
 
         var quests = new ASObject
         {
-            { "QuestComponent", AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto())) }
+            { "QuestComponent", AmfConverter.Convert(user.Quests.Where(q => q.QuestType == QuestType.Active).OrderBy(q => q.Order).Select(x => x.ToDto())) }
         };
 
         return new CityVilleResponse().Data(new ASObject { { "questStarted", 1 } }).MetaData(quests);

@@ -20,7 +20,7 @@ internal sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequ
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
-            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active).OrderBy(q => q.Order))
             .Include(x => x.Player)
             .ThenInclude(x => x!.Collections)
             .ThenInclude(x => x.Items)
@@ -55,7 +55,7 @@ internal sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequ
 
         return new CityVilleResponse().MetaData(new ASObject
         {
-            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()))
+            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Select(x => x.ToDto()))
         }).Data(new ASObject
         {
             ["id"] = obj.WorldFlatId

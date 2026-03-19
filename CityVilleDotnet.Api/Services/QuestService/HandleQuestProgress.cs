@@ -17,7 +17,7 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService<Handle
 
         var user = await context.Set<User>()
             .AsSplitQuery()
-            .Include(x => x.Quests)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active).OrderBy(q => q.Order))
             .Include(x => x.Player)
             .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
@@ -32,7 +32,7 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService<Handle
 
         var rep = new ASObject
         {
-            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()))
+            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Select(x => x.ToDto()))
         };
 
         return new CityVilleResponse().MetaData(rep);

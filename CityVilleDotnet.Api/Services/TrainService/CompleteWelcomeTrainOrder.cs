@@ -14,7 +14,7 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
     public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
-            .Include(x => x.Quests)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active).OrderBy(q => q.Order))
             .Include(x => x.Player)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
@@ -29,7 +29,7 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
 
         return new CityVilleResponse().MetaData(new ASObject
         {
-            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()))
+            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Select(x => x.ToDto()))
         });
     }
 }

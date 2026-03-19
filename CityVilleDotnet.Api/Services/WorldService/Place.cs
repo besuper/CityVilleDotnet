@@ -30,7 +30,7 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
             .ThenInclude(x => x!.InventoryItems)
             .Include(x => x.Player)
             .ThenInclude(x => x!.SeenFlags)
-            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active).OrderBy(q => q.Order))
             .Include(x => x.Player)
             .ThenInclude(x => x!.Collections)
             .ThenInclude(x => x.Items)
@@ -112,7 +112,7 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
 
                 return new CityVilleResponse().MetaData(new ASObject
                 {
-                    ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()))
+                    ["QuestComponent"] = AmfConverter.Convert(user.Quests.Select(x => x.ToDto()))
                 });
             }
         }
@@ -178,7 +178,7 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
 
         return new CityVilleResponse().MetaData(new ASObject
         {
-            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()))
+            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Select(x => x.ToDto()))
         }).Data(new ASObject
         {
             { "id", obj.WorldFlatId }
