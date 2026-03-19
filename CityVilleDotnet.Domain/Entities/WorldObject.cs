@@ -58,6 +58,7 @@ public class WorldObject
     public int? Visits { get; private set; }
     public bool NeverOpened { get; private set; }
     public int? UpgradeActionCount { get; private set; }
+    public int? BuiltFloorCount { get; private set; }
 
     public void SetAsConstructionSite(string itemName, int maxStages)
     {
@@ -126,6 +127,11 @@ public class WorldObject
                 newObject.State = WorldObjectState.Static;
                 newObjects.Add(newObject);
             }
+        }
+
+        if (ClassName == BuildingClassType.Headquarter)
+        {
+            BuiltFloorCount = 1;
         }
 
         return newObjects;
@@ -366,5 +372,12 @@ public class WorldObject
         }
 
         return className;
+    }
+
+    public void UpgradeHeadquarterFloor()
+    {
+        if (BuiltFloorCount is null) throw new Exception("Floor count can't be null for Headquarters");
+
+        BuiltFloorCount++;
     }
 }

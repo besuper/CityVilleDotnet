@@ -63,6 +63,7 @@ public class WorldObjectDto
     [JsonPropertyName("itemOwner")] public string? ItemOwner { get; set; }
 
     [JsonPropertyName("franchise_info")] public FranchiseInfoDto? FranchiseInfo { get; set; }
+    [JsonPropertyName("builtFloorCount")] public int? BuiltFloorCount { get; set; }
 }
 
 public class FranchiseInfoDto
@@ -113,6 +114,7 @@ public static class WorldObjectDtoMapper
                     FranchiseName = model.FranchiseLocation.FranchiseName
                 }
                 : null,
+            BuiltFloorCount = model.BuiltFloorCount
         };
 
         // FIXME: Not enough (not sure if it is the right way to implement this)
