@@ -116,7 +116,7 @@
     <div style="max-width:760px; margin: 0 auto;">
         <hr class="my-2">
         <p class="text-center text-muted mb-3" style="font-size:0.75rem;">
-            CityVilleDotnet build: @(Assembly.GetEntryAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion.Split('+')[0] ?? "dev")
+            CityVilleDotnet build: @(Assembly.GetEntryAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "dev")
         </p>
     </div>
 </footer>

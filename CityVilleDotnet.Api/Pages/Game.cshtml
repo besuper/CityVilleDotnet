@@ -68,7 +68,8 @@
 		console.log("getRuntimeVars called");
 
 		return {
-			"WEATHER": "{\"forecast\":[1,1,1,1,1,1,1,1,1,1,1,1,1]}"
+			"WEATHER": "{\"forecast\":[1,1,1,1,1,1,1,1,1,1,1,1,1]}",
+			"MAX_VISIBLE_NPCS": "150"
 		};
 	}
 
@@ -81,6 +82,9 @@
 		}, {
 			"name": "cv_multipop_migrate",
 			"variant": 1
+		}, {
+			"name": "cv_defcon_npc_culling",
+			"variant": 3
 		}];
 	}
 
