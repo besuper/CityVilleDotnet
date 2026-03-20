@@ -15,9 +15,9 @@ internal sealed class Move(CityVilleDbContext context) : AmfService<MoveRequest>
             .AsSplitQuery()
             .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
-        if (user.Player is null) throw new Exception($"User not found with id {userId}");
+        if (user is null) throw new Exception($"User not found with id {userId}");
 
         var obj = user.GetWorld().GetBuildingById(request.Building.Id) ?? throw new Exception($"Can't find object with id {request.Building.Id}");
 
