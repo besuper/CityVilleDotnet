@@ -44,5 +44,6 @@ public enum BuildingClassType
     TimedHarvestableResource = 39,
     ItemStorage = 40,
     BasePier = 41,
-    TimedBusiness = 42
+    TimedBusiness = 42,
+    ParkingLot = 43
 }
