@@ -1,3 +1,4 @@
+@using System.Reflection
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,7 +17,7 @@
 
     @await RenderSectionAsync("Header", required: false)
 </head>
-<body class="bg-light min-vh-100">
+<body class="bg-light d-flex flex-column min-vh-100">
 <nav class="navbar navbar-expand-lg cv-navbar sticky-top border-bottom bg-white">
     <div class="container">
         <a class="d-flex align-items-center text-decoration-none py-2" href="#">
@@ -103,13 +104,22 @@
     </div>
 </nav>
 
-<div class="container py-4">
-    <div class="d-flex justify-content-center min-vh-100">
+<div class="container py-4 flex-grow-1">
+    <div class="d-flex justify-content-center">
         <div>
             @RenderBody()
         </div>
     </div>
 </div>
+
+<footer class="mt-auto">
+    <div style="max-width:760px; margin: 0 auto;">
+        <hr class="my-2">
+        <p class="text-center text-muted mb-3" style="font-size:0.75rem;">
+            CityVilleDotnet build: @(Assembly.GetEntryAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion.Split('+')[0] ?? "dev")
+        </p>
+    </div>
+</footer>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
