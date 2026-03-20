@@ -45,5 +45,21 @@ public enum BuildingClassType
     ItemStorage = 40,
     BasePier = 41,
     TimedBusiness = 42,
-    ParkingLot = 43
+    ParkingLot = 43,
+    HarvestShip = 44,
+    CitySign = 45,
+    GreenHouse = 46,
+    Neighborhood = 47,
+    EnergyToggleDeco = 48,
+    HolidayTree = 49,
+    Attraction = 50,
+    Aircraftcarrier = 51,
+    Corporation = 52,
+    RainbowDecoration = 53,
+    SubwayReceiver = 54,
+    Party = 55,
+    Heliport = 56,
+    ThemePark = 57,
+    CustomResidence = 58,
+    EnvironmentTile = 59
 }
