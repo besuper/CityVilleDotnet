@@ -74,7 +74,7 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet publish CityVilleDotnet.Api/CityVilleDotnet.Api.csproj -c Release -r ${{ matrix.runtime }} --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=false -p:Version=${{ needs.check-changes.outputs.version }} -o ./publish
+        run: dotnet publish CityVilleDotnet.Api/CityVilleDotnet.Api.csproj -c Release -r ${{ matrix.runtime }} --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=false -p:InformationalVersion=${{ needs.check-changes.outputs.version }} -o ./publish
 
       - name: Create archive (Linux/macOS)
         if: runner.os != 'Windows'
