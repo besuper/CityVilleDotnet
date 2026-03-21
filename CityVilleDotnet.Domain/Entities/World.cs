@@ -16,6 +16,7 @@ public class World
     public int PopulationMin { get; set; }
     public int PopulationMax { get; set; }
     public int PotentialPopulation { get; set; }
+    public List<string> ThemeCollections { get; set; } = [];
     public List<MapRect> MapRects { get; set; } = [];
     public List<WorldObject> Objects { get; set; } = [];
 
@@ -156,6 +157,18 @@ public class World
         foreach (var obj in Objects)
         {
             obj.CleanTempId();
+        }
+    }
+
+    public void UpdateTheme(string theme, bool enable)
+    {
+        if (enable)
+        {
+            ThemeCollections.Add(theme);
+        }
+        else
+        {
+            ThemeCollections.Remove(theme);
         }
     }
 }

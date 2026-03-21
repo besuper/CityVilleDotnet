@@ -11,11 +11,11 @@ public class WorldDto
 
     [JsonPropertyName("sizeY")] public int SizeY { get; set; } = 36;
 
-    [JsonPropertyName("mapRects")] public List<MapRectDto> MapRects { get; set; }
+    [JsonPropertyName("mapRects")] public required List<MapRectDto> MapRects { get; set; }
 
     [JsonPropertyName("citySim")] public CitySimDto? CitySim { get; set; }
 
-    [JsonPropertyName("objects")] public List<WorldObjectDto> Objects { get; set; }
+    [JsonPropertyName("objects")] public required List<WorldObjectDto> Objects { get; set; }
 
     [JsonPropertyName("lastExpansionTier")]
     public int LastExpansionTier { get; set; }
@@ -23,6 +23,7 @@ public class WorldDto
     [JsonPropertyName("world_id")] public required string WorldId { get; set; }
 
     [JsonPropertyName("mostFrequentHelpers")] public ASObject MostFrequentHelpers { get; set; } = new();
+    [JsonPropertyName("currentThemeCollections")] public List<string> ThemeCollections { get; set; } = [];
 }
 
 public static class WorldDtoMapper
@@ -39,6 +40,7 @@ public static class WorldDtoMapper
                 PopulationSummary = model.ToPopulationSummaryDto()
             },
             Objects = model.Objects.Select(x => x.ToDto()).ToList(),
+            ThemeCollections = model.ThemeCollections,
             LastExpansionTier = 0,
             WorldId = "world_main"
         };
