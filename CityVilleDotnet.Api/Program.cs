@@ -1,3 +1,4 @@
+using System.Threading.RateLimiting;
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
@@ -64,12 +65,47 @@ foreach (var type in serviceTypes)
 
 GatewayService.InitializeHandlers(executingAssembly);
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+    {
+        var path = context.Request.Path.Value ?? string.Empty;
+
+        if (path.StartsWith("/assets", StringComparison.OrdinalIgnoreCase) ||
+            path.EndsWith(".swf", StringComparison.OrdinalIgnoreCase) ||
+            path.EndsWith(".js", StringComparison.OrdinalIgnoreCase) ||
+            path.EndsWith(".css", StringComparison.OrdinalIgnoreCase) ||
+            path.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+            path.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+            path.EndsWith(".xml", StringComparison.OrdinalIgnoreCase) ||
+            path.EndsWith("gateway.php", StringComparison.OrdinalIgnoreCase)
+            )
+        {
+            return RateLimitPartition.GetNoLimiter(string.Empty);
+        }
+        
+        var remoteIp = context.Request.Headers["CF-Connecting-IP"].FirstOrDefault()
+            ?? context.Request.Headers["X-Forwarded-For"].FirstOrDefault()?.Split(',', StringSplitOptions.TrimEntries).FirstOrDefault()
+            ?? context.Connection.RemoteIpAddress?.ToString()
+            ?? "unknown";
+        
+        return RateLimitPartition.GetFixedWindowLimiter(remoteIp, _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 50,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0
+        });
+    });
+});
+
 builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
 var app = builder.Build();
 
 app.UseStaticFiles();
 app.UseMiddleware<FallbackAssetMiddleware>();
+app.UseRateLimiter();
 app.UseRouting();
 app.MapRazorPages();
 app.UseAuthentication();
