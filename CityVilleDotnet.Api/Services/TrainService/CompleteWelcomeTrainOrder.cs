@@ -2,7 +2,6 @@
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
-using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -27,9 +26,6 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse().MetaData(new ASObject
-        {
-            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Select(x => x.ToDto()))
-        });
+        return new CityVilleResponse();
     }
 }

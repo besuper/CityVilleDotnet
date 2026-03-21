@@ -1,4 +1,4 @@
-﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
@@ -7,22 +7,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.VisitorService;
 
-public class InitialVisit(CityVilleDbContext context) : AmfService
+public class InitialVisit(CityVilleDbContext context) : AmfService<InitialVisitRequest>
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(InitialVisitRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        var type = (string)@params[0]; // neighborVisit
-        var content = (ASObject)@params[1]; // { recipientId, senderId }
-
-        if (type != "neighborVisit") throw new Exception("Invalid type");
-
-        var recipientId = Convert.ToInt32(content["recipientId"]);
+        if (request.Type != "neighborVisit") throw new Exception("Invalid type");
 
         var currentUser = await context.Set<User>()
             .AsSplitQuery()
             .Include(x => x.Player)
             .ThenInclude(x => x!.VisitorHelpOrders)
-            .Include(x => x.Friends)
+            .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
             .ThenInclude(x => x.FriendUser)
             .ThenInclude(x => x.Player)
             .ThenInclude(x => x!.VisitorHelpOrders)
@@ -30,6 +25,7 @@ public class InitialVisit(CityVilleDbContext context) : AmfService
 
         if (currentUser?.Player is null) throw new Exception("Can't find user with UserId");
 
+        var recipientId = Convert.ToInt32(request.Content.RecipientId);
         var targetFriend = currentUser.Friends.FirstOrDefault(x => x.FriendUser.Player!.Snuid == recipientId);
 
         if (targetFriend?.FriendUser.Player is null) throw new Exception("Can't find friend with recipientId");
@@ -41,11 +37,11 @@ public class InitialVisit(CityVilleDbContext context) : AmfService
         {
             targetFriend.EnergyLeft = 5;
             targetFriend.LastEnergyLeftReset = currentTimestamp;
-            
+
             // Clean all orders from the previous friendship help batch even if its pending/unclaimed
-            var sentOrders = currentUser.Player.VisitorHelpOrders.Where(x => x.RecipientId == (string)content["recipientId"] && x.SenderId == (string)content["senderId"]).ToList();
-            var receivedOrders = targetFriend.FriendUser.Player.VisitorHelpOrders.Where(x => x.RecipientId == (string)content["senderId"] && x.SenderId == (string)content["recipientId"]).ToList();
-            
+            var sentOrders = currentUser.Player.VisitorHelpOrders.Where(x => x.RecipientId == request.Content.RecipientId && x.SenderId == request.Content.SenderId).ToList();
+            var receivedOrders = targetFriend.FriendUser.Player.VisitorHelpOrders.Where(x => x.RecipientId == request.Content.RecipientId && x.SenderId == request.Content.SenderId).ToList();
+
             context.RemoveRange(sentOrders);
             context.RemoveRange(receivedOrders);
         }
@@ -59,4 +55,16 @@ public class InitialVisit(CityVilleDbContext context) : AmfService
 
         return new CityVilleResponse().Data(response);
     }
+}
+
+public class InitialVisitRequest
+{
+    [AmfParam(0)] public string Type { get; set; } = string.Empty;
+    [AmfParam(1)] public InitialVisitContent Content { get; set; } = new();
+}
+
+public class InitialVisitContent
+{
+    [AmfParam("recipientId")] public string RecipientId { get; set; } = string.Empty;
+    [AmfParam("senderId")] public string SenderId { get; set; } = string.Empty;
 }
