@@ -16,7 +16,8 @@
 
 ### Prerequisites
 -   Docker & Docker Compose
--   .NET 10 SDK (for development)
+-   .NET 10 SDK (for development without Docker)
+-   MS SQL Server (required when running without Docker)
 
 ### Quick Start
 
@@ -61,11 +62,16 @@ To run the game with proper assets:
     ```
     wwwroot/
     ├── assets/
-    ├── hashed/
-    └── Game.26346.swf
+    └── Game.2012.swf
     └── Preloader.swf
     └── gameSettings.xml
     └── questSettings.xml
+    └── effectsConfig.xml
+    └── bootstrap.xml
+    └── settings.amf.z
+    └── FontMapper.swf
+    └── EmbeddedArt.swf
+    └── lang/locale_en_US.swf
     ```
 
 
@@ -79,6 +85,7 @@ CityVilleDotnet/
 ├── CityVilleDotnet.Common/       # Shared utilities and helpers
 ├── CityVilleDotnet.Domain/       # Business logic and entities
 ├── CityVilleDotnet.Persistence/  # Data access layer
+├── FluorineFX/                   # AMF serialization library
 ├── docker-compose.yml            # Docker configuration
 └── Dockerfile                    # Container build instructions
 ```
