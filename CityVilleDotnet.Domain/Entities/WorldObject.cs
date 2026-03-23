@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
+using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 
@@ -186,7 +187,7 @@ public class WorldObject
             PlantTime = ServerUtils.GetCurrentTime();
         }
 
-        if (ClassName == BuildingClassType.Business)
+        if (ClassName.IsBusiness())
         {
             if (State != WorldObjectState.ClosedHarvestable)
             {
@@ -202,7 +203,7 @@ public class WorldObject
 
     public void OpenBusiness()
     {
-        if (ClassName != BuildingClassType.Business && ClassName != BuildingClassType.SocialBusiness) throw new Exception("Can't open other than business building, class name is: " + ClassName + "");
+        if (!ClassName.IsBusiness()) throw new Exception("Can't open other than business building, class name is: " + ClassName + "");
         if (State == WorldObjectState.Open || State == WorldObjectState.ClosedHarvestable) throw new Exception("Building is already open");
 
         Visits = 0;
@@ -225,7 +226,7 @@ public class WorldObject
 
     public void UpdateVisits(int visits)
     {
-        if (ClassName != BuildingClassType.Business && ClassName != BuildingClassType.SocialBusiness) throw new Exception($"Can't update visits on non business building {Id} {ClassName} {State}");
+        if (!ClassName.IsBusiness()) throw new Exception($"Can't update visits on non business building {Id} {ClassName} {State}");
         if (State != WorldObjectState.Open)
         {
             if (State == WorldObjectState.ClosedHarvestable) return; // If client get out of sync and try to send processVisit while visits are completed, just ignore
@@ -327,7 +328,7 @@ public class WorldObject
 
     public void Close()
     {
-        if (ClassName != BuildingClassType.Business && ClassName != BuildingClassType.SocialBusiness) return;
+        if (!ClassName.IsBusiness()) return;
 
         State = WorldObjectState.Closed;
     }
