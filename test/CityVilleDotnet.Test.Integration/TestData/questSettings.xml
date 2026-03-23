@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<quests>
+    <quest name="qm_test_quest" delay="1" visible="true" spawns_from="_manual" level_block="5">
+        <tasks>
+            <task action="seenQuest" type="qm_test_quest" total="1"/>
+            <task action="countWorldObjectByName" type="bus_bakery" total="1"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="10" gold="100"/>
+        </resourceModifiers>
+    </quest>
+    <quest name="qm_test_quest_with_init" delay="1" visible="true" spawns_from="_manual">
+        <init>
+            <function name="grantItemOnInit" itemName="factory_premiumgoods"/>
+        </init>
+        <tasks>
+            <task action="seenQuest" type="qm_test_quest_with_init" total="1"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
+    <quest name="qm_test_quest_with_sequel" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="seenQuest" type="qm_test_quest_with_sequel" total="1"/>
+        </tasks>
+        <sequels>
+            <sequel name="qm_test_quest"/>
+        </sequels>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
+    <quest name="qm_test_quest_high_level" delay="1" visible="true" spawns_from="_manual" level_block="50">
+        <tasks>
+            <task action="seenQuest" type="qm_test_quest_high_level" total="1"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
+    <quest name="qm_test_quest_high_pop" delay="1" visible="true" spawns_from="_manual" population_block="5000">
+        <tasks>
+            <task action="seenQuest" type="qm_test_quest_high_pop" total="1"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
+    <quest name="qm_visitor_center" delay="1" visible="true" spawns_from="_manual" level_block="15">
+        <tasks>
+            <task action="seenQuest" type="qm_visitor_center" total="1"/>
+            <task action="countWorldObjectByName" type="mun_visitorcenter" total="1"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="10"/>
+        </resourceModifiers>
+    </quest>
+</quests>

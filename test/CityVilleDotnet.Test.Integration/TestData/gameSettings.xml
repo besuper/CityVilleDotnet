@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+    <farming inGameDaySeconds="82800" energyRegenerationSeconds="300.0"
+             friendVisitShipRepGain="1" friendVisitConstructionRepGain="1"
+             friendVisitPlotRepGain="1" friendHelpDefaultGoodsReward="15"
+             friendVisitBusinessRepGain="1" friendHelpDefaultCoinReward="25"
+             friendVisitWildernessRepGain="1" friendVisitResidenceRepGain="1"
+             franchise1DailyBonus="25" welcomeTrainQuestAmount="250"/>
+
+    <citysim>
+        <populations>
+            <population id="citizen" baseCap="120"/>
+        </populations>
+    </citysim>
+
+    <items>
+        <item name="bus_bakery" type="business" buyable="true">
+            <keyword>Business</keyword>
+            <keyword>Business_Restaurant</keyword>
+            <requiredLevel>1</requiredLevel>
+            <cost>200</cost>
+            <commodityReq>10</commodityReq>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <growTime>0.010425</growTime>
+            <construction>construction_3x3_2stage</construction>
+            <headquarters>hq_bakery</headquarters>
+            <gates/>
+            <mastery>
+                <level level="1" req="5"/>
+                <level level="2" req="15"/>
+            </mastery>
+        </item>
+        <item name="res_cottage3" type="residence" buyable="true">
+            <keyword>Residence</keyword>
+            <requiredLevel>1</requiredLevel>
+            <cost>100</cost>
+            <coinYield>20</coinYield>
+            <xpYield>1</xpYield>
+            <growTime>0.005</growTime>
+            <construction>construction_3x3_4stage</construction>
+            <population min="20" max="80" cap="60"/>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates/>
+            <mastery/>
+        </item>
+        <item name="deco_tree" type="decoration" buyable="true">
+            <requiredLevel>1</requiredLevel>
+            <cost>50</cost>
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+            <mastery/>
+        </item>
+        <item name="road" type="road" buyable="true">
+            <requiredLevel>1</requiredLevel>
+            <cost>10</cost>
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+            <mastery/>
+        </item>
+        <item name="plot_strawberries" type="plot" buyable="true">
+            <requiredLevel>1</requiredLevel>
+            <cost>15</cost>
+            <coinYield>50</coinYield>
+            <xpYield>2</xpYield>
+            <goodsYield>10</goodsYield>
+            <growTime>0.001</growTime>
+            <sizeX>2</sizeX>
+            <sizeY>2</sizeY>
+            <gates/>
+            <mastery/>
+        </item>
+        <item name="mun_visitorcenter" type="municipal" buyable="true">
+            <requiredLevel>15</requiredLevel>
+            <cost>500</cost>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates/>
+            <mastery/>
+        </item>
+        <item name="factory_premiumgoods" type="factory" buyable="true">
+            <requiredLevel>10</requiredLevel>
+            <cost>1000</cost>
+            <sizeX>4</sizeX>
+            <sizeY>4</sizeY>
+            <gates/>
+            <mastery/>
+        </item>
+        <item name="construction_3x3_2stage" type="constructionSite">
+            <numberOfStages>2</numberOfStages>
+            <energyCostPerBuild>1</energyCostPerBuild>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates/>
+            <mastery/>
+        </item>
+        <item name="construction_3x3_4stage" type="constructionSite">
+            <numberOfStages>4</numberOfStages>
+            <energyCostPerBuild>1</energyCostPerBuild>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates/>
+            <mastery/>
+        </item>
+    </items>
+
+    <levels_cv_level_regrade_var_0>
+        <level num="1" requiredXP="0" energyMax="12"/>
+        <level num="2" requiredXP="4" energyMax="13"/>
+        <level num="3" requiredXP="16" energyMax="14"/>
+        <level num="4" requiredXP="31" energyMax="15"/>
+        <level num="5" requiredXP="78" energyMax="16"/>
+    </levels_cv_level_regrade_var_0>
+
+    <reputation>
+        <level num="1" requiredXP="0" reward="20"/>
+        <level num="2" requiredXP="10" reward="40"/>
+        <level num="3" requiredXP="25" reward="60"/>
+    </reputation>
+
+    <randomModifierTables>
+        <randomModifierTable type="item" name="test_droptable">
+            <roll percent="100">
+            </roll>
+        </randomModifierTable>
+    </randomModifierTables>
+
+    <collections>
+        <collection name="testcollection">
+            <collectables>
+                <collectable name="testitem1"/>
+                <collectable name="testitem2"/>
+            </collectables>
+            <tradeInReward>
+                <xp amount="5"/>
+                <energy amount="3"/>
+            </tradeInReward>
+        </collection>
+    </collections>
+
+    <expansionRequirements>
+        <expansionGates name="population">
+            <expansions>
+                <expansion num="01" level="1" permits2="1" cost2="5" goldMultiplier="1"/>
+                <expansion num="02" level="1" permits2="2" cost2="10" goldMultiplier="1.05"/>
+                <expansion num="03" level="2" permits2="3" cost2="15" goldMultiplier="1.1"/>
+            </expansions>
+        </expansionGates>
+    </expansionRequirements>
+
+    <worldRects>
+        <worldRect name="testRect">
+            <width>12</width>
+            <height>12</height>
+            <objects>
+                <object id="roadA" itemName="road" direction="0" x="0" y="0"/>
+            </objects>
+        </worldRect>
+    </worldRects>
+</settings>

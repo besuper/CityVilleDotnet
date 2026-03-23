@@ -89,20 +89,20 @@ public class QuestSettingsManager
         }
     }
 
-    public void Initialize(ILogger<QuestSettingsManager> logger)
+    public void Initialize(ILogger<QuestSettingsManager> logger, string path = "wwwroot/questSettings.xml")
     {
         if (_isInitialized)
             return;
 
-        if (!File.Exists("wwwroot/questSettings.xml"))
+        if (!File.Exists(path))
         {
-            logger.LogError("Missing file assets (wwwroot/questSettings.xml)");
+            logger.LogError("Missing file assets ({Path})", path);
             return;
         }
 
         var serializer = new XmlSerializer(typeof(GameQuests));
 
-        using (var fileStream = new FileStream("wwwroot/questSettings.xml", FileMode.Open))
+        using (var fileStream = new FileStream(path, FileMode.Open))
         {
             var content = serializer.Deserialize(fileStream);
 

@@ -22,6 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="TestData\**\*.xml" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\CityVilleDotnet.Api\CityVilleDotnet.Api.csproj" />
     <ProjectReference Include="..\CityVilleDotnet.Factory\CityVilleDotnet.Factory.csproj" />
   </ItemGroup>

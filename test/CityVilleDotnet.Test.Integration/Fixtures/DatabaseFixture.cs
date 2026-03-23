@@ -1,5 +1,7 @@
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Testcontainers.MsSql;
 
 namespace CityVilleDotnet.Test.Integration.Fixtures;
@@ -14,6 +16,13 @@ public class DatabaseFixture : IAsyncLifetime
 
         await using var context = CreateDbContext();
         await context.Database.EnsureCreatedAsync();
+
+        var testDataPath = Path.Combine(AppContext.BaseDirectory, "TestData");
+
+        using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
+        GameSettingsManager.Instance.Initialize(loggerFactory.CreateLogger<GameSettingsManager>(), Path.Combine(testDataPath, "gameSettings.xml"));
+        QuestSettingsManager.Instance.Initialize(loggerFactory.CreateLogger<QuestSettingsManager>(), Path.Combine(testDataPath, "questSettings.xml"));
     }
 
     public CityVilleDbContext CreateDbContext()

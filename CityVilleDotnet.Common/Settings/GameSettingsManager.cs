@@ -44,20 +44,20 @@ public class GameSettingsManager
         }
     }
 
-    public void Initialize(ILogger<GameSettingsManager> logger)
+    public void Initialize(ILogger<GameSettingsManager> logger, string path = "wwwroot/gameSettings.xml")
     {
         if (_isInitialized)
             return;
 
-        if (!File.Exists("wwwroot/gameSettings.xml"))
+        if (!File.Exists(path))
         {
-            logger.LogError("Missing file assets (wwwroot/gameSettings.xml)");
+            logger.LogError("Missing file assets ({Path})", path);
             return;
         }
 
         var serializer = new XmlSerializer(typeof(GameSettings.GameSettings));
 
-        var xmlContent = File.ReadAllText("wwwroot/gameSettings.xml");
+        var xmlContent = File.ReadAllText(path);
         xmlContent = xmlContent.Replace("&gt;", "");
 
         using (var stringReader = new StringReader(xmlContent))
