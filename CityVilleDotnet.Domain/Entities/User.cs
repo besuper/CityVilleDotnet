@@ -16,6 +16,19 @@ public class User
     public World? World { get; private set; }
     public List<Friend> Friends { get; } = [];
 
+    public User(Guid userId, ApplicationUser appUser, string username, World world)
+    {
+        Id = Guid.NewGuid();
+        UserId = userId;
+        AppUser = appUser;
+        Player = new Player(username);
+        World = world;
+    }
+
+    private User()
+    {
+    }
+
     public static User CreateNewPlayer(WorldDto defaultValue, ApplicationUser user)
     {
         var mapRects = defaultValue.MapRects.Select(x => new MapRect()
@@ -30,14 +43,7 @@ public class User
 
         var world = new World("", 36, 36, 30, 0, 50, 0, 0, mapRects, objects);
 
-        return new User
-        {
-            Id = Guid.NewGuid(),
-            UserId = Guid.Parse(user.Id),
-            AppUser = user,
-            Player = new Player(user.UserName!),
-            World = world
-        };
+        return new User(Guid.Parse(user.Id), user, user.UserName!, world);
     }
 
     public void SetupNewPlayer(ApplicationUser user)

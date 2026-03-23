@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
-internal sealed class Move(CityVilleDbContext context) : AmfService<MoveRequest>
+public class Move(CityVilleDbContext context) : AmfService<MoveRequest>
 {
     public override async Task<ASObject> HandlePacket(MoveRequest request, Guid userId, CancellationToken cancellationToken)
     {
