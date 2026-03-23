@@ -9,16 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.QuestService;
 
-public class RequestManualQuests(CityVilleDbContext context, ILogger<RequestManualQuests> logger) : AmfService
+public class RequestManualQuests(CityVilleDbContext context, ILogger<RequestManualQuests> logger) : AmfService<RequestManualQuestsRequest>
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(RequestManualQuestsRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        if (@params.Length < 1)
-            return GatewayService.CreateEmptyResponse();
-
-        var quests = @params[0] as object[];
-
-        if (quests is null)
+        if (request.Quests is null || request.Quests.Length == 0)
             return GatewayService.CreateEmptyResponse();
 
         var user = await context.Set<User>()
@@ -34,32 +29,17 @@ public class RequestManualQuests(CityVilleDbContext context, ILogger<RequestManu
 
         var results = new List<ASObject>();
 
-        foreach (string questName in quests)
+        foreach (var questName in request.Quests)
         {
             var questItem = QuestSettingsManager.Instance.GetItem(questName);
 
             if (questItem is null)
             {
                 logger.LogError("Can't find quest {QuestName} in RequestManualQuests", questName);
-                results.Add(new ASObject
-                {
-                    ["errorType"] = 0,
-                    ["questName"] = questName,
-                    ["questStarted"] = false
-                });
                 continue;
             }
 
-            if (user.Quests.Any(x => x.Name == questName))
-            {
-                results.Add(new ASObject
-                {
-                    ["errorType"] = 0,
-                    ["questName"] = questName,
-                    ["questStarted"] = false
-                });
-                continue;
-            }
+            if (user.Quests.Any(x => x.Name == questName)) continue;
 
             if (questItem.RequiredLevel is not null && user.Player.Level < questItem.RequiredLevel) continue;
             if (questItem.RequiredPopulation is not null && user.World.Population < questItem.RequiredPopulation) continue;
@@ -108,4 +88,9 @@ public class RequestManualQuests(CityVilleDbContext context, ILogger<RequestManu
 
         return new CityVilleResponse().Data(results);
     }
+}
+
+public class RequestManualQuestsRequest
+{
+    [AmfParam(0)] public string[]? Quests { get; set; }
 }

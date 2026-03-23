@@ -18,9 +18,9 @@ internal sealed class Sell(CityVilleDbContext context) : AmfService<SellRequest>
             .ThenInclude(x => x!.Objects)
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
-        if (user.Player is null) throw new Exception($"User not found with id {userId}");
+        if (user?.Player is null) throw new Exception($"User not found with id {userId}");
 
         var world = user.GetWorld();
 
