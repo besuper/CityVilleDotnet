@@ -69,13 +69,30 @@ public class RequestManualQuests(CityVilleDbContext context, ILogger<RequestManu
 
             logger.LogDebug("Starting quest {QuestName}", questName);
 
-            var itemsToGive = QuestSettingsManager.QuestStartInventoryItem.GetValueOrDefault(questName);
+            var priceGranted = false;
 
-            if (itemsToGive is not null)
+            if (questItem.Init?.Functions is not null)
             {
-                foreach (var item in itemsToGive)
+                foreach (var function in questItem.Init.Functions)
                 {
-                    user.Player.AddItem(item);
+                    if (function.Name == "grantItemOnInit")
+                    {
+                        user.Player.AddItem(function.ItemName);
+                        priceGranted = true;
+                    }
+                }
+            }
+
+            if (!priceGranted)
+            {
+                var itemsToGive = QuestSettingsManager.QuestStartInventoryItem.GetValueOrDefault(questName);
+
+                if (itemsToGive is not null)
+                {
+                    foreach (var item in itemsToGive)
+                    {
+                        user.Player.AddItem(item);
+                    }
                 }
             }
 

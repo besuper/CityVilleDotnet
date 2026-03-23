@@ -67,7 +67,7 @@ public class QuestSettingsManager
         ["qt_russianresidence"] = ["res_russian"],
         ["qt_venetianresidence"] = ["lm_venetianpalace"],
     };
-
+    
     private static QuestSettingsManager? _instance;
     private static readonly object Lock = new();
     private readonly Dictionary<string, QuestItem> _items = new();

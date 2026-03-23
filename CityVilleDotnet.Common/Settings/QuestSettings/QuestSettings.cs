@@ -16,6 +16,8 @@ public class QuestItem
 
     [XmlElement("tasks")] public required TasksContainer Tasks { get; set; }
 
+    [XmlElement("init")] public InitContainer? Init { get; set; }
+
     [XmlElement("sequels")] public SequelsContainer? Sequels { get; set; }
 
     [XmlElement("resourceModifiers")] public ResourceModifiers? ResourceModifiers { get; set; }
@@ -53,6 +55,22 @@ public class QuestTask
     [XmlAttribute("type")] public string? Type { get; set; }
 
     [XmlAttribute("total")] public required string Total { get; set; }
+}
+
+[Serializable]
+public class InitContainer
+{
+    [XmlElement("function")] public List<InitFunction>? Functions { get; set; }
+}
+
+[Serializable]
+public class InitFunction
+{
+    [XmlAttribute("name")] public required string Name { get; set; }
+
+    [XmlAttribute("itemName")] public required string ItemName { get; set; }
+
+    [XmlAttribute("singleton")] public string? Singleton { get; set; }
 }
 
 [Serializable]
