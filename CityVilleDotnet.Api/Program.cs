@@ -15,6 +15,8 @@ using System.Text.Json.Serialization;
 using CityVilleDotnet.Api.Middleware;
 using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Utils;
+using FluentValidation;
+using FluentValidation.Resources;
 
 var builder = WebApplication.CreateBuilder();
 
@@ -64,6 +66,10 @@ foreach (var type in serviceTypes)
 }
 
 GatewayService.InitializeHandlers(executingAssembly);
+
+builder.Services.AddValidatorsFromAssembly(executingAssembly);
+
+ValidatorOptions.Global.LanguageManager.Culture = new System.Globalization.CultureInfo("en");
 
 builder.Services.AddRateLimiter(options =>
 {

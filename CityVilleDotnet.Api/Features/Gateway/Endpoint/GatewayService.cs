@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Enums;
+using FluentValidation;
 
 namespace CityVilleDotnet.Api.Features.Gateway.Endpoint;
 
@@ -137,6 +138,15 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
                         response = CreateEmptyResponse();
                     }
                 }
+                catch (ValidationException ve)
+                {
+                    var errors = string.Join("; ", ve.Errors.Select(e => $"{e.PropertyName}: {e.ErrorMessage}"));
+                    logger.LogWarning("Validation failed for {FunctionName}: {Errors}", functionName, errors);
+
+                    response = new CityVilleResponse().Error(GameErrorType.InvalidData).ErrorMessage(errors).ToObject();
+
+                    errorResponse = response;
+                }
                 catch (Exception e)
                 {
                     logger.LogError(e, "Error processing request for function {FunctionName} with params {@Params}", functionName, parameters);
@@ -174,6 +184,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
             return null;
 
         var instance = (AmfService)serviceProvider.GetRequiredService(classType);
+        instance.ServiceProvider = serviceProvider;
 
         return await instance.HandlePacket((object[])parameter, userId, cancellationToken);
     }

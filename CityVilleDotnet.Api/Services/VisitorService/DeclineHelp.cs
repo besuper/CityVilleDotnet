@@ -3,6 +3,7 @@ using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
+using FluentValidation;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,9 +13,6 @@ public sealed class DeclineHelp(CityVilleDbContext context) : AmfService<Decline
 {
     public override async Task<ASObject> HandlePacket(DeclineHelpRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(request.HelpOrder.SenderId) || string.IsNullOrEmpty(request.HelpOrder.RecipientId))
-            throw new Exception("SenderId or RecipientId can't be null");
-
         var user = await context.Set<User>()
             .Include(x => x.Player)
             .ThenInclude(x => x!.VisitorHelpOrders.Where(o =>
@@ -49,4 +47,13 @@ public class HelpOrder
 {
     [AmfParam("senderID")] public string SenderId { get; set; } = string.Empty;
     [AmfParam("recipientID")] public string RecipientId { get; set; } = string.Empty;
+}
+
+public class DeclineHelpValidator : AbstractValidator<DeclineHelpRequest>
+{
+    public DeclineHelpValidator()
+    {
+        RuleFor(x => x.HelpOrder.SenderId).NotEmpty().MaximumLength(16);
+        RuleFor(x => x.HelpOrder.RecipientId).NotEmpty().MaximumLength(16);
+    }
 }

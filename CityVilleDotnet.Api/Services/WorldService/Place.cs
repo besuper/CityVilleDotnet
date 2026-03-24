@@ -6,6 +6,7 @@ using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
+using FluentValidation;
 using FluorineFx;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
@@ -201,4 +202,12 @@ public class BuildingPlaceRequest
     [AmfParam("direction")] public int Direction { get; set; }
     [AmfParam("tempId")] public int TempId { get; set; }
     [AmfParam("id")] public int Id { get; set; }
+}
+
+public class PlaceValidator : AbstractValidator<PlaceRequest>
+{
+    public PlaceValidator()
+    {
+        RuleFor(x => x.Building.ItemName).NotEmpty().MaximumLength(64);
+    }
 }

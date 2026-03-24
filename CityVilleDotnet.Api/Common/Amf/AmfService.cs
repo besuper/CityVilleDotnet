@@ -3,15 +3,15 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
+using FluentValidation;
 using FluorineFx;
 
 namespace CityVilleDotnet.Api.Common.Amf;
 
 public class AmfService
 {
-    public AmfService()
-    {
-    }
+    internal IServiceProvider? ServiceProvider { get; set; }
+
     public virtual Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
         throw new Exception("Not implemented");
@@ -22,10 +22,19 @@ public abstract class AmfService<TRequest> : AmfService where TRequest : new()
 {
     private static readonly AmfPropertyInfo[] CachedProperties = BuildPropertyCache(typeof(TRequest));
 
-    public override Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
     {
         var request = MapRequest(@params);
-        return HandlePacket(request, userId, cancellationToken);
+
+        if (ServiceProvider?.GetService(typeof(IValidator<TRequest>)) is IValidator<TRequest> validator)
+        {
+            var result = await validator.ValidateAsync(request, cancellationToken);
+
+            if (!result.IsValid)
+                throw new ValidationException(result.Errors);
+        }
+
+        return await HandlePacket(request, userId, cancellationToken);
     }
 
     public abstract Task<ASObject> HandlePacket(TRequest request, Guid userId, CancellationToken cancellationToken);
