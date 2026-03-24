@@ -69,8 +69,8 @@ internal sealed class ProcessVisitsBatch(CityVilleDbContext context, ILogger<Pro
         var user = await context.Set<User>()
             .AsSplitQuery()
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects.Where(w => (w.ClassName == BuildingClassType.Business || w.ClassName == BuildingClassType.SocialBusiness) && (ids.Contains(w.WorldFlatId) || ids.Contains(w.TempId))))
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
+            .ThenInclude(x => x!.Objects.Where(w => ids.Contains(w.WorldFlatId) || ids.Contains(w.TempId)))
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user");
 
         foreach (var obj in user.GetWorld().Objects)
         {
