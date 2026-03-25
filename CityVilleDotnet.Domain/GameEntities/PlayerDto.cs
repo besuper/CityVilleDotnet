@@ -70,11 +70,15 @@ public class PlayerDto
     public bool ShowNpcCloud { get; set; }
 
     [JsonPropertyName("fastbuild")] public bool FastBuild { get; set; } = true;
+
+    [JsonPropertyName("storageComponent")] public ASObject StorageComponent { get; set; } = new();
+
+    [JsonPropertyName("additionalWareHouseSlots")] public int AdditionalWareHouseSlots { get; set; } = 0;
 }
 
 public static class PlayerDtoMapper
 {
-    public static PlayerDto ToDto(this Player model, World? playerWorld)
+    public static PlayerDto ToDto(this Player model, World playerWorld)
     {
         return new PlayerDto
         {
@@ -123,7 +127,7 @@ public static class PlayerDtoMapper
                 new ASObject
                 {
                     ["name"] = "completed_bridge",
-                    ["m_value"] = playerWorld?.Objects.Count(x => x.ClassName == BuildingClassType.Bridge),
+                    ["m_value"] = playerWorld.Objects.Count(x => x.ClassName == BuildingClassType.Bridge),
                     ["lastModifiedGlobalEngineTime"] = 0
                 }
             ],
@@ -136,7 +140,9 @@ public static class PlayerDtoMapper
             PaidEnergy = 0, // TODO
             EnergyModifiers = new List<object>(), // TODO
             FeatureData = new ASObject(new Dictionary<string, object>()),
-            ShowNpcCloud = true
+            ShowNpcCloud = true,
+            StorageComponent = playerWorld.ToStorageComponentDto(),
+            AdditionalWareHouseSlots = 0
         };
     }
 

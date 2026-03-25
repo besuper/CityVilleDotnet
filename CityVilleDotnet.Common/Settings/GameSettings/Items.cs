@@ -89,6 +89,7 @@ public class GameItem
     [XmlElement("bridgeparts")] public BridgePartsContainer? BridgeParts { get; set; }
     [XmlElement("keyword")] public List<string> Keywords { get; set; } = [];
     [XmlElement("mastery")] public required List<MasteryItem> MasteryItems { get; set; }
+    [XmlElement("storageUnit")] public StorageUnitItem? StorageUnit { get; set; }
 
     public bool HasKeyword(string keyword)
     {
@@ -275,6 +276,16 @@ public class MechanicItem
     [XmlAttribute("className")] public string? ClassName { get; set; }
     [XmlAttribute("explodeToRect")] public string? ExplodeToRect { get; set; }
     [XmlAttribute("macroPrefix")] public string? MacroPrefix { get; set; }
+}
+
+[Serializable]
+public class StorageUnitItem
+{
+    [XmlAttribute("name")] public string? Name { get; set; }
+    [XmlElement("storageType")] public string? StorageType { get; set; }
+    [XmlElement("storageKey")] public string? StorageKey { get; set; }
+    [XmlElement("initialCapacity")] public int InitialCapacity { get; set; }
+    [XmlElement("maxCapacity")] public int MaxCapacity { get; set; }
 }
 
 [Serializable]

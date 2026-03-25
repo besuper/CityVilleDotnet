@@ -1,6 +1,7 @@
 ﻿using CityVilleDotnet.Domain.Entities;
 using System.Text.Json.Serialization;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Domain.Enums;
 using FluorineFx;
 
 namespace CityVilleDotnet.Domain.GameEntities;
@@ -22,8 +23,11 @@ public class WorldDto
 
     [JsonPropertyName("world_id")] public required string WorldId { get; set; }
 
-    [JsonPropertyName("mostFrequentHelpers")] public ASObject MostFrequentHelpers { get; set; } = new();
-    [JsonPropertyName("currentThemeCollections")] public List<string> ThemeCollections { get; set; } = [];
+    [JsonPropertyName("mostFrequentHelpers")]
+    public ASObject MostFrequentHelpers { get; set; } = new();
+
+    [JsonPropertyName("currentThemeCollections")]
+    public List<string> ThemeCollections { get; set; } = [];
 }
 
 public static class WorldDtoMapper
@@ -67,7 +71,7 @@ public static class WorldDtoMapper
             })
         };
     }
-    
+
     public static ASObject ToCommoditySummaryDto(this World model)
     {
         var capacities = new Dictionary<string, int>();
@@ -75,12 +79,12 @@ public static class WorldDtoMapper
         foreach (var obj in model.Objects)
         {
             var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
-            
+
             if (gameItem?.Commodity is null || gameItem.Commodity.Capacity <= 0)
                 continue;
 
             var name = gameItem.Commodity.Name;
-            
+
             if (capacities.TryGetValue(name, out var existing))
                 capacities[name] = existing + gameItem.Commodity.Capacity;
             else
@@ -88,7 +92,7 @@ public static class WorldDtoMapper
         }
 
         var commodityObj = new ASObject();
-        
+
         foreach (var (name, capacity) in capacities)
         {
             commodityObj[name] = new ASObject
@@ -99,5 +103,45 @@ public static class WorldDtoMapper
         }
 
         return new ASObject { { "commodity", commodityObj } };
+    }
+
+    public static ASObject ToStorageComponentDto(this World model)
+    {
+        // TODO: Implement sendToStorage/placeFromStorage later
+        var mStorage = new ASObject();
+
+        foreach (var obj in model.Objects)
+        {
+            if (obj.ClassName != BuildingClassType.ItemStorage) continue;
+            
+            var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
+            
+            if (gameItem?.StorageUnit is null) continue;
+
+            var storageType = gameItem.StorageUnit.StorageType;
+            var storageKey = gameItem.StorageUnit.StorageKey;
+            
+            if (storageType is null || storageKey is null) continue;
+
+            if (!mStorage.ContainsKey(storageType))
+                mStorage[storageType] = new ASObject();
+
+            var byType = (ASObject)mStorage[storageType]!;
+
+            if (!byType.ContainsKey(storageKey))
+            {
+                byType[storageKey] = new ASObject
+                {
+                    ["m_storage"] = new ASObject(),
+                    ["m_capacity"] = gameItem.StorageUnit.InitialCapacity,
+                    ["m_maxCapacity"] = gameItem.StorageUnit.MaxCapacity
+                };
+            }
+        }
+
+        return new ASObject
+        {
+            ["m_storage"] = mStorage
+        };
     }
 }
