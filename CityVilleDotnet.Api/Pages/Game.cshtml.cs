@@ -14,7 +14,7 @@ namespace CityVilleDotnet.Api.Pages;
 [Authorize]
 public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbContext dbContext, IConfiguration configuration) : PageModel
 {
-    public static List<string> PreloadAssets = ["road/city/city04_SE.png", "dialogs/MarketAssets.swf", "dialogs/InventoryAssets.swf", "dialogs/QuestAssets.swf", "dialogs/TooltipAssets.swf", "dialogs/PopulationAssets.swf"];
+    public static List<string> PreloadAssets = ["road/city/city04_SE.png", "dialogs/MarketAssets.swf", "dialogs/Market3Assets.swf", "dialogs/ASwingAssets.swf", "dialogs/ScrollingListAssets.swf", "dialogs/InventoryAssets.swf", "dialogs/QuestAssets.swf", "dialogs/TooltipAssets.swf", "dialogs/PopulationAssets.swf"];
 
     public string FriendList { get; set; } = "[]";
     public string Uid { get; set; } = "333";
