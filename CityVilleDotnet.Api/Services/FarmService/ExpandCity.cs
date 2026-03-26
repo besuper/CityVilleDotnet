@@ -1,6 +1,7 @@
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
+using FluentValidation;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
@@ -9,48 +10,42 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.FarmService;
 
-// TODO: Rework this transaction
 public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityRequest>
 {
+    private const string PermitName = "permits";
+
     public override async Task<ASObject> HandlePacket(ExpandCityRequest request, Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
             .Include(x => x.Player)
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x!.Objects) // FIXME: After removing WorldFlatId, remove this
             .Include(x => x.World)
-            .ThenInclude(x => x!.MapRects)
+            .ThenInclude(x => x!.MapRects.Where(m => m.X == request.Coordinates.X && m.Y == request.Coordinates.Y))
             .Include(x => x.Player)
-            .ThenInclude(x => x!.InventoryItems)
+            .ThenInclude(x => x!.InventoryItems.Where(i => i.Name == PermitName))
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
-        if (user?.Player is null)
-            throw new Exception("Can't find user");
+        if (user?.Player is null) throw new Exception("Can't find user");
 
         var item = GameSettingsManager.Instance.GetItem(request.ItemName);
 
-        if (item is null)
-            throw new Exception($"Can't find item {request.ItemName}");
-
-        if (item.Height is null || item.Width is null)
-            throw new Exception($"Item {request.ItemName} has no height or width defined");
+        if (item is null) throw new Exception($"Can't find item {request.ItemName}");
+        if (item.Height is null || item.Width is null) throw new Exception($"Item {request.ItemName} has no height or width defined");
 
         var permitData = user.Player.GetExpansionData();
 
         if (permitData is null) throw new Exception("Can't find permit data");
 
         var requiredPermit = permitData[1];
-        const string permitName = "permits";
 
-        if (user.Player.CountInventoryItem(permitName) < requiredPermit)
-        {
-            throw new Exception($"You need {requiredPermit} {permitName} to expand this city");
-        }
+        if (user.Player.CountInventoryItem(PermitName) < requiredPermit)
+            throw new Exception($"You need {requiredPermit} {PermitName} to expand this city");
 
         var world = user.GetWorld();
 
-        // Add the new map area
+        if (world.MapRects.Count > 0) throw new Exception("Map expansion already exist");
 
         var newMapRect = new MapRect
         {
@@ -62,14 +57,12 @@ public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityReque
 
         world.AddMapRect(newMapRect);
 
-        // Add new trees
+        var remappedIds = new List<object>();
 
-        var remapedIds = new List<object>();
-
-        foreach (ASObject tree in request.Trees)
+        foreach (var tree in request.Trees)
         {
             var newTree = new WorldObject(
-                (string)tree["itemName"],
+                tree.ItemName,
                 BuildingClassType.Wilderness,
                 null,
                 false,
@@ -78,30 +71,30 @@ public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityReque
                 0,
                 ServerUtils.GetCurrentTime(),
                 ServerUtils.GetCurrentTime(),
-                Convert.ToInt32(tree["x"]),
-                Convert.ToInt32(tree["y"]),
+                tree.X,
+                tree.Y,
                 0,
                 world.GetAvailableBuildingId()
             );
 
             world.AddBuilding(newTree);
 
-            remapedIds.Add(new
+            remappedIds.Add(new
             {
-                id = Convert.ToInt32(tree["id"]),
+                id = tree.Id,
                 newId = newTree.WorldFlatId
             });
         }
 
         user.Player.IncrementExpansionsPurchased();
-        var removedItem = user.Player.RemoveItem(permitName, requiredPermit);
+        var removedItem = user.Player.RemoveItem(PermitName, requiredPermit);
 
         if (removedItem is not null)
             context.Set<InventoryItem>().Remove(removedItem);
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse().Data(remapedIds);
+        return new CityVilleResponse().Data(remappedIds);
     }
 }
 
@@ -109,11 +102,28 @@ public sealed class ExpandCityRequest
 {
     [AmfParam(0)] public string ItemName { get; set; } = string.Empty;
     [AmfParam(1)] public ExpandCityCoordinates Coordinates { get; set; } = new();
-    [AmfParam(2)] public object[] Trees { get; set; } = [];
+    [AmfParam(2)] public ExpandCityTree[] Trees { get; set; } = [];
 }
 
 public class ExpandCityCoordinates
 {
     [AmfParam("x")] public int X { get; set; }
     [AmfParam("y")] public int Y { get; set; }
+}
+
+public class ExpandCityTree
+{
+    [AmfParam("id")] public int Id { get; set; }
+    [AmfParam("itemName")] public string ItemName { get; set; } = string.Empty;
+    [AmfParam("x")] public int X { get; set; }
+    [AmfParam("y")] public int Y { get; set; }
+}
+
+public class ExpandCityRequestValidator : AbstractValidator<ExpandCityRequest>
+{
+    public ExpandCityRequestValidator()
+    {
+        RuleFor(x => x.ItemName).NotEmpty().MaximumLength(64);
+        RuleForEach(x => x.Trees).ChildRules(tree => { tree.RuleFor(x => x.ItemName).NotEmpty().MaximumLength(64); });
+    }
 }
