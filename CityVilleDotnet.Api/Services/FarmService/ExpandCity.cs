@@ -41,7 +41,7 @@ public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityReque
         if (permitData is null) throw new Exception("Can't find permit data");
 
         var requiredPermit = permitData[1];
-        var permitName = item.Unlock ?? "";
+        const string permitName = "permits";
 
         if (user.Player.CountInventoryItem(permitName) < requiredPermit)
         {

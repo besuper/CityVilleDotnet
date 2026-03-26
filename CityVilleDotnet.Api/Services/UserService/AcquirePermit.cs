@@ -39,7 +39,7 @@ public class AcquirePermit(CityVilleDbContext context) : AmfService
             return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
 
         player.RemoveCash(permitCost);
-        player.AddItem(gameItem.Unlock, permitData[1]);
+        player.AddItem("permits", permitData[1]);
 
         await context.SaveChangesAsync(cancellationToken);
 
