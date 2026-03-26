@@ -20,8 +20,6 @@ public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityReque
             .AsSplitQuery()
             .Include(x => x.Player)
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects) // FIXME: After removing WorldFlatId, remove this
-            .Include(x => x.World)
             .ThenInclude(x => x!.MapRects.Where(m => m.X == request.Coordinates.X && m.Y == request.Coordinates.Y))
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems.Where(i => i.Name == PermitName))

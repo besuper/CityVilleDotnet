@@ -14,6 +14,7 @@ public class WorldConfiguration : IEntityTypeConfiguration<World>
         builder.Property(x => x.SizeX);
         builder.Property(x => x.SizeY);
         builder.Property(x => x.WorldName).HasMaxLength(32);
+        builder.Property(x => x.NextBuildingId);
 
         builder.HasMany(x => x.MapRects);
         builder.HasMany(x => x.Objects);

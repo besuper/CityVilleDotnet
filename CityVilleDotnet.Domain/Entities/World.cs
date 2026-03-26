@@ -16,6 +16,7 @@ public class World
     public int PopulationMin { get; set; }
     public int PopulationMax { get; set; }
     public int PotentialPopulation { get; set; }
+    public int NextBuildingId { get; private set; }
     public List<string> ThemeCollections { get; set; } = [];
     public List<MapRect> MapRects { get; set; } = [];
     public List<WorldObject> Objects { get; set; } = [];
@@ -36,6 +37,7 @@ public class World
         PotentialPopulation = potentialPopulation;
         MapRects = mapRects;
         Objects = objects;
+        NextBuildingId = objects.Count > 0 ? objects.Max(o => o.WorldFlatId) + 1 : 1;
     }
 
     public void AddBuilding(WorldObject obj)
@@ -102,17 +104,7 @@ public class World
 
     public int GetAvailableBuildingId()
     {
-        for (var i = Objects.Count; i < Objects.Count + 1000; i++)
-        {
-            var building = Objects.FirstOrDefault(x => x.WorldFlatId == i);
-
-            if (building is null)
-            {
-                return i;
-            }
-        }
-
-        return -1;
+        return NextBuildingId++;
     }
 
     public void RemoveBuilding(WorldObject obj)
