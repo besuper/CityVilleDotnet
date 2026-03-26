@@ -78,8 +78,8 @@ public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityReque
                 0,
                 ServerUtils.GetCurrentTime(),
                 ServerUtils.GetCurrentTime(),
-                (int)tree["x"],
-                (int)tree["y"],
+                Convert.ToInt32(tree["x"]),
+                Convert.ToInt32(tree["y"]),
                 0,
                 world.GetAvailableBuildingId()
             );
@@ -88,7 +88,7 @@ public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityReque
 
             remapedIds.Add(new
             {
-                id = (int)tree["id"],
+                id = Convert.ToInt32(tree["id"]),
                 newId = newTree.WorldFlatId
             });
         }
