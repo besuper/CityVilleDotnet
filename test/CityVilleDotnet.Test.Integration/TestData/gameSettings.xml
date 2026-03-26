@@ -105,6 +105,18 @@
             <gates/>
             <mastery/>
         </item>
+        <item name="expansion_18x18" type="expansion" height="18" width="18">
+            <sizeX>18</sizeX>
+            <sizeY>18</sizeY>
+            <gates/>
+            <mastery/>
+        </item>
+        <item name="tree_oak" type="wilderness">
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+            <mastery/>
+        </item>
     </items>
 
     <levels_cv_level_regrade_var_0>

@@ -15,7 +15,7 @@ public static class WorldFactory
         int? populationMax = null,
         int? populationCap = null,
         int? potentialPopulation = null,
-        List<MapRect>? mapRects = null,
+        List<Domain.Entities.MapRect>? mapRects = null,
         List<Domain.Entities.WorldObject>? objects = null)
     {
         return new Domain.Entities.World(

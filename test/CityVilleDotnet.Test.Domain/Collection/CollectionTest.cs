@@ -52,9 +52,9 @@ public class CollectionTest
         var faker = new Faker();
         var collection = faker.Collection();
 
-        collection.AddItem(faker.Lorem.Word());
-        collection.AddItem(faker.Lorem.Word());
-        collection.AddItem(faker.Lorem.Word());
+        collection.AddItem(faker.Random.String2(64));
+        collection.AddItem(faker.Random.String2(64));
+        collection.AddItem(faker.Random.String2(64));
 
         collection.Items.Count.Should().Be(3);
     }
