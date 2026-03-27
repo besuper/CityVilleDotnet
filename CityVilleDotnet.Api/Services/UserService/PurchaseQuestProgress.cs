@@ -1,9 +1,10 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
-using CityVilleDotnet.Api.Features.Gateway.Endpoint;
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
+using FluentValidation;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,20 +16,36 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
-            .Include(x => x.Quests)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.Player)
-            .Include(x => x.World)
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x!.SeenFlags)
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.InventoryItems)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't to find user with UserId");
 
         logger.LogDebug("Quest {QuestName} at {TaskIndex} is purchased", request.QuestName, request.TaskIndex);
 
         var currentQuest = user.Quests.FirstOrDefault(x => x.Name == request.QuestName && x.QuestType == QuestType.Active);
 
-        if (currentQuest is null)
-            throw new Exception("Quest not found");
+        if (currentQuest is null) throw new Exception("Quest not found");
 
-        // TODO: Check cashcost from task in QuestSettings
+        var questItem = QuestSettingsManager.Instance.GetItem(request.QuestName);
+
+        if (questItem is null) throw new Exception("Quest settings not found");
+
+        var task = questItem.Tasks.Tasks[request.TaskIndex];
+        var cashCost = task.CashCost ?? 0;
+
+        if (cashCost > 0)
+        {
+            var player = user.GetPlayer();
+
+            if (player.Cash < cashCost)
+                return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
+
+            player.RemoveCash(cashCost);
+        }
+
         currentQuest.PurchaseProgression(request.TaskIndex);
 
         user.CheckCompletedQuests();
@@ -46,4 +63,12 @@ public class PurchaseQuestProgressRequest
 {
     [AmfParam(0)] public string QuestName { get; set; } = string.Empty;
     [AmfParam(1)] public int TaskIndex { get; set; }
+}
+
+public class PurchaseQuestProgressValidator : AbstractValidator<PurchaseQuestProgressRequest>
+{
+    public PurchaseQuestProgressValidator()
+    {
+        RuleFor(x => x.QuestName).NotEmpty().MaximumLength(64);
+    }
 }

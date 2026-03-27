@@ -55,6 +55,15 @@ public class QuestTask
     [XmlAttribute("type")] public string? Type { get; set; }
 
     [XmlAttribute("total")] public required string Total { get; set; }
+
+    [XmlIgnore] public int? CashCost { get; set; }
+
+    [XmlAttribute("cashcost")]
+    public string? CashCostString
+    {
+        get => CashCost?.ToString();
+        set => CashCost = string.IsNullOrEmpty(value) ? null : int.Parse(value);
+    }
 }
 
 [Serializable]
