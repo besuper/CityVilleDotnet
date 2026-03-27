@@ -19,7 +19,7 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
             .ThenInclude(x => x!.LotOrders.Where(o =>
                 o.OrderState == OrderState.Pending
                 && o.TransmissionStatus == TransmissionStatus.Received
-                && o.SenderId == request.SenderId
+                && o.SenderId == request.SenderId.ToString() // FIXME: Change all IDs to int
                 && o.LotId == request.LotId))
             .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
@@ -48,7 +48,7 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
             .ThenInclude(x => x.Locations)
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
-            .Where(x => x.Player!.Uid == request.SenderId)
+            .Where(x => x.Player!.Snuid == request.SenderId)
             .Select(x => x.Player)
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -83,7 +83,7 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
         receiveUser.World.ReplaceBuildingFromLotOrder(lotOrder);
 
         var newLocation = senderFranchise.AddLocation(lotOrder, gameItem.CommodityRequired ?? 1);
-        newBuilding.SetFranchiseLocation(newLocation, request.SenderId);
+        newBuilding.SetFranchiseLocation(newLocation, request.SenderId.ToString());
 
         senderPlayer.AddItem(gameItem.HeadquartersName);
 
@@ -95,6 +95,6 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
 
 public class AcceptOrderRequest
 {
-    [AmfParam(0)] public string SenderId { get; set; } = string.Empty;
+    [AmfParam(0)] public int SenderId { get; set; }
     [AmfParam(1)] public int LotId { get; set; }
 }

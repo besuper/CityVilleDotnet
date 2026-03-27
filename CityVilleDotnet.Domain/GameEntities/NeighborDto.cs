@@ -41,7 +41,7 @@ public static class NeighborDtoMapper
     {
         return new NeighborDto()
         {
-            Uid = model.FriendUser.Player.Uid,
+            Uid = model.FriendUser.Player.Snuid.ToString(),
             Zid = model.FriendUser.Player.Snuid,
             Snuid = model.FriendUser.Player.Snuid,
             Snid = model.FriendUser.Player.Snuid,

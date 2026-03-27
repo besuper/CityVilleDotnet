@@ -4,7 +4,6 @@ using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
 using CityVilleDotnet.Domain.Enums;
 
 namespace CityVilleDotnet.Api.Services.UserService;
@@ -44,23 +43,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .ThenInclude(x => x!.Masteries)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
-        if (user is null)
-        {
-            // Create a new player
-            var appUser = await context.Set<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId.ToString(), cancellationToken) ?? throw new Exception("Can't find ApplicationUser with UserId");
-            // FIXME: Use start world inside GameSettings
-            var jsonContent = await File.ReadAllTextAsync("Resources/startWorld.json", cancellationToken);
-
-            var defaultWorld = JsonSerializer.Deserialize<WorldDto>(jsonContent) ?? throw new Exception("WorldDto can't be null");
-
-            user = User.CreateNewPlayer(defaultWorld, appUser);
-            user.SetupNewPlayer(appUser);
-
-            await context.AddAsync(user, cancellationToken);
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
-        if (user.Player is null)
+        if (user?.Player is null)
             throw new Exception("Player not initialized correctly");
 
         // Handle energy regeneration

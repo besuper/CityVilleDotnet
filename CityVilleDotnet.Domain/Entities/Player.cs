@@ -10,7 +10,6 @@ namespace CityVilleDotnet.Domain.Entities;
 public class Player
 {
     public Guid Id { get; }
-    public string Uid { get; set; } = "333";
     public int Snuid { get; set; }
     public int LastTrackingTimestamp { get; private set; }
     public List<object> PlayerNews { get; set; } = [];
@@ -285,8 +284,6 @@ public class Player
     {
         IsNew = false;
         FirstDay = false;
-
-        Uid = $"{Snuid}";
     }
 
     private void ComputeSocialLevel()
@@ -388,7 +385,7 @@ public class Player
             var debugName = gameItem.Name;
             var modifierTable = GameSettingsManager.Instance.GetRandomModifier(itemModifier.TableName);
             var rollRange = modifierTable?.RollRange ?? 99;
-            var secureRand = SecureRand.GenerateRand(0, rollRange, RollCounter, Uid);
+            var secureRand = SecureRand.GenerateRand(0, rollRange, RollCounter, Snuid.ToString());
 
             StaticLogger.Current.LogDebug("SecureRand for {DebugName}: rollCounter={PlayerRollCounter} => {SecureRand}", debugName, RollCounter, secureRand);
 

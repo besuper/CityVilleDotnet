@@ -27,7 +27,7 @@ public sealed class PlaceOrder(CityVilleDbContext context) : AmfService<PlaceOrd
         // TODO: Check friendship
         var receiverPlayer = await context.Set<Player>()
             .Include(x => x.LotOrders)
-            .FirstOrDefaultAsync(x => x.Uid == order.RecipientId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Snuid == int.Parse(order.RecipientId), cancellationToken);
 
         if (receiverPlayer is null) throw new Exception("Can't find player with recipientId");
 

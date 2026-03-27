@@ -24,7 +24,7 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
             .Include(x => x.World)
             .ThenInclude(x => x!.MapRects)
             .Include(x => x.Player)
-            .FirstOrDefaultAsync(x => x.Player!.Uid == request.OwnerId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Player!.Snuid == request.OwnerId, cancellationToken);
 
         if (userToLoad is null)
             throw new Exception($"Unable to find user with Player.Uid {request.OwnerId}");
@@ -47,6 +47,6 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
 
 public class OpenWorldRequest
 {
-    [AmfParam(0)] public string OwnerId { get; set; } = string.Empty;
+    [AmfParam(0)] public int OwnerId { get; set; }
     [AmfParam(1)] public string WorldName { get; set; } = string.Empty;
 }

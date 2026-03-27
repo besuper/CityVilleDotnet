@@ -12,10 +12,8 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
         builder.Property(x => x.Id)
             .ValueGeneratedNever();
 
-        builder.Property(x => x.Uid).HasMaxLength(64);
         builder.Property(x => x.Snuid).ValueGeneratedOnAdd();
 
-        builder.HasIndex(x => x.Uid);
         builder.HasIndex(x => x.Snuid);
         builder.Property(x => x.LastTrackingTimestamp);
         builder.Property(x => x.Gold);

@@ -82,7 +82,7 @@ public static class PlayerDtoMapper
     {
         return new PlayerDto
         {
-            Uid = model.Uid,
+            Uid = model.Snuid.ToString(),
             Cash = model.Cash,
             Collections = new ASObject(model.Collections
                 .GroupBy(item => item.Name)

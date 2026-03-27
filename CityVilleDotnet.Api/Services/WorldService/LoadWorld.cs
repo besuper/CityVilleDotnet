@@ -21,7 +21,7 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
             .Include(x => x.World)
             .ThenInclude(x => x!.MapRects)
             .Include(x => x.Player)
-            .FirstOrDefaultAsync(x => x.Player!.Uid.ToString() == request.TargetUsedId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Player!.Snuid == request.TargetUsedId, cancellationToken);
 
         if (userToLoad is null)
             throw new Exception($"Unable to find user with Player.Uid {request.TargetUsedId}");
@@ -55,5 +55,5 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
 
 public class LoadWorldRequest
 {
-    [AmfParam(0)] public string TargetUsedId { get; set; } = string.Empty;
+    [AmfParam(0)] public int TargetUsedId { get; set; }
 }

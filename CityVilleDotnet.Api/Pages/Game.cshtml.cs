@@ -44,7 +44,7 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         if (user?.Player is not null)
         {
-            Uid = user.Player.Uid;
+            Uid = user.Player.Snuid.ToString();
             UserName = user.Player.Username;
             Level = user.Player.Level;
             FriendList = JsonSerializer.Serialize(user.GetSocialNetworkUserFriendsList($"{Request.Scheme}://{Request.Host}{Request.PathBase}"), new JsonSerializerOptions { WriteIndented = false, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
