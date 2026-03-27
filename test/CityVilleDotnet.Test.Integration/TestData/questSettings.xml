@@ -4,6 +4,7 @@
         <tasks>
             <task action="seenQuest" type="qm_test_quest" total="1"/>
             <task action="countWorldObjectByName" type="bus_bakery" total="1"/>
+            <task action="countWorldObjectByName" type="mun_townhall" total="500" cashcost="50" />
         </tasks>
         <resourceModifiers>
             <questRewards xp="10" gold="100"/>

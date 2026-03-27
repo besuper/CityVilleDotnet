@@ -1,3 +1,4 @@
+using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ public class DatabaseFixture : IAsyncLifetime
 
         using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
+        StaticLogger.Configure(loggerFactory);
         GameSettingsManager.Instance.Initialize(loggerFactory.CreateLogger<GameSettingsManager>(), Path.Combine(testDataPath, "gameSettings.xml"));
         QuestSettingsManager.Instance.Initialize(loggerFactory.CreateLogger<QuestSettingsManager>(), Path.Combine(testDataPath, "questSettings.xml"));
     }
