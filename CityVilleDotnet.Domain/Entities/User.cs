@@ -218,4 +218,11 @@ public class User
     {
         return Friends.Select(friend => friend.ToSocialNetworkUserDto(baseUrl)).ToList();
     }
+
+    public Player GetPlayer()
+    {
+        if (Player is null) throw new Exception("Player is not loaded");
+
+        return Player;
+    }
 }

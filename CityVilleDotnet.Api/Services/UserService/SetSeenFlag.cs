@@ -2,6 +2,7 @@
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
+using FluentValidation;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,16 +12,15 @@ public class SetSeenFlag(CityVilleDbContext context, ILogger<SetSeenFlag> logger
 {
     public override async Task<ASObject> HandlePacket(SetSeenFlagRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        var player = await context.Set<User>()
+        var user = await context.Set<User>()
             .Where(x => x.UserId == userId)
             .Include(x => x.Player)
             .ThenInclude(x => x!.SeenFlags)
-            .Select(x => x.Player)
-            .FirstOrDefaultAsync(cancellationToken) ?? throw new Exception("Can't to find player with UserId");
+            .FirstOrDefaultAsync(cancellationToken) ?? throw new Exception("Can't to find user");
 
         logger.LogDebug("Set seen flag for {FlagName}", request.FlagName);
 
-        player.SetSeenFlag(request.FlagName);
+        user.GetPlayer().SetSeenFlag(request.FlagName);
 
         await context.SaveChangesAsync(cancellationToken);
 
@@ -31,4 +31,12 @@ public class SetSeenFlag(CityVilleDbContext context, ILogger<SetSeenFlag> logger
 public class SetSeenFlagRequest
 {
     [AmfParam(0)] public string FlagName { get; set; } = string.Empty;
+}
+
+public class SetSeenFlagValidator : AbstractValidator<SetSeenFlagRequest>
+{
+    public SetSeenFlagValidator()
+    {
+        RuleFor(x => x.FlagName).NotEmpty().MaximumLength(64);
+    }
 }
