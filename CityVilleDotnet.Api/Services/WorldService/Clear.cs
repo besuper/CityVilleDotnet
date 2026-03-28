@@ -47,7 +47,7 @@ internal sealed class Clear(CityVilleDbContext context) : AmfService<ClearReques
             }
         }
 
-        var secureRands = user.Player!.CollectDoobersRewards(obj.ItemName, obj.ClassName);
+        var secureRands = user.Player!.CollectDoobersRewards(obj.ItemName);
 
         // TODO: Implement remove franchise
         world.RemoveBuilding(obj);

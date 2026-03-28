@@ -45,7 +45,7 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context) : AmfSer
             var obj = world.GetBuildingById(request.WorldObjectId) ?? throw new Exception($"Can't find building with id {request.WorldObjectId}");
 
             obj.Harvest();
-            user.Player!.CollectDoobersRewards(obj.ContractName ?? obj.ItemName, obj.ClassName);
+            user.Player!.CollectDoobersRewards(obj.ContractName ?? obj.ItemName);
 
             user.HandleQuestsProgress("harvestByClass", className: obj.ClassName.ToString());
 

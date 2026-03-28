@@ -42,13 +42,11 @@ internal sealed class HarvestState(CityVilleDbContext context) : AmfService<Harv
         }
 
         obj.Harvest();
-        user.Player.CollectDoobersRewards(obj.ContractName ?? obj.ItemName, obj.ClassName);
+        user.Player.CollectDoobersRewards(obj.GetItemName());
 
-        obj.Close();
-
-        user.HandleQuestsProgress("harvestByClass", className: obj.ClassName.ToString());
-        user.HandleQuestsProgress("harvestBusinessByName", itemName: obj.ItemName);
-        user.HandleQuestsProgress("harvestBusinessByClass", className: obj.ClassName.ToString());
+        user.HandleQuestsProgress("harvestByClass", className: obj.GetClassName().ToString());
+        user.HandleQuestsProgress("harvestBusinessByName", itemName: obj.GetItemName());
+        user.HandleQuestsProgress("harvestBusinessByClass", className: obj.GetClassName().ToString());
         user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);

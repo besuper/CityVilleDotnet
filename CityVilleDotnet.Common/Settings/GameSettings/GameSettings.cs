@@ -14,6 +14,7 @@ public class GameSettings
     [XmlElement("farming")] public required FarmingSettings Farming { get; set; }
 
     [XmlElement("randomModifierTables")] public required RandomModifierTables Modifiers { get; set; }
+    [XmlElement("randomModifierPacks")] public RandomModifierPacksContainer? ModifierPacks { get; set; }
     [XmlElement("collections")] public required CollectionContainer Collections { get; set; }
     [XmlElement("expansionRequirements")] public required ExpansionsGate Expansions { get; set; }
     [XmlElement("worldRects")] public required WorldRectsContainer WorldRects { get; set; }

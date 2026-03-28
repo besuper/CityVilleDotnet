@@ -34,6 +34,8 @@ internal sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequ
 
         if (obj.Builds is null)
             throw new Exception($"Can't find `builds` {obj}");
+        
+        var constructionItemName = obj.ItemName;
 
         var createdObjects = obj.FinishConstruction();
 
@@ -48,8 +50,7 @@ internal sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequ
         user.HandleQuestsProgress(""); // Empty actionType to force recheck counts
         user.CheckCompletedQuests();
 
-        // Make sure to call doobers after finishing construction
-        user.Player!.CollectDoobersRewards(obj.ItemName, obj.ClassName);
+        user.Player!.CollectDoobersRewards(constructionItemName);
 
         await context.SaveChangesAsync(cancellationToken);
 

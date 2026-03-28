@@ -11,6 +11,7 @@ public class GameSettingsManager
     private static readonly object Lock = new();
     private readonly Dictionary<string, GameItem?> _items;
     private readonly Dictionary<string, RandomModifierTable> _randomModifiers;
+    private readonly Dictionary<string, RandomModifierPack> _randomModifierPacks;
     private readonly Dictionary<string, WorldRectItem> _worldRects;
     private Dictionary<string, object> _settings;
     private List<LevelItem> _levels = [];
@@ -23,6 +24,7 @@ public class GameSettingsManager
     {
         _items = new Dictionary<string, GameItem?>();
         _randomModifiers = new Dictionary<string, RandomModifierTable>();
+        _randomModifierPacks = new Dictionary<string, RandomModifierPack>();
         _worldRects = new Dictionary<string, WorldRectItem>();
         _settings = new Dictionary<string, object>();
         _isInitialized = false;
@@ -90,6 +92,14 @@ public class GameSettingsManager
                 }
             }
 
+            if (gameSettings.ModifierPacks?.Packs is not null)
+            {
+                foreach (var pack in gameSettings.ModifierPacks.Packs)
+                {
+                    _randomModifierPacks[pack.Id] = pack;
+                }
+            }
+
             _levels = gameSettings.Levels.Levels;
             _reputationLevels = gameSettings.Reputation.Levels;
 
@@ -114,6 +124,7 @@ public class GameSettingsManager
         logger.LogInformation("Loaded {LevelsCount} levels", _levels.Count);
         logger.LogInformation("Loaded {ReputationLevelsCount} social levels", _reputationLevels.Count);
         logger.LogInformation("Loaded {RandomModifiersCount} random modifiers", _randomModifiers.Count);
+        logger.LogInformation("Loaded {RandomModifierPacksCount} random modifier packs", _randomModifierPacks.Count);
         logger.LogInformation("Loaded {CollectionsCount} collections", _collections.Count);
         logger.LogInformation("Loaded {WorldRectsCount} world rects", _worldRects.Count);
         logger.LogInformation("Loaded {ExpansionsCount} expansions", _expansions.Count);
@@ -135,6 +146,14 @@ public class GameSettingsManager
             throw new InvalidOperationException("GameSettingsManager not initialized");
 
         return _randomModifiers.TryGetValue(name, out var item) ? item : null;
+    }
+
+    public List<RandomModifier>? GetRandomModifierPackModifiers(string packId)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return _randomModifierPacks.TryGetValue(packId, out var pack) ? pack.Modifiers : null;
     }
 
     public IReadOnlyCollection<LevelItem> GetLevels()

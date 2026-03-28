@@ -80,7 +80,8 @@ public class GameItem
 
     [XmlElement("commodity")] public CommodityItem? Commodity { get; set; }
 
-    [XmlElement("randomModifiers")] public RandomModifiers? RandomModifiers { get; set; }
+    [XmlElement("randomModifiers")] public List<RandomModifiers> RandomModifiersList { get; set; } = [];
+    [XmlElement("randomModifierGroups")] public RandomModifierGroupsContainer? RandomModifierGroups { get; set; }
     [XmlElement("energyCost")] public EnergyCost? EnergyCost { get; set; }
     [XmlElement("mechanics")] public MechanicsContainer? Mechanics { get; set; }
     [XmlElement("gates")] public required GatesContainer Gates { get; set; }

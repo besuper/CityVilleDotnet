@@ -63,7 +63,7 @@ internal sealed class Build(CityVilleDbContext context) : AmfService<BuildReques
 
         if (obj.Stage != gameItem.NumberOfStages)
         {
-            user.Player!.CollectDoobersRewards(obj.ItemName, obj.ClassName);
+            user.Player!.CollectDoobersRewards(obj.TargetBuildingName!, construction: true);
         }
 
         await context.SaveChangesAsync(cancellationToken);

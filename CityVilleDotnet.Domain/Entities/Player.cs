@@ -343,6 +343,11 @@ public class Player
         PremiumGoods += amount;
     }
 
+    public void AddCash(int cash)
+    {
+        Cash += cash;
+    }
+
     public void SetSeenFlag(string flag)
     {
         if (!SeenFlags.Any(x => x.Key == flag))
@@ -361,33 +366,111 @@ public class Player
         ExpansionsPurchased++;
     }
 
-    // From Player::processRandomModifiersFromConfig
-    public List<int> CollectDoobersRewards(string itemName, BuildingClassType classType)
+    // From Player::processRandomModifiers → processRandomModifiersWithTable → processRandomModifiersFromConfig
+    public List<int> CollectDoobersRewards(string itemName, string modifierGroupName = "default", int coinMultiplier = 1, bool construction = false)
     {
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
-
-        if (gameItem?.RandomModifiers?.Modifiers is null) return [];
-
-        // From Player::processRandomModifiers
-        var modifiers = gameItem.RandomModifiers.Modifiers;
-
-        if (classType == BuildingClassType.ConstructionSite)
-        {
-            modifiers = modifiers.Where(m => m.AllowOnBuild || m.Type == "xp").ToList();
-        }
+        if (gameItem is null) return [];
 
         var secureRands = new List<int>();
 
+        // From Player::selectLocalRandomModifiers
+        var modifiers = SelectRandomModifiers(gameItem, modifierGroupName, secureRands);
+
+        if (modifiers is null || modifiers.Count == 0) return secureRands;
+
+        // From Player::processRandomModifiersWithTable with (defaultenergyactionpack)
+        var packModifiers = GameSettingsManager.Instance.GetRandomModifierPackModifiers("defaultenergyactionpack");
+
+        if (packModifiers is not null && packModifiers.Count > 0)
+            modifiers.AddRange(packModifiers);
+
+        // process each modifier (processRandomModifiersFromConfig)
+        ProcessModifiers(gameItem, modifiers, secureRands, coinMultiplier, construction);
+
+        return secureRands;
+    }
+
+    // From Player::selectLocalRandomModifiers + chooseRandomModifiersXml
+    private List<RandomModifier>? SelectRandomModifiers(GameItem gameItem, string modifierGroupName, List<int> secureRands)
+    {
+        var groups = gameItem.RandomModifierGroups?.Groups;
+
+        if (groups is not null && groups.Count > 0)
+        {
+            var group = groups.FirstOrDefault(g => g.Name == modifierGroupName);
+
+            if (group?.Entries is not null && group.Entries.Count > 0)
+            {
+                // choose which modifier set to use (chooseRandomModifiersXml)
+                IncrementRollCounter();
+
+                var secureRand = SecureRand.GenerateRand(0, 99, RollCounter, Snuid.ToString());
+                secureRands.Add(secureRand);
+
+                StaticLogger.Current.LogDebug("RandomModifierGroup roll for {ItemName} group {GroupName}: rollCounter={RollCounter} => {SecureRand}", gameItem.Name, modifierGroupName, RollCounter, secureRand);
+
+                double runningPercent = 0;
+                string? selectedName = null;
+
+                foreach (var entry in group.Entries)
+                {
+                    runningPercent += entry.Percent;
+
+                    if (secureRand < runningPercent)
+                    {
+                        selectedName = entry.Name;
+                        break;
+                    }
+                }
+
+                if (selectedName is not null)
+                {
+                    var namedModifiers = gameItem.RandomModifiersList.FirstOrDefault(rm => rm.Name == selectedName);
+
+                    if (namedModifiers?.Modifiers is not null)
+                        return namedModifiers.Modifiers;
+                }
+
+                return null;
+            }
+        }
+
+        return gameItem.RandomModifiersList.FirstOrDefault()?.Modifiers;
+    }
+
+    // From Player::processRandomModifiersFromConfig
+    private void ProcessModifiers(GameItem gameItem, List<RandomModifier> modifiers, List<int> secureRands, int coinMultiplier = 1, bool construction = false)
+    {
         foreach (var itemModifier in modifiers)
         {
+            // Skip validates by default, we should validate before but not necessary
+            if (!string.IsNullOrEmpty(itemModifier.Validate))
+            {
+                StaticLogger.Current.LogWarning("Skipping modifier with validate={Validate} for {ItemName}", itemModifier.Validate, gameItem.Name);
+                continue;
+            }
+
+            // TODO: Maybe implement this
+            // client use ExperimentManager.getVariant()
+            if (!string.IsNullOrEmpty(itemModifier.ExperimentName))
+            {
+                var variants = itemModifier.Variants?.Split(',') ?? [];
+
+                if (!variants.Contains("0"))
+                {
+                    StaticLogger.Current.LogDebug("Skipping modifier experimentName={ExperimentName} variants={Variants} for {ItemName}", itemModifier.ExperimentName, itemModifier.Variants, gameItem.Name);
+                    continue;
+                }
+            }
+
             IncrementRollCounter();
 
-            var debugName = gameItem.Name;
             var modifierTable = GameSettingsManager.Instance.GetRandomModifier(itemModifier.TableName);
             var rollRange = modifierTable?.RollRange ?? 99;
             var secureRand = SecureRand.GenerateRand(0, rollRange, RollCounter, Snuid.ToString());
 
-            StaticLogger.Current.LogDebug("SecureRand for {DebugName}: rollCounter={PlayerRollCounter} => {SecureRand}", debugName, RollCounter, secureRand);
+            StaticLogger.Current.LogDebug("SecureRand for {DebugName}: rollCounter={PlayerRollCounter} => {SecureRand}", gameItem.Name, RollCounter, secureRand);
 
             secureRands.Add(secureRand);
 
@@ -395,7 +478,7 @@ public class Player
 
             StaticLogger.Current.LogDebug("Checking random table named {ModifierTableName} type {ModifierTableType} with rand {SecureRand}", modifierTable.Name, modifierTable.Type, secureRand);
 
-            var previousRollPercent = 0;
+            double previousRollPercent = 0;
             var found = false;
 
             foreach (var roll in modifierTable.Rolls)
@@ -404,60 +487,9 @@ public class Player
                 {
                     var currentRollPercent = roll.Percent + previousRollPercent;
 
-                    StaticLogger.Current.LogDebug("Percent {CurrentRollPercent}", currentRollPercent);
-
                     if (secureRand < currentRollPercent && !found)
                     {
-                        StaticLogger.Current.LogDebug("FOUND WITH PERCENT : {CurrentRollPercent}", currentRollPercent);
-                        StaticLogger.Current.LogDebug("SECURE RAND : {SecureRand}", secureRand);
-
-                        foreach (var (key, value) in roll.Rewards)
-                        {
-                            StaticLogger.Current.LogDebug("TYPE : {Key}", key);
-
-                            switch (key)
-                            {
-                                case "coin":
-                                    StaticLogger.Current.LogDebug("Found coin {CoinAmount}", value.Sum(x => x.Amount));
-                                    AddCoins((int)value.Sum(x => x.Amount));
-                                    break;
-                                case "xp":
-                                    AddXp((int)value.Sum(x => x.Amount));
-                                    StaticLogger.Current.LogDebug("Found xp {XpAmount}", value.Sum(x => x.Amount));
-                                    break;
-                                case "energy":
-                                    AddEnergy((int)value.Sum(x => x.Amount));
-                                    break;
-                                case "collectable":
-                                    StaticLogger.Current.LogDebug("Found collectable {CollectableName}", string.Join(", ", value.Select(x => x.Name).ToList()));
-
-                                    foreach (var element in value)
-                                    {
-                                        var collectionName = GameSettingsManager.Instance.GetCollectionByItemName(element.Name);
-
-                                        if (collectionName is not null)
-                                        {
-                                            AddItemToCollection(collectionName, element.Name);
-                                            StaticLogger.Current.LogDebug("Added {CollectableName} to collection {CollectionName}", element.Name, collectionName);
-                                        }
-                                        else
-                                        {
-                                            StaticLogger.Current.LogWarning("Collection for item {CollectableName} not found", element.Name);
-                                        }
-                                    }
-
-                                    break;
-                                case "food" or "goods":
-                                    AddGoods((int)value.Sum(x => x.Amount));
-                                    StaticLogger.Current.LogDebug("Found food {FoodAmount}", value.Sum(x => x.Amount));
-                                    break;
-                                case "premium_goods":
-                                    AddPremiumGoods((int)value.Sum(x => x.Amount));
-                                    StaticLogger.Current.LogDebug("Found premium goods {FoodAmount}", value.Sum(x => x.Amount));
-                                    break;
-                            }
-                        }
-
+                        ApplyRollRewards(roll, itemModifier.Multiplier, coinMultiplier, construction);
                         found = true;
                     }
 
@@ -465,8 +497,87 @@ public class Player
                 }
             }
         }
+    }
 
-        return secureRands;
+    private void ApplyRollRewards(Roll roll, double multiplier, int coinMultiplier = 1, bool construction = false)
+    {
+        foreach (var (rewardType, rewardElements) in roll.Rewards)
+        {
+            // Construction build stages only apply xp and item/profit (check: ConstructionSite.makeDoobers)
+            if (construction && rewardType is not ("xp" or "item" or "profit"))
+                continue;
+
+            var totalAmount = rewardElements.Sum(x => x.Amount) / roll.Divisor;
+
+            switch (rewardType)
+            {
+                case "coin":
+                    var coinAmount = (int)Math.Ceiling(totalAmount * multiplier * coinMultiplier);
+                    AddCoins(coinAmount);
+                    StaticLogger.Current.LogDebug("Found coin {CoinAmount}", coinAmount);
+                    break;
+                case "xp":
+                    var xpAmount = (int)(totalAmount * multiplier);
+                    AddXp(xpAmount);
+                    StaticLogger.Current.LogDebug("Found xp {XpAmount}", xpAmount);
+                    break;
+                case "energy":
+                    var energyAmount = (int)(totalAmount * multiplier);
+                    AddEnergy(energyAmount);
+                    StaticLogger.Current.LogDebug("Found energy {EnergyAmount}", energyAmount);
+                    break;
+                case "collectable":
+                    foreach (var element in rewardElements)
+                    {
+                        var collectionName = GameSettingsManager.Instance.GetCollectionByItemName(element.Name);
+
+                        if (collectionName is not null)
+                        {
+                            AddItemToCollection(collectionName, element.Name);
+                            StaticLogger.Current.LogDebug("Added {CollectableName} to collection {CollectionName}",
+                                element.Name, collectionName);
+                        }
+                        else
+                        {
+                            StaticLogger.Current.LogWarning("Collection for item {CollectableName} not found",
+                                element.Name);
+                        }
+                    }
+
+                    break;
+                case "food" or "goods":
+                    var goodsAmount = (int)(totalAmount * multiplier);
+                    AddGoods(goodsAmount);
+                    StaticLogger.Current.LogDebug("Found goods {GoodsAmount}", goodsAmount);
+                    break;
+                case "premium_goods":
+                    var premiumGoodsAmount = (int)(totalAmount * multiplier);
+                    AddPremiumGoods(premiumGoodsAmount);
+                    StaticLogger.Current.LogDebug("Found premium goods {PremiumGoodsAmount}", premiumGoodsAmount);
+                    break;
+                case "cash":
+                    var cashAmount = (int)(totalAmount * multiplier);
+                    AddCash(cashAmount);
+                    StaticLogger.Current.LogDebug("Found cash {CashAmount}", cashAmount);
+                    break;
+                case "rep":
+                    var repAmount = (int)(totalAmount * multiplier);
+                    AddSocialXp(repAmount);
+                    StaticLogger.Current.LogDebug("Found rep {RepAmount}", repAmount);
+                    break;
+                case "item" or "profit":
+                    foreach (var element in rewardElements)
+                    {
+                        AddItem(element.Name, 1);
+                        StaticLogger.Current.LogDebug("Found item drop {ItemName}", element.Name);
+                    }
+
+                    break;
+                default:
+                    StaticLogger.Current.LogWarning("Unhandled reward type {RewardType}", rewardType);
+                    break;
+            }
+        }
     }
 
     private bool HasCompletedCollection(CollectionSetting targetCollection)

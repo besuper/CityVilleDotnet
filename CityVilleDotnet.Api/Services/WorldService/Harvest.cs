@@ -2,6 +2,7 @@
 using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
@@ -58,8 +59,9 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
         }
 
         var className = obj.GetClassName();
+        var coinMultiplier = className.IsBusiness() ? Math.Max(obj.Visits ?? 0, 1) : 1;
         var (coinYield, cashYield) = obj.Harvest();
-        var secureRands = user.Player!.CollectDoobersRewards(itemName, className);
+        var secureRands = user.Player!.CollectDoobersRewards(itemName, coinMultiplier: coinMultiplier);
 
         logger.LogDebug("Secure rands {Join}", string.Join(",", secureRands.ToArray()));
         logger.LogDebug("Secure rands {SecureRandsCount}", secureRands.Count);
