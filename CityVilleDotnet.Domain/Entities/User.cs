@@ -99,6 +99,8 @@ public class User
                         case "welcomeTrain":
                         case "neighborVisit":
                         case "onValidCityName":
+                        case "incrementalExpansionCount":
+                        case "expand":
                             quest.Progress[index] += 1;
                             break;
                         case "harvestByClass":

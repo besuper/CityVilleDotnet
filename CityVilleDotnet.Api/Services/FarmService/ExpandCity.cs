@@ -22,7 +22,8 @@ public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityReque
             .Include(x => x.World)
             .ThenInclude(x => x!.MapRects.Where(m => m.X == request.Coordinates.X && m.Y == request.Coordinates.Y))
             .Include(x => x.Player)
-            .ThenInclude(x => x!.InventoryItems.Where(i => i.Name == PermitName))
+            .ThenInclude(x => x!.InventoryItems)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (user?.Player is null) throw new Exception("Can't find user");
@@ -89,6 +90,11 @@ public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityReque
 
         if (removedItem is not null)
             context.Set<InventoryItem>().Remove(removedItem);
+
+        user.HandleQuestsProgress("incrementalExpansionCount");
+        user.HandleQuestsProgress("expand");
+
+        user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 
