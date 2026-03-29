@@ -78,7 +78,7 @@ public class PlayerDto
 
 public static class PlayerDtoMapper
 {
-    public static PlayerDto ToDto(this Player model, World playerWorld)
+    public static PlayerDto ToDto(this Player model, World playerWorld, List<NeighborDto> friends)
     {
         return new PlayerDto
         {
@@ -112,7 +112,7 @@ public static class PlayerDtoMapper
             LastTrackingTimestamp = model.LastTrackingTimestamp,
             Level = model.Level,
             Licenses = new ASObject(model.Licenses.ToDictionary(x => x.Name, x => (object)x.Amount)),
-            Neighbors = [],
+            Neighbors = friends, // TODO: Change this after moving friends to player
             Options = new OptionsDto
             {
                 MusicDisabled = model.MusicDisabled,

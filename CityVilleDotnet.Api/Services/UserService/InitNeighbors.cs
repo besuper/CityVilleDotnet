@@ -25,7 +25,9 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
         if (user?.Player is null)
             throw new Exception($"User {userId} not found");
 
-        var neighborList = user.Friends.Select(friend => friend.ToNeighborDto()).ToList();
+        var neighborList = user.Friends
+            .Where(f => !f.FriendUser.Player!.IsSamantha())
+            .Select(friend => friend.ToNeighborDto()).ToList();
 
         neighborList.Add(new NeighborDto() // Samantha
         {

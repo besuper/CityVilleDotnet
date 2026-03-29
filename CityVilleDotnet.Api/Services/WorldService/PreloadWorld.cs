@@ -7,13 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
-public class PreloadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : AmfService
+public class PreloadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : AmfService<PreloadWorldRequest>
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(PreloadWorldRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        var visitUserId = (string)@params[0];
-
-        logger.LogInformation("LoadWorld for user {UserId} visiting {VisitUserId}", userId, visitUserId);
+        logger.LogInformation("LoadWorld for user {UserId} visiting {VisitUserId}", userId, request.VisitUserId);
 
         var user = await context.Set<User>()
             .AsSplitQuery()
@@ -42,10 +40,10 @@ public class PreloadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger)
             .ThenInclude(x => x!.LotOrders) // FIXME: Limit orders
             .Include(x => x.Player)
             .ThenInclude(x => x!.VisitorHelpOrders) // FIXME: Limit orders
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Player!.Snuid == request.VisitUserId, cancellationToken);
 
         if (user is null)
-            throw new Exception($"Unable to find user with Player.Uid {visitUserId}");
+            throw new Exception($"Unable to find user with Player.Uid {request.VisitUserId}");
 
         var dtoUser = user.ToDto();
 
@@ -54,4 +52,9 @@ public class PreloadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger)
 
         return new CityVilleResponse().Data(response);
     }
+}
+
+public sealed class PreloadWorldRequest
+{
+    [AmfParam(0)] public int VisitUserId { get; set; }
 }

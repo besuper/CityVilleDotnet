@@ -32,9 +32,29 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
         var dtoUser = userToLoad.ToDto();
 
         var response = (ASObject)AmfConverter.Convert(dtoUser.UserInfo);
+
+        if (!request.PreloadRequired)
+        {
+            // Remove the world from the response to make Samantha city work, the world is already cached with PreloadWorld
+            // Avoid resetting energy from initialVisit
+            response!.Remove("world");
+        }
+
+        var featuredData = dtoUser.FeatureData;
+
+        if (userToLoad.GetPlayer().IsSamantha())
+        {
+            // socialInventory feature is enabled after level 10
+            // TODO: Check if needed to implement it better
+            featuredData["socialInventory"] = new ASObject
+            {
+                { "samObjectIds", new ASObject(userToLoad.GetWorld().Objects.ToDictionary(x => x.WorldFlatId.ToString(), _ => (object)0)) }
+            };
+        }
+
         response!["franchises"] = new List<object>();
         response["citySim"] = AmfConverter.Convert(dtoUser.UserInfo.World!.CitySim);
-        response["featureData"] = AmfConverter.Convert(dtoUser.FeatureData);
+        response["featureData"] = AmfConverter.Convert(featuredData);
         response["visitDeltas"] = new ASObject();
         response["firstTimeLoaded"] = false;
         response["crews"] = null;
@@ -49,4 +69,5 @@ public class OpenWorldRequest
 {
     [AmfParam(0)] public int OwnerId { get; set; }
     [AmfParam(1)] public string WorldName { get; set; } = string.Empty;
+    [AmfParam(3)] public bool PreloadRequired { get; set; }
 }

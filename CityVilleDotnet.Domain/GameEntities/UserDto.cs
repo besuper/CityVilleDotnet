@@ -19,7 +19,9 @@ public static class UserDtoMapper
         if (model.Player is null) throw new Exception("Player can't be null in UserDto");
         if (model.World is null) throw new Exception("World can't be null in UserDto");
 
-        var player = model.Player.ToDto(model.World);
+        var player = model.Player.ToDto(model.World, model.Friends
+            .Where(f => !f.FriendUser.Player!.IsSamantha() && f.Status == FriendshipStatus.Accepted)
+            .Select(friend => friend.ToNeighborDto()).ToList());
 
         player.Neighbors = model.Friends.Select(x => x.ToNeighborDto()).ToList();
 
@@ -158,7 +160,8 @@ public static class UserDtoMapper
                 { "area51", new ASObject { { "workers", new ASObject() } } },
                 { "trains", new ASObject { { "workers", new ASObject() } } },
                 { "factories", new ASObject { { "workers", new ASObject() } } }, // TODO: Implement hiring workers
-                { "detectiveGameWorkerManager", new ASObject { { "workers", new ASObject() } } }
+                { "detectiveGameWorkerManager", new ASObject { { "workers", new ASObject() } } },
+                { "socialInventory", new ASObject { { "samObjectIds", new ASObject() } } }
             }), // Enable or disable some features for the user
         };
     }

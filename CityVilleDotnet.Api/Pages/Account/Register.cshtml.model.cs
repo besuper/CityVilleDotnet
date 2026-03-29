@@ -5,6 +5,8 @@ namespace CityVilleDotnet.Api.Pages.Account;
 public class RegisterInputModel
 {
     [Required(ErrorMessage = "Username is required")]
+    [MinLength(4, ErrorMessage = "Username must be at least 4 characters")]
+    [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Username can only contain letters and numbers")]
     [Display(Name = "Username")]
     public required string Username { get; set; }
 

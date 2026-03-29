@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Settings.GameSettings;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 using Microsoft.Extensions.Logging;
@@ -50,6 +51,14 @@ public class User
     {
         // Setup first quest
         Quests.Add(Quest.Create("q_rename_city", 1, QuestType.Active));
+    }
+
+    public void SetWorld(World world)
+    {
+        if (UserId != Guid.Parse("00000000-0000-0000-0000-000000000001"))
+            throw new Exception("SetWorld is only accessible to Samantha's city");
+        
+        World = world;
     }
 
     public World GetWorld()
@@ -218,7 +227,7 @@ public class User
 
     public List<SocialNetworkUserDto> GetSocialNetworkUserFriendsList(string baseUrl)
     {
-        return Friends.Select(friend => friend.ToSocialNetworkUserDto(baseUrl)).ToList();
+        return Friends.Where(f => !f.FriendUser.Player!.IsSamantha()).Select(friend => friend.ToSocialNetworkUserDto(baseUrl)).ToList();
     }
 
     public Player GetPlayer()

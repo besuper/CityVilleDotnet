@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Pages.Account;
 
@@ -47,6 +48,21 @@ public class RegisterModel(
             newUser.SetupNewPlayer(user);
             
             await context.AddAsync(newUser);
+
+            var samanthaUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+            var samantha = await context.Set<CityVilleDotnet.Domain.Entities.User>()
+                .Include(u => u.Friends)
+                .FirstOrDefaultAsync(u => u.UserId == samanthaUserId);
+
+            if (samantha is not null)
+            {
+                var friendship1 = new Friend(samantha, newUser, true) { Status = FriendshipStatus.Accepted };
+                var friendship2 = new Friend(newUser, samantha, false) { Status = FriendshipStatus.Accepted };
+
+                samantha.Friends.Add(friendship1);
+                newUser.Friends.Add(friendship2);
+            }
+
             await context.SaveChangesAsync();
             
             await signInManager.SignInAsync(user, isPersistent: false);

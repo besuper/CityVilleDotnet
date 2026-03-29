@@ -39,6 +39,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             .ThenInclude(x => x.FriendUser)
             .ThenInclude(x => x.Player)
             .SelectMany(x => x.Friends, (_, friend) => friend)
+            .Where(x => x.FriendUser.Player!.Snuid != -1) // Remove samantha
             .Select(x => x.ToDto())
             .ToListAsync(ct);
 

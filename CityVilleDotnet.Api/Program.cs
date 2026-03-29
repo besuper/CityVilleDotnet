@@ -12,6 +12,7 @@ using Serilog;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using CityVilleDotnet.Api.Data;
 using CityVilleDotnet.Api.Middleware;
 using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Utils;
@@ -130,5 +131,7 @@ ServerUtils.CheckRequiredFiles(scope.ServiceProvider.GetRequiredService<ILogger<
 
 GameSettingsManager.Instance.Initialize(scope.ServiceProvider.GetRequiredService<ILogger<GameSettingsManager>>());
 QuestSettingsManager.Instance.Initialize(scope.ServiceProvider.GetRequiredService<ILogger<QuestSettingsManager>>());
+
+await SamanthaSeeder.SeedAsync(app.Services);
 
 app.Run();

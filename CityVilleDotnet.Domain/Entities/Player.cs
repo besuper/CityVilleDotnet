@@ -783,4 +783,9 @@ public class Player
         
         AddCoins(baseBonus * franchise.Locations.Count);
     }
+
+    public bool IsSamantha()
+    {
+        return Snuid == -1;
+    }
 }
