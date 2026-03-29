@@ -25,6 +25,8 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context) : AmfSer
             .Include(x => x.Player)
             .ThenInclude(x => x!.Collections)
             .ThenInclude(x => x.Items)
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.Masteries)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (user?.Player is null) throw new Exception($"User not found with id {userId}");
