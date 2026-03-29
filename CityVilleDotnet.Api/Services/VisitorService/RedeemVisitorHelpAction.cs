@@ -12,8 +12,6 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context) : AmfSer
 {
     public override async Task<ASObject> HandlePacket(RedeemVisitorHelpActionRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        // 2026-03-12 21:57:10.905 +01:00 [DBG] Parameters ["2033", 56, "Residence", "res_simpsons", "harvest", 1773349027]
-
         var user = await context.Set<User>()
             .AsSplitQuery()
             .Include(x => x.Player)

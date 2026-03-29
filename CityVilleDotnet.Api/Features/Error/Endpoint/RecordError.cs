@@ -14,7 +14,7 @@ internal sealed class RecordError(ILogger<RecordError> logger) : EndpointWithout
         using var reader = new StreamReader(HttpContext.Request.Body);
         
         var body = await reader.ReadToEndAsync(ct);
-        logger.LogDebug("Error received: {Body}", body);
+        logger.LogError("Error received: {Body}", body);
 
         await Send.OkAsync(cancellation: ct);
     }

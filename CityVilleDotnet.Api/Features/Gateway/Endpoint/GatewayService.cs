@@ -132,7 +132,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
                     if (response is null)
                     {
-                        logger.LogError("Something went wrong while processing the request.");
+                        logger.LogError("Something went wrong while processing the request. {PackageName}.{UpperClassName}", packageName, upperClassName);
                         logger.LogDebug("Parameters {Objects}", (object?)parameters);
 
                         response = CreateEmptyResponse();
