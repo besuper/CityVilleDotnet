@@ -47,6 +47,8 @@ public static class SamanthaSeeder
             world.CalculatePopulation();
 
             await context.SaveChangesAsync();
+            
+            await AddSamanthaToExistingUsers(context, logger);
 
             logger.LogInformation("Samantha's city seeded successfully");
             return;
@@ -85,8 +87,6 @@ public static class SamanthaSeeder
         await transaction.CommitAsync();
 
         logger.LogInformation("Samantha's city seeded successfully");
-
-        await AddSamanthaToExistingUsers(context, logger);
     }
 
     private static async Task AddSamanthaToExistingUsers(CityVilleDbContext context, ILogger logger)
