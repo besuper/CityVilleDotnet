@@ -39,7 +39,7 @@ public class LoginModel(SignInManager<ApplicationUser> signInManager, IConfigura
 
         if (result.Succeeded)
         {
-            return RedirectToPage(returnUrl);
+            return Redirect(returnUrl);
         }
 
         ModelState.AddModelError(string.Empty, "Invalid username or password.");

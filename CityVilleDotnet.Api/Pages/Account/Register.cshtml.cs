@@ -66,7 +66,7 @@ public class RegisterModel(
             await context.SaveChangesAsync();
             
             await signInManager.SignInAsync(user, isPersistent: false);
-            return RedirectToPage(returnUrl);
+            return Redirect(returnUrl);
         }
 
         foreach (var error in result.Errors)
