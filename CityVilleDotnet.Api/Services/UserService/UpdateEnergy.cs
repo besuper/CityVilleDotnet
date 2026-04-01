@@ -15,7 +15,7 @@ public class UpdateEnergy(CityVilleDbContext context, ILogger<UpdateEnergy> logg
             .Select(x => x.Player)
             .FirstOrDefaultAsync(cancellationToken);
 
-        if (player is null) throw new Exception("Can't find player with UserId");
+        if (player is null) throw new Exception("Can't find player");
 
         player.UpdateEnergy();
 

@@ -47,6 +47,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddRazorPages();
 builder.Services.AddFastEndpoints();
+builder.Services.AddHttpContextAccessor();
 
 if (builder.Environment.IsDevelopment())
 {
