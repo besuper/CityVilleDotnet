@@ -19,7 +19,7 @@
 
     <ItemGroup>
         <PackageReference Include="System.CodeDom" Version="10.0.5"/>
-        <PackageReference Include="System.Security.Permissions" Version="10.0.3"/>
+        <PackageReference Include="System.Security.Permissions" Version="10.0.5"/>
 
         <Using Remove="System.Net.Http"/>
     </ItemGroup>
