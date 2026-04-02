@@ -15,7 +15,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
         var user = await context.Set<User>()
             .AsSplitQuery()
             .AsNoTracking()
-            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active).OrderBy(q => q.Order))
+            .Include(x => x.Quests.OrderBy(q => q.Order))
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
             .Include(x => x.World)

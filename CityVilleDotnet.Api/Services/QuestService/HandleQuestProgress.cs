@@ -1,6 +1,5 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Domain.Entities;
-using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
@@ -17,7 +16,7 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService<Handle
 
         var user = await context.Set<User>()
             .AsSplitQuery()
-            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active).OrderBy(q => q.Order))
+            .Include(x => x.Quests.OrderBy(q => q.Order))
             .Include(x => x.Player)
             .Include(x => x.World)
             .ThenInclude(x => x!.Objects)

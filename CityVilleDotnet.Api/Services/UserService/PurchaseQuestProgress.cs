@@ -16,7 +16,7 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
-            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
+            .Include(x => x.Quests)
             .Include(x => x.Player)
             .ThenInclude(x => x!.SeenFlags)
             .Include(x => x.Player)
@@ -54,7 +54,7 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
 
         return new CityVilleResponse().MetaData(new ASObject
         {
-            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()))
+            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Select(x => x.ToDto()))
         });
     }
 }

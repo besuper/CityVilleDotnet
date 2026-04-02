@@ -24,7 +24,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
             .ThenInclude(x => x!.InventoryItems)
             .Include(x => x.Player)
             .ThenInclude(x => x!.SeenFlags)
-            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
+            .Include(x => x.Quests)
             .Include(x => x.Player)
             .ThenInclude(x => x!.Collections)
             .ThenInclude(x => x.Items)
@@ -67,6 +67,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
         logger.LogDebug("Secure rands {SecureRandsCount}", secureRands.Count);
 
         user.HandleQuestsProgress("harvestByClass", className: className.ToString());
+        user.HandleQuestsProgress("harvestByKeyword", itemName: itemName);
 
         if (obj.ClassName == BuildingClassType.Plot)
         {
@@ -106,7 +107,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
             ["worldPopulation"] = worldPopulation
         }).MetaData(new ASObject
         {
-            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()))
+            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Select(x => x.ToDto()))
         });
     }
 }
