@@ -3,25 +3,22 @@ using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
+using FluentValidation;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-public class AcquireLicense(CityVilleDbContext context) : AmfService
+public class AcquireLicense(CityVilleDbContext context) : AmfService<AcquireLicenseRequest>
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(AcquireLicenseRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        var itemName = @params[0] as string;
+        var gameItem = GameSettingsManager.Instance.GetItem(request.ItemName);
 
-        if (string.IsNullOrEmpty(itemName)) throw new Exception("Item name can't be null or empty");
-
-        var gameItem = GameSettingsManager.Instance.GetItem(itemName);
-
-        if (gameItem is null) throw new Exception($"Game item {itemName} not found");
+        if (gameItem is null) throw new Exception($"Game item {request.ItemName} not found");
 
         if (gameItem.UnlockCost is null)
-            throw new Exception($"Game item {itemName} does not have unlock cash defined");
+            throw new Exception($"Game item {request.ItemName} does not have unlock cash defined");
 
         var player = await context.Set<User>()
             .Include(x => x.Player)
@@ -30,16 +27,29 @@ public class AcquireLicense(CityVilleDbContext context) : AmfService
             .Select(x => x.Player)
             .FirstOrDefaultAsync(cancellationToken);
 
-        if (player is null) throw new Exception("Can't find player with UserId");
+        if (player is null) throw new Exception("Can't find player");
 
         if (player.Cash < gameItem.Cash)
             return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
 
         player.RemoveCash(gameItem.UnlockCost.Value);
-        player.AddLicense(itemName);
+        player.AddLicense(request.ItemName);
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse().Data(new ASObject { { "itemName", itemName } });
+        return new CityVilleResponse();
+    }
+}
+
+public class AcquireLicenseRequest
+{
+    [AmfParam(0)] public string ItemName { get; set; } = string.Empty;
+}
+
+public class AcquireLicenseValidator : AbstractValidator<AcquireLicenseRequest>
+{
+    public AcquireLicenseValidator()
+    {
+        RuleFor(x => x.ItemName).NotEmpty().MaximumLength(64);
     }
 }
