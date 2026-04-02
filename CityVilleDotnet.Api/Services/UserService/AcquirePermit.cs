@@ -3,23 +3,20 @@ using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
+using FluentValidation;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-public class AcquirePermit(CityVilleDbContext context) : AmfService
+public class AcquirePermit(CityVilleDbContext context) : AmfService<AcquirePermitRequest>
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(AcquirePermitRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        var itemName = @params[0] as string;
+        var gameItem = GameSettingsManager.Instance.GetItem(request.ItemName);
 
-        if (string.IsNullOrEmpty(itemName)) throw new Exception("Item name can't be null or empty");
-
-        var gameItem = GameSettingsManager.Instance.GetItem(itemName);
-
-        if (gameItem is null) throw new Exception($"Game item {itemName} not found");
-        if (gameItem.Unlock is null) throw new Exception($"Game item {itemName} doesn't have unlock defined");
+        if (gameItem is null) throw new Exception($"Game item {request.ItemName} not found");
+        if (gameItem.Unlock is null) throw new Exception($"Game item {request.ItemName} doesn't have unlock defined");
 
         var player = await context.Set<User>()
             .Include(x => x.Player)
@@ -43,6 +40,19 @@ public class AcquirePermit(CityVilleDbContext context) : AmfService
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse().Data(new ASObject { { "itemName", itemName } });
+        return new CityVilleResponse().Data(new ASObject { { "itemName", request.ItemName } });
+    }
+}
+
+public class AcquirePermitRequest
+{
+    [AmfParam(0)] public string ItemName { get; set; } = string.Empty;
+}
+
+public class AcquirePermitValidator : AbstractValidator<AcquirePermitRequest>
+{
+    public AcquirePermitValidator()
+    {
+        RuleFor(x => x.ItemName).NotEmpty().MaximumLength(64);
     }
 }
