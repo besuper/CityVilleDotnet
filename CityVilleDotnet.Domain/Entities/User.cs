@@ -57,7 +57,7 @@ public class User
     {
         if (UserId != Guid.Parse("00000000-0000-0000-0000-000000000001"))
             throw new Exception("SetWorld is only accessible to Samantha's city");
-        
+
         World = world;
     }
 
@@ -121,7 +121,7 @@ public class User
                             if (className is null)
                                 throw new Exception("Can't validate byClass action without className");
 
-                            if (task.Type.Equals(className))
+                            if (taskType.Equals(className))
                                 quest.Progress[index] += 1;
 
                             break;
@@ -136,19 +136,20 @@ public class User
                             if (itemName is null)
                                 throw new Exception("Can't validate byName action without itemName");
 
-                            if (task.Type.Equals(itemName) || (splitType is not null && splitType.Contains(itemName)))
+                            if (taskType.Equals(itemName) || (splitType is not null && splitType.Contains(itemName)))
                                 quest.Progress[index] += 1;
 
                             break;
                         }
                         case "placeByKeyword":
+                        case "harvestByKeyword":
                             if (itemName is null)
-                                throw new Exception("Can't validate placeByKeyword action without itemName");
+                                throw new Exception("Can't validate byKeyword action without itemName");
 
                             if (gameItem is null)
-                                throw new Exception("Can't validate placeByKeyword action without gameItem");
+                                throw new Exception("Can't validate byKeyword action without gameItem");
 
-                            if (gameItem.HasKeyword(task.Type))
+                            if (gameItem.HasKeyword(taskType))
                                 quest.Progress[index] += 1;
 
                             break;
@@ -163,7 +164,7 @@ public class User
 
                 // Here we can check global values like counting population or buildings
 
-                if (!IsWorldLoaded()) continue;
+                if (!IsWorldLoaded() || task.Type is null) continue;
 
                 switch (actionTask)
                 {
@@ -198,10 +199,16 @@ public class User
                             _ => 0
                         };
 
-                        break;
+                        continue;
                     case "countCollectableByName":
                         quest.Progress[index] = Player!.CountCollectableByName(task.Type);
-                        break;
+                        continue;
+                    case "isQuestCompleted":
+                        quest.Progress[index] = Quests.Count(q => q.Name == task.Type);
+                        continue;
+                    case "countWorldObjectByKeyword":
+                        quest.Progress[index] = GetWorld().CountWorldObjectByKeyword(task.Type);
+                        continue;
                 }
             }
         }

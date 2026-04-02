@@ -102,6 +102,22 @@ public class World
         return Objects.Count(x => regex.IsMatch(x.ItemName));
     }
 
+    public int CountWorldObjectByKeyword(string keyword)
+    {
+        var count = 0;
+
+        foreach (var obj in Objects)
+        {
+            var item = GameSettingsManager.Instance.GetItem(obj.GetItemName());
+
+            if (item is null) continue;
+
+            if (item.HasKeyword(keyword)) count++;
+        }
+
+        return count;
+    }
+
     public int GetAvailableBuildingId()
     {
         return NextBuildingId++;
