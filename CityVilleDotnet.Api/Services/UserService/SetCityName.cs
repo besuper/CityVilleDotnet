@@ -2,6 +2,7 @@
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.UserService;
@@ -29,4 +30,12 @@ public class SetCityName(CityVilleDbContext context) : AmfService<SetCityNameReq
 public class SetCityNameRequest
 {
     [AmfParam(1)] public string CityName { get; set; } = string.Empty;
+}
+
+public class SetCityNameValidator : AbstractValidator<SetCityNameRequest>
+{
+    public SetCityNameValidator()
+    {
+        RuleFor(x => x.CityName).NotEmpty().MaximumLength(32);
+    }
 }
