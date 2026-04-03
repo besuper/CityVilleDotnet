@@ -77,6 +77,8 @@ public class User
     {
         StaticLogger.Current.LogDebug("Handle quest actionType = {ActionType}, className = {ClassName}, itemName = {ItemName}", actionType, className, itemName);
 
+        var calculatedResults = new Dictionary<string, int>();
+
         foreach (var quest in Quests.Where(x => x.QuestType == QuestType.Active))
         {
             var questItem = QuestSettingsManager.Instance.GetItem(quest.Name);
@@ -167,6 +169,9 @@ public class User
 
                 if (!IsWorldLoaded() || task.Type is null) continue;
 
+                var resultKey = $"{task.Action}_{taskType}";
+                var value = 0;
+
                 switch (actionTask)
                 {
                     // FIXME: countConstructionOrBuildingByName
@@ -175,19 +180,26 @@ public class User
                     {
                         if (splitType is null)
                         {
-                            quest.Progress[index] = GetWorld().CountBuildingByName(task.Type);
+                            if (!calculatedResults.TryGetValue(resultKey, out value))
+                                calculatedResults[resultKey] = value = GetWorld().CountBuildingByName(task.Type);
                         }
                         else
                         {
                             //bus_toyota1_zyngage,bus_toyota1_zyngage_2,bus_toyota1_zyngage_3
-                            quest.Progress[index] = splitType.Sum(x => GetWorld().CountBuildingByName(x));
+                            if (!calculatedResults.TryGetValue(resultKey, out value))
+                                calculatedResults[resultKey] = value = splitType.Sum(x => GetWorld().CountBuildingByName(x));
                         }
+
+                        quest.Progress[index] = value;
 
                         continue;
                     }
                     case "countWorldObjectByRegEx":
                     {
-                        quest.Progress[index] = GetWorld().CountBuildingByRegex(task.Type);
+                        if (!calculatedResults.TryGetValue(resultKey, out value))
+                            calculatedResults[resultKey] = value = GetWorld().CountBuildingByRegex(task.Type);
+
+                        quest.Progress[index] = value;
                         continue;
                     }
                     case "countPlayerResourceByType":
@@ -202,13 +214,19 @@ public class User
 
                         continue;
                     case "countCollectableByName":
-                        quest.Progress[index] = Player!.CountCollectableByName(task.Type);
+                        if (!calculatedResults.TryGetValue(resultKey, out value))
+                            calculatedResults[resultKey] = value = Player!.CountCollectableByName(task.Type);
+
+                        quest.Progress[index] = value;
                         continue;
                     case "isQuestCompleted":
                         quest.Progress[index] = Quests.Count(q => q.Name == task.Type);
                         continue;
                     case "countWorldObjectByKeyword":
-                        quest.Progress[index] = GetWorld().CountWorldObjectByKeyword(task.Type);
+                        if (!calculatedResults.TryGetValue(resultKey, out value))
+                            calculatedResults[resultKey] = value = GetWorld().CountWorldObjectByKeyword(task.Type);
+
+                        quest.Progress[index] = value;
                         continue;
                 }
             }
