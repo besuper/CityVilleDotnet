@@ -117,6 +117,7 @@ public class User
                         case "placeByClass":
                         case "harvestBusinessByClass":
                         case "clearByClass":
+                        case "openBusinessByClass":
                         {
                             if (className is null)
                                 throw new Exception("Can't validate byClass action without className");
