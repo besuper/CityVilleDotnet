@@ -9,14 +9,11 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 public class SaveOptions(CityVilleDbContext context) : AmfService<SaveOptionsRequest>
 {
-    public override async Task<ASObject> HandlePacket(SaveOptionsRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(SaveOptionsRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var player = await context.Set<User>()
-            .Where(x => x.UserId == userId)
-            .Select(x => x.Player)
-            .FirstOrDefaultAsync(cancellationToken);
+        var player = await context.Set<Player>().FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (player is null) throw new Exception("Can't find player with UserId");
+        if (player is null) throw new Exception("Player not found");
 
         player.UpdateSettings(request.Options.MusicDisabled, request.Options.SfxDisabled);
 

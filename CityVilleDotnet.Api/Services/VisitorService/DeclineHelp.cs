@@ -11,24 +11,23 @@ namespace CityVilleDotnet.Api.Services.VisitorService;
 
 public sealed class DeclineHelp(CityVilleDbContext context) : AmfService<DeclineHelpRequest>
 {
-    public override async Task<ASObject> HandlePacket(DeclineHelpRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(DeclineHelpRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.VisitorHelpOrders.Where(o =>
+        var user = await context.Set<Player>()
+            .Include(x => x!.VisitorHelpOrders.Where(o =>
                 o.SenderId == request.HelpOrder.SenderId &&
                 o.RecipientId == request.HelpOrder.RecipientId &&
                 o.Status == VisitorHelpStatus.Unclaimed))
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user?.Player is null)
-            throw new Exception($"Can't find user with userId {userId}");
+        if (user is null)
+            throw new Exception("Player not found");
 
-        var ordersToRemove = user.Player.VisitorHelpOrders.ToList();
+        var ordersToRemove = user.VisitorHelpOrders.ToList();
 
         foreach (var order in ordersToRemove)
         {
-            user.Player.VisitorHelpOrders.Remove(order);
+            user.VisitorHelpOrders.Remove(order);
             context.Remove(order);
         }
 

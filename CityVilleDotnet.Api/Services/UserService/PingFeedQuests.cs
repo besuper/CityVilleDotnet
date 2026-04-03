@@ -10,7 +10,7 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
@@ -21,7 +21,7 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
             .Include(x => x.Player)
             .ThenInclude(x => x!.World)
             .ThenInclude(x => x!.Objects)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't to find user with UserId");
+            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         user.HandleQuestsProgress("");
         user.CheckCompletedQuests();

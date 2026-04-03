@@ -10,7 +10,7 @@ namespace CityVilleDotnet.Api.Services.VisitorService;
 
 public sealed class RedeemVisitorHelpAction(CityVilleDbContext context) : AmfService<RedeemVisitorHelpActionRequest>
 {
-    public override async Task<ASObject> HandlePacket(RedeemVisitorHelpActionRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(RedeemVisitorHelpActionRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
@@ -26,9 +26,9 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context) : AmfSer
             .ThenInclude(x => x.Items)
             .Include(x => x.Player)
             .ThenInclude(x => x!.Masteries)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
 
-        if (user?.Player is null) throw new Exception($"User not found with id {userId}");
+        if (user?.Player is null) throw new Exception("Player not found");
 
         var visitOrder = user.Player.VisitorHelpOrders.FirstOrDefault(x => x.SenderId == request.SenderId && x.HelpTargets.Contains(request.WorldObjectId));
 

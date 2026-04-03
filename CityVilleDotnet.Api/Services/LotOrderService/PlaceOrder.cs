@@ -10,17 +10,14 @@ namespace CityVilleDotnet.Api.Services.LotOrderService;
 
 public sealed class PlaceOrder(CityVilleDbContext context) : AmfService<PlaceOrderRequest>
 {
-    public override async Task<ASObject> HandlePacket(PlaceOrderRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(PlaceOrderRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var order = request.Order;
 
         // TODO: Check senderId
-        var player = await context.Set<User>()
-            .Where(x => x.UserId == userId)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.LotOrders)
-            .Select(x => x.Player)
-            .FirstOrDefaultAsync(cancellationToken);
+        var player = await context.Set<Player>()
+            .Include(x => x.LotOrders)
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Can't find player with UserId");
 

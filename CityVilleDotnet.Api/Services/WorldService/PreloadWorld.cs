@@ -9,9 +9,9 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 public class PreloadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : AmfService<PreloadWorldRequest>
 {
-    public override async Task<ASObject> HandlePacket(PreloadWorldRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(PreloadWorldRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        logger.LogInformation("LoadWorld for user {UserId} visiting {VisitUserId}", userId, request.VisitUserId);
+        logger.LogInformation("LoadWorld for user {UserId} visiting {VisitUserId}", playerId, request.VisitUserId);
 
         var user = await context.Set<User>()
             .AsSplitQuery()

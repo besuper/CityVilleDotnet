@@ -12,7 +12,7 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQuestProgress> logger) : AmfService<PurchaseQuestProgressRequest>
 {
-    public override async Task<ASObject> HandlePacket(PurchaseQuestProgressRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(PurchaseQuestProgressRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
@@ -21,7 +21,7 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
             .ThenInclude(x => x!.SeenFlags)
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't to find user with UserId");
+            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         logger.LogDebug("Quest {QuestName} at {TaskIndex} is purchased", request.QuestName, request.TaskIndex);
 

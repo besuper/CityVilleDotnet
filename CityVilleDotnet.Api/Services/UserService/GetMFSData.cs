@@ -9,14 +9,15 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 public class GetMFSData(CityVilleDbContext context, IHttpContextAccessor httpContextAccessor) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsNoTracking()
+            .Include(u => u.Player)
             .Include(u => u.Friends)
             .ThenInclude(x => x.FriendUser)
             .ThenInclude(x => x.Player)
-            .FirstOrDefaultAsync(u => u.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Player.Id == playerId, cancellationToken);
 
         if (user is null) throw new Exception("User not found");
         

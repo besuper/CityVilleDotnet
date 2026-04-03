@@ -8,22 +8,19 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 public class UpdateEnergy(CityVilleDbContext context, ILogger<UpdateEnergy> logger) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
-        var player = await context.Set<User>()
-            .Where(x => x.UserId == userId)
-            .Select(x => x.Player)
-            .FirstOrDefaultAsync(cancellationToken);
+        var player = await context.Set<Player>().FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (player is null) throw new Exception("Can't find player");
+        if (player is null) throw new Exception("Player not found");
 
         player.UpdateEnergy();
 
         await context.SaveChangesAsync(cancellationToken);
 
         // Global.player.setEnergyFromServer(_loc2_.energy,_loc2_.energyMax,_loc2_.lastEnergyCheck);
-        
-        logger.LogDebug("UpdateEnergy for user {UserId} with new energy {NewEnergy}", userId, player.Energy);
+
+        logger.LogDebug("UpdateEnergy for user {UserId} with new energy {NewEnergy}", playerId, player.Energy);
 
         return new CityVilleResponse().GameData(new ASObject
         {

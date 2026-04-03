@@ -10,19 +10,17 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<UpgradeBuildingRequest>
 {
-    public override async Task<ASObject> HandlePacket(UpgradeBuildingRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(UpgradeBuildingRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x.World)
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
-            .Include(x => x.Player)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user.Player is null) throw new Exception($"User not found with id {userId}");
+        if (player is null) throw new Exception("Player not found");
 
-        var world = user.GetPlayer().GetWorld();
+        var world = player.GetWorld();
 
         var obj = world.GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z) ?? throw new Exception("Can't find building");
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
@@ -40,7 +38,7 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
 
         if (gameItem.Upgrade.CashCost is not null)
         {
-            user.Player?.RemoveCash(Convert.ToInt32(gameItem.Upgrade.CashCost));
+            player.RemoveCash(Convert.ToInt32(gameItem.Upgrade.CashCost));
         }
 
         obj.UpgradeBuilding(newItemName);

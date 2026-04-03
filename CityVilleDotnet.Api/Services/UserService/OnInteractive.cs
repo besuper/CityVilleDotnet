@@ -7,7 +7,7 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 public class OnInteractive(CityVilleDbContext context, ILogger<OnInteractive> logger) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
         logger.LogDebug("Received request OnInteractive {Objects}", (object?)@params);
 

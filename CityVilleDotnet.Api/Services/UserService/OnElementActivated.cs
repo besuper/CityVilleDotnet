@@ -9,15 +9,13 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 public class OnElementActivated(CityVilleDbContext context) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
-            .Include(x => x.Player)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+        var user = await context.Set<Player>().FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user?.Player is null) throw new Exception("Can't to find user with UserId");
+        if (user is null) throw new Exception("Player not found");
 
-        user.Player.UpdateTracking();
+        user.UpdateTracking();
 
         await context.SaveChangesAsync(cancellationToken);
 

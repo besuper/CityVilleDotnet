@@ -10,7 +10,7 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 public class ExpireLicense(CityVilleDbContext context) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
         var itemName = @params[0] as string;
 
@@ -23,12 +23,9 @@ public class ExpireLicense(CityVilleDbContext context) : AmfService
         if (gameItem.UnlockCost is null)
             throw new Exception($"Game item {itemName} does not have unlock cash defined");
 
-        var player = await context.Set<User>()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Licenses)
-            .Where(x => x.UserId == userId)
-            .Select(x => x.Player)
-            .FirstOrDefaultAsync(cancellationToken);
+        var player = await context.Set<Player>()
+            .Include(x => x.Licenses)
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Can't find player with UserId");
 

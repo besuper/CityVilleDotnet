@@ -11,24 +11,21 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 internal sealed class Build(CityVilleDbContext context) : AmfService<BuildRequest>
 {
-    public override async Task<ASObject> HandlePacket(BuildRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(BuildRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x.World)
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.InventoryItems)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Collections)
+            .Include(x => x.InventoryItems)
+            .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user.Player is null) throw new Exception("Player not found for user");
+        if (player is null) throw new Exception("Player not found");
 
-        var obj = user.GetPlayer().GetWorld().GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z) ?? throw new Exception("Can't find building");
+        var obj = player.GetWorld().GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z) ?? throw new Exception("Can't find building");
 
         if (obj.Builds is null)
             throw new Exception("Can't find `builds`");
@@ -45,7 +42,7 @@ internal sealed class Build(CityVilleDbContext context) : AmfService<BuildReques
         {
             var energyCost = int.Parse(gameItem.EnergyCost.Build);
 
-            if (!user.Player!.RemoveEnergy(energyCost))
+            if (!player.RemoveEnergy(energyCost))
             {
                 // FIXME: Return error response
                 return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
@@ -53,7 +50,7 @@ internal sealed class Build(CityVilleDbContext context) : AmfService<BuildReques
         }
         else if (gameItem.EnergyCostPerBuild is not null)
         {
-            if (!user.Player!.RemoveEnergy(gameItem.EnergyCostPerBuild.Value))
+            if (!player.RemoveEnergy(gameItem.EnergyCostPerBuild.Value))
             {
                 // FIXME: Return error response
                 return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
@@ -64,7 +61,7 @@ internal sealed class Build(CityVilleDbContext context) : AmfService<BuildReques
 
         if (obj.Stage != gameItem.NumberOfStages)
         {
-            user.Player!.CollectDoobersRewards(obj.TargetBuildingName!, construction: true);
+            player.CollectDoobersRewards(obj.TargetBuildingName!, construction: true);
         }
 
         await context.SaveChangesAsync(cancellationToken);

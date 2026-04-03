@@ -13,7 +13,7 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest> logger) : AmfService<HarvestRequest>
 {
-    public override async Task<ASObject> HandlePacket(HarvestRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(HarvestRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
@@ -31,9 +31,9 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
             .ThenInclude(x => x.Items)
             .Include(x => x.Player)
             .ThenInclude(x => x!.Masteries)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
+            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
 
-        if (user.Player is null) throw new Exception("Player not found for user");
+        if (user?.Player is null) throw new Exception("Player not found");
 
         var world = user.GetPlayer().GetWorld();
 

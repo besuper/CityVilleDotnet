@@ -8,18 +8,17 @@ namespace CityVilleDotnet.Api.Services.FranchiseService;
 
 public sealed class OnCollectDailyBonus(CityVilleDbContext context) : AmfService<OnCollectDailyBonusRequest>
 {
-    public override async Task<ASObject> HandlePacket(OnCollectDailyBonusRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(OnCollectDailyBonusRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Franchises.Where(f => f.FranchiseType == request.FranchiseType))
+            .Include(x => x.Franchises.Where(f => f.FranchiseType == request.FranchiseType))
             .ThenInclude(x => x.Locations)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user?.Player is null) throw new Exception($"User not found with id {userId}");
+        if (player is null) throw new Exception("Player not found");
 
-        user.Player.CollectFranchisesDailyBonus(request.FranchiseType);
+        player.CollectFranchisesDailyBonus(request.FranchiseType);
 
         await context.SaveChangesAsync(cancellationToken);
 

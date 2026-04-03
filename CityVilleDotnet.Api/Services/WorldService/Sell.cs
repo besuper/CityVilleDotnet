@@ -10,20 +10,18 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 internal sealed class Sell(CityVilleDbContext context) : AmfService<SellRequest>
 {
-    public override async Task<ASObject> HandlePacket(SellRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(SellRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var user = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.World)
+            .Include(x => x!.World)
             .ThenInclude(x => x!.Objects)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.InventoryItems)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .Include(x => x!.InventoryItems)
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user?.Player is null) throw new Exception($"User not found with id {userId}");
+        if (user is null) throw new Exception("Player not found");
 
-        var world = user.GetPlayer().GetWorld();
+        var world = user.GetWorld();
 
         var obj = world.GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z);
 
@@ -40,7 +38,7 @@ internal sealed class Sell(CityVilleDbContext context) : AmfService<SellRequest>
         {
             if (bool.TryParse(gameItem.SellSendsToInventory, out var result) && result)
             {
-                user.Player!.AddItem(obj.ItemName);
+                user.AddItem(obj.ItemName);
             }
         }
 

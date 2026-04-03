@@ -12,17 +12,14 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 public class BuyEnergy(CityVilleDbContext context) : AmfService<BuyEnergyRequest>
 {
-    public override async Task<ASObject> HandlePacket(BuyEnergyRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(BuyEnergyRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var gameItem = GameSettingsManager.Instance.GetItem(request.ItemName);
 
         if (gameItem is null) throw new Exception($"Game item {request.ItemName} not found");
         if (gameItem.Cash is null || gameItem.EnergyRewards is null) throw new Exception($"Game item {request.ItemName} doesn't have cash or energy reward");
 
-        var player = await context.Set<User>()
-            .Where(x => x.UserId == userId)
-            .Select(x => x.Player)
-            .FirstOrDefaultAsync(cancellationToken);
+        var player = await context.Set<Player>().FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Can't find player");
 

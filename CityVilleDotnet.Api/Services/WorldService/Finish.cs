@@ -11,7 +11,7 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 internal sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequest>
 {
-    public override async Task<ASObject> HandlePacket(FinishRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(FinishRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
@@ -25,9 +25,9 @@ internal sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequ
             .Include(x => x.Player)
             .ThenInclude(x => x!.Collections)
             .ThenInclude(x => x.Items)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
+            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
 
-        if (user.Player is null) throw new Exception("Player not found for user");
+        if (user?.Player is null) throw new Exception("Player not found");
 
         var world = user.GetPlayer().GetWorld();
 

@@ -11,7 +11,7 @@ namespace CityVilleDotnet.Api.Services.GameMechanicService;
 
 internal sealed class HarvestState(CityVilleDbContext context) : AmfService<HarvestStateRequest>
 {
-    public override async Task<ASObject> HandlePacket(HarvestStateRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(HarvestStateRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
@@ -24,9 +24,9 @@ internal sealed class HarvestState(CityVilleDbContext context) : AmfService<Harv
             .ThenInclude(x => x!.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
 
-        if (user?.Player is null) throw new Exception($"User not found with id {userId}");
+        if (user?.Player is null) throw new Exception("Player not found");
 
         var world = user.GetPlayer().GetWorld();
 

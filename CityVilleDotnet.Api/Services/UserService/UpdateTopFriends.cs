@@ -7,7 +7,7 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 public class UpdateTopFriends(CityVilleDbContext context) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
         // TODO: understand what this service is used for
         //var topFriends = @params.GetObjectArray(0);

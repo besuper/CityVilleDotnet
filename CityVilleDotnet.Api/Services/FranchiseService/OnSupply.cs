@@ -10,18 +10,17 @@ namespace CityVilleDotnet.Api.Services.FranchiseService;
 
 public sealed class OnSupply(CityVilleDbContext context) : AmfService<OnSupplyRequest>
 {
-    public override async Task<ASObject> HandlePacket(OnSupplyRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(OnSupplyRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var user = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Franchises.Where(f => f.FranchiseType == request.FranchiseType))
+            .Include(x => x.Franchises.Where(f => f.FranchiseType == request.FranchiseType))
             .ThenInclude(x => x.Locations)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user?.Player is null) throw new Exception($"User not found with id {userId}");
+        if (user is null) throw new Exception("Player not found");
 
-        var franchise = user.Player.Franchises.FirstOrDefault();
+        var franchise = user.Franchises.FirstOrDefault();
         if (franchise is null) throw new Exception($"Can't find franchise {request.FranchiseType}");
 
         var location = franchise.Locations.FirstOrDefault(l => l.Uid == request.NeighborUid);
@@ -40,7 +39,7 @@ public sealed class OnSupply(CityVilleDbContext context) : AmfService<OnSupplyRe
 
         if (commodityCost > 0)
         {
-            user.Player.RemoveGoods(commodityCost);
+            user.RemoveGoods(commodityCost);
         }
 
         // FIXME: Move MoneyCollected to harvest in receiver city with the money harvested

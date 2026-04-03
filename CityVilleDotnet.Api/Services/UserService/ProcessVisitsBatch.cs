@@ -8,7 +8,7 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 internal sealed class ProcessVisitsBatch(CityVilleDbContext context) : AmfService<ProcessVisitsBatchRequest>
 {
-    public override async Task<ASObject> HandlePacket(ProcessVisitsBatchRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(ProcessVisitsBatchRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         // TODO: Add offline simulation
         var visits = new Dictionary<int, int>();
@@ -32,14 +32,13 @@ internal sealed class ProcessVisitsBatch(CityVilleDbContext context) : AmfServic
 
         var ids = visits.Keys.ToList();
 
-        var user = await context.Set<User>()
+        var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x.World)
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects.Where(w => ids.Contains(w.WorldFlatId) || ids.Contains(w.TempId)))
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user");
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
-        foreach (var obj in user.GetPlayer().GetWorld().Objects)
+        foreach (var obj in player.GetWorld().Objects)
         {
             var id = ids.Contains(obj.WorldFlatId) ? obj.WorldFlatId
                 : ids.Contains(obj.TempId) ? obj.TempId

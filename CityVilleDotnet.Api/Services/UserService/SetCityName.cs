@@ -9,15 +9,13 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 public class SetCityName(CityVilleDbContext context) : AmfService<SetCityNameRequest>
 {
-    public override async Task<ASObject> HandlePacket(SetCityNameRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(SetCityNameRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var world = await context.Set<User>()
-            .Where(x => x.UserId == userId)
-            .Include(x => x.Player)
-            .ThenInclude(x => x.World)
-            .FirstOrDefaultAsync(cancellationToken) ?? throw new Exception("Can't to find world with UserId");
+        var world = await context.Set<Player>()
+            .Include(x => x.World)
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
-        var name = world.GetPlayer().GetWorld().SetWorldName(request.CityName);
+        var name = world.GetWorld().SetWorldName(request.CityName);
 
         await context.SaveChangesAsync(cancellationToken);
 

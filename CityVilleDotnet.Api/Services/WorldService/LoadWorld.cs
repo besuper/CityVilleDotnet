@@ -9,7 +9,7 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : AmfService<LoadWorldRequest>
 {
-    public override async Task<ASObject> HandlePacket(LoadWorldRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(LoadWorldRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var userToLoad = await context.Set<User>()
             .AsNoTracking()
@@ -22,20 +22,20 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
             .ThenInclude(x => x!.MapRects)
             .FirstOrDefaultAsync(x => x.Player!.Snuid == request.TargetUsedId, cancellationToken);
 
-        if (userToLoad is null)
+        if (userToLoad?.Player is null)
             throw new Exception($"Unable to find user with Player.Uid {request.TargetUsedId}");
 
-        if (userToLoad.UserId.ToString() != userId.ToString())
+        if (userToLoad.GetPlayer().Id != playerId)
         {
             var currentUser = await context.Set<User>()
                 .AsSplitQuery()
                 .Include(x => x.Quests)
                 .Include(x => x.Player)
                 .ThenInclude(x => x!.InventoryItems)
-                .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
 
             if (currentUser is null)
-                throw new Exception($"Unable to find current user with UserId {userId}");
+                throw new Exception("Current player not found");
 
             currentUser.HandleQuestsProgress("neighborVisit");
             currentUser.CheckCompletedQuests();

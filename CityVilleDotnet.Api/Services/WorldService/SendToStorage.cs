@@ -9,16 +9,17 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 public class SendToStorage(CityVilleDbContext context) : AmfService<SendToStorageRequest>
 {
-    public override async Task<ASObject> HandlePacket(SendToStorageRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(SendToStorageRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var user = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x.World)
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user?.Player is null) throw new Exception("User not found");
+        if (user is null) throw new Exception("Player not found");
+
+        // TODO: Implement this
 
         return new CityVilleResponse();
     }

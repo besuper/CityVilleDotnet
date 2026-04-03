@@ -7,7 +7,7 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 public class PurchaseCrewMember(CityVilleDbContext context) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
         // TODO: Implement crew members logic
 

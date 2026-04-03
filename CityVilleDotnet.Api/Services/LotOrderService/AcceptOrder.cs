@@ -11,47 +11,40 @@ namespace CityVilleDotnet.Api.Services.LotOrderService;
 
 public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderRequest>
 {
-    public override async Task<ASObject> HandlePacket(AcceptOrderRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(AcceptOrderRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var receiveUser = await context.Set<User>()
+        var receiveUser = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.LotOrders.Where(o =>
+            .Include(x => x!.LotOrders.Where(o =>
                 o.OrderState == OrderState.Pending
                 && o.TransmissionStatus == TransmissionStatus.Received
                 && o.SenderId == request.SenderId.ToString() // FIXME: Change all IDs to int
                 && o.LotId == request.LotId))
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.World)
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (receiveUser?.Player is null)
-            throw new Exception("Can't find player with UserId");
+        if (receiveUser is null)
+            throw new Exception("Can't find player");
 
-        var lotOrder = receiveUser.Player.LotOrders.FirstOrDefault();
+        var lotOrder = receiveUser.LotOrders.FirstOrDefault();
 
         if (lotOrder is null)
             throw new Exception($"Can't find pending received order from sender {request.SenderId} for lot {request.LotId}");
 
-        var senderPlayer = await context.Set<User>()
+        var senderPlayer = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.LotOrders.Where(o =>
+            .Include(x => x!.LotOrders.Where(o =>
                 o.OrderState == OrderState.Pending
                 && o.TransmissionStatus == TransmissionStatus.Sent
                 && o.LotId == request.LotId))
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Franchises.Where(f =>
+            .Include(x => x!.Franchises.Where(f =>
                 f.FranchiseType == lotOrder.ResourceType
                 && f.FranchiseName == lotOrder.OrderResourceName))
             .ThenInclude(x => x.Locations)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.InventoryItems)
-            .Where(x => x.Player!.Snuid == request.SenderId)
-            .Select(x => x.Player)
-            .FirstOrDefaultAsync(cancellationToken);
+            .Include(x => x!.InventoryItems)
+            .FirstOrDefaultAsync(x => x.Snuid == request.SenderId, cancellationToken);
 
         if (senderPlayer is null)
             throw new Exception("Can't find sender player");
@@ -66,7 +59,7 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
         if (senderFranchise is null)
             throw new Exception("Can't find sender franchise");
 
-        var newBuilding = receiveUser.GetPlayer().GetWorld().Objects.FirstOrDefault(x => x.WorldFlatId == lotOrder.LotId);
+        var newBuilding = receiveUser.GetWorld().Objects.FirstOrDefault(x => x.WorldFlatId == lotOrder.LotId);
 
         if (newBuilding is null)
             throw new Exception($"Can't find building with WorldFlatId {lotOrder.LotId}");
@@ -81,7 +74,7 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
         senderLotOrder.Accept();
         lotOrder.Accept();
 
-        receiveUser.GetPlayer().GetWorld().ReplaceBuildingFromLotOrder(lotOrder);
+        receiveUser.GetWorld().ReplaceBuildingFromLotOrder(lotOrder);
 
         var newLocation = senderFranchise.AddLocation(lotOrder, gameItem.CommodityRequired ?? 1);
         newBuilding.SetFranchiseLocation(newLocation, request.SenderId.ToString());

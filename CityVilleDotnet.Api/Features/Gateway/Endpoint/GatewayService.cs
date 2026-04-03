@@ -10,11 +10,13 @@ using Microsoft.AspNetCore.Identity;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Enums;
+using CityVilleDotnet.Persistence;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Features.Gateway.Endpoint;
 
-internal sealed class GatewayService(UserManager<ApplicationUser> userManager, IServiceProvider serviceProvider, ILogger<GatewayService> logger) : EndpointWithoutRequest
+internal sealed class GatewayService(UserManager<ApplicationUser> userManager, IServiceProvider serviceProvider, ILogger<GatewayService> logger, CityVilleDbContext context) : EndpointWithoutRequest
 {
     private static FrozenDictionary<string, Type> _handlerTypes = FrozenDictionary<string, Type>.Empty;
 
@@ -40,6 +42,12 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
             await Send.UnauthorizedAsync(ct);
             return;
         }
+
+        var pUser = await context.Set<User>()
+            .AsNoTracking()
+            .Where(x => x.UserId == Guid.Parse(user.Id))
+            .Select(x => x.Player.Id)
+            .FirstOrDefaultAsync(ct);
 
         using var ms = new MemoryStream();
         await HttpContext.Request.Body.CopyToAsync(ms, ct);
@@ -128,7 +136,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
                 try
                 {
-                    response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{packageName}.{upperClassName}", parameters, Guid.Parse(user.Id), ct);
+                    response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{packageName}.{upperClassName}", parameters, pUser, ct);
 
                     if (response is null)
                     {

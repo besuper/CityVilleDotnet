@@ -12,7 +12,7 @@ namespace CityVilleDotnet.Api.Services.QuestService;
 
 internal sealed class RequestManualQuest(CityVilleDbContext context, ILogger<RequestManualQuest> logger) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
         if (@params.Length < 1)
             return GatewayService.CreateEmptyResponse();
@@ -24,10 +24,11 @@ internal sealed class RequestManualQuest(CityVilleDbContext context, ILogger<Req
 
         var user = await context.Set<User>()
             .Include(x => x.Quests)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .Include(x => x.Player)
+            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
 
         if (user is null)
-            throw new Exception($"User {userId} not found");
+            throw new Exception("Player not found");
 
         if (user.Quests.Any(x => x.Name == questName))
             return new CityVilleResponse().Data(new ASObject { { "questStarted", 0 } });

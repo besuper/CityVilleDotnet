@@ -14,7 +14,7 @@ public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityReque
 {
     private const string PermitName = "permits";
 
-    public override async Task<ASObject> HandlePacket(ExpandCityRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(ExpandCityRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
@@ -24,7 +24,7 @@ public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityReque
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
 
         if (user?.Player is null) throw new Exception("Can't find user");
 

@@ -10,23 +10,19 @@ namespace CityVilleDotnet.Api.Services.CollectionsService;
 
 public class OnTradeIn(CityVilleDbContext context) : AmfService<OnTradeInRequest>
 {
-    public override async Task<ASObject> HandlePacket(OnTradeInRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(OnTradeInRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var collection = GameSettingsManager.Instance.GetCollectionByName(request.CollectionName);
 
         if (collection is null)
             throw new Exception($"Can't find collection {request.CollectionName}");
 
-        var player = await context.Set<User>()
+        var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Collections)
-            .ThenInclude(x => x!.Items)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.InventoryItems)
-            .Where(x => x.UserId == userId)
-            .Select(x => x.Player)
-            .FirstOrDefaultAsync(cancellationToken);
+            .Include(x => x.Collections)
+            .ThenInclude(x => x.Items)
+            .Include(x => x.InventoryItems)
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null)
             throw new Exception("Can't find user");

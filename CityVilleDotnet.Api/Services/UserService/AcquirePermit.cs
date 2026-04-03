@@ -11,19 +11,16 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 public class AcquirePermit(CityVilleDbContext context) : AmfService<AcquirePermitRequest>
 {
-    public override async Task<ASObject> HandlePacket(AcquirePermitRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(AcquirePermitRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var gameItem = GameSettingsManager.Instance.GetItem(request.ItemName);
 
         if (gameItem is null) throw new Exception($"Game item {request.ItemName} not found");
         if (gameItem.Unlock is null) throw new Exception($"Game item {request.ItemName} doesn't have unlock defined");
 
-        var player = await context.Set<User>()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.InventoryItems)
-            .Where(x => x.UserId == userId)
-            .Select(x => x.Player)
-            .FirstOrDefaultAsync(cancellationToken);
+        var player = await context.Set<Player>()
+            .Include(x => x.InventoryItems)
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Can't find player with UserId");
 

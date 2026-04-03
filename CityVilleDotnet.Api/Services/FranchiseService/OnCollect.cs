@@ -10,18 +10,17 @@ namespace CityVilleDotnet.Api.Services.FranchiseService;
 
 public sealed class OnCollect(CityVilleDbContext context) : AmfService<OnCollectRequest>
 {
-    public override async Task<ASObject> HandlePacket(OnCollectRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(OnCollectRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Franchises.Where(f => f.FranchiseType == request.FranchiseType))
+            .Include(x => x.Franchises.Where(f => f.FranchiseType == request.FranchiseType))
             .ThenInclude(x => x.Locations)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user?.Player is null) throw new Exception($"User not found with id {userId}");
+        if (player is null) throw new Exception("Player not found");
 
-        var franchise = user.Player.Franchises.FirstOrDefault();
+        var franchise = player.Franchises.FirstOrDefault();
         if (franchise is null) throw new Exception($"Can't find franchise {request.FranchiseType}");
 
         var location = franchise.Locations.FirstOrDefault(l => l.Uid == request.NeighborUid);
@@ -30,7 +29,7 @@ public sealed class OnCollect(CityVilleDbContext context) : AmfService<OnCollect
         if (location.MoneyCollected <= 0)
             throw new Exception("No money to collect from this franchise location");
 
-        user.Player.AddCoins(location.MoneyCollected);
+        player.AddCoins(location.MoneyCollected);
 
         location.MoneyCollected = 0;
         location.TimeLastCollected = ServerUtils.GetCurrentTimeSeconds();

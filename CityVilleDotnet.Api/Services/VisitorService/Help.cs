@@ -11,9 +11,9 @@ namespace CityVilleDotnet.Api.Services.VisitorService;
 
 public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService<HelpRequest>
 {
-    public override async Task<ASObject> HandlePacket(HelpRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(HelpRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        logger.LogDebug("Received visitor help from {UserId}: {RequestName} {RequestType}", userId, request.Name, request.Type);
+        logger.LogDebug("Received visitor help from {UserId}: {RequestName} {RequestType}", playerId, request.Name, request.Type);
 
         // TODO: Improve this query
         var currentUser = await context.Set<User>()
@@ -30,10 +30,10 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
             .ThenInclude(x => x.Player)
             .ThenInclude(x => x.World)
             .ThenInclude(x => x!.Objects.Where(o => request.HelpParams.HelpTargets.Contains(o.WorldFlatId)))
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
 
         if (currentUser?.Player is null)
-            throw new Exception($"Can't find user with userId {userId}");
+            throw new Exception("Player not found");
 
         var reputation = 0;
         var coins = 0;

@@ -10,7 +10,7 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 internal sealed class InitUser(CityVilleDbContext context) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
@@ -44,24 +44,22 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .ThenInclude(x => x!.VisitorHelpOrders) // FIXME: Limit orders
             .Include(x => x.Player)
             .ThenInclude(x => x!.Masteries)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
 
         if (user?.Player is null)
             throw new Exception("Player not initialized correctly");
 
         // Handle energy regeneration
-        var trackedUser = await context.Set<User>()
-            .Where(x => x.UserId == userId)
-            .Include(x => x.Player)
-            .ThenInclude(x => x.World)
+        var trackedUser = await context.Set<Player>()
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects.Where(y => y.TempId != -1))
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (trackedUser?.Player is null)
+        if (trackedUser is null)
             throw new Exception("Player not found for user");
 
-        trackedUser.Player.UpdateEnergy();
-        trackedUser.GetPlayer().GetWorld().CleanTempIDs();
+        trackedUser.UpdateEnergy();
+        trackedUser.GetWorld().CleanTempIDs();
 
         user.Player.UpdateEnergy(); // This will not save
 

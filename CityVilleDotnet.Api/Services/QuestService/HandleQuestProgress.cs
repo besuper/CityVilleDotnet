@@ -9,7 +9,7 @@ namespace CityVilleDotnet.Api.Services.QuestService;
 
 public class HandleQuestProgress(CityVilleDbContext context) : AmfService<HandleQuestProgressRequest>
 {
-    public override async Task<ASObject> HandlePacket(HandleQuestProgressRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(HandleQuestProgressRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         // params
         // 0: action type (onValidCityName)
@@ -20,7 +20,7 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService<Handle
             .Include(x => x.Player)
             .ThenInclude(x => x.World)
             .ThenInclude(x => x!.Objects)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
 
         if (user is null) throw new Exception("Can't to find user with UserId");
 

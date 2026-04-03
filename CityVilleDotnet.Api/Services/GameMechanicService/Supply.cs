@@ -11,7 +11,7 @@ namespace CityVilleDotnet.Api.Services.GameMechanicService;
 
 internal sealed class Supply(CityVilleDbContext context) : AmfService<SupplyRequest>
 {
-    public override async Task<ASObject> HandlePacket(SupplyRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(SupplyRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
@@ -22,9 +22,9 @@ internal sealed class Supply(CityVilleDbContext context) : AmfService<SupplyRequ
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
 
-        if (user?.Player is null) throw new Exception($"User not found with id {userId}");
+        if (user?.Player is null) throw new Exception("Player not found");
 
         var world = user.GetPlayer().GetWorld();
 

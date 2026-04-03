@@ -9,22 +9,21 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 public class Move(CityVilleDbContext context) : AmfService<MoveRequest>
 {
-    public override async Task<ASObject> HandlePacket(MoveRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(MoveRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var moveParams = request.MoveParams[0];
         var originX = moveParams.OrigX;
         var originY = moveParams.OrigY;
 
-        var user = await context.Set<User>()
+        var user = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.World)
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects.Where(o => o.X == originX && o.Y == originY))
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user is null) throw new Exception($"User not found with id {userId}");
+        if (user is null) throw new Exception("Player not found");
 
-        var obj = user.GetPlayer().GetWorld().GetBuildingByCoord(originX, originY, 0) ?? throw new Exception($"Can't find object at ({originX}, {originY})");
+        var obj = user.GetWorld().GetBuildingByCoord(originX, originY, 0) ?? throw new Exception($"Can't find object at ({originX}, {originY})");
 
         obj.MoveTo(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z, request.Building.Direction);
 

@@ -15,7 +15,7 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : AmfService<PlaceRequest>
 {
-    public override async Task<ASObject> HandlePacket(PlaceRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(PlaceRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         logger.LogDebug("Received place action {@PlaceRequest}", request);
 
@@ -38,9 +38,9 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
             .ThenInclude(x => x.Items)
             .Include(x => x.Player)
             .ThenInclude(x => x!.Masteries)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
+            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
 
-        if (user.Player is null) throw new Exception($"User not found with id {userId}");
+        if (user.Player is null) throw new Exception("Player not found");
 
         var world = user.GetPlayer().GetWorld();
 

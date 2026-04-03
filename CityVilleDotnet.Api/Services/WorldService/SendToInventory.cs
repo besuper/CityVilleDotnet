@@ -10,21 +10,19 @@ namespace CityVilleDotnet.Api.Services.WorldService;
 
 internal sealed class SendToInventory(CityVilleDbContext context) : AmfService<SendToInventoryRequest>
 {
-    public override async Task<ASObject> HandlePacket(SendToInventoryRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(SendToInventoryRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x.World)
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.InventoryItems)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .Include(x => x.InventoryItems)
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user?.Player is null) throw new Exception($"User not found with id {userId}");
+        if (player is null) throw new Exception("Player not found");
 
-        var world = user.GetPlayer().GetWorld();
+        var world = player.GetWorld();
 
         var obj = world.GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z) ?? throw new Exception($"Can't find building at {request.Building.Position}");
 
@@ -39,7 +37,7 @@ internal sealed class SendToInventory(CityVilleDbContext context) : AmfService<S
         if (bool.TryParse(gameItem.SellSendsToInventory, out var result) && !result)
             throw new Exception("SellSendsToInventory is disabled");
 
-        user.Player!.AddItem(obj.GetItemName());
+        player.AddItem(obj.GetItemName());
 
         world.RemoveBuilding(obj);
         context.Set<WorldObject>().Remove(obj);

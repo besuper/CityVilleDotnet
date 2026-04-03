@@ -8,14 +8,11 @@ namespace CityVilleDotnet.Api.Services.FranchiseService;
 
 public class UpdateFranchiseName(CityVilleDbContext context) : AmfService<UpdateFranchiseNameRequest>
 {
-    public override async Task<ASObject> HandlePacket(UpdateFranchiseNameRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(UpdateFranchiseNameRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var player = await context.Set<User>()
-            .Where(x => x.UserId == userId)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Franchises)
-            .Select(x => x.Player)
-            .FirstOrDefaultAsync(cancellationToken);
+        var player = await context.Set<Player>()
+            .Include(x => x.Franchises)
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Can't find player with UserId");
 

@@ -9,7 +9,7 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
 {
-    public override async Task<ASObject> HandlePacket(object[] @params, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
             .AsNoTracking()
@@ -21,10 +21,10 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
             .ThenInclude(x => x.FriendUser)
             .ThenInclude(x => x.Player)
             .ThenInclude(x => x.World)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
 
         if (user?.Player is null)
-            throw new Exception($"User {userId} not found");
+            throw new Exception("Player not found");
 
         var neighborList = user.Friends
             .Where(f => !f.FriendUser.Player!.IsSamantha())

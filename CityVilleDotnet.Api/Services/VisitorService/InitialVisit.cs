@@ -9,7 +9,7 @@ namespace CityVilleDotnet.Api.Services.VisitorService;
 
 public class InitialVisit(CityVilleDbContext context) : AmfService<InitialVisitRequest>
 {
-    public override async Task<ASObject> HandlePacket(InitialVisitRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(InitialVisitRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         if (request.Type != "neighborVisit") throw new Exception("Invalid type");
 
@@ -21,7 +21,7 @@ public class InitialVisit(CityVilleDbContext context) : AmfService<InitialVisitR
             .ThenInclude(x => x.FriendUser)
             .ThenInclude(x => x.Player)
             .ThenInclude(x => x!.VisitorHelpOrders)
-            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
 
         if (currentUser?.Player is null) throw new Exception("Can't find user with UserId");
 

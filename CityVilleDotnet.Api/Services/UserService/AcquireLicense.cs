@@ -11,7 +11,7 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 public class AcquireLicense(CityVilleDbContext context) : AmfService<AcquireLicenseRequest>
 {
-    public override async Task<ASObject> HandlePacket(AcquireLicenseRequest request, Guid userId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(AcquireLicenseRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var gameItem = GameSettingsManager.Instance.GetItem(request.ItemName);
 
@@ -20,12 +20,9 @@ public class AcquireLicense(CityVilleDbContext context) : AmfService<AcquireLice
         if (gameItem.UnlockCost is null)
             throw new Exception($"Game item {request.ItemName} does not have unlock cash defined");
 
-        var player = await context.Set<User>()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Licenses)
-            .Where(x => x.UserId == userId)
-            .Select(x => x.Player)
-            .FirstOrDefaultAsync(cancellationToken);
+        var player = await context.Set<Player>()
+            .Include(x => x.Licenses)
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Can't find player");
 
