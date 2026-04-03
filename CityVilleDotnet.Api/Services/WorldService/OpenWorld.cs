@@ -33,7 +33,8 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
 
         var response = (ASObject)AmfConverter.Convert(dtoUser.UserInfo);
 
-        if (!request.PreloadRequired)
+        // FIXME: Don't remove world in open world for owned worlds otherwise it will clear the map. This cause weird reload in game, might not be the best way
+        if (!request.PreloadRequired && userToLoad.UserId.ToString() != userId.ToString())
         {
             // Remove the world from the response to make Samantha city work, the world is already cached with PreloadWorld
             // Avoid resetting energy from initialVisit

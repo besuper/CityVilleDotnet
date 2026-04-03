@@ -11,8 +11,6 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
 {
     public override async Task<ASObject> HandlePacket(LoadWorldRequest request, Guid userId, CancellationToken cancellationToken)
     {
-        logger.LogInformation("LoadWorld for user {UserId} visiting {VisitUserId}", userId, request.TargetUsedId);
-
         var userToLoad = await context.Set<User>()
             .AsNoTracking()
             .AsSplitQuery()
