@@ -12,8 +12,6 @@ public class Player
     public Guid Id { get; }
     public int Snuid { get; set; }
     public int LastTrackingTimestamp { get; private set; }
-    public List<object> PlayerNews { get; set; } = [];
-    public List<object> Wishlist { get; set; } = [];
     public bool SfxDisabled { get; private set; }
     public bool MusicDisabled { get; private set; }
     public List<InventoryItem> InventoryItems { get; set; } = [];
@@ -780,7 +778,7 @@ public class Player
 
         // TODO: Add server check
         franchise.TimeLastCollected = currentTime;
-        
+
         AddCoins(baseBonus * franchise.Locations.Count);
     }
 

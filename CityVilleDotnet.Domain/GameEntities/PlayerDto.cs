@@ -73,7 +73,8 @@ public class PlayerDto
 
     [JsonPropertyName("storageComponent")] public ASObject StorageComponent { get; set; } = new();
 
-    [JsonPropertyName("additionalWareHouseSlots")] public int AdditionalWareHouseSlots { get; set; } = 0;
+    [JsonPropertyName("additionalWareHouseSlots")]
+    public int AdditionalWareHouseSlots { get; set; } = 0;
 }
 
 public static class PlayerDtoMapper
@@ -118,7 +119,7 @@ public static class PlayerDtoMapper
                 MusicDisabled = model.MusicDisabled,
                 SfxDisabled = model.SfxDisabled,
             },
-            PlayerNews = model.PlayerNews,
+            PlayerNews = [], // TODO: Implement news
             RollCounter = model.RollCounter,
             SeenFlags = new ASObject(model.SeenFlags.ToDictionary(x => x.Key, x => (object)true)),
             // FIXME: Handle that better
@@ -131,7 +132,7 @@ public static class PlayerDtoMapper
                     ["lastModifiedGlobalEngineTime"] = 0
                 }
             ],
-            Wishlist = model.Wishlist,
+            Wishlist = [], // TODO: Implement wishlist
             Xp = model.Xp,
             SocialLevel = model.SocialLevel,
             SocialXp = model.SocialXp,
@@ -149,7 +150,7 @@ public static class PlayerDtoMapper
     private static ASObject BuildOrdersAsObject(Player model)
     {
         var root = new ASObject();
-        
+
         // TODO: Add VisitorHelp and TrainOrder
         foreach (var order in model.LotOrders.Where(x => x.OrderState == OrderState.Pending))
         {
