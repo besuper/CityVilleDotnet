@@ -45,7 +45,6 @@ public class RegisterModel(
             var defaultWorld = JsonSerializer.Deserialize<WorldDto>(jsonContent) ?? throw new Exception("WorldDto can't be null");
             
             var newUser = CityVilleDotnet.Domain.Entities.User.CreateNewPlayer(defaultWorld, user);
-            newUser.SetupNewPlayer(user);
             
             await context.AddAsync(newUser);
 

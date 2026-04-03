@@ -15,7 +15,8 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
         var user = await context.Set<User>()
             .AsSplitQuery()
             .AsNoTracking()
-            .Include(x => x.Quests.OrderBy(q => q.Order))
+            .Include(x => x.Player)
+            .ThenInclude(x => x.Quests.OrderBy(q => q.Order))
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
             .Include(x => x.Player)
@@ -70,7 +71,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
         var quests = new ASObject();
 
         if (!user.Player.IsNew)
-            quests["QuestComponent"] = AmfConverter.Convert(user.Quests.Select(x => x.ToDto()).ToList());
+            quests["QuestComponent"] = AmfConverter.Convert(user.GetPlayer().Quests.Select(x => x.ToDto()).ToList());
 
         return new CityVilleResponse().Data(userObj).MetaData(quests);
     }

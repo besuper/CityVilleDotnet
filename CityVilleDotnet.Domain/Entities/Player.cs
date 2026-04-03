@@ -40,6 +40,7 @@ public class Player
     public List<VisitorHelpOrder> VisitorHelpOrders { get; set; } = [];
     public List<Mastery> Masteries { get; set; } = [];
     public World? World { get; private set; }
+    public List<Quest> Quests { get; } = [];
 
     public Player()
     {
@@ -811,5 +812,189 @@ public class Player
     public bool IsWorldLoaded()
     {
         return World != null && World.Objects.Count != 0;
+    }
+
+    public void SetupNewPlayer(ApplicationUser user)
+    {
+        // Setup first quest
+        Quests.Add(Quest.Create("q_rename_city", 1, QuestType.Active));
+    }
+
+    public void HandleQuestsProgress(string actionType, string? className = null, string? itemName = null)
+    {
+        StaticLogger.Current.LogDebug("Handle quest actionType = {ActionType}, className = {ClassName}, itemName = {ItemName}", actionType, className, itemName);
+
+        var calculatedResults = new Dictionary<string, int>();
+
+        foreach (var quest in Quests.Where(x => x.QuestType == QuestType.Active))
+        {
+            var questItem = QuestSettingsManager.Instance.GetItem(quest.Name);
+
+            if (questItem is null) continue;
+
+            var index = -1;
+
+            foreach (var task in questItem.Tasks.Tasks)
+            {
+                index++;
+
+                if (quest.Progress[index] + quest.Purchased[index] >= int.Parse(task.Total)) continue;
+
+                var actionTask = task.Action;
+                var taskType = task.Type ?? "";
+                var splitType = taskType.Contains(',') ? taskType.Split(',') : null;
+
+                var gameItem = itemName is not null ? GameSettingsManager.Instance.GetItem(itemName) : null;
+
+                // When user performs an action
+                if (!string.IsNullOrEmpty(actionType) && actionTask.Equals(actionType))
+                {
+                    switch (actionType)
+                    {
+                        case "seenQuest":
+                        case "popNews":
+                        case "sendTrain":
+                        case "welcomeTrain":
+                        case "neighborVisit":
+                        case "onValidCityName":
+                        case "incrementalExpansionCount":
+                        case "expand":
+                            quest.Progress[index] += 1;
+                            break;
+                        case "harvestByClass":
+                        case "startContractByClass":
+                        case "placeByClass":
+                        case "harvestBusinessByClass":
+                        case "clearByClass":
+                        case "openBusinessByClass":
+                        {
+                            if (className is null)
+                                throw new Exception("Can't validate byClass action without className");
+
+                            if (taskType.Equals(className))
+                                quest.Progress[index] += 1;
+
+                            break;
+                        }
+                        case "harvestResidenceByName":
+                        case "harvestPlotByName":
+                        case "openBusinessByName":
+                        case "harvestBusinessByName":
+                        case "placeBuildingByName":
+                        case "sendTourNeighborBusinessByName":
+                        {
+                            if (itemName is null)
+                                throw new Exception("Can't validate byName action without itemName");
+
+                            if (taskType.Equals(itemName) || (splitType is not null && splitType.Contains(itemName)))
+                                quest.Progress[index] += 1;
+
+                            break;
+                        }
+                        case "placeByKeyword":
+                        case "harvestByKeyword":
+                            if (itemName is null)
+                                throw new Exception("Can't validate byKeyword action without itemName");
+
+                            if (gameItem is null)
+                                throw new Exception("Can't validate byKeyword action without gameItem");
+
+                            if (gameItem.HasKeyword(taskType))
+                                quest.Progress[index] += 1;
+
+                            break;
+                        case "visitorHelp":
+                            // plotHarvest, businessSendTour, ...
+                            if (task.Type == className)
+                                quest.Progress[index] += 1;
+
+                            break;
+                    }
+                }
+
+                // Here we can check global values like counting population or buildings
+
+                if (!IsWorldLoaded() || task.Type is null) continue;
+
+                var resultKey = $"{task.Action}_{taskType}";
+                var value = 0;
+
+                switch (actionTask)
+                {
+                    // FIXME: countConstructionOrBuildingByName
+                    case "countWorldObjectByName":
+                    case "countConstructionOrBuildingByName":
+                    {
+                        if (splitType is null)
+                        {
+                            if (!calculatedResults.TryGetValue(resultKey, out value))
+                                calculatedResults[resultKey] = value = GetWorld().CountBuildingByName(task.Type);
+                        }
+                        else
+                        {
+                            //bus_toyota1_zyngage,bus_toyota1_zyngage_2,bus_toyota1_zyngage_3
+                            if (!calculatedResults.TryGetValue(resultKey, out value))
+                                calculatedResults[resultKey] = value = splitType.Sum(x => GetWorld().CountBuildingByName(x));
+                        }
+
+                        quest.Progress[index] = value;
+
+                        continue;
+                    }
+                    case "countWorldObjectByRegEx":
+                    {
+                        if (!calculatedResults.TryGetValue(resultKey, out value))
+                            calculatedResults[resultKey] = value = GetWorld().CountBuildingByRegex(task.Type);
+
+                        quest.Progress[index] = value;
+                        continue;
+                    }
+                    case "countPlayerResourceByType":
+                        quest.Progress[index] = task.Type switch
+                        {
+                            // population,ghost
+                            "population" => GetWorld().GetCurrentPopulation(),
+                            "coin" => Gold,
+                            "goods" => Goods,
+                            _ => 0
+                        };
+
+                        continue;
+                    case "countCollectableByName":
+                        if (!calculatedResults.TryGetValue(resultKey, out value))
+                            calculatedResults[resultKey] = value = CountCollectableByName(task.Type);
+
+                        quest.Progress[index] = value;
+                        continue;
+                    case "isQuestCompleted":
+                        quest.Progress[index] = Quests.Count(q => q.Name == task.Type);
+                        continue;
+                    case "countWorldObjectByKeyword":
+                        if (!calculatedResults.TryGetValue(resultKey, out value))
+                            calculatedResults[resultKey] = value = GetWorld().CountWorldObjectByKeyword(task.Type);
+
+                        quest.Progress[index] = value;
+                        continue;
+                }
+            }
+        }
+    }
+
+    public void CheckCompletedQuests()
+    {
+        var newQuests = new List<Quest>();
+
+        foreach (var item in Quests.Where(x => x.QuestType == QuestType.Active))
+        {
+            if (item.IsCompleted())
+            {
+                item.QuestType = QuestType.Completed;
+                item.ClaimRewards(this);
+
+                newQuests = item.StartSequels();
+            }
+        }
+
+        Quests.AddRange(newQuests);
     }
 }

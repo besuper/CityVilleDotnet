@@ -12,16 +12,14 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var user = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Quests)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Collections)
+            .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.World)
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
-            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         user.HandleQuestsProgress("");
         user.CheckCompletedQuests();

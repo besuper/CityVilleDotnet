@@ -13,23 +13,20 @@ internal sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequ
 {
     public override async Task<ASObject> HandlePacket(FinishRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x.World)
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.InventoryItems)
+            .Include(x => x.InventoryItems)
             .Include(x => x.Quests.OrderBy(q => q.Order))
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Collections)
+            .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
-            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user?.Player is null) throw new Exception("Player not found");
+        if (player is null) throw new Exception("Player not found");
 
-        var world = user.GetPlayer().GetWorld();
+        var world = player.GetWorld();
 
         var obj = world.GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z) ?? throw new Exception($"Can't find building with ID {request.Building.Id}");
 
@@ -48,16 +45,16 @@ internal sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequ
 
         world.CalculatePopulation();
 
-        user.HandleQuestsProgress(""); // Empty actionType to force recheck counts
-        user.CheckCompletedQuests();
+        player.HandleQuestsProgress(""); // Empty actionType to force recheck counts
+        player.CheckCompletedQuests();
 
-        user.Player!.CollectDoobersRewards(constructionItemName);
+        player.CollectDoobersRewards(constructionItemName);
 
         await context.SaveChangesAsync(cancellationToken);
 
         return new CityVilleResponse().MetaData(new ASObject
         {
-            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Select(x => x.ToDto()))
+            ["QuestComponent"] = AmfConverter.Convert(player.Quests.Select(x => x.ToDto()))
         }).Data(new ASObject
         {
             ["id"] = obj.WorldFlatId

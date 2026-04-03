@@ -24,7 +24,8 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
             .ThenInclude(x => x.FriendUser)
             .ThenInclude(x => x.Player)
             .ThenInclude(x => x!.VisitorHelpOrders)
-            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
+            .Include(x => x.Player)
+            .ThenInclude(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.Friends)
             .ThenInclude(x => x.FriendUser)
             .ThenInclude(x => x.Player)
@@ -66,7 +67,7 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
         if (targetFriend?.FriendUser.Player is null) throw new Exception($"Can't find friend with recipientId {request.HelpParams.RecipientId}");
         if (targetFriend.EnergyLeft <= 0) return GatewayService.CreateEmptyResponse();
 
-        currentUser.HandleQuestsProgress("visitorHelp", request.Type);
+        currentUser.GetPlayer().HandleQuestsProgress("visitorHelp", request.Type);
 
         var world = targetFriend.FriendUser.GetPlayer().GetWorld();
 
@@ -82,7 +83,7 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
                     return new CityVilleResponse().Error(GameErrorType.InvalidData);
                 }
 
-                currentUser.HandleQuestsProgress("sendTourNeighborBusinessByName", obj.ItemName, obj.ItemName);
+                currentUser.GetPlayer().HandleQuestsProgress("sendTourNeighborBusinessByName", obj.ItemName, obj.ItemName);
             }
         }
 

@@ -13,20 +13,18 @@ internal sealed class Supply(CityVilleDbContext context) : AmfService<SupplyRequ
 {
     public override async Task<ASObject> HandlePacket(SupplyRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.World)
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.InventoryItems)
+            .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
-            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user?.Player is null) throw new Exception("Player not found");
+        if (player is null) throw new Exception("Player not found");
 
-        var world = user.GetPlayer().GetWorld();
+        var world = player.GetWorld();
 
         var obj = world.GetBuildingById(request.ObjectId) ?? throw new Exception($"Can't find building with id {request.ObjectId}");
 
@@ -34,16 +32,16 @@ internal sealed class Supply(CityVilleDbContext context) : AmfService<SupplyRequ
 
         if (gameItem.CommodityRequired is not null && gameItem.CommodityRequired > 0)
         {
-            if (user.Player.Goods < gameItem.CommodityRequired)
+            if (player.Goods < gameItem.CommodityRequired)
                 return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
 
-            user.Player.RemoveGoods(gameItem.CommodityRequired.Value);
+            player.RemoveGoods(gameItem.CommodityRequired.Value);
         }
 
         obj.OpenBusiness();
 
-        user.HandleQuestsProgress("openBusinessByName", itemName: obj.ItemName);
-        user.CheckCompletedQuests();
+        player.HandleQuestsProgress("openBusinessByName", itemName: obj.ItemName);
+        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

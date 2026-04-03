@@ -13,22 +13,19 @@ internal sealed class StartContract(CityVilleDbContext context) : AmfService<Sta
 {
     public override async Task<ASObject> HandlePacket(StartContractRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var user = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x.World)
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.InventoryItems)
+            .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Collections)
+            .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
-            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
 
-        if (user.Player is null) throw new Exception("Player not found");
+        if (user is null) throw new Exception("Player not found");
 
-        var obj = user.GetPlayer().GetWorld().GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z);
+        var obj = user.GetWorld().GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z);
 
         if (obj is null)
             throw new Exception("Can't find building with coords");
@@ -40,10 +37,10 @@ internal sealed class StartContract(CityVilleDbContext context) : AmfService<Sta
 
         if (contractItem.Cost is not null)
         {
-            if (contractItem.Cost > user.Player!.Gold)
+            if (contractItem.Cost > user.Gold)
                 return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
 
-            user.Player!.RemoveCoins(contractItem.Cost.Value);
+            user.RemoveCoins(contractItem.Cost.Value);
         }
 
         obj.StartContract(request.Building.ContractName!, request.Building.State);

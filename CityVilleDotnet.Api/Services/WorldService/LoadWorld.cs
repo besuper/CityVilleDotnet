@@ -29,7 +29,8 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
         {
             var currentUser = await context.Set<User>()
                 .AsSplitQuery()
-                .Include(x => x.Quests)
+                .Include(x => x.Player)
+                .ThenInclude(x => x.Quests)
                 .Include(x => x.Player)
                 .ThenInclude(x => x!.InventoryItems)
                 .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
@@ -37,8 +38,8 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
             if (currentUser is null)
                 throw new Exception("Current player not found");
 
-            currentUser.HandleQuestsProgress("neighborVisit");
-            currentUser.CheckCompletedQuests();
+            currentUser.GetPlayer().HandleQuestsProgress("neighborVisit");
+            currentUser.GetPlayer().CheckCompletedQuests();
 
             await context.SaveChangesAsync(cancellationToken);
         }

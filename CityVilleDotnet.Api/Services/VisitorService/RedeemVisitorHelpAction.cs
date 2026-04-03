@@ -12,25 +12,20 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context) : AmfSer
 {
     public override async Task<ASObject> HandlePacket(RedeemVisitorHelpActionRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.VisitorHelpOrders.Where(o => o.SenderId == request.SenderId))
-            .Include(x => x.Player)
-            .ThenInclude(x => x.World)
+            .Include(x => x.VisitorHelpOrders.Where(o => o.SenderId == request.SenderId))
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.WorldObjectId))
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.InventoryItems)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Collections)
+            .Include(x => x.InventoryItems)
+            .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Masteries)
-            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
+            .Include(x => x.Masteries)
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user?.Player is null) throw new Exception("Player not found");
+        if (player is null) throw new Exception("Player not found");
 
-        var visitOrder = user.Player.VisitorHelpOrders.FirstOrDefault(x => x.SenderId == request.SenderId && x.HelpTargets.Contains(request.WorldObjectId));
+        var visitOrder = player.VisitorHelpOrders.FirstOrDefault(x => x.SenderId == request.SenderId && x.HelpTargets.Contains(request.WorldObjectId));
 
         if (visitOrder is null)
             throw new Exception("Can't find help visit order");
@@ -42,43 +37,43 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context) : AmfSer
 
         if (request.Action == "harvest")
         {
-            var world = user.GetPlayer().GetWorld();
+            var world = player.GetWorld();
             var obj = world.GetBuildingById(request.WorldObjectId) ?? throw new Exception($"Can't find building with id {request.WorldObjectId}");
 
             obj.Harvest();
-            user.Player!.CollectDoobersRewards(obj.ContractName ?? obj.ItemName);
+            player.CollectDoobersRewards(obj.ContractName ?? obj.ItemName);
 
-            user.HandleQuestsProgress("harvestByClass", className: obj.ClassName.ToString());
+            player.HandleQuestsProgress("harvestByClass", className: obj.ClassName.ToString());
 
             if (obj.ClassName == BuildingClassType.Plot)
             {
-                user.HandleQuestsProgress("harvestPlotByName", itemName: obj.ItemName);
+                player.HandleQuestsProgress("harvestPlotByName", itemName: obj.ItemName);
 
                 if (gameItem.HasMasteries())
                 {
-                    user.Player.IncrementMastery(gameItem.Name);
+                    player.IncrementMastery(gameItem.Name);
                 }
             }
 
             if (obj.ClassName == BuildingClassType.Business)
             {
-                user.HandleQuestsProgress("harvestBusinessByName", itemName: obj.ItemName);
-                user.HandleQuestsProgress("harvestBusinessByClass", className: obj.ClassName.ToString());
+                player.HandleQuestsProgress("harvestBusinessByName", itemName: obj.ItemName);
+                player.HandleQuestsProgress("harvestBusinessByClass", className: obj.ClassName.ToString());
             }
 
             if (obj.ClassName == BuildingClassType.Residence)
             {
-                user.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);
+                player.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);
             }
 
-            user.CheckCompletedQuests();
+            player.CheckCompletedQuests();
         }
 
         visitOrder.RemoveTarget(request.WorldObjectId);
 
         if (visitOrder.HelpTargets.Length == 0)
         {
-            user.Player.VisitorHelpOrders.Remove(visitOrder);
+            player.VisitorHelpOrders.Remove(visitOrder);
             context.Remove(visitOrder);
         }
 

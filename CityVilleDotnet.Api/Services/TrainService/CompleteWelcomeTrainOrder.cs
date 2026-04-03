@@ -12,17 +12,16 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var player = await context.Set<Player>()
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active).OrderBy(q => q.Order))
-            .Include(x => x.Player)
-            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user?.Player is null)
+        if (player is null)
             throw new Exception("Player not found");
 
-        user.Player.AddGoods(GameSettingsManager.Instance.GetInt("WelcomeTrainQuestAmount"));
-        user.HandleQuestsProgress("welcomeTrain");
-        user.CheckCompletedQuests();
+        player.AddGoods(GameSettingsManager.Instance.GetInt("WelcomeTrainQuestAmount"));
+        player.HandleQuestsProgress("welcomeTrain");
+        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

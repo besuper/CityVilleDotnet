@@ -13,23 +13,20 @@ internal sealed class Clear(CityVilleDbContext context) : AmfService<ClearReques
 {
     public override async Task<ASObject> HandlePacket(ClearRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x.World)
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.InventoryItems)
+            .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Collections)
+            .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
-            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user?.Player is null) throw new Exception("Player not found");
+        if (player is null) throw new Exception("Player not found");
 
-        var world = user.GetPlayer().GetWorld();
+        var world = player.GetWorld();
 
         var obj = world.GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z) ?? throw new Exception($"Can't find building");
 
@@ -42,21 +39,21 @@ internal sealed class Clear(CityVilleDbContext context) : AmfService<ClearReques
         {
             var energyCost = int.Parse(gameItem.EnergyCost.Clear);
 
-            if (!user.Player!.RemoveEnergy(energyCost))
+            if (!player.RemoveEnergy(energyCost))
             {
                 return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
             }
         }
 
-        var secureRands = user.Player!.CollectDoobersRewards(obj.ItemName);
+        var secureRands = player.CollectDoobersRewards(obj.ItemName);
 
         // TODO: Implement remove franchise
         world.RemoveBuilding(obj);
 
         context.Set<WorldObject>().Remove(obj);
 
-        user.HandleQuestsProgress("clearByClass", className: obj.ClassName.ToString()); // Wilderness
-        user.CheckCompletedQuests();
+        player.HandleQuestsProgress("clearByClass", className: obj.ClassName.ToString()); // Wilderness
+        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

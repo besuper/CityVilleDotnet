@@ -25,7 +25,7 @@ public static class UserDtoMapper
 
         player.Neighbors = model.Friends.Select(x => x.ToNeighborDto()).ToList();
 
-        var activeQuests = model.Quests
+        var activeQuests = model.GetPlayer().Quests
             .Where(q => q.QuestType == QuestType.Active)
             .ToList();
 
