@@ -24,7 +24,8 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
 
         var user = await context.Set<User>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.World)
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.Player)
@@ -41,7 +42,7 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
 
         if (user.Player is null) throw new Exception($"User not found with id {userId}");
 
-        var world = user.GetWorld();
+        var world = user.GetPlayer().GetWorld();
 
         var gameItem = GameSettingsManager.Instance.GetItem(request.Building.ItemName);
 

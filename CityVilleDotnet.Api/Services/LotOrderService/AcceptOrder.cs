@@ -21,12 +21,13 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
                 && o.TransmissionStatus == TransmissionStatus.Received
                 && o.SenderId == request.SenderId.ToString() // FIXME: Change all IDs to int
                 && o.LotId == request.LotId))
-            .Include(x => x.World)
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.World)
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
-        if (receiveUser?.Player is null || receiveUser.World is null)
+        if (receiveUser?.Player is null)
             throw new Exception("Can't find player with UserId");
 
         var lotOrder = receiveUser.Player.LotOrders.FirstOrDefault();
@@ -65,7 +66,7 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
         if (senderFranchise is null)
             throw new Exception("Can't find sender franchise");
 
-        var newBuilding = receiveUser.World.Objects.FirstOrDefault(x => x.WorldFlatId == lotOrder.LotId);
+        var newBuilding = receiveUser.GetPlayer().GetWorld().Objects.FirstOrDefault(x => x.WorldFlatId == lotOrder.LotId);
 
         if (newBuilding is null)
             throw new Exception($"Can't find building with WorldFlatId {lotOrder.LotId}");
@@ -80,7 +81,7 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
         senderLotOrder.Accept();
         lotOrder.Accept();
 
-        receiveUser.World.ReplaceBuildingFromLotOrder(lotOrder);
+        receiveUser.GetPlayer().GetWorld().ReplaceBuildingFromLotOrder(lotOrder);
 
         var newLocation = senderFranchise.AddLocation(lotOrder, gameItem.CommodityRequired ?? 1);
         newBuilding.SetFranchiseLocation(newLocation, request.SenderId.ToString());

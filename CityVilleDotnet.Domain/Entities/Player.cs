@@ -39,8 +39,13 @@ public class Player
     public List<LotOrder> LotOrders { get; set; } = [];
     public List<VisitorHelpOrder> VisitorHelpOrders { get; set; } = [];
     public List<Mastery> Masteries { get; set; } = [];
+    public World? World { get; private set; }
 
-    public Player(string username)
+    public Player()
+    {
+    }
+
+    public Player(string username, World world)
     {
         Id = Guid.NewGuid();
         Cash = 900;
@@ -51,6 +56,7 @@ public class Player
         PremiumGoods = 0;
         Username = username;
         CreationTimestamp = (int)ServerUtils.GetCurrentTime();
+        World = world;
     }
 
     public void AddItemToCollection(string collectionName, string itemName, int amount = 1)
@@ -785,5 +791,25 @@ public class Player
     public bool IsSamantha()
     {
         return Snuid == -1;
+    }
+
+    public void SetWorld(World world)
+    {
+        if (!IsSamantha())
+            throw new Exception("SetWorld is only accessible to Samantha's city");
+
+        World = world;
+    }
+
+    public World GetWorld()
+    {
+        if (World is null) throw new Exception("GetWorld called on not loaded world");
+
+        return World;
+    }
+
+    public bool IsWorldLoaded()
+    {
+        return World != null && World.Objects.Count != 0;
     }
 }

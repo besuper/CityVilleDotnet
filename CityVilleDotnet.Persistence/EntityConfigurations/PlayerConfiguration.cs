@@ -26,6 +26,7 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
         builder.Property(x => x.RollCounter);
         builder.Property(x => x.Username).HasMaxLength(32);
 
+        builder.HasOne(x => x.World);
         builder.HasMany(x => x.InventoryItems).WithOne();
         builder.HasMany(x => x.SeenFlags);
         builder.HasMany(x => x.Licenses);

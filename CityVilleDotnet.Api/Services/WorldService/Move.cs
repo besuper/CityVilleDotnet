@@ -17,13 +17,14 @@ public class Move(CityVilleDbContext context) : AmfService<MoveRequest>
 
         var user = await context.Set<User>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.World)
             .ThenInclude(x => x!.Objects.Where(o => o.X == originX && o.Y == originY))
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (user is null) throw new Exception($"User not found with id {userId}");
 
-        var obj = user.GetWorld().GetBuildingByCoord(originX, originY, 0) ?? throw new Exception($"Can't find object at ({originX}, {originY})");
+        var obj = user.GetPlayer().GetWorld().GetBuildingByCoord(originX, originY, 0) ?? throw new Exception($"Can't find object at ({originX}, {originY})");
 
         obj.MoveTo(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z, request.Building.Direction);
 

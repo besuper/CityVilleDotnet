@@ -16,7 +16,8 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context) : AmfSer
             .AsSplitQuery()
             .Include(x => x.Player)
             .ThenInclude(x => x!.VisitorHelpOrders.Where(o => o.SenderId == request.SenderId))
-            .Include(x => x.World)
+            .Include(x => x.Player)
+            .ThenInclude(x => x.World)
             .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.WorldObjectId))
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
@@ -41,7 +42,7 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context) : AmfSer
 
         if (request.Action == "harvest")
         {
-            var world = user.GetWorld();
+            var world = user.GetPlayer().GetWorld();
             var obj = world.GetBuildingById(request.WorldObjectId) ?? throw new Exception($"Can't find building with id {request.WorldObjectId}");
 
             obj.Harvest();

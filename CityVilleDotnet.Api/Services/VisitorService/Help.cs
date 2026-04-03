@@ -27,9 +27,9 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.Friends)
             .ThenInclude(x => x.FriendUser)
+            .ThenInclude(x => x.Player)
             .ThenInclude(x => x.World)
             .ThenInclude(x => x!.Objects.Where(o => request.HelpParams.HelpTargets.Contains(o.WorldFlatId)))
-            
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (currentUser?.Player is null)
@@ -60,15 +60,15 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
             default:
                 throw new Exception($"Not implemented help type {request.Type}");
         }
-        
+
         var targetFriend = currentUser.Friends.FirstOrDefault(x => x.FriendUser.Player!.Snuid == Convert.ToInt32(request.HelpParams.RecipientId));
 
         if (targetFriend?.FriendUser.Player is null) throw new Exception($"Can't find friend with recipientId {request.HelpParams.RecipientId}");
         if (targetFriend.EnergyLeft <= 0) return GatewayService.CreateEmptyResponse();
-        
+
         currentUser.HandleQuestsProgress("visitorHelp", request.Type);
-        
-        var world = targetFriend.FriendUser.GetWorld();
+
+        var world = targetFriend.FriendUser.GetPlayer().GetWorld();
 
         if (request.Type == "businessSendTour")
         {

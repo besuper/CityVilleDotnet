@@ -15,7 +15,8 @@ internal sealed class Build(CityVilleDbContext context) : AmfService<BuildReques
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Player)
+            .ThenInclude(x => x.World)
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.Player)
@@ -27,7 +28,7 @@ internal sealed class Build(CityVilleDbContext context) : AmfService<BuildReques
 
         if (user.Player is null) throw new Exception("Player not found for user");
 
-        var obj = user.GetWorld().GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z) ?? throw new Exception("Can't find building");
+        var obj = user.GetPlayer().GetWorld().GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z) ?? throw new Exception("Can't find building");
 
         if (obj.Builds is null)
             throw new Exception("Can't find `builds`");

@@ -14,16 +14,14 @@ public class User
     public ApplicationUser? AppUser { get; private set; }
     public List<Quest> Quests { get; } = [];
     public Player? Player { get; private set; }
-    public World? World { get; private set; }
     public List<Friend> Friends { get; } = [];
 
-    public User(Guid userId, ApplicationUser appUser, string username, World world)
+    public User(Guid userId, ApplicationUser appUser, string username, Player player)
     {
         Id = Guid.NewGuid();
         UserId = userId;
         AppUser = appUser;
-        Player = new Player(username);
-        World = world;
+        Player = player;
     }
 
     private User()
@@ -44,33 +42,15 @@ public class User
 
         var world = new World("", 36, 36, 30, 0, 50, 0, 0, mapRects, objects);
 
-        return new User(Guid.Parse(user.Id), user, user.UserName!, world);
+        var newPlayer = new Player(user.UserName!, world);
+
+        return new User(Guid.Parse(user.Id), user, user.UserName!, newPlayer);
     }
 
     public void SetupNewPlayer(ApplicationUser user)
     {
         // Setup first quest
         Quests.Add(Quest.Create("q_rename_city", 1, QuestType.Active));
-    }
-
-    public void SetWorld(World world)
-    {
-        if (UserId != Guid.Parse("00000000-0000-0000-0000-000000000001"))
-            throw new Exception("SetWorld is only accessible to Samantha's city");
-
-        World = world;
-    }
-
-    public World GetWorld()
-    {
-        if (World is null) throw new Exception("GetWorld called on not loaded world");
-
-        return World;
-    }
-
-    public bool IsWorldLoaded()
-    {
-        return World != null && World.Objects.Count != 0;
     }
 
     public void HandleQuestsProgress(string actionType, string? className = null, string? itemName = null)
@@ -167,7 +147,7 @@ public class User
 
                 // Here we can check global values like counting population or buildings
 
-                if (!IsWorldLoaded() || task.Type is null) continue;
+                if (!GetPlayer().IsWorldLoaded() || task.Type is null) continue;
 
                 var resultKey = $"{task.Action}_{taskType}";
                 var value = 0;
@@ -181,13 +161,13 @@ public class User
                         if (splitType is null)
                         {
                             if (!calculatedResults.TryGetValue(resultKey, out value))
-                                calculatedResults[resultKey] = value = GetWorld().CountBuildingByName(task.Type);
+                                calculatedResults[resultKey] = value = GetPlayer().GetWorld().CountBuildingByName(task.Type);
                         }
                         else
                         {
                             //bus_toyota1_zyngage,bus_toyota1_zyngage_2,bus_toyota1_zyngage_3
                             if (!calculatedResults.TryGetValue(resultKey, out value))
-                                calculatedResults[resultKey] = value = splitType.Sum(x => GetWorld().CountBuildingByName(x));
+                                calculatedResults[resultKey] = value = splitType.Sum(x => GetPlayer().GetWorld().CountBuildingByName(x));
                         }
 
                         quest.Progress[index] = value;
@@ -197,7 +177,7 @@ public class User
                     case "countWorldObjectByRegEx":
                     {
                         if (!calculatedResults.TryGetValue(resultKey, out value))
-                            calculatedResults[resultKey] = value = GetWorld().CountBuildingByRegex(task.Type);
+                            calculatedResults[resultKey] = value = GetPlayer().GetWorld().CountBuildingByRegex(task.Type);
 
                         quest.Progress[index] = value;
                         continue;
@@ -206,7 +186,7 @@ public class User
                         quest.Progress[index] = task.Type switch
                         {
                             // population,ghost
-                            "population" => GetWorld().GetCurrentPopulation(),
+                            "population" => GetPlayer().GetWorld().GetCurrentPopulation(),
                             "coin" => Player!.Gold,
                             "goods" => Player!.Goods,
                             _ => 0
@@ -224,7 +204,7 @@ public class User
                         continue;
                     case "countWorldObjectByKeyword":
                         if (!calculatedResults.TryGetValue(resultKey, out value))
-                            calculatedResults[resultKey] = value = GetWorld().CountWorldObjectByKeyword(task.Type);
+                            calculatedResults[resultKey] = value = GetPlayer().GetWorld().CountWorldObjectByKeyword(task.Type);
 
                         quest.Progress[index] = value;
                         continue;

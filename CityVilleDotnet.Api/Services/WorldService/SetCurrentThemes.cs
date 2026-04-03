@@ -12,12 +12,13 @@ public sealed class SetCurrentThemes(CityVilleDbContext context) : AmfService<Se
     public override async Task<ASObject> HandlePacket(SetCurrentThemesRequest request, Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Set<User>()
-            .Include(x => x.World)
+            .Include(x => x.Player)
+            .ThenInclude(x => x.World)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (user is null) throw new Exception($"User not found with id {userId}");
 
-        var world = user.GetWorld();
+        var world = user.GetPlayer().GetWorld();
 
         world.UpdateTheme(request.ThemeName, request.Enabled);
 

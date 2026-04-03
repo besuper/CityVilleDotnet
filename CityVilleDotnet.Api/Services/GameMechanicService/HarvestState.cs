@@ -15,7 +15,8 @@ internal sealed class HarvestState(CityVilleDbContext context) : AmfService<Harv
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.World)
             .ThenInclude(x => x!.Objects)
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
@@ -27,7 +28,7 @@ internal sealed class HarvestState(CityVilleDbContext context) : AmfService<Harv
 
         if (user?.Player is null) throw new Exception($"User not found with id {userId}");
 
-        var world = user.GetWorld();
+        var world = user.GetPlayer().GetWorld();
 
         var obj = world.GetBuildingById(request.ObjectId) ?? throw new Exception($"Can't find building with id {request.ObjectId}");
 

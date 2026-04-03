@@ -16,13 +16,14 @@ internal sealed class BuildFloor(CityVilleDbContext context) : AmfService<BuildF
         // TODO: Check if this transaction is only used for headquarters
         var user = await context.Set<User>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Player)
+            .ThenInclude(x => x.World)
             .ThenInclude(x => x!.Objects.Where(o => o.ClassName == request.Building.ClassName))
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         if (user is null) throw new Exception($"User not found with id {userId}");
 
-        var world = user.GetWorld();
+        var world = user.GetPlayer().GetWorld();
 
         var obj = world.GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z);
 

@@ -19,6 +19,7 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
             .Include(x => x.Player)
             .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
             .ThenInclude(x => x.FriendUser)
+            .ThenInclude(x => x.Player)
             .ThenInclude(x => x.World)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 

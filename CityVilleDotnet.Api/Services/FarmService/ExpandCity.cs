@@ -19,7 +19,7 @@ public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityReque
         var user = await context.Set<User>()
             .AsSplitQuery()
             .Include(x => x.Player)
-            .Include(x => x.World)
+            .ThenInclude(x => x.World)
             .ThenInclude(x => x!.MapRects.Where(m => m.X == request.Coordinates.X && m.Y == request.Coordinates.Y))
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
@@ -42,7 +42,7 @@ public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityReque
         if (user.Player.CountInventoryItem(PermitName) < requiredPermit)
             throw new Exception($"You need {requiredPermit} {PermitName} to expand this city");
 
-        var world = user.GetWorld();
+        var world = user.GetPlayer().GetWorld();
 
         if (world.MapRects.Count > 0) throw new Exception("Map expansion already exist");
 

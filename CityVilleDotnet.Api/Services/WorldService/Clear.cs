@@ -15,7 +15,8 @@ internal sealed class Clear(CityVilleDbContext context) : AmfService<ClearReques
     {
         var user = await context.Set<User>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Player)
+            .ThenInclude(x => x.World)
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.Player)
@@ -28,7 +29,7 @@ internal sealed class Clear(CityVilleDbContext context) : AmfService<ClearReques
 
         if (user.Player is null) throw new Exception("Player not found for user");
 
-        var world = user.GetWorld();
+        var world = user.GetPlayer().GetWorld();
 
         var obj = world.GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z) ?? throw new Exception($"Can't find building");
 

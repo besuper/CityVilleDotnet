@@ -24,9 +24,10 @@ public static class SamanthaSeeder
         var samanthaUser = await context.Set<User>()
             .AsSplitQuery()
             .Include(u => u.Player)
-            .Include(u => u.World)
+            .ThenInclude(u => u.World)
             .ThenInclude(w => w!.Objects)
-            .Include(u => u.World)
+            .Include(u => u.Player)
+            .ThenInclude(u => u.World)
             .ThenInclude(w => w!.MapRects)
             .FirstOrDefaultAsync(u => u.UserId == SamanthaUserId);
 
@@ -35,11 +36,11 @@ public static class SamanthaSeeder
 
         if (samanthaUser is not null)
         {
-            if (samanthaUser.World is not null)
-                context.Remove(samanthaUser.World);
+            if (samanthaUser.GetPlayer().World is not null)
+                context.Remove(samanthaUser.GetPlayer().GetWorld());
 
             var world = new World("City Sam", 36, 36, 0, 0, 0, 0, 0, mapRects, objects);
-            samanthaUser.SetWorld(world);
+            samanthaUser.GetPlayer().SetWorld(world);
 
             var player = samanthaUser.Player!;
             player.SetLevel(80);
@@ -47,7 +48,7 @@ public static class SamanthaSeeder
             world.CalculatePopulation();
 
             await context.SaveChangesAsync();
-            
+
             await AddSamanthaToExistingUsers(context, logger);
 
             logger.LogInformation("Samantha's city seeded successfully");
@@ -63,9 +64,10 @@ public static class SamanthaSeeder
         };
 
         var newWorld = new World("City Sam", 36, 36, 0, 0, 0, 0, 0, mapRects, objects);
-        var user = new User(SamanthaUserId, appUser, "Sam", newWorld);
-
-        var newPlayer = user.Player!;
+        var newPlayer = new Player(appUser.UserName!, newWorld);
+        
+        var user = new User(SamanthaUserId, appUser, "Sam", newPlayer);
+        
         newPlayer.Snuid = SamanthaSnuid;
         newPlayer.CompleteTutorial();
         newPlayer.SetLevel(80);

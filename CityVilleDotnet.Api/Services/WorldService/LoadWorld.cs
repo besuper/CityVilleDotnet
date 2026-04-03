@@ -14,11 +14,12 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
         var userToLoad = await context.Set<User>()
             .AsNoTracking()
             .AsSplitQuery()
-            .Include(x => x.World)
-            .ThenInclude(x => x!.Objects)
-            .Include(x => x.World)
-            .ThenInclude(x => x!.MapRects)
             .Include(x => x.Player)
+            .ThenInclude(x => x!.World)
+            .ThenInclude(x => x!.Objects)
+            .Include(x => x.Player)
+            .ThenInclude(x => x!.World)
+            .ThenInclude(x => x!.MapRects)
             .FirstOrDefaultAsync(x => x.Player!.Snuid == request.TargetUsedId, cancellationToken);
 
         if (userToLoad is null)

@@ -13,7 +13,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .ValueGeneratedNever();
 
         builder.HasOne(x => x.Player);
-        builder.HasOne(x => x.World);
 
         builder.HasOne(x => x.AppUser);
         builder.HasMany(x => x.Quests);

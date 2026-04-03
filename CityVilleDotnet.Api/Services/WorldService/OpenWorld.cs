@@ -19,11 +19,12 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
         var userToLoad = await context.Set<User>()
             .AsNoTracking()
             .AsSplitQuery()
-            .Include(x => x.World)
-            .ThenInclude(x => x!.Objects)
-            .Include(x => x.World)
-            .ThenInclude(x => x!.MapRects)
             .Include(x => x.Player)
+            .ThenInclude(x => x.World)
+            .ThenInclude(x => x!.Objects)
+            .Include(x => x.Player)
+            .ThenInclude(x => x.World)
+            .ThenInclude(x => x!.MapRects)
             .FirstOrDefaultAsync(x => x.Player!.Snuid == request.OwnerId, cancellationToken);
 
         if (userToLoad is null)
@@ -49,7 +50,7 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
             // TODO: Check if needed to implement it better
             featuredData["socialInventory"] = new ASObject
             {
-                { "samObjectIds", new ASObject(userToLoad.GetWorld().Objects.ToDictionary(x => x.WorldFlatId.ToString(), _ => (object)0)) }
+                { "samObjectIds", new ASObject(userToLoad.GetPlayer().GetWorld().Objects.ToDictionary(x => x.WorldFlatId.ToString(), _ => (object)0)) }
             };
         }
 

@@ -17,9 +17,9 @@ public static class UserDtoMapper
     public static UserDto ToDto(this User model)
     {
         if (model.Player is null) throw new Exception("Player can't be null in UserDto");
-        if (model.World is null) throw new Exception("World can't be null in UserDto");
+        if (model.Player.World is null) throw new Exception("World can't be null in UserDto");
 
-        var player = model.Player.ToDto(model.World, model.Friends
+        var player = model.Player.ToDto(model.GetPlayer().GetWorld(), model.Friends
             .Where(f => !f.FriendUser.Player!.IsSamantha() && f.Status == FriendshipStatus.Accepted)
             .Select(friend => friend.ToNeighborDto()).ToList());
 
@@ -37,9 +37,9 @@ public static class UserDtoMapper
                 FirstDay = model.Player.FirstDay,
                 IsNew = model.Player.IsNew,
                 Player = player,
-                World = model.World.ToDto(),
+                World = model.GetPlayer().GetWorld().ToDto(),
                 Username = model.Player.Username,
-                WorldName = model.World.WorldName,
+                WorldName = model.GetPlayer().GetWorld().WorldName,
                 // This fix null in setFinishedWorldFTUE after tutorial
                 WorldSummary = new ASObject(new Dictionary<string, object>()
                 {
@@ -49,13 +49,13 @@ public static class UserDtoMapper
                             { "world_id", "world_main" },
                             { "ftueCompleted", !model.Player.IsNew },
                             {
-                                "items_by_name", model.World.Objects
+                                "items_by_name", model.GetPlayer().GetWorld().Objects
                                     .Where(x => x.ClassName != BuildingClassType.ConstructionSite)
                                     .GroupBy(x => x.ItemName)
                                     .ToDictionary(g => g.Key, g => g.Count())
                             },
                             {
-                                "construction_items", model.World.Objects
+                                "construction_items", model.GetPlayer().GetWorld().Objects
                                     .Where(x => x.ClassName == BuildingClassType.ConstructionSite && x.TargetBuildingName != null)
                                     .GroupBy(x => x.TargetBuildingName)
                                     .ToDictionary(g => g.Key, g => g.Count())
@@ -63,8 +63,8 @@ public static class UserDtoMapper
                             { "malls_items", new ASObject() }, // TODO: Implement containers
                             { "incentivized_expansion", new ASObject() }, // TODO: Implement specials expansions
                             { "numberOfExpansions", model.Player.ExpansionsPurchased },
-                            { "number_of_business", model.World.Objects.Count(x => x.ClassName == BuildingClassType.Business) },
-                            { "populationSummary", model.World.ToPopulationSummaryDto() },
+                            { "number_of_business", model.GetPlayer().GetWorld().Objects.Count(x => x.ClassName == BuildingClassType.Business) },
+                            { "populationSummary", model.GetPlayer().GetWorld().ToPopulationSummaryDto() },
                             {
                                 "appraisalSummary", new ASObject() // TODO: Implement appraisal (not used in world_main)
                                 {
@@ -74,7 +74,7 @@ public static class UserDtoMapper
                                     { "potential", 0 },
                                 }
                             },
-                            { "commoditySummary", model.World.ToCommoditySummaryDto() },
+                            { "commoditySummary", model.GetPlayer().GetWorld().ToCommoditySummaryDto() },
                             {
                                 "savedQuestSequence", activeQuests
                                     .Where(q => q.Location == QuestLocation.Sidebar)

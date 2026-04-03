@@ -18,15 +18,18 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .Include(x => x.Quests.OrderBy(q => q.Order))
             .Include(x => x.Player)
             .ThenInclude(x => x!.InventoryItems)
-            .Include(x => x.World)
+            .Include(x => x.Player)
+            .ThenInclude(x => x.World)
             .ThenInclude(x => x!.MapRects)
-            .Include(x => x.World)
+            .Include(x => x.Player)
+            .ThenInclude(x => x.World)
             .ThenInclude(x => x!.Objects)
             .Include(x => x.Player)
             .ThenInclude(x => x!.SeenFlags)
             .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
             .ThenInclude(x => x.FriendUser)
             .ThenInclude(x => x.Player)
+            .ThenInclude(x => x.World)
             .Include(x => x.Player)
             .ThenInclude(x => x!.Collections)
             .ThenInclude(x => x.Items)
@@ -50,15 +53,15 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
         var trackedUser = await context.Set<User>()
             .Where(x => x.UserId == userId)
             .Include(x => x.Player)
-            .Include(x => x.World)
+            .ThenInclude(x => x.World)
             .ThenInclude(x => x!.Objects.Where(y => y.TempId != -1))
             .FirstOrDefaultAsync(cancellationToken);
 
-        if (trackedUser?.Player is null || trackedUser.World is null)
+        if (trackedUser?.Player is null)
             throw new Exception("Player not found for user");
 
         trackedUser.Player.UpdateEnergy();
-        trackedUser.World.CleanTempIDs();
+        trackedUser.GetPlayer().GetWorld().CleanTempIDs();
 
         user.Player.UpdateEnergy(); // This will not save
 

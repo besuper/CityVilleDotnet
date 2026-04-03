@@ -13,10 +13,11 @@ public class SetCityName(CityVilleDbContext context) : AmfService<SetCityNameReq
     {
         var world = await context.Set<User>()
             .Where(x => x.UserId == userId)
-            .Select(x => x.World)
+            .Include(x => x.Player)
+            .ThenInclude(x => x.World)
             .FirstOrDefaultAsync(cancellationToken) ?? throw new Exception("Can't to find world with UserId");
 
-        var name = world.SetWorldName(request.CityName);
+        var name = world.GetPlayer().GetWorld().SetWorldName(request.CityName);
 
         await context.SaveChangesAsync(cancellationToken);
 

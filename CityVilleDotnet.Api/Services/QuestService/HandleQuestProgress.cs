@@ -18,7 +18,7 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService<Handle
             .AsSplitQuery()
             .Include(x => x.Quests.OrderBy(q => q.Order))
             .Include(x => x.Player)
-            .Include(x => x.World)
+            .ThenInclude(x => x.World)
             .ThenInclude(x => x!.Objects)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
