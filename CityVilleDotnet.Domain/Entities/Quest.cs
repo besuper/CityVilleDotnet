@@ -12,6 +12,7 @@ public class Quest
         Progress = progress;
         Purchased = purchased;
         QuestType = questType;
+        CreatedAt = DateTime.Now;
     }
 
     public Quest()
@@ -31,6 +32,8 @@ public class Quest
     public int Order { get; private set; }
 
     public QuestLocation Location { get; private set; }
+
+    public DateTime CreatedAt { get; private set; }
 
     public static Quest Create(string name, int length, QuestType questType)
     {

@@ -23,15 +23,15 @@ public static class QuestDtoMapper
 {
     public static QuestDto ToDto(this Quest model)
     {
-        return new QuestDto()
+        return new QuestDto
         {
             Name = model.Name,
             Complete = model.QuestType == QuestType.Completed,
             Progress = model.Progress,
             Purchased = model.Purchased,
             Expired = false,
-            ActivatedTime = ServerUtils.GetCurrentTime(),
-            IsNew = true
+            ActivatedTime = new DateTimeOffset(model.CreatedAt).ToUnixTimeSeconds(),
+            IsNew = (DateTime.Now - model.CreatedAt) > TimeSpan.FromSeconds(10)
         };
     }
 }
