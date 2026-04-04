@@ -13,22 +13,20 @@ public class InitialVisit(CityVilleDbContext context) : AmfService<InitialVisitR
     {
         if (request.Type != "neighborVisit") throw new Exception("Invalid type");
 
-        var currentUser = await context.Set<User>()
+        var currentUser = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.VisitorHelpOrders)
+            .Include(x => x!.VisitorHelpOrders)
             .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
-            .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.Player)
+            .ThenInclude(x => x.FriendPlayer)
             .ThenInclude(x => x!.VisitorHelpOrders)
-            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (currentUser?.Player is null) throw new Exception("Can't find user with UserId");
+        if (currentUser is null) throw new Exception("Can't find user with UserId");
 
         var recipientId = Convert.ToInt32(request.Content.RecipientId);
-        var targetFriend = currentUser.Friends.FirstOrDefault(x => x.FriendUser.Player!.Snuid == recipientId);
+        var targetFriend = currentUser.Friends.FirstOrDefault(x => x.FriendPlayer.Snuid == recipientId);
 
-        if (targetFriend?.FriendUser.Player is null) throw new Exception("Can't find friend with recipientId");
+        if (targetFriend?.FriendPlayer is null) throw new Exception("Can't find friend with recipientId");
 
         // TODO: Implement rewards system (https://cityville.fandom.com/wiki/Neighbors)
         var currentTimestamp = ServerUtils.GetCurrentTime();
@@ -39,8 +37,8 @@ public class InitialVisit(CityVilleDbContext context) : AmfService<InitialVisitR
             targetFriend.LastEnergyLeftReset = currentTimestamp;
 
             // Clean all orders from the previous friendship help batch even if its pending/unclaimed
-            var sentOrders = currentUser.Player.VisitorHelpOrders.Where(x => x.RecipientId == request.Content.RecipientId && x.SenderId == request.Content.SenderId).ToList();
-            var receivedOrders = targetFriend.FriendUser.Player.VisitorHelpOrders.Where(x => x.RecipientId == request.Content.RecipientId && x.SenderId == request.Content.SenderId).ToList();
+            var sentOrders = currentUser.VisitorHelpOrders.Where(x => x.RecipientId == request.Content.RecipientId && x.SenderId == request.Content.SenderId).ToList();
+            var receivedOrders = targetFriend.FriendPlayer.VisitorHelpOrders.Where(x => x.RecipientId == request.Content.RecipientId && x.SenderId == request.Content.SenderId).ToList();
 
             context.RemoveRange(sentOrders);
             context.RemoveRange(receivedOrders);

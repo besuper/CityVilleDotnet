@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Domain.Entities;
 using System.Text.Json.Serialization;
+using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using FluorineFx;
 
@@ -14,18 +15,9 @@ public class UserDto
 
 public static class UserDtoMapper
 {
-    public static UserDto ToDto(this User model)
+    public static UserDto ToDto(this Player model)
     {
-        if (model.Player is null) throw new Exception("Player can't be null in UserDto");
-        if (model.Player.World is null) throw new Exception("World can't be null in UserDto");
-
-        var player = model.Player.ToDto(model.GetPlayer().GetWorld(), model.Friends
-            .Where(f => !f.FriendUser.Player!.IsSamantha() && f.Status == FriendshipStatus.Accepted)
-            .Select(friend => friend.ToNeighborDto()).ToList());
-
-        player.Neighbors = model.Friends.Select(x => x.ToNeighborDto()).ToList();
-
-        var activeQuests = model.GetPlayer().Quests
+        var activeQuests = model.Quests
             .Where(q => q.QuestType == QuestType.Active)
             .ToList();
 
@@ -33,13 +25,78 @@ public static class UserDtoMapper
         {
             UserInfo = new UserInfoDto
             {
-                CreationTimestamp = model.Player.CreationTimestamp,
-                FirstDay = model.Player.FirstDay,
-                IsNew = model.Player.IsNew,
-                Player = player,
-                World = model.GetPlayer().GetWorld().ToDto(),
-                Username = model.Player.Username,
-                WorldName = model.GetPlayer().GetWorld().WorldName,
+                CreationTimestamp = model.CreationTimestamp,
+                FirstDay = model.FirstDay,
+                IsNew = model.IsNew,
+                Player = new PlayerDto
+                {
+                    Uid = model.Snuid.ToString(),
+                    Cash = model.Cash,
+                    Collections = new ASObject(model.Collections
+                        .GroupBy(item => item.Name)
+                        .ToDictionary(
+                            group => group.Key, object (group) => new ASObject(
+                                group.SelectMany(x => x.Items).ToDictionary(x => x.Name, x => (object)x.Amount))
+                        )),
+                    Commodities = new CommoditiesDto
+                    {
+                        Storage = new StorageDto
+                        {
+                            Goods = model.Goods,
+                            PremiumGoods = model.PremiumGoods
+                        }
+                    },
+                    CompletedCollections = new ASObject(model.Collections.Where(x => x.Completed > 0).ToDictionary(x => x.Name, x => (object)x.Completed)),
+                    Energy = model.Energy,
+                    EnergyMax = model.EnergyMax,
+                    LastEnergyCheck = model.GetLastCheckEnergyTimestamp(),
+                    ExpansionsPurchased = model.ExpansionsPurchased,
+                    Gold = model.Gold,
+                    Inventory = new InventoryDto
+                    {
+                        Count = model.CountInventoryItems(),
+                        Items = new ASObject(model.InventoryItems.ToDictionary(x => x.Name, x => (object)x.Amount))
+                    },
+                    LastTrackingTimestamp = model.LastTrackingTimestamp,
+                    Level = model.Level,
+                    Licenses = new ASObject(model.Licenses.ToDictionary(x => x.Name, x => (object)x.Amount)),
+                    Neighbors = model.Friends
+                        .Where(f => !f.FriendPlayer.IsSamantha() && f.Status == FriendshipStatus.Accepted)
+                        .Select(friend => friend.ToNeighborDto()).ToList(), // TODO: Change this after moving friends to player
+                    Options = new OptionsDto
+                    {
+                        MusicDisabled = model.MusicDisabled,
+                        SfxDisabled = model.SfxDisabled,
+                    },
+                    PlayerNews = [], // TODO: Implement news
+                    RollCounter = model.RollCounter,
+                    SeenFlags = new ASObject(model.SeenFlags.ToDictionary(x => x.Key, x => (object)true)),
+                    // FIXME: Handle that better
+                    FlagContainer =
+                    [
+                        new ASObject
+                        {
+                            ["name"] = "completed_bridge",
+                            ["m_value"] = model.GetWorld().Objects.Count(x => x.ClassName == BuildingClassType.Bridge),
+                            ["lastModifiedGlobalEngineTime"] = 0
+                        }
+                    ],
+                    Wishlist = [], // TODO: Implement wishlist
+                    Xp = model.Xp,
+                    SocialLevel = model.SocialLevel,
+                    SocialXp = model.SocialXp,
+                    Orders = BuildOrdersAsObject(model),
+                    LightLevel = 0, // TODO
+                    PaidEnergy = 0, // TODO
+                    EnergyModifiers = new List<object>(), // TODO
+                    FeatureData = new ASObject(new Dictionary<string, object>()),
+                    ShowNpcCloud = true,
+                    StorageComponent = model.GetWorld().ToStorageComponentDto(),
+                    AdditionalWareHouseSlots = 0
+                },
+                World = model.GetWorld().ToDto(),
+                Username = model.Username,
+                WorldName = model.GetWorld().WorldName,
                 // This fix null in setFinishedWorldFTUE after tutorial
                 WorldSummary = new ASObject(new Dictionary<string, object>()
                 {
@@ -47,24 +104,24 @@ public static class UserDtoMapper
                         "world_main", new ASObject(new Dictionary<string, object>()
                         {
                             { "world_id", "world_main" },
-                            { "ftueCompleted", !model.Player.IsNew },
+                            { "ftueCompleted", !model.IsNew },
                             {
-                                "items_by_name", model.GetPlayer().GetWorld().Objects
+                                "items_by_name", model.GetWorld().Objects
                                     .Where(x => x.ClassName != BuildingClassType.ConstructionSite)
                                     .GroupBy(x => x.ItemName)
                                     .ToDictionary(g => g.Key, g => g.Count())
                             },
                             {
-                                "construction_items", model.GetPlayer().GetWorld().Objects
+                                "construction_items", model.GetWorld().Objects
                                     .Where(x => x.ClassName == BuildingClassType.ConstructionSite && x.TargetBuildingName != null)
                                     .GroupBy(x => x.TargetBuildingName)
                                     .ToDictionary(g => g.Key, g => g.Count())
                             },
                             { "malls_items", new ASObject() }, // TODO: Implement containers
                             { "incentivized_expansion", new ASObject() }, // TODO: Implement specials expansions
-                            { "numberOfExpansions", model.Player.ExpansionsPurchased },
-                            { "number_of_business", model.GetPlayer().GetWorld().Objects.Count(x => x.ClassName == BuildingClassType.Business) },
-                            { "populationSummary", model.GetPlayer().GetWorld().ToPopulationSummaryDto() },
+                            { "numberOfExpansions", model.ExpansionsPurchased },
+                            { "number_of_business", model.GetWorld().Objects.Count(x => x.ClassName == BuildingClassType.Business) },
+                            { "populationSummary", model.GetWorld().ToPopulationSummaryDto() },
                             {
                                 "appraisalSummary", new ASObject() // TODO: Implement appraisal (not used in world_main)
                                 {
@@ -74,7 +131,7 @@ public static class UserDtoMapper
                                     { "potential", 0 },
                                 }
                             },
-                            { "commoditySummary", model.GetPlayer().GetWorld().ToCommoditySummaryDto() },
+                            { "commoditySummary", model.GetWorld().ToCommoditySummaryDto() },
                             {
                                 "savedQuestSequence", activeQuests
                                     .Where(q => q.Location == QuestLocation.Sidebar)
@@ -100,7 +157,7 @@ public static class UserDtoMapper
                     }
                 })
             },
-            Franchises = model.Player.Franchises.Select(x => x.ToDto()).ToList(),
+            Franchises = model.Franchises.Select(x => x.ToDto()).ToList(),
             FeatureData = new ASObject(new Dictionary<string, object>()
             {
                 {
@@ -110,7 +167,7 @@ public static class UserDtoMapper
                         { "earlyUnlocked", true },
                         { "cityLightCount", 0 },
                         { "active", false },
-                        { "numExpansionsPurchased", model.Player.ExpansionsPurchased },
+                        { "numExpansionsPurchased", model.ExpansionsPurchased },
                     }
                 },
                 { "remodel", new ASObject() { { "enabled", false } } },
@@ -135,7 +192,7 @@ public static class UserDtoMapper
                     "goal", new ASObject
                     {
                         {
-                            "mastery", model.Player.Masteries.ToDictionary(x => x.ItemName, x => new ASObject
+                            "mastery", model.Masteries.ToDictionary(x => x.ItemName, x => new ASObject
                             {
                                 { "count", x.Count },
                                 { "level", x.Level },
@@ -164,5 +221,105 @@ public static class UserDtoMapper
                 { "socialInventory", new ASObject { { "samObjectIds", new ASObject() } } }
             }), // Enable or disable some features for the user
         };
+    }
+
+    private static ASObject BuildOrdersAsObject(Player model)
+    {
+        var root = new ASObject();
+
+        // TODO: Add VisitorHelp and TrainOrder
+        foreach (var order in model.LotOrders.Where(x => x.OrderState == OrderState.Pending))
+        {
+            var orderTypeKey = order.OrderType.ToDescriptionString(); // "order_lot"
+            var transmissionKey = order.TransmissionStatus.ToDescriptionString(); // "sent"/"received"
+            var stateKey = order.OrderState.ToDescriptionString(); // "pending"/"accepted"/"denied"
+
+            var isReceived = transmissionKey == "received";
+            var otherUserId = isReceived ? $"{order.SenderId}" : $"{order.RecipientId}";
+
+            if (!root.ContainsKey(orderTypeKey))
+                root[orderTypeKey] = new ASObject();
+
+            var byTransmission = (ASObject)root[orderTypeKey]!;
+
+            if (!byTransmission.ContainsKey(transmissionKey))
+                byTransmission[transmissionKey] = new ASObject();
+
+            var byState = (ASObject)byTransmission[transmissionKey]!;
+
+            if (!byState.ContainsKey(stateKey))
+                byState[stateKey] = new ASObject();
+
+            var byOtherUser = (ASObject)byState[stateKey]!;
+
+            if (!byOtherUser.ContainsKey(otherUserId))
+                byOtherUser[otherUserId] = new ASObject();
+
+            var orderParams = new ASObject
+            {
+                ["senderID"] = order.SenderId,
+                ["recipientID"] = order.RecipientId,
+                ["timeSent"] = order.TimeSent,
+                ["lastTimeReminded"] = order.LastTimeReminded,
+                ["orderType"] = orderTypeKey,
+                ["orderState"] = stateKey,
+                ["transmissionStatus"] = transmissionKey,
+
+                ["lotId"] = order.LotId,
+                ["resourceType"] = order.ResourceType,
+                ["orderResourceName"] = order.OrderResourceName,
+                ["constructionCount"] = order.ConstructionCount,
+                ["offsetX"] = order.OffsetX,
+                ["offsetY"] = order.OffsetY
+            };
+
+            byOtherUser[otherUserId] = orderParams;
+        }
+
+        foreach (var order in model.VisitorHelpOrders)
+        {
+            var orderTypeKey = order.OrderType.ToDescriptionString(); // "order_lot"
+            var transmissionKey = order.TransmissionStatus.ToDescriptionString(); // "sent"/"received"
+            var stateKey = order.OrderState.ToDescriptionString(); // "pending"/"accepted"/"denied"
+
+            var isReceived = transmissionKey == "received";
+            var otherUserId = isReceived ? $"{order.SenderId}" : $"{order.RecipientId}";
+
+            if (!root.ContainsKey(orderTypeKey))
+                root[orderTypeKey] = new ASObject();
+
+            var byTransmission = (ASObject)root[orderTypeKey]!;
+
+            if (!byTransmission.ContainsKey(transmissionKey))
+                byTransmission[transmissionKey] = new ASObject();
+
+            var byState = (ASObject)byTransmission[transmissionKey]!;
+
+            if (!byState.ContainsKey(stateKey))
+                byState[stateKey] = new ASObject();
+
+            var byOtherUser = (ASObject)byState[stateKey]!;
+
+            if (!byOtherUser.ContainsKey(otherUserId))
+                byOtherUser[otherUserId] = new ASObject();
+
+            var orderParams = new ASObject
+            {
+                ["senderID"] = order.SenderId,
+                ["recipientID"] = order.RecipientId,
+                ["timeSent"] = order.TimeSent,
+                ["lastTimeReminded"] = order.LastTimeReminded,
+                ["orderType"] = orderTypeKey,
+                ["orderState"] = stateKey,
+                ["transmissionStatus"] = transmissionKey,
+
+                ["helpTargets"] = order.HelpTargets,
+                ["status"] = order.Status.ToDescriptionString()
+            };
+
+            byOtherUser[otherUserId] = orderParams;
+        }
+
+        return root;
     }
 }

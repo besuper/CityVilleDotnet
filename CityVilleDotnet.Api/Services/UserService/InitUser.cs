@@ -12,42 +12,30 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var user = await context.Set<Player>()
             .AsSplitQuery()
             .AsNoTracking()
-            .Include(x => x.Player)
-            .ThenInclude(x => x.Quests.OrderBy(q => q.Order))
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.InventoryItems)
-            .Include(x => x.Player)
-            .ThenInclude(x => x.World)
+            .Include(x => x.Quests.OrderBy(q => q.Order))
+            .Include(x => x!.InventoryItems)
+            .Include(x => x.World)
             .ThenInclude(x => x!.MapRects)
-            .Include(x => x.Player)
-            .ThenInclude(x => x.World)
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.SeenFlags)
+            .Include(x => x!.SeenFlags)
             .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
-            .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.Player)
+            .ThenInclude(x => x.FriendPlayer)
             .ThenInclude(x => x.World)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Collections)
+            .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Licenses)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Franchises)
+            .Include(x => x!.Licenses)
+            .Include(x => x.Franchises)
             .ThenInclude(x => x.Locations)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.LotOrders) // FIXME: Limit orders
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.VisitorHelpOrders) // FIXME: Limit orders
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Masteries)
-            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
+            .Include(x => x!.LotOrders) // FIXME: Limit orders
+            .Include(x => x!.VisitorHelpOrders) // FIXME: Limit orders
+            .Include(x => x!.Masteries)
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user?.Player is null)
+        if (user is null)
             throw new Exception("Player not initialized correctly");
 
         // Handle energy regeneration
@@ -62,7 +50,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
         trackedUser.UpdateEnergy();
         trackedUser.GetWorld().CleanTempIDs();
 
-        user.Player.UpdateEnergy(); // This will not save
+        user.UpdateEnergy(); // This will not save
 
         await context.SaveChangesAsync(cancellationToken);
 
@@ -70,8 +58,8 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
 
         var quests = new ASObject();
 
-        if (!user.Player.IsNew)
-            quests["QuestComponent"] = AmfConverter.Convert(user.GetPlayer().Quests.Select(x => x.ToDto()).ToList());
+        if (!user.IsNew)
+            quests["QuestComponent"] = AmfConverter.Convert(user.Quests.Select(x => x.ToDto()).ToList());
 
         return new CityVilleResponse().Data(userObj).MetaData(quests);
     }

@@ -12,9 +12,8 @@ public class User
     public Guid Id { get; private set; }
     public Guid UserId { get; private set; }
     public ApplicationUser? AppUser { get; private set; }
-    //public List<Quest> Quests { get; } = [];
     public Player? Player { get; private set; }
-    public List<Friend> Friends { get; } = [];
+    //public List<Friend> Friends { get; } = [];
 
     public User(Guid userId, ApplicationUser appUser, string username, Player player)
     {
@@ -46,11 +45,6 @@ public class User
         newPlayer.SetupNewPlayer(user);
 
         return new User(Guid.Parse(user.Id), user, user.UserName!, newPlayer);
-    }
-
-    public List<SocialNetworkUserDto> GetSocialNetworkUserFriendsList(string baseUrl)
-    {
-        return Friends.Where(f => !f.FriendUser.Player!.IsSamantha()).Select(friend => friend.ToSocialNetworkUserDto(baseUrl)).ToList();
     }
 
     public Player GetPlayer()

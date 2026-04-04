@@ -41,16 +41,16 @@ public static class NeighborDtoMapper
     {
         return new NeighborDto()
         {
-            Uid = model.FriendUser.Player.Snuid.ToString(),
-            Zid = model.FriendUser.Player.Snuid,
-            Snuid = model.FriendUser.Player.Snuid,
-            Snid = model.FriendUser.Player.Snuid,
-            Level = model.FriendUser.Player.Level,
+            Uid = model.FriendPlayer.Snuid.ToString(),
+            Zid = model.FriendPlayer.Snuid,
+            Snuid = model.FriendPlayer.Snuid,
+            Snid = model.FriendPlayer.Snuid,
+            Level = model.FriendPlayer.Level,
 
-            Gold = model.FriendUser.Player.Gold,
-            Xp = model.FriendUser.Player.Xp,
-            SocialLevel = model.FriendUser.Player.SocialLevel,
-            CityName = model.FriendUser.GetPlayer().GetWorld().WorldName ?? "Unknown city",
+            Gold = model.FriendPlayer.Gold,
+            Xp = model.FriendPlayer.Xp,
+            SocialLevel = model.FriendPlayer.SocialLevel,
+            CityName = model.FriendPlayer.GetWorld().WorldName ?? "Unknown city",
 
             FirstTimeVisit = false,
             RollCall = false,

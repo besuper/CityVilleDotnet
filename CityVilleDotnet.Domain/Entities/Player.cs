@@ -3,6 +3,7 @@ using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Settings.GameSettings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Enums;
+using CityVilleDotnet.Domain.GameEntities;
 using Microsoft.Extensions.Logging;
 
 namespace CityVilleDotnet.Domain.Entities;
@@ -41,6 +42,7 @@ public class Player
     public List<Mastery> Masteries { get; set; } = [];
     public World? World { get; private set; }
     public List<Quest> Quests { get; } = [];
+    public List<Friend> Friends { get; } = [];
 
     public Player()
     {
@@ -996,5 +998,10 @@ public class Player
         }
 
         Quests.AddRange(newQuests);
+    }
+    
+    public List<SocialNetworkUserDto> GetSocialNetworkUserFriendsList(string baseUrl)
+    {
+        return Friends.Where(f => !f.FriendPlayer.IsSamantha()).Select(friend => friend.ToSocialNetworkUserDto(baseUrl)).ToList();
     }
 }

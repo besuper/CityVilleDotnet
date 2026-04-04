@@ -49,8 +49,6 @@ public static class SamanthaSeeder
 
             await context.SaveChangesAsync();
 
-            await AddSamanthaToExistingUsers(context, logger);
-
             logger.LogInformation("Samantha's city seeded successfully");
             return;
         }
@@ -65,9 +63,9 @@ public static class SamanthaSeeder
 
         var newWorld = new World("City Sam", 36, 36, 0, 0, 0, 0, 0, mapRects, objects);
         var newPlayer = new Player(appUser.UserName!, newWorld);
-        
+
         var user = new User(SamanthaUserId, appUser, "Sam", newPlayer);
-        
+
         newPlayer.Snuid = SamanthaSnuid;
         newPlayer.CompleteTutorial();
         newPlayer.SetLevel(80);
@@ -89,35 +87,6 @@ public static class SamanthaSeeder
         await transaction.CommitAsync();
 
         logger.LogInformation("Samantha's city seeded successfully");
-    }
-
-    private static async Task AddSamanthaToExistingUsers(CityVilleDbContext context, ILogger logger)
-    {
-        var samantha = await context.Set<User>()
-            .Include(u => u.Friends)
-            .FirstOrDefaultAsync(u => u.UserId == SamanthaUserId);
-
-        if (samantha is null) return;
-
-        var usersWithoutSamantha = await context.Set<User>()
-            .Include(u => u.Friends)
-            .Where(u => u.UserId != SamanthaUserId && !u.Friends.Any(f => f.FriendUser.UserId == SamanthaUserId))
-            .ToListAsync();
-
-        if (usersWithoutSamantha.Count == 0) return;
-
-        foreach (var user in usersWithoutSamantha)
-        {
-            var friendship1 = new Friend(samantha, user, true) { Status = FriendshipStatus.Accepted };
-            var friendship2 = new Friend(user, samantha, false) { Status = FriendshipStatus.Accepted };
-
-            samantha.Friends.Add(friendship1);
-            user.Friends.Add(friendship2);
-        }
-
-        await context.SaveChangesAsync();
-
-        logger.LogInformation("Added Samantha as friend to {Count} existing user(s)", usersWithoutSamantha.Count);
     }
 
     private static List<MapRect> GetMapRects()

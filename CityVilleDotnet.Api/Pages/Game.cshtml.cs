@@ -14,7 +14,11 @@ namespace CityVilleDotnet.Api.Pages;
 [Authorize]
 public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbContext dbContext, IConfiguration configuration) : PageModel
 {
-    public static List<string> PreloadAssets = ["road/city/city04_SE.png", "dialogs/MarketAssets.swf", "dialogs/Market3Assets.swf", "dialogs/ASwingAssets.swf", "dialogs/ScrollingListAssets.swf", "dialogs/InventoryAssets.swf", "dialogs/QuestAssets.swf", "dialogs/TooltipAssets.swf", "dialogs/PopulationAssets.swf"];
+    public static List<string> PreloadAssets =
+    [
+        "road/city/city04_SE.png", "dialogs/MarketAssets.swf", "dialogs/Market3Assets.swf", "dialogs/ASwingAssets.swf", "dialogs/ScrollingListAssets.swf", "dialogs/InventoryAssets.swf", "dialogs/QuestAssets.swf",
+        "dialogs/TooltipAssets.swf", "dialogs/PopulationAssets.swf"
+    ];
 
     public string FriendList { get; set; } = "[]";
     public string Uid { get; set; } = "333";
@@ -34,10 +38,9 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         var user = await dbContext.Set<User>()
             .AsNoTracking()
             .Include(x => x.AppUser)
-            .Include(x => x.Friends)
-            .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.Player)
             .Include(x => x.Player)
+            .ThenInclude(x => x!.Friends)
+            .ThenInclude(x => x.FriendPlayer)
             .FirstOrDefaultAsync(x => x.AppUser!.Id.Equals(currentUser.Id));
 
         ServerTime = ServerUtils.GetCurrentTime();
@@ -47,7 +50,8 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             Uid = user.Player.Snuid.ToString();
             UserName = user.Player.Username;
             Level = user.Player.Level;
-            FriendList = JsonSerializer.Serialize(user.GetSocialNetworkUserFriendsList($"{Request.Scheme}://{Request.Host}{Request.PathBase}"), new JsonSerializerOptions { WriteIndented = false, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
+            FriendList = JsonSerializer.Serialize(user.GetPlayer().GetSocialNetworkUserFriendsList($"{Request.Scheme}://{Request.Host}{Request.PathBase}"),
+                new JsonSerializerOptions { WriteIndented = false, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
         }
         else
         {

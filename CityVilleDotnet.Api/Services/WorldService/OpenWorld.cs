@@ -16,26 +16,24 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
         // TODO: Update this to support other worlds type (world_main)
         logger.LogDebug("OpenWorld for user {UserId} targeting {OwnerId} world {WorldName}", playerId, request.OwnerId, request.WorldName);
 
-        var userToLoad = await context.Set<User>()
+        var playerToLoad = await context.Set<Player>()
             .AsNoTracking()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x.World)
+            .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
-            .Include(x => x.Player)
-            .ThenInclude(x => x.World)
+            .Include(x => x.World)
             .ThenInclude(x => x!.MapRects)
-            .FirstOrDefaultAsync(x => x.Player!.Snuid == request.OwnerId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Snuid == request.OwnerId, cancellationToken);
 
-        if (userToLoad is null)
-            throw new Exception($"Unable to find user with Player.Uid {request.OwnerId}");
+        if (playerToLoad is null)
+            throw new Exception($"Unable to find player with Player.Uid {request.OwnerId}");
 
-        var dtoUser = userToLoad.ToDto();
+        var dtoUser = playerToLoad.ToDto();
 
         var response = (ASObject)AmfConverter.Convert(dtoUser.UserInfo);
 
         // FIXME: Don't remove world in open world for owned worlds otherwise it will clear the map. This cause weird reload in game, might not be the best way
-        if (!request.PreloadRequired && userToLoad.UserId.ToString() != playerId.ToString())
+        if (!request.PreloadRequired && playerToLoad.Id != playerId)
         {
             // Remove the world from the response to make Samantha city work, the world is already cached with PreloadWorld
             // Avoid resetting energy from initialVisit
@@ -44,13 +42,13 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
 
         var featuredData = dtoUser.FeatureData;
 
-        if (userToLoad.GetPlayer().IsSamantha())
+        if (playerToLoad.IsSamantha())
         {
             // socialInventory feature is enabled after level 10
             // TODO: Check if needed to implement it better
             featuredData["socialInventory"] = new ASObject
             {
-                { "samObjectIds", new ASObject(userToLoad.GetPlayer().GetWorld().Objects.ToDictionary(x => x.WorldFlatId.ToString(), _ => (object)0)) }
+                { "samObjectIds", new ASObject(playerToLoad.GetWorld().Objects.ToDictionary(x => x.WorldFlatId.ToString(), _ => (object)0)) }
             };
         }
 

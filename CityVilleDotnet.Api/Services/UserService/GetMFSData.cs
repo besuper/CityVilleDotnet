@@ -11,19 +11,17 @@ public class GetMFSData(CityVilleDbContext context, IHttpContextAccessor httpCon
 {
     public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var player = await context.Set<Player>()
             .AsNoTracking()
-            .Include(u => u.Player)
             .Include(u => u.Friends)
-            .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.Player)
-            .FirstOrDefaultAsync(u => u.Player.Id == playerId, cancellationToken);
+            .ThenInclude(x => x.FriendPlayer)
+            .FirstOrDefaultAsync(u => u.Id == playerId, cancellationToken);
 
-        if (user is null) throw new Exception("User not found");
-        
+        if (player is null) throw new Exception("Player not found");
+
         var baseUrl = $"{httpContextAccessor.HttpContext!.Request.Scheme}://{httpContextAccessor.HttpContext.Request.Host}{httpContextAccessor.HttpContext.Request.PathBase}";
 
-        var friends = user.Friends.Where(p => !p.FriendUser.Player.IsSamantha()).Select(f => f.ToSocialNetworkUserDto(baseUrl)).ToList();
+        var friends = player.Friends.Where(p => !p.FriendPlayer.IsSamantha()).Select(f => f.ToSocialNetworkUserDto(baseUrl)).ToList();
 
         return new CityVilleResponse().Data(new ASObject
         {

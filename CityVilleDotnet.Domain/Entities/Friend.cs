@@ -10,9 +10,9 @@ public class Friend
 {
     public Guid Id { get; private set; }
 
-    public User User { get; private set; }
+    public Player Player { get; private set; }
 
-    public User FriendUser { get; private set; }
+    public Player FriendPlayer { get; private set; }
 
     public FriendshipStatus Status { get; set; }
 
@@ -22,11 +22,11 @@ public class Friend
     
     public long LastEnergyLeftReset { get; set; } = 0;
 
-    public Friend(User user, User friend, bool requested)
+    public Friend(Player user, Player friend, bool requested)
     {
         Id = Guid.NewGuid();
-        User = user;
-        FriendUser = friend;
+        Player = user;
+        FriendPlayer = friend;
 
         Status = FriendshipStatus.Pending;
         Requested = requested;

@@ -11,31 +11,26 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<User>()
+        var player = await context.Set<Player>()
             .AsNoTracking()
             .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
-            .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.Player)
-            .Include(x => x.Player)
-            .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
-            .ThenInclude(x => x.FriendUser)
-            .ThenInclude(x => x.Player)
+            .ThenInclude(x => x.FriendPlayer)
             .ThenInclude(x => x.World)
-            .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user?.Player is null)
+        if (player is null)
             throw new Exception("Player not found");
 
-        var neighborList = user.Friends
-            .Where(f => !f.FriendUser.Player!.IsSamantha())
+        var neighborList = player.Friends
+            .Where(f => !f.FriendPlayer.IsSamantha())
             .Select(friend => friend.ToNeighborDto()).ToList();
 
         neighborList.Add(new NeighborDto() // Samantha
         {
             Uid = "-1",
             Fake = 1,
-            Level = user.Player.Level + 1, // FriendBarSlot::updateSlot
-            Xp = user.Player.Xp + 10
+            Level = player.Level + 1, // FriendBarSlot::updateSlot
+            Xp = player.Xp + 10
         });
 
         return new CityVilleResponse().Data(new ASObject

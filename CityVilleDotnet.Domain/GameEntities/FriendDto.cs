@@ -16,8 +16,8 @@ public static class FriendDtoMapper
     {
         return new FriendDto()
         {
-            UserName = model.FriendUser.Player.Username,
-            Level = model.FriendUser.Player.Level,
+            UserName = model.FriendPlayer.Username,
+            Level = model.FriendPlayer.Level,
             Status = model.Status,
             Requested = model.Requested
         };

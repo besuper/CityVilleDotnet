@@ -11,40 +11,36 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
 {
     public override async Task<ASObject> HandlePacket(LoadWorldRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var userToLoad = await context.Set<User>()
+        var playerToLoad = await context.Set<Player>()
             .AsNoTracking()
             .AsSplitQuery()
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.World)
+            .Include(x => x!.World)
             .ThenInclude(x => x!.Objects)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.World)
+            .Include(x => x!.World)
             .ThenInclude(x => x!.MapRects)
-            .FirstOrDefaultAsync(x => x.Player!.Snuid == request.TargetUsedId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Snuid == request.TargetUsedId, cancellationToken);
 
-        if (userToLoad?.Player is null)
-            throw new Exception($"Unable to find user with Player.Uid {request.TargetUsedId}");
+        if (playerToLoad is null)
+            throw new Exception($"Unable to find player with Player.Uid {request.TargetUsedId}");
 
-        if (userToLoad.GetPlayer().Id != playerId)
+        if (playerToLoad.Id != playerId)
         {
-            var currentUser = await context.Set<User>()
+            var currentPlayer = await context.Set<Player>()
                 .AsSplitQuery()
-                .Include(x => x.Player)
-                .ThenInclude(x => x.Quests)
-                .Include(x => x.Player)
-                .ThenInclude(x => x!.InventoryItems)
-                .FirstOrDefaultAsync(x => x.Player.Id == playerId, cancellationToken);
+                .Include(x => x.Quests)
+                .Include(x => x!.InventoryItems)
+                .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-            if (currentUser is null)
+            if (currentPlayer is null)
                 throw new Exception("Current player not found");
 
-            currentUser.GetPlayer().HandleQuestsProgress("neighborVisit");
-            currentUser.GetPlayer().CheckCompletedQuests();
+            currentPlayer.HandleQuestsProgress("neighborVisit");
+            currentPlayer.CheckCompletedQuests();
 
             await context.SaveChangesAsync(cancellationToken);
         }
 
-        var dtoUser = userToLoad.ToDto();
+        var dtoUser = playerToLoad.ToDto();
 
         var response = (ASObject)AmfConverter.Convert(dtoUser.UserInfo);
         response!["franchises"] = new List<object>();

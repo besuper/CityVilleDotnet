@@ -28,11 +28,11 @@ public static class SocialNetworkUserDtoMapper
     {
         return new SocialNetworkUserDto
         {
-            Zid = model.FriendUser.Player.Snuid,
-            Snuid = model.FriendUser.Player.Snuid,
-            Snid = model.FriendUser.Player.Snuid,
-            FirstName = model.FriendUser.Player.Username,
-            Name = model.FriendUser.Player.Username,
+            Zid = model.FriendPlayer.Snuid,
+            Snuid = model.FriendPlayer.Snuid,
+            Snid = model.FriendPlayer.Snuid,
+            FirstName = model.FriendPlayer.Username,
+            Name = model.FriendPlayer.Username,
             Picture = $"{baseUrl}/blank.png",
             Gender = "M",
             Locale = "EN"
