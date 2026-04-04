@@ -74,10 +74,10 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             return RedirectToPage("/Friends/List");
         }
 
-        var targetUser = await dbContext.Set<User>()
-            .Include(x => x.Player)
-            .Where(x => x.Player!.Username == Username)
-            .FirstOrDefaultAsync(ct);
+        var targetUser = await dbContext.Set<Player>()
+            .Include(x => x.Friends)
+            .ThenInclude(x => x.FriendPlayer)
+            .FirstOrDefaultAsync(x => x.Username == Username, ct);
 
         if (targetUser is null)
         {
@@ -94,10 +94,10 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             return RedirectToPage("/Friends/List");
         }
 
-        var friendship1 = new Friend(targetUser.GetPlayer(), user, true);
-        var friendship2 = new Friend(user, targetUser.GetPlayer(), false);
+        var friendship1 = new Friend(targetUser, user, true);
+        var friendship2 = new Friend(user, targetUser, false);
 
-        targetUser.GetPlayer().Friends.Add(friendship1);
+        targetUser.Friends.Add(friendship1);
         user.Friends.Add(friendship2);
 
         TempData["Success"] = $"Friend request sent to {Username}.";

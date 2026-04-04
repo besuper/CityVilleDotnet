@@ -43,10 +43,10 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
             return;
         }
 
-        var pUser = await context.Set<User>()
+        var pUser = await context.Set<Player>()
             .AsNoTracking()
-            .Where(x => x.UserId == Guid.Parse(user.Id))
-            .Select(x => x.Player.Id)
+            .Where(x => x.AppUser.Id == user.Id)
+            .Select(x => x.Id)
             .FirstOrDefaultAsync(ct);
 
         using var ms = new MemoryStream();

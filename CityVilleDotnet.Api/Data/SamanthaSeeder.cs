@@ -21,29 +21,26 @@ public static class SamanthaSeeder
 
         logger.LogInformation("Seeding Samantha's city");
 
-        var samanthaUser = await context.Set<User>()
+        var samanthaUser = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(u => u.Player)
-            .ThenInclude(u => u.World)
+            .Include(u => u.World)
             .ThenInclude(w => w!.Objects)
-            .Include(u => u.Player)
-            .ThenInclude(u => u.World)
+            .Include(u => u.World)
             .ThenInclude(w => w!.MapRects)
-            .FirstOrDefaultAsync(u => u.UserId == SamanthaUserId);
+            .FirstOrDefaultAsync(u => u.Snuid == SamanthaSnuid);
 
         var mapRects = GetMapRects();
         var objects = GetWorldObjects();
 
         if (samanthaUser is not null)
         {
-            if (samanthaUser.GetPlayer().World is not null)
-                context.Remove(samanthaUser.GetPlayer().GetWorld());
+            if (samanthaUser.World is not null)
+                context.Remove(samanthaUser.GetWorld());
 
             var world = new World("City Sam", 36, 36, 0, 0, 0, 0, 0, mapRects, objects);
-            samanthaUser.GetPlayer().SetWorld(world);
+            samanthaUser.SetWorld(world);
 
-            var player = samanthaUser.Player!;
-            player.SetLevel(80);
+            samanthaUser.SetLevel(80);
 
             world.CalculatePopulation();
 
@@ -63,16 +60,14 @@ public static class SamanthaSeeder
 
         var newWorld = new World("City Sam", 36, 36, 0, 0, 0, 0, 0, mapRects, objects);
         var newPlayer = new Player(appUser, newWorld);
-
-        var user = new User(SamanthaUserId, appUser, "Sam", newPlayer);
-
+        
         newPlayer.Snuid = SamanthaSnuid;
         newPlayer.CompleteTutorial();
         newPlayer.SetLevel(80);
 
         newWorld.CalculatePopulation();
 
-        await context.AddAsync(user);
+        await context.AddAsync(newPlayer);
 
         var connection = context.Database.GetDbConnection();
         await connection.OpenAsync();
