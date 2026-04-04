@@ -1,7 +1,7 @@
 using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.QuestService;
 using CityVilleDotnet.Domain.Entities;
-using CityVilleDotnet.Factory.User;
+using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Test.Integration.Fixtures;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +15,7 @@ public class RequestManualQuestsTest(DatabaseFixture fixture) : IntegrationTest(
     [Fact]
     public async Task RequestManualQuests_ValidQuest()
     {
-        var user = Faker.User();
+        var user = Faker.Player();
 
         await Context.AddAsync(user);
         await Context.SaveChangesAsync();
@@ -26,7 +26,7 @@ public class RequestManualQuestsTest(DatabaseFixture fixture) : IntegrationTest(
             Quests = ["qm_test_quest_with_sequel"]
         };
 
-        var response = await handler.HandlePacket(request, user.UserId, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
 
         var data = response["data"] as List<ASObject>;
         
@@ -44,7 +44,7 @@ public class RequestManualQuestsTest(DatabaseFixture fixture) : IntegrationTest(
     [Fact]
     public async Task RequestManualQuests_LevelBelowRequired_DoesNotStartQuest()
     {
-        var user = Faker.User();
+        var user = Faker.Player();
 
         await Context.AddAsync(user);
         await Context.SaveChangesAsync();
@@ -55,7 +55,7 @@ public class RequestManualQuestsTest(DatabaseFixture fixture) : IntegrationTest(
             Quests = ["qm_test_quest_high_level"]
         };
 
-        var response = await handler.HandlePacket(request, user.UserId, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
 
         var data = response["data"] as List<ASObject>;
         data.Should().NotBeNull();
@@ -68,8 +68,8 @@ public class RequestManualQuestsTest(DatabaseFixture fixture) : IntegrationTest(
     [Fact]
     public async Task RequestManualQuests_LevelAboveRequired_StartsQuest()
     {
-        var user = Faker.User();
-        user.Player!.SetLevel(50);
+        var user = Faker.Player();
+        user.SetLevel(50);
 
         await Context.AddAsync(user);
         await Context.SaveChangesAsync();
@@ -80,7 +80,7 @@ public class RequestManualQuestsTest(DatabaseFixture fixture) : IntegrationTest(
             Quests = ["qm_test_quest_high_level"]
         };
 
-        var response = await handler.HandlePacket(request, user.UserId, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
 
         var data = response["data"] as List<ASObject>;
         data.Should().NotBeNull();

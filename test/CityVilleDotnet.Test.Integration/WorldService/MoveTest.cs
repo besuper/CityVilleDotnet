@@ -2,7 +2,7 @@ using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.WorldService;
 using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Domain.Entities;
-using CityVilleDotnet.Factory.User;
+using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
 using CityVilleDotnet.Test.Integration.Fixtures;
@@ -18,7 +18,7 @@ public class MoveTest(DatabaseFixture fixture) : IntegrationTest(fixture)
     {
         var building = Faker.WorldObject(x: 10, y: 20, direction: 0);
         var world = Faker.World(objects: [building]);
-        var user = Faker.User(world: world);
+        var user = Faker.Player(world: world);
 
         await Context.AddAsync(user);
         await Context.SaveChangesAsync();
@@ -34,7 +34,7 @@ public class MoveTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             MoveParams = [new MoveParamsRequest { OrigX = 10, OrigY = 20 }]
         };
 
-        var response = await handler.HandlePacket(request, user.UserId, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
 
         response["errorType"].Should().Be(0);
 
@@ -49,7 +49,7 @@ public class MoveTest(DatabaseFixture fixture) : IntegrationTest(fixture)
     {
         var building = Faker.WorldObject(x: 10, y: 20, direction: 0);
         var world = Faker.World(objects: [building]);
-        var user = Faker.User(world: world);
+        var user = Faker.Player(world: world);
 
         await Context.AddAsync(user);
         await Context.SaveChangesAsync();
@@ -65,7 +65,7 @@ public class MoveTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             MoveParams = [new MoveParamsRequest { OrigX = 15, OrigY = 35 }]
         };
 
-        var act = () => handler.HandlePacket(request, user.UserId, CancellationToken.None);
+        var act = () => handler.HandlePacket(request, user.Id, CancellationToken.None);
 
         await act.Should().ThrowAsync<Exception>();
     }

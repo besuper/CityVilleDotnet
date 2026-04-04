@@ -1,7 +1,7 @@
 using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.UserService;
 using CityVilleDotnet.Domain.Entities;
-using CityVilleDotnet.Factory.User;
+using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Test.Integration.Fixtures;
 using FluentValidation.TestHelper;
 using Microsoft.EntityFrameworkCore;
@@ -15,21 +15,21 @@ public class SetSeenFlagTest(DatabaseFixture fixture) : IntegrationTest(fixture)
     [Fact]
     public async Task SetSeenFlag_ValidFlag()
     {
-        var user = Faker.User();
+        var user = Faker.Player();
 
         await Context.AddAsync(user);
         await Context.SaveChangesAsync();
 
-        var handler = new SetSeenFlag(Context, NullLogger<SetSeenFlag>.Instance);
+        var handler = new SetSeenFlag(Context);
         var request = new SetSeenFlagRequest { FlagName = "tutorial_complete" };
 
-        var response = await handler.HandlePacket(request, user.UserId, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
 
         response["errorType"].Should().Be(0);
 
         var player = await Context.Set<Player>()
             .Include(x => x.SeenFlags)
-            .FirstAsync(x => x.Id == user.Player!.Id);
+            .FirstAsync(x => x.Id == user.Id);
 
         player.SeenFlags.Should().ContainSingle(x => x.Key == "tutorial_complete");
     }
@@ -37,22 +37,22 @@ public class SetSeenFlagTest(DatabaseFixture fixture) : IntegrationTest(fixture)
     [Fact]
     public async Task SetSeenFlag_DuplicateFlag_DoesNotAddTwice()
     {
-        var user = Faker.User();
-        user.GetPlayer().SetSeenFlag("already_seen");
+        var user = Faker.Player();
+        user.SetSeenFlag("already_seen");
 
         await Context.AddAsync(user);
         await Context.SaveChangesAsync();
 
-        var handler = new SetSeenFlag(Context, NullLogger<SetSeenFlag>.Instance);
+        var handler = new SetSeenFlag(Context);
         var request = new SetSeenFlagRequest { FlagName = "already_seen" };
 
-        var response = await handler.HandlePacket(request, user.UserId, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
 
         response["errorType"].Should().Be(0);
 
         var player = await Context.Set<Player>()
             .Include(x => x.SeenFlags)
-            .FirstAsync(x => x.Id == user.Player!.Id);
+            .FirstAsync(x => x.Id == user.Id);
 
         player.SeenFlags.Where(x => x.Key == "already_seen").Should().ContainSingle();
     }
@@ -84,7 +84,7 @@ public class SetSeenFlagTest(DatabaseFixture fixture) : IntegrationTest(fixture)
     [Fact]
     public async Task SetSeenFlag_InvalidUser_ThrowsException()
     {
-        var handler = new SetSeenFlag(Context, NullLogger<SetSeenFlag>.Instance);
+        var handler = new SetSeenFlag(Context);
         var request = new SetSeenFlagRequest { FlagName = "some_flag" };
 
         var act = () => handler.HandlePacket(request, Guid.NewGuid(), CancellationToken.None);
