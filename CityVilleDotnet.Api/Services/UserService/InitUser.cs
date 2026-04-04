@@ -47,9 +47,23 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
         if (trackedUser is null)
             throw new Exception("Player not found for user");
 
+        // Remove the first building if user refresh before completing the tutorial to avoid being stuck
+        if (trackedUser.IsNew)
+        {
+            var firstBuilding = trackedUser.GetWorld().Objects.FirstOrDefault(y => y.TempId != -1);
+
+            if (firstBuilding is not null)
+            {
+                user.GetWorld().RemoveBuilding(user.GetWorld().Objects.FirstOrDefault(y => y.TempId != -1)!);
+                trackedUser.GetWorld().RemoveBuilding(firstBuilding);
+                
+                context.Remove(firstBuilding);
+            }
+        }
+
         trackedUser.UpdateEnergy();
         trackedUser.GetWorld().CleanTempIDs();
-
+        
         user.UpdateEnergy(); // This will not save
 
         await context.SaveChangesAsync(cancellationToken);

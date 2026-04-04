@@ -158,7 +158,7 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
         }
 
         // Set TempId to current clientId to fix harvest
-        if (request.Building.ClassName == BuildingClassType.Business)
+        if (request.Building.ClassName == BuildingClassType.Business || player.IsNew)
         {
             obj.SetTempId(request.Building.Id);
         }

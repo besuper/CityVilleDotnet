@@ -308,7 +308,7 @@ public class WorldObject
         State = EnumExtensions.EnumExtensions.ParseFromDescription<WorldObjectState>(worldObjectDto.State);
         TargetBuildingClass = worldObjectDto.TargetBuildingClass is null ? null : Enum.Parse<BuildingClassType>(worldObjectDto.TargetBuildingClass);
         TargetBuildingName = worldObjectDto.TargetBuildingName;
-        TempId = worldObjectDto.TempId;
+        TempId = -1;
         WorldFlatId = worldObjectDto.WorldFlatId;
 
         return this;
