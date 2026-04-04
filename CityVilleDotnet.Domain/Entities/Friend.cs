@@ -10,16 +10,16 @@ public class Friend
 {
     public Guid Id { get; private set; }
 
-    public Player Player { get; private set; }
+    public Player? Player { get; private set; }
 
-    public Player FriendPlayer { get; private set; }
+    public Player? FriendPlayer { get; private set; }
 
     public FriendshipStatus Status { get; set; }
 
     public bool Requested { get; set; }
 
     public int EnergyLeft { get; set; } = 5;
-    
+
     public long LastEnergyLeftReset { get; set; } = 0;
 
     public Friend(Player user, Player friend, bool requested)
@@ -32,5 +32,21 @@ public class Friend
         Requested = requested;
     }
 
-    public Friend() { }
+    public Friend()
+    {
+    }
+
+    public Player GetPlayer()
+    {
+        if (Player is null) throw new Exception("Player is not loaded");
+
+        return Player;
+    }
+
+    public Player GetFriend()
+    {
+        if (FriendPlayer is null) throw new Exception("Friend player is not loaded");
+
+        return FriendPlayer;
+    }
 }

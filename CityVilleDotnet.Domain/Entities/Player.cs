@@ -62,6 +62,8 @@ public class Player
         CreationTimestamp = (int)ServerUtils.GetCurrentTime();
         World = world;
         AppUser = appUser;
+        
+        Quests.Add(Quest.Create("q_rename_city", 1, QuestType.Active));
     }
 
     public void AddItemToCollection(string collectionName, string itemName, int amount = 1)
@@ -818,12 +820,6 @@ public class Player
         return World != null && World.Objects.Count != 0;
     }
 
-    public void SetupNewPlayer(ApplicationUser user)
-    {
-        // Setup first quest
-        Quests.Add(Quest.Create("q_rename_city", 1, QuestType.Active));
-    }
-
     public void HandleQuestsProgress(string actionType, string? className = null, string? itemName = null)
     {
         StaticLogger.Current.LogDebug("Handle quest actionType = {ActionType}, className = {ClassName}, itemName = {ItemName}", actionType, className, itemName);
@@ -1001,9 +997,26 @@ public class Player
 
         Quests.AddRange(newQuests);
     }
-    
+
     public List<SocialNetworkUserDto> GetSocialNetworkUserFriendsList(string baseUrl)
     {
         return Friends.Where(f => !f.FriendPlayer.IsSamantha()).Select(friend => friend.ToSocialNetworkUserDto(baseUrl)).ToList();
+    }
+
+    public bool HasFriend(Player friend)
+    {
+        return Friends.Any(x => x.GetFriend().Id == friend.Id);
+    }
+
+    public void SendFriendRequest(Player targetPlayer)
+    {
+        if (targetPlayer.Id == Id) throw new Exception("You cannot add yourself as a friend");
+        if (HasFriend(targetPlayer)) throw new Exception("You are already friends");
+
+        var friendship1 = new Friend(targetPlayer, this, true);
+        var friendship2 = new Friend(this, targetPlayer, false);
+
+        targetPlayer.Friends.Add(friendship1);
+        Friends.Add(friendship2);
     }
 }

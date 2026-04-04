@@ -27,10 +27,7 @@ public class RegisterModel(
     {
         returnUrl = returnUrl ?? "/Game";
 
-        if (!ModelState.IsValid)
-        {
-            return Page();
-        }
+        if (!ModelState.IsValid) return Page();
 
         var user = new ApplicationUser
         {
