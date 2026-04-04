@@ -11,15 +11,12 @@ public class User
 {
     public Guid Id { get; private set; }
     public Guid UserId { get; private set; }
-    public ApplicationUser? AppUser { get; private set; }
     public Player? Player { get; private set; }
-    //public List<Friend> Friends { get; } = [];
 
     public User(Guid userId, ApplicationUser appUser, string username, Player player)
     {
         Id = Guid.NewGuid();
         UserId = userId;
-        AppUser = appUser;
         Player = player;
     }
 
@@ -41,7 +38,7 @@ public class User
 
         var world = new World("", 36, 36, 30, 0, 50, 0, 0, mapRects, objects);
 
-        var newPlayer = new Player(user.UserName!, world);
+        var newPlayer = new Player(user, world);
         newPlayer.SetupNewPlayer(user);
 
         return new User(Guid.Parse(user.Id), user, user.UserName!, newPlayer);

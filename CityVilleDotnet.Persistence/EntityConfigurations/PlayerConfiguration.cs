@@ -39,5 +39,6 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
             .IsRequired(true)
             .OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(x => x.Friends);
+        builder.HasOne(x => x.AppUser);
     }
 }

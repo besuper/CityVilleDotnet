@@ -31,20 +31,19 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             return RedirectToPage("/Game");
         }
 
-        Friends = await dbContext.Set<User>()
+        Friends = await dbContext.Set<Player>()
             .AsNoTracking()
             .Where(x => x.AppUser!.Id.Equals(CurrentUser.Id))
             .Include(x => x.AppUser)
-            .Include(x => x.Player)
-            .ThenInclude(x => x.Friends)
+            .Include(x => x.Friends)
             .ThenInclude(x => x.FriendPlayer)
-            .SelectMany(x => x.Player.Friends, (_, friend) => friend)
+            .SelectMany(x => x.Friends, (_, friend) => friend)
             .Where(x => x.FriendPlayer.Snuid != -1) // Remove samantha
             .Select(x => x.ToDto())
             .ToListAsync(ct);
 
-        ViewData["PlayerName"] = user.Player?.Username;
-        ViewData["PlayerLevel"] = user.Player?.Level;
+        ViewData["PlayerName"] = user.Username;
+        ViewData["PlayerLevel"] = user.Level;
 
         return Page();
     }
@@ -59,7 +58,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         var user = await GetCurrentUserAsync(ct);
 
-        if (user?.Player is null || user.AppUser is null)
+        if (user is null || user.AppUser is null)
             return RedirectToPage("/Account/Login");
 
         CurrentUser = user.AppUser;
@@ -69,7 +68,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             return RedirectToPage("/Game");
         }
 
-        if (user.Player.Username.Equals(Username, StringComparison.OrdinalIgnoreCase))
+        if (user.Username.Equals(Username, StringComparison.OrdinalIgnoreCase))
         {
             TempData["Error"] = "You cannot add yourself as a friend.";
             return RedirectToPage("/Friends/List");
@@ -95,16 +94,16 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             return RedirectToPage("/Friends/List");
         }
 
-        var friendship1 = new Friend(targetUser.GetPlayer(), user.GetPlayer(), true);
-        var friendship2 = new Friend(user.GetPlayer(), targetUser.GetPlayer(), false);
+        var friendship1 = new Friend(targetUser.GetPlayer(), user, true);
+        var friendship2 = new Friend(user, targetUser.GetPlayer(), false);
 
         targetUser.GetPlayer().Friends.Add(friendship1);
-        user.GetPlayer().Friends.Add(friendship2);
+        user.Friends.Add(friendship2);
 
         TempData["Success"] = $"Friend request sent to {Username}.";
 
-        ViewData["PlayerName"] = user.Player?.Username;
-        ViewData["PlayerLevel"] = user.Player?.Level;
+        ViewData["PlayerName"] = user.Username;
+        ViewData["PlayerLevel"] = user.Level;
 
         await dbContext.SaveChangesAsync(ct);
 
@@ -155,8 +154,8 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         TempData["Success"] = $"You are now friends with {userName}.";
 
-        ViewData["PlayerName"] = user.Player?.Username;
-        ViewData["PlayerLevel"] = user.Player?.Level;
+        ViewData["PlayerName"] = user.Username;
+        ViewData["PlayerLevel"] = user.Level;
 
         await dbContext.SaveChangesAsync(ct);
 
@@ -206,8 +205,8 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         TempData["Success"] = $"Friend request from {userName} rejected.";
 
-        ViewData["PlayerName"] = user.Player?.Username;
-        ViewData["PlayerLevel"] = user.Player?.Level;
+        ViewData["PlayerName"] = user.Username;
+        ViewData["PlayerLevel"] = user.Level;
 
         await dbContext.SaveChangesAsync(ct);
         return RedirectToPage("/Friends/List");
@@ -253,23 +252,22 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         TempData["Success"] = $"Friend request to {userName} cancelled.";
 
-        ViewData["PlayerName"] = user.Player?.Username;
-        ViewData["PlayerLevel"] = user.Player?.Level;
+        ViewData["PlayerName"] = user.Username;
+        ViewData["PlayerLevel"] = user.Level;
 
         await dbContext.SaveChangesAsync(ct);
         return RedirectToPage("/Friends/List");
     }
 
-    private async Task<User?> GetCurrentUserAsync(CancellationToken ct)
+    private async Task<Player?> GetCurrentUserAsync(CancellationToken ct)
     {
         CurrentUser = await userManager.GetUserAsync(User);
 
         if (CurrentUser is null)
             return null;
 
-        return await dbContext.Set<User>()
+        return await dbContext.Set<Player>()
             .Include(x => x.AppUser)
-            .Include(x => x.Player)
             .FirstOrDefaultAsync(x => x.AppUser!.Id == CurrentUser.Id, ct);
     }
 }

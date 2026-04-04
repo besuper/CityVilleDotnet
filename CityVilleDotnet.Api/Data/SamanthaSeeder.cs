@@ -62,7 +62,7 @@ public static class SamanthaSeeder
         };
 
         var newWorld = new World("City Sam", 36, 36, 0, 0, 0, 0, 0, mapRects, objects);
-        var newPlayer = new Player(appUser.UserName!, newWorld);
+        var newPlayer = new Player(appUser, newWorld);
 
         var user = new User(SamanthaUserId, appUser, "Sam", newPlayer);
 

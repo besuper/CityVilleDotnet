@@ -35,22 +35,21 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         if (currentUser is null)
             return RedirectToPage("/Account/Login");
 
-        var user = await dbContext.Set<User>()
+        var user = await dbContext.Set<Player>()
             .AsNoTracking()
             .Include(x => x.AppUser)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.Friends)
+            .Include(x => x!.Friends)
             .ThenInclude(x => x.FriendPlayer)
             .FirstOrDefaultAsync(x => x.AppUser!.Id.Equals(currentUser.Id));
 
         ServerTime = ServerUtils.GetCurrentTime();
 
-        if (user?.Player is not null)
+        if (user is not null)
         {
-            Uid = user.Player.Snuid.ToString();
-            UserName = user.Player.Username;
-            Level = user.Player.Level;
-            FriendList = JsonSerializer.Serialize(user.GetPlayer().GetSocialNetworkUserFriendsList($"{Request.Scheme}://{Request.Host}{Request.PathBase}"),
+            Uid = user.Snuid.ToString();
+            UserName = user.Username;
+            Level = user.Level;
+            FriendList = JsonSerializer.Serialize(user.GetSocialNetworkUserFriendsList($"{Request.Scheme}://{Request.Host}{Request.PathBase}"),
                 new JsonSerializerOptions { WriteIndented = false, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
         }
         else

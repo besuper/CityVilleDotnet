@@ -43,12 +43,13 @@ public class Player
     public World? World { get; private set; }
     public List<Quest> Quests { get; } = [];
     public List<Friend> Friends { get; } = [];
+    public ApplicationUser? AppUser { get; private set; }
 
     public Player()
     {
     }
 
-    public Player(string username, World world)
+    public Player(ApplicationUser appUser, World world)
     {
         Id = Guid.NewGuid();
         Cash = 900;
@@ -57,9 +58,10 @@ public class Player
         EnergyMax = 12;
         Goods = 100;
         PremiumGoods = 0;
-        Username = username;
+        Username = appUser.UserName!;
         CreationTimestamp = (int)ServerUtils.GetCurrentTime();
         World = world;
+        AppUser = appUser;
     }
 
     public void AddItemToCollection(string collectionName, string itemName, int amount = 1)

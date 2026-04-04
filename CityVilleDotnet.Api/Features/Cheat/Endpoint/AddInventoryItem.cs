@@ -31,12 +31,9 @@ internal sealed class AddInventoryItem(UserManager<ApplicationUser> userManager,
             return;
         }
 
-        var player = await dbContext.Set<User>()
-            .Where(x => x.AppUser!.Id == currentUser.Id)
-            .Include(x => x.Player)
-            .ThenInclude(x => x!.InventoryItems)
-            .Select(x => x.Player)
-            .FirstOrDefaultAsync(ct);
+        var player = await dbContext.Set<Player>()
+            .Include(x => x!.InventoryItems)
+            .FirstOrDefaultAsync(x => x.AppUser!.Id == currentUser.Id, ct);
 
         if (player is null)
         {

@@ -14,8 +14,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasOne(x => x.Player);
 
-        builder.HasOne(x => x.AppUser);
-
         builder.HasIndex(x => x.UserId);
     }
 }

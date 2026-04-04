@@ -31,10 +31,9 @@ internal sealed class UpdateResources(UserManager<ApplicationUser> userManager, 
             return;
         }
 
-        var player = await dbContext.Set<User>()
-            .Where(x => x.AppUser!.Id == currentUser.Id)
-            .Select(x => x.Player)
-            .FirstOrDefaultAsync(ct);
+        var player = await dbContext.Set<Player>()
+            .Include(x => x.AppUser)
+            .FirstOrDefaultAsync(x => x.AppUser!.Id == currentUser.Id, ct);
 
         if (player is null)
         {
