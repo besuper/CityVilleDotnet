@@ -16,7 +16,7 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
     {
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Quests)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.SeenFlags)
             .Include(x => x.InventoryItems)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
@@ -48,10 +48,7 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse().MetaData(new ASObject
-        {
-            ["QuestComponent"] = AmfConverter.Convert(player.Quests.Select(x => x.ToDto()))
-        });
+        return new CityVilleResponse();
     }
 }
 

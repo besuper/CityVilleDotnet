@@ -19,7 +19,7 @@ internal sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequ
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.InventoryItems)
-            .Include(x => x.Quests.OrderBy(q => q.Order))
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
@@ -52,10 +52,7 @@ internal sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequ
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse().MetaData(new ASObject
-        {
-            ["QuestComponent"] = AmfConverter.Convert(player.Quests.Select(x => x.ToDto()))
-        }).Data(new ASObject
+        return new CityVilleResponse().Data(new ASObject
         {
             ["id"] = obj.WorldFlatId
         });

@@ -22,7 +22,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.InventoryItems)
             .Include(x => x.SeenFlags)
-            .Include(x => x.Quests)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.Masteries)
@@ -101,9 +101,6 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
             ["secureRands"] = AmfConverter.Convert(secureRands),
             ["objectPopulation"] = objectPopulation,
             ["worldPopulation"] = worldPopulation
-        }).MetaData(new ASObject
-        {
-            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Select(x => x.ToDto()))
         });
     }
 }

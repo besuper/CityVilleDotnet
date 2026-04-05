@@ -4,7 +4,6 @@ using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
-using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
 using FluentValidation;
 using FluorineFx;
@@ -29,7 +28,7 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.InventoryItems)
             .Include(x => x.SeenFlags)
-            .Include(x => x.Quests.OrderBy(q => q.Order))
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.Masteries)
@@ -107,10 +106,7 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
 
                 await context.SaveChangesAsync(cancellationToken);
 
-                return new CityVilleResponse().MetaData(new ASObject
-                {
-                    ["QuestComponent"] = AmfConverter.Convert(player.Quests.Select(x => x.ToDto()))
-                });
+                return new CityVilleResponse();
             }
         }
 
@@ -173,10 +169,7 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse().MetaData(new ASObject
-        {
-            ["QuestComponent"] = AmfConverter.Convert(player.Quests.Select(x => x.ToDto()))
-        }).Data(new ASObject
+        return new CityVilleResponse().Data(new ASObject
         {
             { "id", obj.WorldFlatId }
         });
