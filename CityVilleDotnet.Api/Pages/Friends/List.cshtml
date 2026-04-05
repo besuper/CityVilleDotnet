@@ -1,4 +1,5 @@
 ﻿@page
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Resources.SharedResource> Localizer
 @{
 	Layout = "Shared/_GameLayout";
 }
@@ -21,14 +22,14 @@
 		}
 
 		<form asp-page-handler="AddFriend" method="post" class="add-friend">
-			<label>Add Friend</label>
+			<label>@Localizer["AddFriend"]</label>
 			<div>
-				<input type="text" asp-for="Username" placeholder="Enter username..."/>
-				<button type="submit">Add Friend</button>
+				<input type="text" asp-for="Username" placeholder="@Localizer["EnterUsername"]"/>
+				<button type="submit">@Localizer["AddFriend"]</button>
 			</div>
 		</form>
 
-		<h2 class="section-title">Friends
+		<h2 class="section-title">@Localizer["Friends"]
 			(@Model.Friends.Count(x => x.Status == Domain.Entities.FriendshipStatus.Accepted))</h2>
 
 		@{
@@ -44,7 +45,7 @@
 						<img src="/blank.png" alt="@item.UserName's avatar"/>
 						<div class="friend-content">
 							<div>@item.UserName</div>
-							<div>Level @item.Level</div>
+							<div>@Localizer["Level"] @item.Level</div>
 						</div>
 					</div>
 				}
@@ -52,10 +53,10 @@
 		}
 		else
 		{
-			<div class="empty-state">No friends yet. Add some friends to get started!</div>
+			<div class="empty-state">@Localizer["EmptyFriends"]</div>
 		}
 
-		<h2 class="section-title">Pending Requests
+		<h2 class="section-title">@Localizer["PendingFriendsRequests"]
 			(@Model.Friends.Count(x => x.Status == Domain.Entities.FriendshipStatus.Pending))</h2>
 
 		@{
@@ -71,19 +72,19 @@
 						<img src="/blank.png" alt="@item.UserName's avatar"/>
 						<div class="friend-content">
 							<div>@item.UserName</div>
-							<div>Level @item.Level</div>
+							<div>@Localizer["Level"] @item.Level</div>
 							<div class="interactions">
 								@if (!item.Requested)
 								{
 									<a class="cancel" asp-page-handler="Cancel" asp-route-userName="@item.UserName"
-									   title="Cancel friend request">Cancel</a>
+									   title="Cancel friend request">@Localizer["Cancel"]</a>
 								}
 								else
 								{
 									<a class="accept" asp-page-handler="Accept" asp-route-userName="@item.UserName"
-									   title="Accept friend request">Accept</a>
+									   title="Accept friend request">@Localizer["Accept"]</a>
 									<a class="reject" asp-page-handler="Reject" asp-route-userName="@item.UserName"
-									   title="Reject friend request">Reject</a>
+									   title="Reject friend request">@Localizer["Reject"]</a>
 								}
 							</div>
 						</div>
@@ -93,7 +94,7 @@
 		}
 		else
 		{
-			<div class="empty-state">No pending friend requests.</div>
+			<div class="empty-state">@Localizer["EmptyPendingFriendsRequests"]</div>
 		}
 	</div>
 </div>

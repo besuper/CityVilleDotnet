@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Threading.RateLimiting;
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
@@ -17,7 +18,8 @@ using CityVilleDotnet.Api.Middleware;
 using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Utils;
 using FluentValidation;
-using FluentValidation.Resources;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder();
 
@@ -45,7 +47,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromHours(1);
 });
 
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages().AddViewLocalization();
 builder.Services.AddFastEndpoints();
 builder.Services.AddHttpContextAccessor();
 
@@ -58,6 +60,17 @@ builder.Services.ConfigureHttpJsonOptions(options => { options.SerializerOptions
 builder.Services.Configure<JsonOptions>(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(o => o.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
+
+builder.Services.AddLocalization();
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = LocaleUtils.SUPPORTED_LOCALES.Select(x => new CultureInfo(x)).ToList();
+    
+    options.DefaultRequestCulture = new RequestCulture("en-US");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+});
 
 var executingAssembly = Assembly.GetExecutingAssembly();
 var serviceTypes = executingAssembly.GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(AmfService)));
@@ -121,6 +134,9 @@ app.UseAuthorization();
 
 app.UseSerilogRequestLogging();
 app.UseFastEndpoints();
+
+var options = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
+app.UseRequestLocalization(options.Value);
 
 StaticLogger.Configure(app.Services.GetRequiredService<ILoggerFactory>());
 

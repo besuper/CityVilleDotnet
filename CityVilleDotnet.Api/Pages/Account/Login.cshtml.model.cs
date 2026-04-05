@@ -4,14 +4,15 @@ namespace CityVilleDotnet.Api.Pages.Account;
 
 public class LoginInputModel
 {
-    [Required(ErrorMessage = "Username is required")]
-    [Display(Name = "Username")]
+    [Required(ErrorMessageResourceType = typeof(Resources.SharedResource), ErrorMessageResourceName = "UsernameRequired")]
+    [Display(Name = "Username", ResourceType = typeof(Resources.SharedResource))]
     public required string Username { get; set; }
 
-    [Required(ErrorMessage = "Password is required")]
+    [Required(ErrorMessageResourceType = typeof(Resources.SharedResource), ErrorMessageResourceName = "PasswordRequired")]
     [DataType(DataType.Password)]
-    [Display(Name = "Password")]
+    [Display(Name = "Password", ResourceType = typeof(Resources.SharedResource))]
     public required string Password { get; set; }
 
-    [Display(Name = "Remember me")] public bool RememberMe { get; set; }
+    [Display(Name = "RememberMe", ResourceType = typeof(Resources.SharedResource))]
+    public bool RememberMe { get; set; }
 }

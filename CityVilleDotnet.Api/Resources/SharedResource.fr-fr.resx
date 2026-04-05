@@ -1,0 +1,128 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Play" xml:space="preserve">
+        <value>Jouer</value>
+    </data>
+    <data name="Friends" xml:space="preserve">
+        <value>Liste d'amis</value>
+    </data>
+    <data name="Profile" xml:space="preserve">
+        <value>Profil</value>
+    </data>
+    <data name="Settings" xml:space="preserve">
+        <value>Paramètres</value>
+    </data>
+    <data name="Logout" xml:space="preserve">
+        <value>Se déconnecter</value>
+    </data>
+    <data name="Login_" xml:space="preserve">
+        <value>Se connecter</value>
+    </data>
+    <data name="Register" xml:space="preserve">
+        <value>Créer un compte</value>
+    </data>
+    <data name="Password" xml:space="preserve">
+        <value>Mot de passe</value>
+    </data>
+    <data name="Username" xml:space="preserve">
+        <value>Nom d'utilisateur</value>
+    </data>
+    <data name="RememberMe" xml:space="preserve">
+        <value>Se souvenir de moi</value>
+    </data>
+    <data name="UsernameRequired" xml:space="preserve">
+        <value>Le nom d'utilisateur est requis</value>
+    </data>
+    <data name="PasswordRequired" xml:space="preserve">
+        <value>Le mot de passe est requis</value>
+    </data>
+    <data name="UsernameMinLength" xml:space="preserve">
+        <value>Le nom d'utilisateur doit comporter au moins 4 caractères</value>
+    </data>
+    <data name="UsernameInvalidChars" xml:space="preserve">
+        <value>Le nom d'utilisateur ne peut contenir que des lettres et des chiffres</value>
+    </data>
+    <data name="ConfirmPassword" xml:space="preserve">
+        <value>Confirmez le mot de passe</value>
+    </data>
+    <data name="PasswordsDoNotMatch" xml:space="preserve">
+        <value>Les mots de passe ne correspondent pas</value>
+    </data>
+    <data name="LoginInstead" xml:space="preserve">
+        <value>Se connecter</value>
+    </data>
+    <data name="Resources" xml:space="preserve">
+        <value>Ressources</value>
+    </data>
+    <data name="Gold" xml:space="preserve">
+        <value>Pièces</value>
+    </data>
+    <data name="Cash" xml:space="preserve">
+        <value>Billets</value>
+    </data>
+    <data name="XP" xml:space="preserve">
+        <value>XP</value>
+    </data>
+    <data name="Level" xml:space="preserve">
+        <value>Niveau</value>
+    </data>
+    <data name="Goods" xml:space="preserve">
+        <value>Marchandises</value>
+    </data>
+    <data name="PremiumGoods" xml:space="preserve">
+        <value>Marchandises de luxe</value>
+    </data>
+    <data name="UpdateResources" xml:space="preserve">
+        <value>Mettre à jour les ressources</value>
+    </data>
+    <data name="Inventory" xml:space="preserve">
+        <value>Inventaire</value>
+    </data>
+    <data name="ItemName" xml:space="preserve">
+        <value>Nom de l'objet</value>
+    </data>
+    <data name="Amount" xml:space="preserve">
+        <value>Montant</value>
+    </data>
+    <data name="AddItem" xml:space="preserve">
+        <value>Ajouter l'objet</value>
+    </data>
+    <data name="CheatMenu" xml:space="preserve">
+        <value>Menu de triche</value>
+    </data>
+    <data name="AddFriend" xml:space="preserve">
+        <value>Ajouter un ami</value>
+    </data>
+    <data name="EnterUsername" xml:space="preserve">
+        <value>Entrer un nom d'utilisateur</value>
+    </data>
+    <data name="EmptyFriends" xml:space="preserve">
+        <value>Aucun ami pour l'instant. Ajoutez des amis pour commencer !</value>
+    </data>
+    <data name="PendingFriendsRequests" xml:space="preserve">
+        <value>Demandes en attente</value>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Annuler</value>
+    </data>
+    <data name="Accept" xml:space="preserve">
+        <value>Accepter</value>
+    </data>
+    <data name="Reject" xml:space="preserve">
+        <value>Refuser</value>
+    </data>
+    <data name="EmptyPendingFriendsRequests" xml:space="preserve">
+        <value>Aucune demande d'ami en attente.</value>
+    </data>
+</root>

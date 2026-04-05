@@ -1,13 +1,11 @@
 ﻿@page
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Resources.SharedResource> Localizer
 @model CityVilleDotnet.Api.Pages.Account.RegisterModel
-@{
-    ViewData["Title"] = "Register";
-}
 
 <div class="d-flex align-items-center justify-content-center min-vh-100 bg-light px-3">
     <div class="card shadow-sm" style="max-width: 400px; width: 100%;">
         <div class="card-header text-center">
-            <h2 class="mb-0">@ViewData["Title"]</h2>
+            <h2 class="mb-0">@Localizer["Register"]</h2>
         </div>
         <div class="card-body">
             <form id="registerForm" method="post" novalidate>
@@ -32,14 +30,14 @@
                 </div>
 
                 <button id="registerSubmit" type="submit" class="w-100 btn btn-primary btn-lg">
-                    Register
+                    @Localizer["Register"]
                 </button>
             </form>
 
             <div class="mt-3 text-center">
                 <p>
                     <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl" class="text-decoration-none">
-                        Login instead
+                        @Localizer["LoginInstead"]
                     </a>
                 </p>
             </div>

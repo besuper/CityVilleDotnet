@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="resourcefilecodegenerator">
+        <value>PublicResXFileCodeGenerator</value>
+    </resheader>
+    <data name="Play" xml:space="preserve">
+        <value>Play</value>
+    </data>
+    <data name="Friends" xml:space="preserve">
+        <value>Friends</value>
+    </data>
+    <data name="Profile" xml:space="preserve">
+        <value>Profile</value>
+    </data>
+    <data name="Settings" xml:space="preserve">
+        <value>Settings</value>
+    </data>
+    <data name="Logout" xml:space="preserve">
+        <value>Logout</value>
+    </data>
+    <data name="Login_" xml:space="preserve">
+        <value>Login</value>
+    </data>
+    <data name="Password" xml:space="preserve">
+        <value>Password</value>
+    </data>
+    <data name="PasswordRequired" xml:space="preserve">
+        <value>Password is required</value>
+    </data>
+    <data name="Register" xml:space="preserve">
+        <value>Create an account</value>
+    </data>
+    <data name="RememberMe" xml:space="preserve">
+        <value>Remember me</value>
+    </data>
+    <data name="Username" xml:space="preserve">
+        <value>Username</value>
+    </data>
+    <data name="UsernameRequired" xml:space="preserve">
+        <value>Username is required</value>
+    </data>
+    <data name="UsernameMinLength" xml:space="preserve">
+        <value>Username must be at least 4 characters</value>
+    </data>
+    <data name="UsernameInvalidChars" xml:space="preserve">
+        <value>Username can only contain letters and numbers</value>
+    </data>
+    <data name="ConfirmPassword" xml:space="preserve">
+        <value>Confirm password</value>
+    </data>
+    <data name="PasswordsDoNotMatch" xml:space="preserve">
+        <value>Passwords don't match</value>
+    </data>
+    <data name="LoginInstead" xml:space="preserve">
+        <value>Login instead</value>
+    </data>
+    <data name="Resources" xml:space="preserve">
+        <value>Resources</value>
+    </data>
+    <data name="Gold" xml:space="preserve">
+        <value>Gold</value>
+    </data>
+    <data name="Cash" xml:space="preserve">
+        <value>Cash</value>
+    </data>
+    <data name="XP" xml:space="preserve">
+        <value>XP</value>
+    </data>
+    <data name="Level" xml:space="preserve">
+        <value>Level</value>
+    </data>
+    <data name="Goods" xml:space="preserve">
+        <value>Goods</value>
+    </data>
+    <data name="PremiumGoods" xml:space="preserve">
+        <value>Premium goods</value>
+    </data>
+    <data name="UpdateResources" xml:space="preserve">
+        <value>Update resources</value>
+    </data>
+    <data name="Inventory" xml:space="preserve">
+        <value>Inventory</value>
+    </data>
+    <data name="ItemName" xml:space="preserve">
+        <value>Item name</value>
+    </data>
+    <data name="Amount" xml:space="preserve">
+        <value>Amount</value>
+    </data>
+    <data name="AddItem" xml:space="preserve">
+        <value>Add item</value>
+    </data>
+    <data name="CheatMenu" xml:space="preserve">
+        <value>Cheat menu</value>
+    </data>
+    <data name="AddFriend" xml:space="preserve">
+        <value>Add friend</value>
+    </data>
+    <data name="EnterUsername" xml:space="preserve">
+        <value>Enter username</value>
+    </data>
+    <data name="EmptyFriends" xml:space="preserve">
+        <value>No friends yet. Add some friends to get started!</value>
+    </data>
+    <data name="PendingFriendsRequests" xml:space="preserve">
+        <value>Pending Requests</value>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="Accept" xml:space="preserve">
+        <value>Accept</value>
+    </data>
+    <data name="Reject" xml:space="preserve">
+        <value>Reject</value>
+    </data>
+    <data name="EmptyPendingFriendsRequests" xml:space="preserve">
+        <value>No pending friend requests.</value>
+    </data>
+</root>

@@ -1,65 +1,67 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Resources.SharedResource> Localizer
+
 <div class="card mt-3">
 	<div class="card-header d-flex align-items-center justify-content-between py-2" role="button"
 	     data-toggle="collapse" data-target="#cheatPanel" aria-expanded="false" aria-controls="cheatPanel">
-		Cheat menu
+		@Localizer["CheatMenu"]
 		<i class="bi bi-chevron-down"></i>
 	</div>
 	<div id="cheatPanel" class="collapse">
 		<div class="card-body">
 			<div id="cheatAlert" class="alert d-none" role="alert"></div>
 
-			<h6 class="mb-2">Resources</h6>
-			
+			<h6 class="mb-2">@Localizer["Resources"]</h6>
+
 			<div class="row g-2 mb-2">
 				<div class="col">
-					<label class="form-label form-label-sm mb-0">Gold</label>
+					<label class="form-label form-label-sm mb-0">@Localizer["Gold"]</label>
 					<input type="number" class="form-control form-control-sm" id="cheatGold">
 				</div>
 				<div class="col">
-					<label class="form-label form-label-sm mb-0">Cash</label>
+					<label class="form-label form-label-sm mb-0">@Localizer["Cash"]</label>
 					<input type="number" class="form-control form-control-sm" id="cheatCash">
 				</div>
 				<div class="col">
-					<label class="form-label form-label-sm mb-0">XP</label>
+					<label class="form-label form-label-sm mb-0">@Localizer["XP"]</label>
 					<input type="number" class="form-control form-control-sm" id="cheatXp">
 				</div>
 			</div>
-			
+
 			<div class="row g-2 mb-2">
 				<div class="col">
-					<label class="form-label form-label-sm mb-0">Level</label>
+					<label class="form-label form-label-sm mb-0">@Localizer["Level"]</label>
 					<input type="number" class="form-control form-control-sm" id="cheatLevel">
 				</div>
 				<div class="col">
-					<label class="form-label form-label-sm mb-0">Goods</label>
+					<label class="form-label form-label-sm mb-0">@Localizer["Goods"]</label>
 					<input type="number" class="form-control form-control-sm" id="cheatGoods">
 				</div>
 				<div class="col">
-					<label class="form-label form-label-sm mb-0">Premium Goods</label>
+					<label class="form-label form-label-sm mb-0">@Localizer["PremiumGoods"]</label>
 					<input type="number" class="form-control form-control-sm" id="cheatPremiumGoods">
 				</div>
 			</div>
 
-			<button class="btn btn-primary btn-sm" onclick="updateResources()">Update resources</button>
+			<button class="btn btn-primary btn-sm" onclick="updateResources()">@Localizer["UpdateResources"]</button>
 
 			<hr>
 
-			<h6 class="mb-2">Inventory</h6>
-			
+			<h6 class="mb-2">@Localizer["Inventory"]</h6>
+
 			<div class="row g-2 mb-2">
 				<div class="col">
-					<label class="form-label form-label-sm mb-0">Item name</label>
+					<label class="form-label form-label-sm mb-0">@Localizer["ItemName"]</label>
 					<input type="text" class="form-control form-control-sm" id="cheatItemName"
 					       placeholder="e.g. decorative_light">
 				</div>
-				
+
 				<div class="col-3">
-					<label class="form-label form-label-sm mb-0">Amount</label>
+					<label class="form-label form-label-sm mb-0">@Localizer["Amount"]</label>
 					<input type="number" class="form-control form-control-sm" id="cheatItemAmount" value="1" min="1">
 				</div>
 			</div>
-			
-			<button class="btn btn-primary btn-sm" onclick="addInventoryItem()">Add item</button>
+
+			<button class="btn btn-primary btn-sm" onclick="addInventoryItem()">@Localizer["AddItem"]</button>
 		</div>
 	</div>
 </div>

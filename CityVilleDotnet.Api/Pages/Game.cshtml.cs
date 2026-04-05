@@ -1,3 +1,4 @@
+using System.Globalization;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
 using Microsoft.AspNetCore.Authorization;
@@ -65,6 +66,8 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
     public string BuildFlashVars()
     {
+        var locale = CultureInfo.CurrentCulture.Name.Replace("-", "_");
+        
         var flashVars = new Dictionary<string, string>()
         {
             ["optimizePreloader"] = "true",
@@ -87,7 +90,7 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             ["quest_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/questSettings.xml",
             ["effects_config_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/effectsConfig.xml",
             ["font_mapper_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/FontMapper.swf",
-            ["localization_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/lang/locale_en_US.swf",
+            ["localization_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/lang/locale_{locale}.swf",
             ["bootstrap_config_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/bootstrap.xml",
             ["amf_settings_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/settings.amf.z",
             ["embedded_art_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/EmbeddedArt.swf",
@@ -97,7 +100,7 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             ["asset_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/",
             ["preloaded_asset_urls"] = string.Join(",", PreloadAssets.Select(x => $"{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/{x}")),
             ["pollTimeSeconds"] = "1",
-            ["locale"] = "en_US",
+            ["locale"] = locale,
         };
 
         foreach (var param in Request.Query)
