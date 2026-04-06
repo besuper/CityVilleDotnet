@@ -67,25 +67,40 @@
 	function getRuntimeVars() {
 		console.log("getRuntimeVars called");
 
+		const weatherSettings = {
+			"forecast": [1, 0, 0, 0, 0, 0, 0]
+		};
+
 		return {
-			"WEATHER": "{\"forecast\":[1,1,1,1,1,1,1,1,1,1,1,1,1]}",
-			"MAX_VISIBLE_NPCS": "150"
+			"WEATHER": JSON.stringify(weatherSettings),
+			"CITY_AT_NIGHT_GAME_MODE": 1,
+
+			"MAX_VISIBLE_NPCS": 150,
+			"MIN_VISIBLE_NPCS": 10,
+			"MAXIMUM_ACTIVE_TAXIS": 5,
+			"MAXIMUM_ACTIVE_CARS": 10,
+
+			"SHRINK_RAY_CAP": 100,
+			"SUBSCRIPTION_ENABLE_ZDC": 1
 		};
 	}
 
 	function getExperiments() {
 		console.log("getExperiments called");
 
-		return [{
-			"name": "cv_leader_master",
-			"variant": 4
-		}, {
-			"name": "cv_multipop_migrate",
-			"variant": 1
-		}, {
-			"name": "cv_defcon_npc_culling",
-			"variant": 3
-		}];
+		return [{"name": "cv_leader_master", "variant": 0},
+			{"name": "cv_multipop_migrate", "variant": 1},
+			{"name": "cv_defcon_npc_culling", "variant": 3},
+			{"name": "cv_CityatNights_Teaser", "variant": 2},
+			{"name": "cv_CityatNights_Main", "variant": 0}, // disable it to remove incentivized expansion_cityatnight that is not supported
+			{"name": "cv_CityatNights_Priceunlock", "variant": 6},
+			{"name": "cv_quest_frame", "variant": 3},
+			{"name": "cv_featured_quest_sort", "variant": 3},
+			{"name": "cv_hide_even_more_quests", "variant": 3},
+			{"name": "cv_questhiding", "variant": 1},
+			{"name": "cv_quest_prorated_pricing", "variant": 0},
+			{"name": "cv_quest_sale", "variant": 0},
+		];
 	}
 
 	function getLocaleOverrides() {
@@ -94,6 +109,14 @@
 
 	function getFlashApp() {
 		return document.getElementById('flashapp');
+	}
+
+	function sendRequest(a, b, c, d) {
+		console.log("sendRequest called: ", a, b, c, d);
+	}
+
+	function completeSendRequest(b) {
+		console.log("completeSendRequest called:", b)
 	}
 
 	ZYFrameManager = {

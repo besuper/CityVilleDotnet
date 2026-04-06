@@ -161,6 +161,20 @@ public static class UserDtoMapper
             FeatureData = new ASObject(new Dictionary<string, object>()
             {
                 {
+                    "rewardForSpend", new ASObject()
+                    {
+                        { "version", 0 },
+                        {
+                            "versionedData", new ASObject()
+                            {
+                                { "initialAmount", 0 },
+                                { "progress", 0 },
+                                { "targetAmount", 0 }
+                            }
+                        }
+                    }
+                },
+                {
                     "cityAtNight", new ASObject()
                     {
                         { "nightModeAvailable", true },
@@ -200,7 +214,18 @@ public static class UserDtoMapper
                         }
                     }
                 },
-                { "weather", new ASObject() },
+                {
+                    "weather", new ASObject()
+                    {
+                        {
+                            "supportedWeather", new ASObject()
+                            {
+                                { "0", 0 },
+                                { "1", 1 },
+                            }
+                        }
+                    }
+                },
                 {
                     "leaderboards", new ASObject
                     {
