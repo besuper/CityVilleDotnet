@@ -29,6 +29,7 @@ public static class UserDtoMapper
                 FirstDay = model.FirstDay,
                 IsNew = model.IsNew,
                 CompletedQuests = model.Quests.Where(q => q.QuestType == QuestType.Completed).Select(q => q.Name).ToList(),
+                LastPlayedWorldId = model.LastPlayedWorldType.ToDescriptionString(),
                 Player = new PlayerDto
                 {
                     Uid = model.Snuid.ToString(),
@@ -103,9 +104,9 @@ public static class UserDtoMapper
                 WorldSummary = new ASObject(new Dictionary<string, object>()
                 {
                     {
-                        "world_main", new ASObject(new Dictionary<string, object>()
+                        model.GetWorld().Type.ToDescriptionString(), new ASObject(new Dictionary<string, object>()
                         {
-                            { "world_id", "world_main" },
+                            { "world_id", model.GetWorld().Type.ToDescriptionString() },
                             { "ftueCompleted", !model.IsNew },
                             {
                                 "items_by_name", model.GetWorld().Objects

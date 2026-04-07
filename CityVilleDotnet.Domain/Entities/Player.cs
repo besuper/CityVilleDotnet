@@ -44,6 +44,7 @@ public class Player
     public List<Quest> Quests { get; } = [];
     public List<Friend> Friends { get; } = [];
     public ApplicationUser? AppUser { get; private set; }
+    public WorldType LastPlayedWorldType { get; private set; } = WorldType.Main;
 
     public Player()
     {
@@ -62,7 +63,7 @@ public class Player
         CreationTimestamp = (int)ServerUtils.GetCurrentTime();
         World = world;
         AppUser = appUser;
-        
+
         Quests.Add(Quest.Create("q_rename_city", 1, QuestType.Active));
     }
 
@@ -1018,5 +1019,10 @@ public class Player
 
         targetPlayer.Friends.Add(friendship1);
         Friends.Add(friendship2);
+    }
+
+    public void SwitchWorld(WorldType type)
+    {
+        LastPlayedWorldType = type;
     }
 }

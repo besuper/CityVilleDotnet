@@ -170,6 +170,9 @@ public abstract class AmfService<TRequest> : AmfService where TRequest : new()
 
             if (targetType == typeof(WorldObjectState))
                 return EnumExtensions.ParseFromDescription<WorldObjectState>(s);
+            
+            if (targetType == typeof(WorldType))
+                return EnumExtensions.ParseFromDescription<WorldType>(s);
 
             return Enum.Parse(targetType, s);
         }

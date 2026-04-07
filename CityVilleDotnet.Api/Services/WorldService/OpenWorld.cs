@@ -1,5 +1,6 @@
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
@@ -14,7 +15,7 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
         // Called after visiting friend, might be used to load player world back and move to different player worlds
 
         // TODO: Update this to support other worlds type (world_main)
-        logger.LogDebug("OpenWorld for user {UserId} targeting {OwnerId} world {WorldName}", playerId, request.OwnerId, request.WorldName);
+        logger.LogDebug("OpenWorld for user {UserId} targeting {OwnerId} world {WorldType}", playerId, request.OwnerId, request.WorldType);
 
         var playerToLoad = await context.Set<Player>()
             .AsNoTracking()
@@ -52,6 +53,18 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
             };
         }
 
+        if (playerToLoad.Id == playerId)
+        {
+            var trackedPlayer = await context.Set<Player>().FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
+
+            if (trackedPlayer is null)
+                throw new Exception("Unable to find player");
+
+            trackedPlayer.SwitchWorld(request.WorldType);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
         response!["franchises"] = new List<object>();
         response["citySim"] = AmfConverter.Convert(dtoUser.UserInfo.World!.CitySim);
         response["featureData"] = AmfConverter.Convert(featuredData);
@@ -68,6 +81,6 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
 public class OpenWorldRequest
 {
     [AmfParam(0)] public int OwnerId { get; set; }
-    [AmfParam(1)] public string WorldName { get; set; } = string.Empty;
+    [AmfParam(1)] public WorldType WorldType { get; set; }
     [AmfParam(3)] public bool PreloadRequired { get; set; }
 }
