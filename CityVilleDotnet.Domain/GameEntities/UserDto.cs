@@ -28,6 +28,7 @@ public static class UserDtoMapper
                 CreationTimestamp = model.CreationTimestamp,
                 FirstDay = model.FirstDay,
                 IsNew = model.IsNew,
+                CompletedQuests = model.Quests.Where(q => q.QuestType == QuestType.Completed).Select(q => q.Name).ToList(),
                 Player = new PlayerDto
                 {
                     Uid = model.Snuid.ToString(),
@@ -92,7 +93,8 @@ public static class UserDtoMapper
                     FeatureData = new ASObject(new Dictionary<string, object>()),
                     ShowNpcCloud = true,
                     StorageComponent = model.GetWorld().ToStorageComponentDto(),
-                    AdditionalWareHouseSlots = 0
+                    AdditionalWareHouseSlots = 0,
+                    ActiveQuests = activeQuests.Select(q => q.ToDto()).ToList()
                 },
                 World = model.GetWorld().ToDto(),
                 Username = model.Username,

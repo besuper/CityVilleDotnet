@@ -71,4 +71,7 @@ public class PlayerDto
 
     [JsonPropertyName("additionalWareHouseSlots")]
     public int AdditionalWareHouseSlots { get; set; } = 0;
+    
+    [JsonPropertyName("quests")]
+    public List<QuestDto> ActiveQuests { get; set; } = [];
 }

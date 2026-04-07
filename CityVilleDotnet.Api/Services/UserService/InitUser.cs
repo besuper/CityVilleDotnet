@@ -16,23 +16,23 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .AsSplitQuery()
             .AsNoTracking()
             .Include(x => x.Quests.OrderBy(q => q.Order))
-            .Include(x => x!.InventoryItems)
+            .Include(x => x.InventoryItems)
             .Include(x => x.World)
             .ThenInclude(x => x!.MapRects)
             .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
-            .Include(x => x!.SeenFlags)
+            .Include(x => x.SeenFlags)
             .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
             .ThenInclude(x => x.FriendPlayer)
-            .ThenInclude(x => x.World)
+            .ThenInclude(x => x!.World)
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
-            .Include(x => x!.Licenses)
+            .Include(x => x.Licenses)
             .Include(x => x.Franchises)
             .ThenInclude(x => x.Locations)
-            .Include(x => x!.LotOrders) // FIXME: Limit orders
-            .Include(x => x!.VisitorHelpOrders) // FIXME: Limit orders
-            .Include(x => x!.Masteries)
+            .Include(x => x.LotOrders) // FIXME: Limit orders
+            .Include(x => x.VisitorHelpOrders) // FIXME: Limit orders
+            .Include(x => x.Masteries)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (user is null)
