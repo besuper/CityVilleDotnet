@@ -20,6 +20,7 @@ public class World
     public List<string> ThemeCollections { get; set; } = [];
     public List<MapRect> MapRects { get; set; } = [];
     public List<WorldObject> Objects { get; set; } = [];
+    public WorldType Type { get; set; } = WorldType.Main;
 
     public World()
     {
