@@ -7,7 +7,7 @@ services:
       - SA_PASSWORD=YourStrong!Passw0rd
       - MSSQL_PID=Express
     volumes:
-      - sqlserver_data:/var/opt/mssql
+      - ./data:/var/opt/mssql/data
     networks:
       - cityville-network
     healthcheck:
@@ -23,31 +23,13 @@ services:
       dockerfile: Dockerfile
     container_name: cityville-api
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:8080
-      
-      - Logging__LogLevel__Default=Information
-      - Logging__LogLevel__Microsoft.AspNetCore=Warning
+      - ASPNETCORE_ENVIRONMENT=Development
+      - URLS=http://0.0.0.0:5221
       - AllowedHosts=*
+      - Serilog__WriteTo__0__Args__restrictedToMinimumLevel=Debug
       - ConnectionStrings__Database=Server=sqlserver,1433;Database=CityVille;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
-      - Serilog__Using__0=Serilog.Sinks.Console
-      - Serilog__Using__1=Serilog.Sinks.File
-      - Serilog__MinimumLevel__Default=Information
-      - Serilog__MinimumLevel__Override__Microsoft=Warning
-      - Serilog__MinimumLevel__Override__System=Warning
-      - Serilog__WriteTo__0__Name=Console
-      - Serilog__WriteTo__0__Args__restrictedToMinimumLevel=Information
-      - Serilog__WriteTo__1__Name=File
-      - Serilog__WriteTo__1__Args__path=/app/logs/applog-.txt
-      - Serilog__WriteTo__1__Args__rollingInterval=Day
-      - Serilog__WriteTo__1__Args__rollOnFileSizeLimit=true
-      - Serilog__WriteTo__1__Args__restrictedToMinimumLevel=Information
-      - Serilog__WriteTo__1__Args__formatter=Serilog.Formatting.Compact.CompactJsonFormatter, Serilog.Formatting.Compact
-      - Serilog__Enrich__0=FromLogContext
-      - Serilog__Enrich__1=WithMachineName
-      - Serilog__Properties__ApplicationName=CityVilleDotnet
     ports:
-      - "8080:8080"
+      - "5221:5221"
     volumes:
       - ./wwwroot:/app/wwwroot
       - ./logs:/app/logs
@@ -57,9 +39,6 @@ services:
       sqlserver:
         condition: service_healthy
     restart: unless-stopped
-
-volumes:
-  sqlserver_data:
 
 networks:
   cityville-network:
