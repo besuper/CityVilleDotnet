@@ -140,7 +140,21 @@ public class WorldObject
 
     public bool HasGrown()
     {
-        return State == WorldObjectState.Planted && PlantTime <= ServerUtils.GetCurrentTime();
+        if (State != WorldObjectState.Planted || PlantTime is null) return false;
+
+        var currentTime = ServerUtils.GetCurrentTime();
+        var timeElapsed = currentTime - PlantTime.Value;
+
+        var item = GameSettingsManager.Instance.GetItem(GetItemName());
+        var growTime = item?.GrowTime ?? 0;
+
+        if (growTime <= 0) return true;
+
+        var inGameDaySeconds = GameSettingsManager.Instance.GetInt("InGameDaySeconds");
+        var growMultiplier = GameSettingsManager.Instance.GetInt("GrowMultiplier");
+        var growTimeMs = growTime * inGameDaySeconds * 1000.0 * growMultiplier;
+
+        return timeElapsed >= growTimeMs;
     }
 
     public void SetReadyToHarvest()

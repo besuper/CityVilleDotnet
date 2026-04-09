@@ -6,6 +6,7 @@ namespace CityVilleDotnet.Common.Settings.GameSettings;
 [XmlRoot("farming")]
 public class FarmingSettings
 {
+    [XmlAttribute("growMultiplier")] public required string GrowMultiplier { get; set; }
     [XmlAttribute("inGameDaySeconds")] public required string InGameDaySeconds { get; set; }
     [XmlAttribute("energyRegenerationSeconds")] public required string EnergyRegenerationSeconds { get; set; }
 

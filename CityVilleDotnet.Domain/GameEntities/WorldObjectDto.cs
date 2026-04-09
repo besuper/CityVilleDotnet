@@ -77,6 +77,9 @@ public static class WorldObjectDtoMapper
 {
     public static WorldObjectDto ToDto(this WorldObject model)
     {
+        if (model.HasGrown())
+            model.SetReadyToHarvest();
+
         var dto = new WorldObjectDto()
         {
             ItemName = model.ItemName,
