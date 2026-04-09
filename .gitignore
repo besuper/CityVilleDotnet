@@ -8,3 +8,4 @@ logs/
 !test/**/TestData/*.xml
 *.xml.z
 *.z
+data/
