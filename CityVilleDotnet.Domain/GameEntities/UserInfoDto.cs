@@ -18,13 +18,13 @@ public class UserInfoDto
     public int CreationTimestamp { get; set; } = 0;
 
     [JsonPropertyName("username")]
-    public string Username { get; set; }
+    public required string Username { get; set; }
 
     [JsonPropertyName("player")]
-    public PlayerDto? Player { get; set; }
+    public required PlayerDto Player { get; set; }
 
     [JsonPropertyName("world")]
-    public WorldDto? World { get; set; }
+    public required WorldDto World { get; set; }
 
     [JsonPropertyName("world_summary")] public ASObject WorldSummary { get; set; } = [];
     [JsonPropertyName("CompletedQuests")] public List<string> CompletedQuests { get; set; } = [];

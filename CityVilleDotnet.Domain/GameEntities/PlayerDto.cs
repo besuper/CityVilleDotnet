@@ -16,11 +16,11 @@ public class PlayerDto
 
     [JsonPropertyName("wishlist")] public List<object> Wishlist { get; set; } = [];
 
-    [JsonPropertyName("options")] public OptionsDto? Options { get; set; }
+    [JsonPropertyName("options")] public required OptionsDto Options { get; set; }
 
-    [JsonPropertyName("commodities")] public CommoditiesDto? Commodities { get; set; }
+    [JsonPropertyName("commodities")] public required CommoditiesDto Commodities { get; set; }
 
-    [JsonPropertyName("inventory")] public InventoryDto? Inventory { get; set; }
+    [JsonPropertyName("inventory")] public required InventoryDto Inventory { get; set; }
 
     [JsonPropertyName("gold")] public int Gold { get; set; } = 500;
 

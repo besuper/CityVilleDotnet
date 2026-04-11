@@ -17,7 +17,7 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 {
     public static List<string> PreloadAssets =
     [
-        "road/city/city04_SE.png", "dialogs/MarketAssets.swf", "dialogs/Market3Assets.swf", "dialogs/ASwingAssets.swf", "dialogs/ScrollingListAssets.swf", "dialogs/InventoryAssets.swf", "dialogs/QuestAssets.swf",
+        "dialogs/MarketAssets.swf", "dialogs/Market3Assets.swf", "dialogs/ASwingAssets.swf", "dialogs/ScrollingListAssets.swf", "dialogs/InventoryAssets.swf", "dialogs/QuestAssets.swf",
         "dialogs/TooltipAssets.swf", "dialogs/PopulationAssets.swf"
     ];
 
@@ -108,7 +108,17 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             flashVars[param.Key] = param.Value.ToString();
         }
 
-        if (!Request.Query.ContainsKey("disableCache"))
+        if (Request.Query.ContainsKey("rev"))
+        {
+            var revision = Request.Query["rev"].ToString();
+            
+            flashVars["swfLocation"] = $"Game_rev{revision}.swf";
+            flashVars["game_config_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/gameSettings_rev{revision}.xml";
+            flashVars["quest_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/questSettings_rev{revision}.xml";
+            flashVars["amf_settings_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/settings_rev{revision}.amf.z";
+        }
+
+        if (!Request.Query.ContainsKey("disableCache") && !Request.Query.ContainsKey("rev"))
         {
             flashVars["zcache_gameswf_gamesettings"] = "true";
             flashVars["zcache_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/zcache/ZCache.swf";
