@@ -10,12 +10,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.FarmService;
 
-public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityRequest>
+public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) : AmfService<ExpandCityRequest>
 {
     private const string PermitName = "permits";
 
     public override async Task<ASObject> HandlePacket(ExpandCityRequest request, Guid playerId, CancellationToken cancellationToken)
     {
+        var item = GameSettingsManager.Instance.GetItem(request.ItemName);
+
+        if (item is null) throw new Exception($"Can't find item {request.ItemName}");
+        if (item.Height is null || item.Width is null) throw new Exception($"Item {request.ItemName} has no height or width defined");
+
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.World)
@@ -24,12 +29,7 @@ public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityReque
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (player is null) throw new Exception("Can't find user");
-
-        var item = GameSettingsManager.Instance.GetItem(request.ItemName);
-
-        if (item is null) throw new Exception($"Can't find item {request.ItemName}");
-        if (item.Height is null || item.Width is null) throw new Exception($"Item {request.ItemName} has no height or width defined");
+        if (player is null) throw new Exception("Can't find player");
 
         var permitData = player.GetExpansionData();
 
@@ -42,7 +42,11 @@ public class ExpandCity(CityVilleDbContext context) : AmfService<ExpandCityReque
 
         var world = player.GetWorld();
 
-        if (world.MapRects.Count > 0) throw new Exception("Map expansion already exist");
+        if (world.MapRects.Count > 0)
+        {
+            logger.LogError("Map expansion already exist {PlayerSnuid} {MapRectsCount} | {CoordinatesX} {CoordinatesY}", player.Snuid, world.MapRects.Count, request.Coordinates.X, request.Coordinates.Y);
+            return new CityVilleResponse();
+        }
 
         var newMapRect = new MapRect
         {
