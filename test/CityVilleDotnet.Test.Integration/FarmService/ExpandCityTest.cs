@@ -7,6 +7,7 @@ using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Test.Integration.Fixtures;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CityVilleDotnet.Test.Integration.FarmService;
 
@@ -27,7 +28,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         await Context.AddAsync(user);
         await Context.SaveChangesAsync();
 
-        var handler = new ExpandCity(Context);
+        var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
         var request = new ExpandCityRequest
         {
             ItemName = ExpansionItemName,
@@ -81,7 +82,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         await Context.AddAsync(user);
         await Context.SaveChangesAsync();
 
-        var handler = new ExpandCity(Context);
+        var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
         var request = new ExpandCityRequest
         {
             ItemName = ExpansionItemName,
@@ -113,7 +114,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         await Context.AddAsync(user);
         await Context.SaveChangesAsync();
 
-        var handler = new ExpandCity(Context);
+        var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
         var request = new ExpandCityRequest
         {
             ItemName = ExpansionItemName,
@@ -138,7 +139,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         await Context.AddAsync(user);
         await Context.SaveChangesAsync();
 
-        var handler = new ExpandCity(Context);
+        var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
         var request = new ExpandCityRequest
         {
             ItemName = ExpansionItemName,
@@ -162,7 +163,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         await Context.AddAsync(user);
         await Context.SaveChangesAsync();
 
-        var handler = new ExpandCity(Context);
+        var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
         var request = new ExpandCityRequest
         {
             ItemName = "unknown",
