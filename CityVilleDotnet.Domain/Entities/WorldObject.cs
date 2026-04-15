@@ -138,6 +138,14 @@ public class WorldObject
         return newObjects;
     }
 
+    public bool CanHarvest()
+    {
+        if (GetClassName().IsBusiness())
+            return State == WorldObjectState.ClosedHarvestable;
+
+        return HasGrown();
+    }
+
     public bool HasGrown()
     {
         if (State != WorldObjectState.Planted || PlantTime is null) return false;
@@ -146,9 +154,9 @@ public class WorldObject
         var timeElapsed = currentTime - PlantTime.Value;
 
         var item = GameSettingsManager.Instance.GetItem(GetItemName());
-        var growTime = item?.GrowTime ?? 0;
+        var growTime = item?.GetGrowTime();
 
-        if (growTime <= 0) return true;
+        if (growTime is null) return false;
 
         var inGameDaySeconds = GameSettingsManager.Instance.GetInt("InGameDaySeconds");
         var growMultiplier = GameSettingsManager.Instance.GetInt("GrowMultiplier");
@@ -191,11 +199,8 @@ public class WorldObject
             }
         }
 
-        // Update state to planted if it was grown
-        if (HasGrown()) SetReadyToHarvest();
-
         // This is harvesting Residence
-        if (State == WorldObjectState.Grown)
+        if (HasGrown())
         {
             State = WorldObjectState.Planted;
             PlantTime = ServerUtils.GetCurrentTime();
@@ -203,11 +208,6 @@ public class WorldObject
 
         if (ClassName.IsBusiness())
         {
-            if (State != WorldObjectState.ClosedHarvestable)
-            {
-                throw new Exception("Can't harvest business building that is not harvestable");
-            }
-
             State = WorldObjectState.Closed;
             Visits = 0;
         }
@@ -351,7 +351,7 @@ public class WorldObject
     {
         if (TargetBuildingName is not null)
             return TargetBuildingName;
-        
+
         if (ContractName is not null)
             return ContractName;
 
