@@ -40,33 +40,39 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context) : AmfSer
             var world = player.GetWorld();
             var obj = world.GetBuildingById(request.WorldObjectId) ?? throw new Exception($"Can't find building with id {request.WorldObjectId}");
 
-            obj.Harvest();
-            player.CollectDoobersRewards(obj.ContractName ?? obj.ItemName);
-
-            player.HandleQuestsProgress("harvestByClass", className: obj.ClassName.ToString());
-
-            if (obj.ClassName == BuildingClassType.Plot)
+            if (obj.CanHarvest())
             {
-                player.HandleQuestsProgress("harvestPlotByName", itemName: obj.ItemName);
+                var itemName = obj.GetItemName();
+                var className = obj.GetClassName();
 
-                if (gameItem.HasMasteries())
+                obj.Harvest();
+                player.CollectDoobersRewards(itemName);
+
+                player.HandleQuestsProgress("harvestByClass", className: className.ToString());
+
+                if (obj.ClassName == BuildingClassType.Plot)
                 {
-                    player.IncrementMastery(gameItem.Name);
+                    player.HandleQuestsProgress("harvestPlotByName", itemName: itemName);
+
+                    if (gameItem.HasMasteries())
+                    {
+                        player.IncrementMastery(gameItem.Name);
+                    }
                 }
-            }
 
-            if (obj.ClassName == BuildingClassType.Business)
-            {
-                player.HandleQuestsProgress("harvestBusinessByName", itemName: obj.ItemName);
-                player.HandleQuestsProgress("harvestBusinessByClass", className: obj.ClassName.ToString());
-            }
+                if (obj.ClassName == BuildingClassType.Business)
+                {
+                    player.HandleQuestsProgress("harvestBusinessByName", itemName: itemName);
+                    player.HandleQuestsProgress("harvestBusinessByClass", className: className.ToString());
+                }
 
-            if (obj.ClassName == BuildingClassType.Residence)
-            {
-                player.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);
-            }
+                if (obj.ClassName == BuildingClassType.Residence)
+                {
+                    player.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);
+                }
 
-            player.CheckCompletedQuests();
+                player.CheckCompletedQuests();
+            }
         }
 
         visitOrder.RemoveTarget(request.WorldObjectId);
