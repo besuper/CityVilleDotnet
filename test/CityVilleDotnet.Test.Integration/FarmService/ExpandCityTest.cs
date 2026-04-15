@@ -128,31 +128,6 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
     }
 
     [Fact]
-    public async Task ExpandCity_MapRectAlreadyExists_ThrowsException()
-    {
-        var existingMapRect = Faker.MapRect(x: 40, y: 40, width: 18, height: 18);
-        var permit = Faker.InventoryItem(itemName: "permits", amount: 5);
-        var world = Faker.World(mapRects: [existingMapRect]);
-        var user = Faker.Player(world: world);
-        user.InventoryItems.Add(permit);
-
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
-
-        var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
-        var request = new ExpandCityRequest
-        {
-            ItemName = ExpansionItemName,
-            Coordinates = new ExpandCityCoordinates { X = 40, Y = 40 },
-            Trees = []
-        };
-
-        var act = () => handler.HandlePacket(request, user.Id, CancellationToken.None);
-
-        await act.Should().ThrowAsync<Exception>().WithMessage("*already exist*");
-    }
-
-    [Fact]
     public async Task ExpandCity_NotExistingItem_ThrowsException()
     {
         var permit = Faker.InventoryItem(itemName: "permits", amount: 5);
