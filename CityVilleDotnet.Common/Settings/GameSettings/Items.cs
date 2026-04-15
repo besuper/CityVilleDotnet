@@ -124,6 +124,20 @@ public class GameItem
 
         return null;
     }
+
+    public double? GetGrowTime()
+    {
+        if (GrowTime is not null) return GrowTime;
+
+        if (DerivesFrom is not null)
+        {
+            var derivedItem = GameSettingsManager.Instance.GetItem(DerivesFrom);
+
+            return derivedItem?.GetGrowTime();
+        }
+
+        return null;
+    }
 }
 
 [Serializable]
