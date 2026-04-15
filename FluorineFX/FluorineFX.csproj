@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(Logging)'">
-        <PackageReference Include="log4net" Version="3.0.0"/>
+        <PackageReference Include="log4net" Version="3.3.0"/>
     </ItemGroup>
 
     <ItemGroup>
