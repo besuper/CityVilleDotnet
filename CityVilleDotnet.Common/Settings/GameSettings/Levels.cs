@@ -11,9 +11,9 @@ public class LevelsContainer
 [Serializable]
 public class LevelItem
 {
-    [XmlAttribute("num")] public required string Num { get; set; }
+    [XmlAttribute("num")] public required int Num { get; set; }
 
-    [XmlAttribute("requiredXP")] public required string RequiredXp { get; set; }
+    [XmlAttribute("requiredXP")] public required int RequiredXp { get; set; }
 
-    [XmlAttribute("energyMax")] public required string EnergyMax { get; set; }
+    [XmlAttribute("energyMax")] public required int EnergyMax { get; set; }
 }

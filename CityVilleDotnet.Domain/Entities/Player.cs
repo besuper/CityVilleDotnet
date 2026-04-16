@@ -241,13 +241,12 @@ public class Player
     {
         Level = level;
 
-        var levelData = GameSettingsManager.Instance.GetLevels()
-            .FirstOrDefault(x => int.Parse(x.Num) == level);
+        var levelData = GameSettingsManager.Instance.GetLevels().FirstOrDefault(x => x.Num == level);
 
         if (levelData is not null)
         {
-            EnergyMax = int.Parse(levelData.EnergyMax);
-            Xp = Math.Max(Xp, int.Parse(levelData.RequiredXp));
+            EnergyMax = levelData.EnergyMax;
+            Xp = Math.Max(Xp, levelData.RequiredXp);
         }
     }
 
@@ -267,16 +266,13 @@ public class Player
     {
         foreach (var item in GameSettingsManager.Instance.GetLevels())
         {
-            if (Xp < int.Parse(item.RequiredXp)) continue;
+            if (Xp < item.RequiredXp) continue;
 
-            var level = int.Parse(item.Num);
+            var level = item.Num;
 
             if (level <= Level) continue;
 
-            // Level up!
-            StaticLogger.Current.LogDebug("Level up! New level: {Level}", level);
-
-            var energyMax = int.Parse(item.EnergyMax);
+            var energyMax = item.EnergyMax;
 
             // TODO: Add heldEnergy and cash
             var energy = energyMax + Math.Max(Energy - energyMax, 0);
