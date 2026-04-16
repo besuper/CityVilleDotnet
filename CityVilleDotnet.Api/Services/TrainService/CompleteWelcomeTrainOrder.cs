@@ -19,7 +19,7 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
         if (player is null)
             throw new Exception("Player not found");
 
-        player.AddGoods(GameSettingsManager.Instance.GetInt("WelcomeTrainQuestAmount"));
+        player.AddGoods(GameSettingsManager.Instance.GetSettings().WelcomeTrainQuestAmount);
         player.HandleQuestsProgress("welcomeTrain");
         player.CheckCompletedQuests();
 

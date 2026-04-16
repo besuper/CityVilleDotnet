@@ -140,7 +140,7 @@ public class Player
     private Energy CalculateCurrentEnergy()
     {
         var elapsedTime = (int)ServerUtils.GetCurrentTime() - TimeBeforeNextEnergy;
-        var timeToRegen = GameSettingsManager.Instance.GetDouble("EnergyRegenerationSeconds") * 1000;
+        var timeToRegen = GameSettingsManager.Instance.GetSettings().EnergyRegenerationSeconds * 1000;
         var toRecover = Math.Floor(elapsedTime / timeToRegen);
         var currentNewEnergy = Math.Min(Energy + (int)toRecover, EnergyMax);
         var timeSinceLastRegen = elapsedTime % timeToRegen;
@@ -780,7 +780,7 @@ public class Player
         if (franchise is null) throw new Exception($"Can't find franchise with type {franchiseType}");
 
         // TODO: Implement bonus based on index 1 => 25 coins, 2 => 50 coins ...
-        var baseBonus = GameSettingsManager.Instance.GetInt("Franchise1DailyBonus");
+        var baseBonus = GameSettingsManager.Instance.GetSettings().Franchise1DailyBonus;
 
         var currentTime = (long)ServerUtils.GetCurrentTimeSeconds();
 
