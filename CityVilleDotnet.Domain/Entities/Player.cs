@@ -302,17 +302,15 @@ public class Player
     {
         foreach (var item in GameSettingsManager.Instance.GetSocialLevels())
         {
-            if (SocialXp < int.Parse(item.RequiredXp)) continue;
+            if (SocialXp < item.RequiredXp) continue;
 
-            var level = int.Parse(item.Num);
+            var level = item.Num;
 
             if (level <= SocialLevel) continue;
 
-            StaticLogger.Current.LogDebug("Social level up! New level: {Level}", level);
-
             SocialLevel = level;
-
-            // FIXME: Give the reward
+            
+            AddGoods(item.Reward);
 
             break;
         }

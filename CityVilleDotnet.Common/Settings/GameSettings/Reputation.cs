@@ -11,9 +11,9 @@ public class ReputationContainer
 [Serializable]
 public class ReputationItem
 {
-    [XmlAttribute("num")] public required string Num { get; set; }
+    [XmlAttribute("num")] public required int Num { get; set; }
 
-    [XmlAttribute("requiredXP")] public required string RequiredXp { get; set; }
+    [XmlAttribute("requiredXP")] public required int RequiredXp { get; set; }
 
-    [XmlAttribute("reward")] public required string Reward { get; set; }
+    [XmlAttribute("reward")] public required int Reward { get; set; }
 }
