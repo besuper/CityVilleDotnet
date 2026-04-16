@@ -11,11 +11,11 @@ public class World
     public string WorldName { get; private set; }
     public int SizeX { get; private set; }
     public int SizeY { get; private set; }
-    public int Population { get; set; }
-    public int PopulationCap { get; set; }
-    public int PopulationMin { get; set; }
-    public int PopulationMax { get; set; }
-    public int PotentialPopulation { get; set; }
+    public int Population { get; private set; }
+    public int PopulationCap { get; private set; }
+    public int PopulationMin { get; private set; }
+    public int PopulationMax { get; private set; }
+    public int PotentialPopulation { get; private set; }
     public int NextBuildingId { get; private set; }
     public List<string> ThemeCollections { get; set; } = [];
     public List<MapRect> MapRects { get; set; } = [];

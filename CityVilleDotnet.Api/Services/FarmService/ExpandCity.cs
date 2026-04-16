@@ -24,7 +24,7 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.World)
-            .ThenInclude(x => x!.MapRects.Where(m => m.X == request.Coordinates.X && m.Y == request.Coordinates.Y))
+            .ThenInclude(x => x!.MapRects)
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
@@ -42,18 +42,18 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
 
         var world = player.GetWorld();
 
-        if (world.MapRects.Count > 0)
+        if (world.MapRects.Any(m => m.X == request.Coordinates.X && m.Y == request.Coordinates.Y))
         {
             logger.LogError("Map expansion already exist {PlayerSnuid} {MapRectsCount} | {CoordinatesX} {CoordinatesY}", player.Snuid, world.MapRects.Count, request.Coordinates.X, request.Coordinates.Y);
             return new CityVilleResponse();
         }
-
+        
         var newMapRect = new MapRect
         {
             X = request.Coordinates.X,
             Y = request.Coordinates.Y,
-            Height = int.Parse(item.Height), // FIXME: Change these value to the right type when loading the settings
-            Width = int.Parse(item.Width)
+            Height = item.Height.Value,
+            Width = item.Width.Value
         };
 
         world.AddMapRect(newMapRect);
