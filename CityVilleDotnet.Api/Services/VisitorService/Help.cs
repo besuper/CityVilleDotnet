@@ -36,23 +36,26 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
         var coins = 0;
         var goods = 0;
 
+        var settings = GameSettingsManager.Instance.GetSettings();
+
         switch (request.Type)
         {
             case "residenceCollectRent":
-                reputation = GameSettingsManager.Instance.GetInt("FriendVisitResidenceRepGain");
-                coins = GameSettingsManager.Instance.GetInt("FriendHelpDefaultCoinReward");
+                reputation = settings.FriendVisitResidenceRepGain;
+                coins = settings.FriendHelpDefaultCoinReward;
                 break;
             case "wildernessClear":
-                reputation = GameSettingsManager.Instance.GetInt("FriendVisitWildernessRepGain");
-                coins = GameSettingsManager.Instance.GetInt("FriendHelpDefaultCoinReward");
+                reputation = settings.FriendVisitWildernessRepGain;
+                coins = settings.FriendHelpDefaultCoinReward;
                 break;
             case "businessSendTour":
-                reputation = GameSettingsManager.Instance.GetInt("FriendVisitBusinessRepGain");
-                coins = GameSettingsManager.Instance.GetInt("FriendHelpDefaultCoinReward");
+                reputation = settings.FriendVisitBusinessRepGain;
+                coins = settings.FriendHelpDefaultCoinReward;
                 break;
             case "plotHarvest":
-                reputation = GameSettingsManager.Instance.GetInt("FriendVisitPlotRepGain");
-                goods = GameSettingsManager.Instance.GetInt("FriendHelpDefaultGoodsReward");
+            case "plotWater":
+                reputation = settings.FriendVisitPlotRepGain;
+                goods = settings.FriendHelpDefaultGoodsReward;
                 break;
             default:
                 throw new Exception($"Not implemented help type {request.Type}");

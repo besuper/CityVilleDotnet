@@ -2,6 +2,7 @@
 
 public static class ClassUtils
 {
+    [Obsolete("Remove this after removing _settings")]
     public static Dictionary<string, object> ToDictionary(this object obj)
     {
         var result = new Dictionary<string, object>();
@@ -9,15 +10,10 @@ public static class ClassUtils
     
         foreach (var prop in properties)
         {
-            var value = prop.GetValue(obj)?.ToString();
+            var value = prop.GetValue(obj);
             if (value == null) continue;
-        
-            if (int.TryParse(value, out int intValue))
-                result[prop.Name] = intValue;
-            else if (double.TryParse(value, System.Globalization.CultureInfo.InvariantCulture, out double doubleValue))
-                result[prop.Name] = doubleValue;
-            else
-                result[prop.Name] = value;
+            
+            result[prop.Name] = value;
         }
     
         return result;

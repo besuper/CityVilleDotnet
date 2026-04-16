@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.VisitorService;
 
-public sealed class RedeemVisitorHelpAction(CityVilleDbContext context) : AmfService<RedeemVisitorHelpActionRequest>
+public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<RedeemVisitorHelpAction> logger) : AmfService<RedeemVisitorHelpActionRequest>
 {
     public override async Task<ASObject> HandlePacket(RedeemVisitorHelpActionRequest request, Guid playerId, CancellationToken cancellationToken)
     {
@@ -72,6 +72,22 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context) : AmfSer
                 }
 
                 player.CheckCompletedQuests();
+            }
+        }
+
+        if (request.Action == "")
+        {
+            var world = player.GetWorld();
+            var obj = world.GetBuildingById(request.WorldObjectId) ?? throw new Exception($"Can't find building with id {request.WorldObjectId}");
+
+            if (obj.GetClassName() == BuildingClassType.Plot && obj.State == WorldObjectState.Planted)
+            {
+                // Plot can be watered
+                obj.BoostPlot();
+            }
+            else
+            {
+                logger.LogError("Not supported help type {RequestAction}", request.Action);
             }
         }
 

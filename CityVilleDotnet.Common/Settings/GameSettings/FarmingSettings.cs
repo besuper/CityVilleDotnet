@@ -6,43 +6,39 @@ namespace CityVilleDotnet.Common.Settings.GameSettings;
 [XmlRoot("farming")]
 public class FarmingSettings
 {
-    [XmlAttribute("growMultiplier")] public required string GrowMultiplier { get; set; }
-    [XmlAttribute("inGameDaySeconds")] public required string InGameDaySeconds { get; set; }
-    [XmlAttribute("energyRegenerationSeconds")] public required string EnergyRegenerationSeconds { get; set; }
+    [XmlAttribute("growMultiplier")] public required int GrowMultiplier { get; set; }
+    [XmlAttribute("inGameDaySeconds")] public required int InGameDaySeconds { get; set; }
+    [XmlAttribute("energyRegenerationSeconds")] public required double EnergyRegenerationSeconds { get; set; }
 
     [XmlAttribute("friendVisitShipRepGain")]
-    public required string FriendVisitShipRepGain { get; set; }
+    public required int FriendVisitShipRepGain { get; set; }
 
     [XmlAttribute("friendVisitConstructionRepGain")]
-    public required string FriendVisitConstructionRepGain { get; set; }
+    public required int FriendVisitConstructionRepGain { get; set; }
 
     [XmlAttribute("friendVisitPlotRepGain")]
-    public required string FriendVisitPlotRepGain { get; set; }
+    public required int FriendVisitPlotRepGain { get; set; }
 
     [XmlAttribute("friendHelpDefaultGoodsReward")]
-    public required string FriendHelpDefaultGoodsReward { get; set; }
+    public required int FriendHelpDefaultGoodsReward { get; set; }
 
     [XmlAttribute("friendVisitBusinessRepGain")]
-    public required string FriendVisitBusinessRepGain { get; set; }
+    public required int FriendVisitBusinessRepGain { get; set; }
 
     [XmlAttribute("friendHelpDefaultCoinReward")]
-    public required string FriendHelpDefaultCoinReward { get; set; }
+    public required int FriendHelpDefaultCoinReward { get; set; }
 
     [XmlAttribute("friendVisitWildernessRepGain")]
-    public required string FriendVisitWildernessRepGain { get; set; }
+    public required int FriendVisitWildernessRepGain { get; set; }
 
     [XmlAttribute("friendVisitResidenceRepGain")]
-    public required string FriendVisitResidenceRepGain { get; set; }
+    public required int FriendVisitResidenceRepGain { get; set; }
     
     [XmlAttribute("franchise1DailyBonus")]
     public required int Franchise1DailyBonus { get; set; }
-    
-    [XmlAttribute("welcomeTrainQuestAmount")]
-    public string? WelcomeTrainQuestAmountString
-    {
-        get => WelcomeTrainQuestAmount?.ToString();
-        set => WelcomeTrainQuestAmount = string.IsNullOrEmpty(value) ? null : int.Parse(value);
-    }
 
-    [XmlIgnore] public int? WelcomeTrainQuestAmount { get; set; }
+    [XmlAttribute("welcomeTrainQuestAmount")] public int WelcomeTrainQuestAmount { get; set; }
+    
+    [XmlAttribute("boostGrowMultiplier")] public double BoostGrowMultiplier { get; set; }
+    [XmlAttribute("boostGrowInstantHourLimit")] public int BoostGrowInstantHourLimit { get; set; }
 }

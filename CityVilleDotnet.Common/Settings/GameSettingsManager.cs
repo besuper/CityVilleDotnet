@@ -14,6 +14,7 @@ public class GameSettingsManager
     private readonly Dictionary<string, RandomModifierPack> _randomModifierPacks;
     private readonly Dictionary<string, WorldRectItem> _worldRects;
     private Dictionary<string, object> _settings;
+    private FarmingSettings _farmSettings;
     private List<LevelItem> _levels = [];
     private List<ReputationItem> _reputationLevels = [];
     private List<CollectionSetting> _collections = [];
@@ -103,6 +104,7 @@ public class GameSettingsManager
             _levels = gameSettings.Levels.Levels;
             _reputationLevels = gameSettings.Reputation.Levels;
 
+            _farmSettings = gameSettings.Farming;
             _settings = gameSettings.Farming.ToDictionary();
 
             foreach (var collection in gameSettings.Collections.Collections)
@@ -166,11 +168,13 @@ public class GameSettingsManager
         return _reputationLevels.AsReadOnly();
     }
 
+    [Obsolete("Remove this method to directly use GetSettings")]
     public int GetInt(string name)
     {
         return (int)_settings[name];
     }
 
+    [Obsolete("Remove this method to directly use GetSettings")]
     public double GetDouble(string name)
     {
         return (double)_settings[name];
@@ -211,5 +215,10 @@ public class GameSettingsManager
     public IReadOnlyCollection<ExpansionSetting> GetExpansions()
     {
         return _expansions.AsReadOnly();
+    }
+
+    public FarmingSettings GetSettings()
+    {
+        return _farmSettings;
     }
 }

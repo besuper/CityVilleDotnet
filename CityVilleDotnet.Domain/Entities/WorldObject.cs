@@ -1,8 +1,10 @@
-﻿using CityVilleDotnet.Common.Settings;
+﻿using CityVilleDotnet.Common.Global;
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
+using Microsoft.Extensions.Logging;
 
 namespace CityVilleDotnet.Domain.Entities;
 
@@ -148,6 +150,7 @@ public class WorldObject
 
     public bool HasGrown()
     {
+        if (State == WorldObjectState.Grown) return true;
         if (State != WorldObjectState.Planted || PlantTime is null) return false;
 
         var currentTime = ServerUtils.GetCurrentTime();
@@ -158,9 +161,10 @@ public class WorldObject
 
         if (growTime is null) return false;
 
-        var inGameDaySeconds = GameSettingsManager.Instance.GetInt("InGameDaySeconds");
-        var growMultiplier = GameSettingsManager.Instance.GetInt("GrowMultiplier");
-        var growTimeMs = growTime * inGameDaySeconds * 1000.0 * growMultiplier;
+        var settings = GameSettingsManager.Instance.GetSettings();
+        var inGameDaySeconds = settings.InGameDaySeconds;
+        var growMultiplier = settings.GrowMultiplier;
+        var growTimeMs = growTime * (inGameDaySeconds * 1000.0) * growMultiplier;
 
         return timeElapsed >= growTimeMs;
     }
@@ -378,5 +382,28 @@ public class WorldObject
         if (BuiltFloorCount is null) throw new Exception("Floor count can't be null for Headquarters");
 
         BuiltFloorCount++;
+    }
+
+    public void BoostPlot()
+    {
+        if (GetClassName() != BuildingClassType.Plot)
+            throw new Exception($"Can't water {ClassName}");
+
+        var item = GameSettingsManager.Instance.GetItem(GetItemName());
+        var growTime = item?.GetGrowTime();
+
+        if (growTime is null) throw new Exception("Building can't be watered without growTime");
+
+        var settings = GameSettingsManager.Instance.GetSettings();
+        var inGameDaySeconds = settings.InGameDaySeconds;
+        var growMultiplier = settings.GrowMultiplier;
+        var boostGrowMultiplier = settings.BoostGrowMultiplier;
+        //var boostGrowInstantHourLimit = settings.BoostGrowInstantHourLimit; // TODO
+
+        var visitBoost = growTime * (inGameDaySeconds * 1000) * growMultiplier * boostGrowMultiplier;
+
+        PlantTime -= visitBoost;
+
+        if (HasGrown()) SetReadyToHarvest();
     }
 }
