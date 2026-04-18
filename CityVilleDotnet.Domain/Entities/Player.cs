@@ -80,19 +80,19 @@ public class Player
         collection.AddItem(itemName, amount);
     }
 
-    public void AddItem(string itemName, int amount = 1)
+    public void AddItem(string itemName, int amount = 1, string? storageKey = null, WorldObject? storedObject = null)
     {
-        var item = InventoryItems.FirstOrDefault(x => x.Name == itemName);
+        var item = InventoryItems.FirstOrDefault(x => x.Name == itemName && x.StorageType == storageKey);
 
         if (item is null)
-            InventoryItems.Add(new InventoryItem(itemName, amount));
+            InventoryItems.Add(new InventoryItem(itemName, amount, storageKey, storedObject));
         else
             item.AddAmount(amount);
     }
 
-    public InventoryItem? RemoveItem(string itemName, int amount = 1)
+    public InventoryItem? RemoveItem(string itemName, int amount = 1, string? storageKey = null)
     {
-        var item = InventoryItems.FirstOrDefault(x => x.Name == itemName);
+        var item = InventoryItems.FirstOrDefault(x => x.Name == itemName && x.StorageType == storageKey);
 
         if (item is null)
             throw new Exception($"Item not found in player inventory {itemName}");
@@ -113,17 +113,17 @@ public class Player
 
     public int CountInventoryItems()
     {
-        return InventoryItems.Sum(x => x.Amount);
+        return InventoryItems.Where(x => x.StorageType is null).Sum(x => x.Amount);
     }
 
     public int CountInventoryItem(string itemName)
     {
-        return InventoryItems.Where(x => x.Name == itemName).Sum(x => x.Amount);
+        return InventoryItems.Where(x => x.Name == itemName && x.StorageType is null).Sum(x => x.Amount);
     }
 
     public bool HasItem(string itemName)
     {
-        return InventoryItems.Any(x => x.Name == itemName && x.Amount > 0);
+        return InventoryItems.Any(x => x.StorageType is null && x.Name == itemName && x.Amount > 0);
     }
 
     public void UpdateTracking()
@@ -862,11 +862,12 @@ public class Player
                         case "harvestBusinessByClass":
                         case "clearByClass":
                         case "openBusinessByClass":
+                        case "storeItemByClass":
                         {
                             if (className is null)
                                 throw new Exception("Can't validate byClass action without className");
 
-                            if (taskType.Equals(className))
+                            if (taskType.Equals(className) || (splitType is not null && splitType.Contains(className)))
                                 quest.Progress[index] += 1;
 
                             break;

@@ -406,4 +406,14 @@ public class WorldObject
 
         if (HasGrown()) SetReadyToHarvest();
     }
+
+    public void SetDirection(int direction)
+    {
+        Direction = direction;
+    }
+
+    public WorldObject Clone(int x, int y, int z, int id)
+    {
+        return new WorldObject(ItemName, ClassName, ContractName, Deleted, TempId, State, Direction, ServerUtils.GetCurrentTime(), ServerUtils.GetCurrentTime(), x, y, z ,id);
+    }
 }

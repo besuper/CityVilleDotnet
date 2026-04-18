@@ -1,4 +1,7 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
+using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using FluorineFx;
 
 namespace CityVilleDotnet.Domain.GameEntities;
@@ -67,11 +70,73 @@ public class PlayerDto
 
     [JsonPropertyName("fastbuild")] public bool FastBuild { get; set; } = true;
 
-    [JsonPropertyName("storageComponent")] public ASObject StorageComponent { get; set; } = new();
+    [JsonPropertyName("storageComponent")] public Dictionary<string, object> StorageComponent { get; set; } = new();
 
     [JsonPropertyName("additionalWareHouseSlots")]
     public int AdditionalWareHouseSlots { get; set; } = 0;
-    
-    [JsonPropertyName("quests")]
-    public List<QuestDto> ActiveQuests { get; set; } = [];
+
+    [JsonPropertyName("quests")] public List<QuestDto> ActiveQuests { get; set; } = [];
+}
+
+public static class PlayerDtoMapper
+{
+    public static Dictionary<string, object> ToStorageComponentDto(this Player model)
+    {
+        var mStorage = new Dictionary<string, object>();
+
+        foreach (var obj in model.GetWorld().Objects)
+        {
+            if (obj.ClassName != BuildingClassType.ItemStorage) continue;
+
+            var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
+
+            if (gameItem?.StorageUnit is null) continue;
+
+            var storageType = gameItem.StorageUnit.StorageType;
+            var storageKey = gameItem.StorageUnit.StorageKey;
+
+            if (storageType is null || storageKey is null) continue;
+
+            if (!mStorage.ContainsKey(storageType))
+                mStorage[storageType] = new Dictionary<string, object>();
+
+            var byType = (Dictionary<string, object>)mStorage[storageType];
+
+            if (!byType.ContainsKey(storageKey))
+            {
+                var innerStorage = new Dictionary<string, object>();
+
+                foreach (var item in model.InventoryItems.Where(x => x.StorageType == storageKey))
+                {
+                    if (item.StoredObject is null)
+                    {
+                        innerStorage[item.Name] = item.Amount;
+                    }
+                    else
+                    {
+                        var worldObjects = new List<WorldObjectDto>();
+
+                        for (var i = 0; i < item.Amount; i++)
+                        {
+                            worldObjects.Add(item.StoredObject.ToDto());
+                        }
+
+                        innerStorage[item.Name] = worldObjects;
+                    }
+                }
+
+                byType[storageKey] = new Dictionary<string, object>
+                {
+                    ["m_storage"] = innerStorage,
+                    ["m_capacity"] = gameItem.StorageUnit.InitialCapacity,
+                    ["m_maxCapacity"] = gameItem.StorageUnit.MaxCapacity
+                };
+            }
+        }
+
+        return new Dictionary<string, object>
+        {
+            ["m_storage"] = mStorage
+        };
+    }
 }

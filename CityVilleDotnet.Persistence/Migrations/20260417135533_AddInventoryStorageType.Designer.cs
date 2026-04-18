@@ -4,6 +4,7 @@ using CityVilleDotnet.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CityVilleDotnet.Persistence.Migrations
 {
     [DbContext(typeof(CityVilleDbContext))]
-    partial class CityVilleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260417135533_AddInventoryStorageType")]
+    partial class AddInventoryStorageType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -287,14 +290,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
-                    b.Property<int?>("StoredObjectId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("PlayerId");
-
-                    b.HasIndex("StoredObjectId");
 
                     b.ToTable("InventoryItem");
                 });
@@ -1017,12 +1015,6 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.HasOne("CityVilleDotnet.Domain.Entities.Player", null)
                         .WithMany("InventoryItems")
                         .HasForeignKey("PlayerId");
-
-                    b.HasOne("CityVilleDotnet.Domain.Entities.WorldObject", "StoredObject")
-                        .WithMany()
-                        .HasForeignKey("StoredObjectId");
-
-                    b.Navigation("StoredObject");
                 });
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.LicenseItem", b =>

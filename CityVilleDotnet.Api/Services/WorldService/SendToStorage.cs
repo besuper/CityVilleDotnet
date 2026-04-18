@@ -1,6 +1,8 @@
-﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.EnumExtensions;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -11,15 +13,38 @@ public class SendToStorage(CityVilleDbContext context) : AmfService<SendToStorag
 {
     public override async Task<ASObject> HandlePacket(SendToStorageRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<Player>()
+        var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
+            .Include(x => x.InventoryItems)
+            .ThenInclude(x => x.StoredObject)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user is null) throw new Exception("Player not found");
+        if (player is null) throw new Exception("Player not found");
 
-        // TODO: Implement this
+        var world = player.GetWorld();
+        var obj = world.GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z);
+
+        if (obj is null) throw new Exception($"Building is not found at {request.Building.Position.X} {request.Building.Position.Y}");
+        if (request.Storage.Length == 0) throw new Exception("Invalid storage request");
+
+        var storageRequest = request.Storage[0];
+        var isStackable = obj.GetClassName().IsStackable();
+
+        player.AddItem(obj.GetItemName(), 1, storageRequest.Key, isStackable ? null : obj);
+
+        world.Objects.Remove(obj);
+
+        if (isStackable)
+            context.Remove(obj);
+        
+        player.HandleQuestsProgress("storeItemByClass", className: storageRequest.Key);
+        
+        world.CalculatePopulation();
+
+        await context.SaveChangesAsync(cancellationToken);
 
         return new CityVilleResponse();
     }
@@ -34,14 +59,4 @@ public class SendToStorageRequest
 public class BuildingSendToStorageRequest
 {
     [AmfParam("position")] public PerformActionPositionRequest Position { get; set; } = new();
-}
-
-public class StorageInfoRequest
-{
-    [AmfParam(0)] public StorageDetails Details { get; set; } = new();
-}
-
-public class StorageDetails
-{
-    [AmfParam("storageKey")] public string Key { get; set; } = string.Empty;
 }

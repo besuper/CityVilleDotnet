@@ -12,5 +12,7 @@ public class InventoryItemConfiguration : IEntityTypeConfiguration<InventoryItem
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
         builder.Property(x => x.Name).HasMaxLength(64);
+        builder.Property(x => x.StorageType).HasMaxLength(64);
+        builder.HasOne(x => x.StoredObject);
     }
 }

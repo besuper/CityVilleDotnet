@@ -17,6 +17,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .AsNoTracking()
             .Include(x => x.Quests.OrderBy(q => q.Order))
             .Include(x => x.InventoryItems)
+            .ThenInclude(x => x.StoredObject)
             .Include(x => x.World)
             .ThenInclude(x => x!.MapRects)
             .Include(x => x.World)

@@ -61,5 +61,6 @@ public enum BuildingClassType
     Heliport = 56,
     ThemePark = 57,
     CustomResidence = 58,
-    EnvironmentTile = 59
+    EnvironmentTile = 59,
+    Amphitheater = 60
 }

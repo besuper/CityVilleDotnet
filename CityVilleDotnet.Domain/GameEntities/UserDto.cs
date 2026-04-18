@@ -1,4 +1,4 @@
-﻿using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Entities;
 using System.Text.Json.Serialization;
 using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
@@ -93,7 +93,7 @@ public static class UserDtoMapper
                     EnergyModifiers = new List<object>(), // TODO
                     FeatureData = new ASObject(new Dictionary<string, object>()),
                     ShowNpcCloud = true,
-                    StorageComponent = model.GetWorld().ToStorageComponentDto(),
+                    StorageComponent = model.ToStorageComponentDto(),
                     AdditionalWareHouseSlots = 0,
                     ActiveQuests = activeQuests.Select(q => q.ToDto()).ToList()
                 },

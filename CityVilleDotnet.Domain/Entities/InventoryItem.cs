@@ -7,13 +7,18 @@ public class InventoryItem
     public string Name { get; set; }
 
     public int Amount { get; set; }
+    
+    public string? StorageType { get; set; }
+    public WorldObject? StoredObject { get; set; }
 
     private InventoryItem() {}
     
-    public InventoryItem(string itemName, int amount = 1)
+    public InventoryItem(string itemName, int amount = 1, string? storageType = null, WorldObject? storedObject = null)
     {
         Name = itemName;
         Amount = amount;
+        StorageType = storageType;
+        StoredObject = storedObject;
     }
 
     public void AddAmount(int amount)
