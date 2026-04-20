@@ -1,4 +1,4 @@
-﻿using CityVilleDotnet.Common.Global;
+using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.EnumExtensions;
@@ -414,6 +414,64 @@ public class WorldObject
 
     public WorldObject Clone(int x, int y, int z, int id)
     {
-        return new WorldObject(ItemName, ClassName, ContractName, Deleted, TempId, State, Direction, ServerUtils.GetCurrentTime(), ServerUtils.GetCurrentTime(), x, y, z ,id);
+        return new WorldObject(ItemName, ClassName, ContractName, Deleted, TempId, State, Direction, ServerUtils.GetCurrentTime(), ServerUtils.GetCurrentTime(), x, y, z, id);
+    }
+
+    private double PlotCostToMakeReady()
+    {
+        if (State != WorldObjectState.Planted || PlantTime is null) return 0;
+
+        var settings = GameSettingsManager.Instance.GetSettings();
+        var currentTime = ServerUtils.GetCurrentTime();
+        var timeUntilReady = (GameSettingsManager.Instance.GetItem(GetItemName())?.GetGrowTime() ?? 0) * 1000.0;
+        var growTimeMs = timeUntilReady * settings.InGameDaySeconds * settings.GrowMultiplier;
+
+        var hoursLeft = Math.Max((growTimeMs - (currentTime - PlantTime.Value)) / 3600000.0, 0);
+        var exponent = 0.4;
+        var multiplier = settings.InstantReadyCropCostConstant3;
+
+        return multiplier * Math.Pow(hoursLeft, exponent);
+    }
+    
+    private double ResidenceCostToMakeReady()
+    {
+        if (State != WorldObjectState.Planted || PlantTime is null) return 0;
+
+        var settings = GameSettingsManager.Instance.GetSettings();
+        var currentTime = ServerUtils.GetCurrentTime();
+        var timeUntilReady = (GameSettingsManager.Instance.GetItem(GetItemName())?.GetGrowTime() ?? 0) * 1000.0;
+        var growTimeMs = timeUntilReady * settings.InGameDaySeconds * settings.GrowMultiplier;
+
+        var hoursLeft = Math.Max((growTimeMs - (currentTime - PlantTime.Value)) / 3600000.0, 0);
+        var exponent = 0.25;
+        var multiplier = settings.InstantReadyResidenceCostConstant5;
+
+        return multiplier * Math.Pow(hoursLeft, exponent);
+    }
+
+    public int GetCostToMakeReady()
+    {
+        return ClassName switch
+        {
+            BuildingClassType.Plot => (int)Math.Ceiling(PlotCostToMakeReady()),
+            BuildingClassType.Ship => (int)Math.Ceiling(PlotCostToMakeReady()),
+            BuildingClassType.HarvestableShip => (int)Math.Ceiling(HarvestableShipCostToMakeReady()),
+            BuildingClassType.Residence => (int)Math.Ceiling(ResidenceCostToMakeReady()),
+            _ => throw new NotImplementedException()
+        };
+    }
+
+    private double HarvestableShipCostToMakeReady()
+    {
+        var baseCost = PlotCostToMakeReady();
+        if (baseCost <= 0) return 0;
+
+        var gameItem = GameSettingsManager.Instance.GetItem(GetItemName());
+        var harvestMultiplier = gameItem?.HarvestMultiplier ?? 0;
+        var useHarvestMultForCost = gameItem?.UseHarvestMultForCost ?? false;
+
+        if (!useHarvestMultForCost || harvestMultiplier <= 0) return baseCost;
+
+        return Math.Max(Math.Ceiling(baseCost), 1) * (1 + harvestMultiplier / 100.0);
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Xml.Serialization;
+using System.Xml.Serialization;
 
 namespace CityVilleDotnet.Common.Settings.GameSettings;
 
@@ -92,6 +92,8 @@ public class GameItem
     [XmlElement("energyCostPerBuild")] public int? EnergyCostPerBuild { get; set; }
     [XmlElement("energyRewards")] public int? EnergyRewards { get; set; }
     [XmlElement("coinRewards")] public int? CoinRewards { get; set; }
+    [XmlElement("harvestMultiplier")] public int? HarvestMultiplier { get; set; }
+    [XmlElement("useHarvestMultForCost")] public bool UseHarvestMultForCost { get; set; }
 
     [XmlElement("commodity")] public CommodityItem? Commodity { get; set; }
 
