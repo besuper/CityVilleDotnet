@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Xml.Serialization;
 using CityVilleDotnet.Common.Settings.GameSettings;
-using CityVilleDotnet.Common.Utils;
 
 namespace CityVilleDotnet.Common.Settings;
 
@@ -58,12 +57,9 @@ public class GameSettingsManager
 
         var serializer = new XmlSerializer(typeof(GameSettings.GameSettings));
 
-        var xmlContent = File.ReadAllText(path);
-        xmlContent = xmlContent.Replace("&gt;", "");
-
-        using (var stringReader = new StringReader(xmlContent))
+        using (var fileStream = new FileStream(path, FileMode.Open))
         {
-            var content = serializer.Deserialize(stringReader);
+            var content = serializer.Deserialize(fileStream);
 
             if (content is null)
             {
