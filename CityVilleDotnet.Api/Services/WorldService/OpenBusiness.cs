@@ -58,6 +58,7 @@ internal sealed class OpenBusiness(CityVilleDbContext context) : AmfService<Open
 
         player.HandleQuestsProgress("openBusinessByClass", className: obj.GetClassName().ToString());
         player.HandleQuestsProgress("openBusinessByName", itemName: obj.GetItemName());
+        player.HandleQuestsProgress("openBusinessByKeyword", itemName: obj.GetItemName());
         player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
