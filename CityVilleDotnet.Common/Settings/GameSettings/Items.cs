@@ -155,6 +155,20 @@ public class GameItem
 
         return null;
     }
+
+    public GameItem GetFirstDeriveItem(GameItem item)
+    {
+        if (item.DerivesFrom is not null)
+        {
+            var parentItem = GameSettingsManager.Instance.GetItem(item.DerivesFrom);
+
+            if (parentItem is null) return item;
+            
+            return GetFirstDeriveItem(parentItem);
+        }
+        
+        return item;
+    }
 }
 
 [Serializable]
@@ -293,6 +307,11 @@ public class MasteryItem
 public class MechanicsContainer
 {
     [XmlElement("gameEventMechanics")] public List<GameEventMechanicsItem>? GameEventMechanics { get; set; }
+
+    public GameEventMechanicsItem? GetMechanicByGameMode(string gameMode)
+    {
+        return GameEventMechanics?.FirstOrDefault(x => x.GameMode == gameMode);
+    }
 }
 
 [Serializable]
@@ -300,6 +319,11 @@ public class GameEventMechanicsItem
 {
     [XmlAttribute("gameMode")] public string? GameMode { get; set; }
     [XmlElement("mechanic")] public List<MechanicItem>? Mechanics { get; set; }
+
+    public MechanicItem? GetMechanicItemByType(string type)
+    {
+        return Mechanics?.FirstOrDefault(x => x.Type == type);
+    }
 }
 
 [Serializable]
@@ -308,6 +332,15 @@ public class MechanicItem
     [XmlAttribute("className")] public string? ClassName { get; set; }
     [XmlAttribute("explodeToRect")] public string? ExplodeToRect { get; set; }
     [XmlAttribute("macroPrefix")] public string? MacroPrefix { get; set; }
+    [XmlAttribute("type")] public string? Type { get; set; }
+    [XmlAttribute("priority")] public int Priority { get; set; }
+    [XmlAttribute("consumableType")] public string? ConsumableType { get; set; }
+    [XmlAttribute("consumableQuantity")] public int ConsumableQuantity { get; set; }
+    [XmlAttribute("activeDuration")] public int ActiveDuration { get; set; }
+    [XmlAttribute("inactiveDuration")] public int InactiveDuration { get; set; }
+    [XmlAttribute("maxStreakLength")] public int MaxStreakLength { get; set; }
+    [XmlAttribute("blockOthers")] public bool BlockOthers { get; set; }
+    [XmlAttribute("pick")] public string? Pick { get; set; }
 }
 
 [Serializable]

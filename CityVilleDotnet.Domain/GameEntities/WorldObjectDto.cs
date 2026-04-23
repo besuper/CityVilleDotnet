@@ -1,6 +1,7 @@
 ﻿using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using System.Text.Json.Serialization;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using FluorineFx;
@@ -140,7 +141,6 @@ public static class WorldObjectDtoMapper
             }
         }
 
-        // TODO: Receive visits like a normal business, but no startContract, GameMechanic transaction instead
         if (model.ClassName == BuildingClassType.SocialBusiness || model.ClassName == BuildingClassType.Hotel)
         {
             var item = GameSettingsManager.Instance.GetItem(model.ItemName);
@@ -157,6 +157,34 @@ public static class WorldObjectDtoMapper
                         : null
                 }
             };
+        }
+
+        var gameItem = GameSettingsManager.Instance.GetItem(model.ItemName);
+
+        if (gameItem?.Mechanics is not null)
+        {
+            var loadGameMode = gameItem.Mechanics.GetMechanicByGameMode("load");
+
+            foreach (var mechanic in loadGameMode?.Mechanics ?? [])
+            {
+                if (mechanic.Type == "streakData")
+                {
+                    var activeDuration = mechanic.ActiveDuration;
+                    var inactiveDuration = mechanic.InactiveDuration;
+                    var maxStreakLength = mechanic.MaxStreakLength;
+
+                    model.UpdateStreakData(activeDuration, inactiveDuration, maxStreakLength);
+
+                    dto.MechanicData ??= new ASObject();
+
+                    dto.MechanicData["streakData"] = new ASObject
+                    {
+                        { "activationTime", model.ActivationTime },
+                        { "inactiveTime", model.InactiveTime },
+                        { "streakLength", model.StreakLength }
+                    };
+                }
+            }
         }
 
         return dto;

@@ -21,6 +21,13 @@ public static class UserDtoMapper
             .Where(q => q.QuestType == QuestType.Active)
             .ToList();
 
+        var energyModifiers = new Dictionary<string, int>();
+
+        foreach (var obj in model.GetWorld().Objects.Where(o => o.StreakLength > 0))
+        {
+            energyModifiers[$"{obj.WorldFlatId}"] = obj.StreakLength;
+        }
+
         return new UserDto()
         {
             UserInfo = new UserInfoDto
@@ -90,7 +97,7 @@ public static class UserDtoMapper
                     Orders = BuildOrdersAsObject(model),
                     LightLevel = 0, // TODO
                     PaidEnergy = 0, // TODO
-                    EnergyModifiers = new List<object>(), // TODO
+                    EnergyModifiers = energyModifiers,
                     FeatureData = new ASObject(new Dictionary<string, object>()),
                     ShowNpcCloud = true,
                     StorageComponent = model.ToStorageComponentDto(),

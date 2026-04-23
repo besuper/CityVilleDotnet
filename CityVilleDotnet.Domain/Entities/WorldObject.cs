@@ -62,6 +62,49 @@ public class WorldObject
     public bool NeverOpened { get; private set; }
     public int? UpgradeActionCount { get; private set; }
     public int? BuiltFloorCount { get; private set; }
+    public long? ActivationTime { get; private set; }
+    public long? InactiveTime { get; private set; }
+    public int StreakLength { get; private set; }
+
+    private void ProcessNegativeStreak(int maxStreakLength)
+    {
+        if (StreakLength > 0)
+            StreakLength = 0;
+
+        if (maxStreakLength == -1 || StreakLength > maxStreakLength)
+            StreakLength--;
+    }
+
+    public void UpdateStreakData(int activeDuration, int inactiveDuration, int maxStreakLength)
+    {
+        var currentTime = ServerUtils.GetCurrentTimeSeconds();
+
+        var isActive = ActivationTime.HasValue && currentTime - ActivationTime.Value <= activeDuration;
+
+        if (isActive || (InactiveTime.HasValue && currentTime - InactiveTime.Value <= inactiveDuration)) return;
+
+        if (currentTime - (InactiveTime ?? ActivationTime ?? 0) > inactiveDuration)
+        {
+            ProcessNegativeStreak(maxStreakLength);
+
+            InactiveTime = currentTime;
+            ActivationTime = null;
+        }
+    }
+
+    public void Supply(int maxStreakLength)
+    {
+        var currentTime = ServerUtils.GetCurrentTimeSeconds();
+        
+        ActivationTime = currentTime;
+        InactiveTime = null;
+
+        if (StreakLength < 0)
+            StreakLength = 0;
+
+        if (maxStreakLength == -1 || StreakLength < maxStreakLength)
+            StreakLength++;
+    }
 
     public void SetAsConstructionSite(string itemName, int maxStages)
     {
@@ -432,7 +475,7 @@ public class WorldObject
 
         return multiplier * Math.Pow(hoursLeft, exponent);
     }
-    
+
     private double ResidenceCostToMakeReady()
     {
         if (State != WorldObjectState.Planted || PlantTime is null) return 0;
@@ -473,5 +516,17 @@ public class WorldObject
         if (!useHarvestMultForCost || harvestMultiplier <= 0) return baseCost;
 
         return Math.Max(Math.Ceiling(baseCost), 1) * (1 + harvestMultiplier / 100.0);
+    }
+    
+    public string GetDeepItemName()
+    {
+        var defaultItemName = GetItemName();
+        var gameItem = GameSettingsManager.Instance.GetItem(defaultItemName);
+
+        if (gameItem?.DerivesFrom is null) return defaultItemName;
+
+        var derivedItem = gameItem.GetFirstDeriveItem(gameItem);
+        
+        return derivedItem.Name;
     }
 }

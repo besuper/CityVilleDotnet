@@ -36,7 +36,7 @@ public class PlayerDto
     [JsonPropertyName("paidEnergy")] public int PaidEnergy { get; set; } = 0;
 
     [JsonPropertyName("m_energyModifiers")]
-    public List<object> EnergyModifiers { get; set; }
+    public Dictionary<string, int> EnergyModifiers { get; set; } = new();
 
     [JsonPropertyName("socialLevel")] public int SocialLevel { get; set; } = 1;
 

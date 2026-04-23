@@ -180,4 +180,13 @@ public class World
             ThemeCollections.Remove(theme);
         }
     }
+
+    public int CountStreakByItemName(string itemName)
+    {
+        var obj = Objects.FirstOrDefault(o => o.StreakLength > 0 && o.GetDeepItemName() == itemName);
+
+        if (obj is null) return 0;
+
+        return obj.StreakLength;
+    }
 }

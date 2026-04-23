@@ -53,6 +53,14 @@ public class QuestTask
     [XmlAttribute("action")] public required string Action { get; set; }
 
     [XmlAttribute("type")] public string? Type { get; set; }
+    [XmlIgnore] public int? Streak { get; set; }
+
+    [XmlAttribute("streak")]
+    public string? StreakString
+    {
+        get => Streak?.ToString();
+        set => Streak = string.IsNullOrEmpty(value) ? null : int.Parse(value);
+    }
 
     [XmlAttribute("total")] public required string Total { get; set; }
 

@@ -972,6 +972,13 @@ public class Player
 
                         quest.Progress[index] = value;
                         continue;
+                    case "countNumAtThisStreak":
+                    case "checkStreakEffect":
+                        var count = GetWorld().CountStreakByItemName(task.Type);
+
+                        if (count >= task.Streak)
+                            quest.Progress[index] = count;
+                        continue;
                 }
             }
         }
