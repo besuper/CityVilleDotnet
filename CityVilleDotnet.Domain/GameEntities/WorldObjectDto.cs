@@ -171,7 +171,6 @@ public static class WorldObjectDtoMapper
                 {
                     var activeDuration = mechanic.ActiveDuration;
                     var inactiveDuration = mechanic.InactiveDuration;
-                    var maxStreakLength = mechanic.MaxStreakLength;
 
                     model.UpdateStreakData(activeDuration, inactiveDuration);
 
@@ -179,8 +178,8 @@ public static class WorldObjectDtoMapper
 
                     dto.MechanicData["streakData"] = new ASObject
                     {
-                        { "activationTime", model.ActivationTime },
-                        { "inactiveTime", model.InactiveTime },
+                        { "activationTime", model.ActivationTime ?? -1 },
+                        { "inactiveTime", model.InactiveTime ?? -1 },
                         { "streakLength", model.StreakLength }
                     };
                 }
