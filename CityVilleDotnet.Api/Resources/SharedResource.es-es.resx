@@ -105,55 +105,28 @@
     <data name="XP" xml:space="preserve">
         <value>XP</value>
     </data>
-    <data name="Level" xml:space="preserve">
-    <value>Nivel</value>
-</data>
-    <data name="Goods" xml:space="preserve">
-    <value>Bienes</value>
-</data>
-    <data name="PremiumGoods" xml:space="preserve">
-    <value>Bienes premium</value>
-</data>
-    <data name="UpdateResources" xml:space="preserve">
-    <value>Actualizar recursos</value>
-</data>
-    <data name="Inventory" xml:space="preserve">
-    <value>Inventario</value>
-</data>
-    <data name="ItemName" xml:space="preserve">
-    <value>Nombre del artículo</value>
-</data>
-    <data name="Amount" xml:space="preserve">
-    <value>Cantidad</value>
-</data>
-    <data name="AddItem" xml:space="preserve">
-    <value>Añadir artículo</value>
-</data>
-    <data name="CheatMenu" xml:space="preserve">
-    <value>Menú de trucos</value>
-</data>
     <data name="AddFriend" xml:space="preserve">
-    <value>Añadir amigo</value>
-</data>
+        <value>Añadir amigo</value>
+    </data>
     <data name="EnterUsername" xml:space="preserve">
-    <value>Introducir nombre de usuario</value>
-</data>
+        <value>Introducir nombre de usuario</value>
+    </data>
     <data name="EmptyFriends" xml:space="preserve">
-    <value>Aún no tienes amigos. ¡Añade amigos para empezar!</value>
-</data>
+        <value>Aún no tienes amigos. ¡Añade amigos para empezar!</value>
+    </data>
     <data name="PendingFriendsRequests" xml:space="preserve">
-    <value>Solicitudes pendientes</value>
-</data>
+        <value>Solicitudes pendientes</value>
+    </data>
     <data name="Cancel" xml:space="preserve">
-    <value>Cancelar</value>
-</data>
+        <value>Cancelar</value>
+    </data>
     <data name="Accept" xml:space="preserve">
-    <value>Aceptar</value>
-</data>
+        <value>Aceptar</value>
+    </data>
     <data name="Reject" xml:space="preserve">
-    <value>Rechazar</value>
-</data>
+        <value>Rechazar</value>
+    </data>
     <data name="EmptyPendingFriendsRequests" xml:space="preserve">
-    <value>No hay solicitudes de amistad pendientes.</value>
-</data>
+        <value>No hay solicitudes de amistad pendientes.</value>
+    </data>
 </root>
