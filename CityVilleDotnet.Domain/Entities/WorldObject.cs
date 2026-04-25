@@ -66,43 +66,48 @@ public class WorldObject
     public long? InactiveTime { get; private set; }
     public int StreakLength { get; private set; }
 
-    private void ProcessNegativeStreak(int maxStreakLength)
+    public void UpdateStreakData(int activeDuration, int inactiveDuration)
     {
-        if (StreakLength > 0)
-            StreakLength = 0;
+        var now = ServerUtils.GetCurrentTimeSeconds();
 
-        if (maxStreakLength == -1 || StreakLength > maxStreakLength)
-            StreakLength--;
-    }
-
-    public void UpdateStreakData(int activeDuration, int inactiveDuration, int maxStreakLength)
-    {
-        var currentTime = ServerUtils.GetCurrentTimeSeconds();
-
-        var isActive = ActivationTime.HasValue && currentTime - ActivationTime.Value <= activeDuration;
-
-        if (isActive || (InactiveTime.HasValue && currentTime - InactiveTime.Value <= inactiveDuration)) return;
-
-        if (currentTime - (InactiveTime ?? ActivationTime ?? 0) > inactiveDuration)
+        if (ActivationTime.HasValue)
         {
-            ProcessNegativeStreak(maxStreakLength);
+            var elapsed = now - ActivationTime.Value;
 
-            InactiveTime = currentTime;
-            ActivationTime = null;
+            if (elapsed >= activeDuration)
+            {
+                InactiveTime = ActivationTime.Value + activeDuration;
+                ActivationTime = null;
+            }
+
+            return;
+        }
+
+        if (InactiveTime.HasValue)
+        {
+            var elapsedInactive = now - InactiveTime.Value;
+
+            if (elapsedInactive >= inactiveDuration)
+            {
+                if (StreakLength > 0)
+                    StreakLength--;
+
+                InactiveTime = now;
+            }
         }
     }
 
     public void Supply(int maxStreakLength)
     {
         var currentTime = ServerUtils.GetCurrentTimeSeconds();
-        
+
         ActivationTime = currentTime;
         InactiveTime = null;
 
         if (StreakLength < 0)
             StreakLength = 0;
 
-        if (maxStreakLength == -1 || StreakLength < maxStreakLength)
+        if (StreakLength < maxStreakLength)
             StreakLength++;
     }
 
@@ -517,7 +522,7 @@ public class WorldObject
 
         return Math.Max(Math.Ceiling(baseCost), 1) * (1 + harvestMultiplier / 100.0);
     }
-    
+
     public string GetDeepItemName()
     {
         var defaultItemName = GetItemName();
@@ -526,7 +531,7 @@ public class WorldObject
         if (gameItem?.DerivesFrom is null) return defaultItemName;
 
         var derivedItem = gameItem.GetFirstDeriveItem(gameItem);
-        
+
         return derivedItem.Name;
     }
 }

@@ -45,7 +45,7 @@ internal sealed class StreakData(CityVilleDbContext context) : AmfService<Streak
 
         if (action.Equals("supply"))
         {
-            obj.UpdateStreakData(mechanic.ActiveDuration, mechanic.InactiveDuration, mechanic.MaxStreakLength);
+            obj.UpdateStreakData(mechanic.ActiveDuration, mechanic.InactiveDuration);
 
             if (mechanic.ConsumableType is not null && mechanic.ConsumableQuantity > 0)
             {
@@ -74,7 +74,7 @@ internal sealed class StreakData(CityVilleDbContext context) : AmfService<Streak
         }
         else if (action.Equals("timerExpired"))
         {
-            obj.UpdateStreakData(mechanic.ActiveDuration, mechanic.InactiveDuration, mechanic.MaxStreakLength);
+            obj.UpdateStreakData(mechanic.ActiveDuration, mechanic.InactiveDuration);
         }
 
         await context.SaveChangesAsync(cancellationToken);
