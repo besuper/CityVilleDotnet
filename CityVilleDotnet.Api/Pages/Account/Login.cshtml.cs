@@ -11,7 +11,6 @@ public class LoginModel(SignInManager<ApplicationUser> signInManager, IConfigura
     [TempData] public string? ErrorMessage { get; set; }
 
     public string ReturnUrl { get; set; } = "/Game";
-    public bool EnableGuests => configuration.GetValue<bool>("enableGuests");
 
     public void OnGet(string? returnUrl = null)
     {

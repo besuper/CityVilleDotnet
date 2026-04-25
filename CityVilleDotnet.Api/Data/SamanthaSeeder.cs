@@ -54,8 +54,7 @@ public static class SamanthaSeeder
         {
             Id = SamanthaAppUserId,
             UserName = "Sam",
-            NormalizedUserName = "SAM",
-            IsGuest = false
+            NormalizedUserName = "SAM"
         };
 
         var newWorld = new World("City Sam", 36, 36, 0, 0, 0, 0, 0, mapRects, objects);

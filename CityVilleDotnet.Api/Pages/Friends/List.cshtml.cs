@@ -27,11 +27,6 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         CurrentUser = user.AppUser;
 
-        if (CurrentUser.IsGuest)
-        {
-            return RedirectToPage("/Game");
-        }
-
         Friends = await dbContext.Set<Player>()
             .AsNoTracking()
             .Where(x => x.AppUser!.Id.Equals(CurrentUser.Id))
@@ -63,8 +58,6 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             return RedirectToPage("/Account/Login");
 
         CurrentUser = player.AppUser;
-
-        if (CurrentUser.IsGuest) return RedirectToPage("/Game");
 
         var targetPlayer = await dbContext.Set<Player>().FirstOrDefaultAsync(x => x.Username == Username, ct);
 
@@ -105,8 +98,6 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         if (user?.AppUser is null) return RedirectToPage("/Account/Login");
 
         CurrentUser = user.AppUser;
-
-        if (CurrentUser.IsGuest) return RedirectToPage("/Game");
 
         var friendship = await dbContext.Set<Friend>()
             .Include(x => x.Player)
@@ -158,11 +149,6 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         CurrentUser = user.AppUser;
 
-        if (CurrentUser.IsGuest)
-        {
-            return RedirectToPage("/Game");
-        }
-
         var friendship = await dbContext.Set<Friend>()
             .Include(x => x.Player)
             .Include(x => x.FriendPlayer)
@@ -209,11 +195,6 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             return RedirectToPage("/Account/Login");
 
         CurrentUser = user.AppUser;
-
-        if (CurrentUser.IsGuest)
-        {
-            return RedirectToPage("/Game");
-        }
 
         var friendship = await dbContext.Set<Friend>()
             .Include(x => x.FriendPlayer)
