@@ -2,7 +2,6 @@
 using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
-using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -46,6 +45,7 @@ internal sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequ
         world.CalculatePopulation();
 
         player.HandleQuestsProgress(""); // Empty actionType to force recheck counts
+        player.HandleQuestsProgress("finishConstructionByName", itemName: obj.GetItemName());
         player.CheckCompletedQuests();
 
         player.CollectDoobersRewards(constructionItemName);

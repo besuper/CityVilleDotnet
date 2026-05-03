@@ -878,6 +878,7 @@ public class Player
                         case "harvestBusinessByName":
                         case "placeBuildingByName":
                         case "sendTourNeighborBusinessByName":
+                        case "finishConstructionByName":
                         {
                             if (itemName is null)
                                 throw new Exception("Can't validate byName action without itemName");
