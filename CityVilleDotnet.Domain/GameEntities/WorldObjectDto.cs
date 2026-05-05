@@ -57,7 +57,7 @@ public class WorldObjectDto
 
     [JsonPropertyName("endPosition")] public WorldObjectPositionDto? EndPosition { get; set; }
 
-    [JsonPropertyName("mechanicData")] public ASObject? MechanicData { get; set; }
+    [JsonPropertyName("mechanicData")] public Dictionary<string, object?>? MechanicData { get; set; }
     // TODO: Implement Gates
     //[JsonPropertyName("gates")] public List<object>? Gates { get; set; }
 
@@ -145,18 +145,15 @@ public static class WorldObjectDtoMapper
         {
             var item = GameSettingsManager.Instance.GetItem(model.ItemName);
 
-            dto.MechanicData = new ASObject
-            {
+            dto.MechanicData ??= new Dictionary<string, object?>();
+
+            dto.MechanicData["harvestState"] = model.State == WorldObjectState.Open || model.State == WorldObjectState.ClosedHarvestable
+                ? new ASObject
                 {
-                    "harvestState", model.State == WorldObjectState.Open || model.State == WorldObjectState.ClosedHarvestable
-                        ? new ASObject
-                        {
-                            { "customers", model.Visits },
-                            { "customersReq", item?.CustomerCapacity ?? 0 }
-                        }
-                        : null
+                    { "customers", model.Visits },
+                    { "customersReq", item?.CustomerCapacity ?? 0 }
                 }
-            };
+                : null;
         }
 
         var gameItem = GameSettingsManager.Instance.GetItem(model.ItemName);
@@ -174,7 +171,7 @@ public static class WorldObjectDtoMapper
 
                     model.UpdateStreakData(activeDuration, inactiveDuration);
 
-                    dto.MechanicData ??= new ASObject();
+                    dto.MechanicData ??= new Dictionary<string, object?>();
 
                     dto.MechanicData["streakData"] = new ASObject
                     {
@@ -184,6 +181,18 @@ public static class WorldObjectDtoMapper
                     };
                 }
             }
+        }
+
+        if (model.ClassName == BuildingClassType.GreenHouse)
+        {
+            dto.MechanicData ??= new Dictionary<string, object?>();
+            
+            dto.MechanicData["greenHouseStorage"] = new Dictionary<string, object>()
+            {
+                { "item", model.GetGreenHousePlot().ToDto() }
+            };
+
+            dto.State = WorldObjectState.Static.ToDescriptionString(); // restore to static state
         }
 
         return dto;

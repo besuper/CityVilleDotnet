@@ -16,16 +16,16 @@ public class GameItem
     [XmlAttribute("type")] public required string Type { get; set; }
     [XmlAttribute("sellSendsToInventory")] public string? SellSendsToInventory { get; set; }
     [XmlIgnore] public int? Height { get; set; }
-    
+
     [XmlAttribute("height")]
     public string? HeightString
     {
         get => Height?.ToString();
         set => Height = string.IsNullOrEmpty(value) ? null : int.Parse(value);
     }
-    
+
     [XmlIgnore] public int? Width { get; set; }
-    
+
     [XmlAttribute("width")]
     public string? WidthString
     {
@@ -106,6 +106,14 @@ public class GameItem
     [XmlElement("keyword")] public List<string> Keywords { get; set; } = [];
     [XmlElement("mastery")] public required List<MasteryItem> MasteryItems { get; set; }
     [XmlElement("storageUnit")] public StorageUnitItem? StorageUnit { get; set; }
+    [XmlIgnore] public int? NumCrop { get; set; }
+
+    [XmlElement("numCrop")]
+    public string? NumCropString
+    {
+        get => NumCrop?.ToString();
+        set => NumCrop = string.IsNullOrEmpty(value) ? null : int.Parse(value);
+    }
 
     public bool HasKeyword(string keyword)
     {
@@ -161,10 +169,10 @@ public class GameItem
             var parentItem = GameSettingsManager.Instance.GetItem(item.DerivesFrom);
 
             if (parentItem is null) return item;
-            
+
             return GetFirstDeriveItem(parentItem);
         }
-        
+
         return item;
     }
 }

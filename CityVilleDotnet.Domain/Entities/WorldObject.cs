@@ -267,6 +267,12 @@ public class WorldObject
         return (coinYield, cashYield);
     }
 
+    public void HarvestGreenHouse()
+    {
+        ContractName = null;
+        State = WorldObjectState.Plowed;
+    }
+
     public void OpenBusiness()
     {
         if (!ClassName.IsBusiness()) throw new Exception("Can't open other than business building, class name is: " + ClassName + "");
@@ -533,5 +539,10 @@ public class WorldObject
         var derivedItem = gameItem.GetFirstDeriveItem(gameItem);
 
         return derivedItem.Name;
+    }
+
+    public WorldObject GetGreenHousePlot()
+    {
+        return new WorldObject("plot_crop", BuildingClassType.Plot, ContractName, Deleted, TempId, State, Direction, BuildTime, PlantTime, X, Y, Z ?? 0, 0);
     }
 }
