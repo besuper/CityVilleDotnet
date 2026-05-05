@@ -80,15 +80,20 @@ public static class WorldDtoMapper
         {
             var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
 
-            if (gameItem?.Commodity is null || gameItem.Commodity.Capacity <= 0)
-                continue;
+            if (gameItem is null) continue;
 
-            var name = gameItem.Commodity.Name;
+            foreach (var commodityItem in gameItem.Commodity)
+            {
+                /*if (commodityItem.Capacity <= 0)
+                    continue;*/
 
-            if (capacities.TryGetValue(name, out var existing))
-                capacities[name] = existing + gameItem.Commodity.Capacity;
-            else
-                capacities[name] = gameItem.Commodity.Capacity;
+                var name = commodityItem.Name;
+
+                if (capacities.TryGetValue(name, out var existing))
+                    capacities[name] = existing + commodityItem.Capacity;
+                else
+                    capacities[name] = commodityItem.Capacity;
+            }
         }
 
         var commodityObj = new ASObject();

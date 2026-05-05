@@ -1,4 +1,6 @@
-﻿using CityVilleDotnet.Common.Global;
+﻿using CityVilleDotnet.Common.Enums;
+using CityVilleDotnet.Common.Exceptions;
+using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Settings.GameSettings;
 using CityVilleDotnet.Common.Utils;
@@ -305,7 +307,7 @@ public class Player
             if (level <= SocialLevel) continue;
 
             SocialLevel = level;
-            
+
             AddGoods(item.Reward);
 
             break;
@@ -817,7 +819,7 @@ public class Player
 
     public void HandleQuestsProgress(string actionType, string? className = null, string? itemName = null)
     {
-        StaticLogger.Current.LogDebug("Handle quest actionType = {ActionType}, className = {ClassName}, itemName = {ItemName}", actionType, className, itemName);
+        if(StaticLogger.IsReady()) StaticLogger.Current.LogDebug("Handle quest actionType = {ActionType}, className = {ClassName}, itemName = {ItemName}", actionType, className, itemName);
 
         var calculatedResults = new Dictionary<string, int>();
 
@@ -879,6 +881,7 @@ public class Player
                         case "placeBuildingByName":
                         case "sendTourNeighborBusinessByName":
                         case "finishConstructionByName":
+                        case "openBusinessByCommodityType":
                         {
                             if (itemName is null)
                                 throw new Exception("Can't validate byName action without itemName");
@@ -1028,5 +1031,58 @@ public class Player
     public void SwitchWorld(WorldType type)
     {
         LastPlayedWorldType = type;
+    }
+
+    private int GetGoodsByType(string goodType)
+    {
+        return goodType switch
+        {
+            "goods" => Goods,
+            "premium_goods" => PremiumGoods,
+            _ => 0
+        };
+    }
+
+    private void RemoveGoodByType(string goodType, int amount)
+    {
+        switch (goodType)
+        {
+            case "goods":
+                RemoveGoods(amount);
+                break;
+            case "premium_goods":
+                RemovePremiumGoods(amount);
+                break;
+        }
+    }
+
+    public void ProcessGoods(GameItem item, string desiredGoodType = "goods", int? leftToPay = null)
+    {
+        if (item.Commodity.Count == 0 || item.CommodityRequired is null) throw new Exception("Can't supply item without commodity");
+        if (!item.Commodity.Any(x => x.Name == desiredGoodType)) throw new DomainException(GameErrorType.NotEnoughMoney);
+
+        var toPay = leftToPay ?? item.CommodityRequired.Value;
+        var leftGoods = toPay - GetGoodsByType(desiredGoodType);
+
+        if (leftGoods > 0)
+        {
+            if(desiredGoodType == "premium_goods") throw new DomainException(GameErrorType.NotEnoughMoney);
+            
+            var toRemove = toPay - leftGoods;
+
+            if (toRemove > 0)
+            {
+                RemoveGoodByType(desiredGoodType, toRemove);
+                HandleQuestsProgress("openBusinessByCommodityType", itemName: desiredGoodType);
+            }
+
+            ProcessGoods(item, "premium_goods", leftGoods);
+        }
+        else
+        {
+            RemoveGoodByType(desiredGoodType, toPay);
+            
+            HandleQuestsProgress("openBusinessByCommodityType", itemName: desiredGoodType);
+        }
     }
 }

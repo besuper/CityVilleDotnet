@@ -94,9 +94,7 @@ public class GameItem
     [XmlElement("coinRewards")] public int? CoinRewards { get; set; }
     [XmlElement("harvestMultiplier")] public int? HarvestMultiplier { get; set; }
     [XmlElement("useHarvestMultForCost")] public bool UseHarvestMultForCost { get; set; }
-
-    [XmlElement("commodity")] public CommodityItem? Commodity { get; set; }
-
+    [XmlElement("commodity")] public required List<CommodityItem> Commodity { get; set; }
     [XmlElement("randomModifiers")] public List<RandomModifiers> RandomModifiersList { get; set; } = [];
     [XmlElement("randomModifierGroups")] public RandomModifierGroupsContainer? RandomModifierGroups { get; set; }
     [XmlElement("energyCost")] public EnergyCost? EnergyCost { get; set; }
@@ -358,6 +356,7 @@ public class CommodityItem
 {
     [XmlAttribute("name")] public required string Name { get; set; }
     [XmlAttribute("capacity")] public int Capacity { get; set; }
+    [XmlAttribute("default")] public int Default { get; set; }
 }
 
 [Serializable]

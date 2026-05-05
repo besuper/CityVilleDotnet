@@ -1,4 +1,5 @@
-﻿using CityVilleDotnet.Common.Utils;
+﻿using CityVilleDotnet.Common.Enums;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Enums;
 using FluorineFx;
 

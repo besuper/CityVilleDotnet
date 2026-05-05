@@ -6,6 +6,8 @@ using System.Reflection;
 using Humanizer;
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.QuestService;
+using CityVilleDotnet.Common.Enums;
+using CityVilleDotnet.Common.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Common.Settings;
@@ -145,6 +147,14 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
                         response = CreateEmptyResponse();
                     }
+                }
+                catch (DomainException de)
+                {
+                    logger.LogWarning("Domain exception for {FunctionName}: {Errors}", functionName, de.Reason);
+
+                    response = new CityVilleResponse().Error(de.Reason).ToObject();
+
+                    errorResponse = response;
                 }
                 catch (ValidationException ve)
                 {

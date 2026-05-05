@@ -12,5 +12,10 @@ public static class StaticLogger
         _logger = loggerFactory.CreateLogger("Global");
     }
 
+    public static bool IsReady()
+    {
+        return _logger is not null;
+    }
+
     public static ILogger Current => _logger ?? throw new InvalidOperationException("Logger is not ready. Call Configure() first.");
 }

@@ -1,5 +1,6 @@
 using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.UserService;
+using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Factory.Player;

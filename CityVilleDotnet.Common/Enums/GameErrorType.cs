@@ -1,4 +1,4 @@
-﻿namespace CityVilleDotnet.Domain.Enums;
+﻿namespace CityVilleDotnet.Common.Enums;
 
 public enum GameErrorType
 {

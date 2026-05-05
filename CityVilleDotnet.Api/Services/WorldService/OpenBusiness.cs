@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.WorldService.Common;
+using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
@@ -19,7 +20,7 @@ internal sealed class OpenBusiness(CityVilleDbContext context) : AmfService<Open
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.InventoryItems)
-            .Include(x => x.Quests)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
@@ -35,24 +36,15 @@ internal sealed class OpenBusiness(CityVilleDbContext context) : AmfService<Open
         if (gameItem is null)
             throw new Exception($"Can't find game item with name {obj.ItemName}");
 
-        if (gameItem.CommodityRequired is null)
-            throw new Exception($"Game item {obj.ItemName} doesn't have commodity required");
-
-        if (player.Goods < gameItem.CommodityRequired)
-            // TODO: Show an error ?
-            return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
+        player.ProcessGoods(gameItem);
 
         if (gameItem.EnergyCost?.Open is not null)
         {
             var energyCost = int.Parse(gameItem.EnergyCost.Open);
 
             if (!player.RemoveEnergy(energyCost))
-            {
                 return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
-            }
         }
-
-        player.RemoveGoods(gameItem.CommodityRequired.Value);
 
         obj.OpenBusiness();
 

@@ -30,13 +30,7 @@ internal sealed class Supply(CityVilleDbContext context) : AmfService<SupplyRequ
 
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName) ?? throw new Exception($"Can't find game item for {obj.ItemName}");
 
-        if (gameItem.CommodityRequired is not null && gameItem.CommodityRequired > 0)
-        {
-            if (player.Goods < gameItem.CommodityRequired)
-                return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
-
-            player.RemoveGoods(gameItem.CommodityRequired.Value);
-        }
+        player.ProcessGoods(gameItem);
 
         obj.OpenBusiness();
 
