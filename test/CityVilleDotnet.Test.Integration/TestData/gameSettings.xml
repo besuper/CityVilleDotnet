@@ -26,10 +26,6 @@
             <construction>construction_3x3_2stage</construction>
             <headquarters>hq_bakery</headquarters>
             <gates/>
-            <mastery>
-                <level level="1" req="5"/>
-                <level level="2" req="15"/>
-            </mastery>
         </item>
         <item name="res_cottage3" type="residence" buyable="true">
             <keyword>Residence</keyword>
@@ -43,7 +39,6 @@
             <sizeX>3</sizeX>
             <sizeY>3</sizeY>
             <gates/>
-            <mastery/>
         </item>
         <item name="deco_tree" type="decoration" buyable="true">
             <requiredLevel>1</requiredLevel>
@@ -51,7 +46,6 @@
             <sizeX>1</sizeX>
             <sizeY>1</sizeY>
             <gates/>
-            <mastery/>
         </item>
         <item name="road" type="road" buyable="true">
             <requiredLevel>1</requiredLevel>
@@ -59,7 +53,6 @@
             <sizeX>1</sizeX>
             <sizeY>1</sizeY>
             <gates/>
-            <mastery/>
         </item>
         <item name="plot_strawberries" type="plot" buyable="true">
             <requiredLevel>1</requiredLevel>
@@ -71,7 +64,24 @@
             <sizeX>2</sizeX>
             <sizeY>2</sizeY>
             <gates/>
-            <mastery/>
+            <mastery level="0" bonusMultiplier="0"/>
+            <mastery level="1" req="50" bonusMultiplier="10"/>
+            <mastery level="2" req="150" bonusMultiplier="20"/>
+            <mastery level="3" req="300" bonusMultiplier="30"/>
+        </item>
+        <item name="plot_corn" type="plot" buyable="true">
+            <requiredLevel>1</requiredLevel>
+            <cost>15</cost>
+            <coinYield>50</coinYield>
+            <xpYield>2</xpYield>
+            <goodsYield>10</goodsYield>
+            <growTime>0.001</growTime>
+            <sizeX>2</sizeX>
+            <sizeY>2</sizeY>
+            <gates/>
+            <mastery level="0" bonusMultiplier="0"/>
+            <mastery level="1" req="60" bonusMultiplier="10"/>
+            <mastery level="2" req="180" bonusMultiplier="20"/>
         </item>
         <item name="mun_visitorcenter" type="municipal" buyable="true">
             <requiredLevel>15</requiredLevel>
@@ -79,7 +89,6 @@
             <sizeX>3</sizeX>
             <sizeY>3</sizeY>
             <gates/>
-            <mastery/>
         </item>
         <item name="factory_premiumgoods" type="factory" buyable="true">
             <requiredLevel>10</requiredLevel>
@@ -87,7 +96,6 @@
             <sizeX>4</sizeX>
             <sizeY>4</sizeY>
             <gates/>
-            <mastery/>
         </item>
         <item name="construction_3x3_2stage" type="constructionSite">
             <numberOfStages>2</numberOfStages>
@@ -95,7 +103,6 @@
             <sizeX>3</sizeX>
             <sizeY>3</sizeY>
             <gates/>
-            <mastery/>
         </item>
         <item name="construction_3x3_4stage" type="constructionSite">
             <numberOfStages>4</numberOfStages>
@@ -103,19 +110,16 @@
             <sizeX>3</sizeX>
             <sizeY>3</sizeY>
             <gates/>
-            <mastery/>
         </item>
         <item name="expansion_18x18" type="expansion" height="18" width="18">
             <sizeX>18</sizeX>
             <sizeY>18</sizeY>
             <gates/>
-            <mastery/>
         </item>
         <item name="tree_oak" type="wilderness">
             <sizeX>1</sizeX>
             <sizeY>1</sizeY>
             <gates/>
-            <mastery/>
         </item>
     </items>
 

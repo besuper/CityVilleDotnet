@@ -762,7 +762,7 @@ public class Player
 
         if (gameItem is null) return;
 
-        foreach (var masteryItem in gameItem.MasteryItems)
+        foreach (var masteryItem in gameItem.MasteryItems.OrderByDescending(x => x.Level))
         {
             if (masteryItem.RequiredCount is null || masteryItem.Level is null) continue;
 
