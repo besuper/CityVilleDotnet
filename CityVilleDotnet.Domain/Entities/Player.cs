@@ -744,7 +744,7 @@ public class Player
         return null;
     }
 
-    public void IncrementMastery(string itemName)
+    public void IncrementMastery(string itemName, int amount = 1)
     {
         // TODO: Implement bonusMultiplier with doobers collect
 
@@ -756,7 +756,7 @@ public class Player
             Masteries.Add(mastery);
         }
 
-        mastery.AddCount();
+        mastery.AddCount(amount);
 
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
 

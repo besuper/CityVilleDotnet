@@ -47,12 +47,10 @@ public class GreenHouseHarvest(CityVilleDbContext context) : AmfService<GreenHou
         for (var i = 0; i < gameItem.NumCrop; i++)
         {
             player.CollectDoobersRewards(plotObj.ContractName, coinMultiplier: 1);
-
-            if (plotItem.HasMasteries())
-            {
-                player.IncrementMastery(plotItem.Name);
-            }
         }
+        
+        if (plotItem.HasMasteries())
+            player.IncrementMastery(plotItem.Name, gameItem.NumCrop.Value);
 
         await context.SaveChangesAsync(cancellationToken);
 

@@ -7,9 +7,9 @@ public class Mastery(string itemName)
     public int Level { get; private set; } = 0;
     public int Count { get; private set; } = 0;
 
-    public void AddCount()
+    public void AddCount(int amount = 1)
     {
-        Count++;
+        Count+=amount;
     }
 
     public void LevelUp(int level)
