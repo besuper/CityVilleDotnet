@@ -63,7 +63,14 @@ public class World
         {
             var gameItem = GameSettingsManager.Instance.GetItem(item.ItemName);
 
-            if (gameItem?.Population is null) continue;
+            if (gameItem?.Population is null)
+            {
+                var deepItem = gameItem?.GetFirstDeriveItem(gameItem);
+                
+                if(deepItem?.Population is null) continue;
+
+                gameItem = deepItem;
+            }
 
             var itemMin = gameItem.Population.Min ?? 0;
             var itemMax = gameItem.Population.Max ?? 0;
