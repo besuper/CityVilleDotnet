@@ -41,7 +41,7 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
             player.RemoveCash(Convert.ToInt32(gameItem.Upgrade.CashCost));
         }
 
-        obj.UpgradeBuilding(newItemName);
+        obj.UpgradeBuilding(gameItem, newItemName);
         world.CalculatePopulation();
 
         await context.SaveChangesAsync(cancellationToken);

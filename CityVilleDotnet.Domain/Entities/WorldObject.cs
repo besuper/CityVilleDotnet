@@ -1,5 +1,6 @@
 using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Settings.GameSettings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
@@ -324,9 +325,14 @@ public class WorldObject
         }
     }
 
-    public void UpgradeBuilding(string newItemName)
+    public void UpgradeBuilding(GameItem item, string newItemName)
     {
         ItemName = newItemName;
+
+        if (ClassName == BuildingClassType.Municipal && item.Behavior == "upgradable")
+        {
+            State = WorldObjectState.Grown;
+        }
     }
 
     public void MoveTo(int x, int y, int z, int direction)

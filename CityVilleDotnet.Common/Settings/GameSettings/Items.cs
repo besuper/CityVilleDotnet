@@ -14,6 +14,7 @@ public class GameItem
     [XmlAttribute("name")] public required string Name { get; set; }
     [XmlAttribute("derivesFrom")] public string? DerivesFrom { get; set; }
     [XmlAttribute("type")] public required string Type { get; set; }
+    [XmlAttribute("behavior")] public string? Behavior { get; set; }
     [XmlAttribute("sellSendsToInventory")] public string? SellSendsToInventory { get; set; }
     [XmlIgnore] public int? Height { get; set; }
 
