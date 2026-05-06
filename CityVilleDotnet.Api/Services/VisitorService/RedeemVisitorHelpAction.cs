@@ -49,6 +49,7 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
                 player.CollectDoobersRewards(itemName);
 
                 player.HandleQuestsProgress("harvestByClass", className: className.ToString());
+                player.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);
 
                 if (obj.ClassName == BuildingClassType.Plot)
                 {
@@ -64,11 +65,6 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
                 {
                     player.HandleQuestsProgress("harvestBusinessByName", itemName: itemName);
                     player.HandleQuestsProgress("harvestBusinessByClass", className: className.ToString());
-                }
-
-                if (obj.ClassName == BuildingClassType.Residence)
-                {
-                    player.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);
                 }
 
                 player.CheckCompletedQuests();

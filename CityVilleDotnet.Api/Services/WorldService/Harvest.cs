@@ -66,6 +66,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
 
         user.HandleQuestsProgress("harvestByClass", className: className.ToString());
         user.HandleQuestsProgress("harvestByKeyword", itemName: itemName);
+        user.HandleQuestsProgress("harvestResidenceByName", itemName: itemName);
 
         if (obj.ClassName == BuildingClassType.Plot)
         {
@@ -81,11 +82,6 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
         {
             user.HandleQuestsProgress("harvestBusinessByName", itemName: itemName);
             user.HandleQuestsProgress("harvestBusinessByClass", className: className.ToString());
-        }
-
-        if (obj.ClassName == BuildingClassType.Residence)
-        {
-            user.HandleQuestsProgress("harvestResidenceByName", itemName: itemName);
         }
 
         user.CheckCompletedQuests();
