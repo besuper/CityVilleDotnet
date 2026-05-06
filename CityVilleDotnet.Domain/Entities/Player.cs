@@ -865,6 +865,7 @@ public class Player
                         case "clearByClass":
                         case "openBusinessByClass":
                         case "storeItemByClass":
+                        case "finishConstructionByClass":
                         {
                             if (className is null)
                                 throw new Exception("Can't validate byClass action without className");

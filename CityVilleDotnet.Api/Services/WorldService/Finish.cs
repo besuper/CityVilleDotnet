@@ -1,6 +1,7 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
@@ -46,6 +47,7 @@ internal sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequ
 
         player.HandleQuestsProgress(""); // Empty actionType to force recheck counts
         player.HandleQuestsProgress("finishConstructionByName", itemName: obj.GetItemName());
+        player.HandleQuestsProgress("finishConstructionByClass", className: obj.GetClassName().ToString());
         player.CheckCompletedQuests();
 
         player.CollectDoobersRewards(constructionItemName);
