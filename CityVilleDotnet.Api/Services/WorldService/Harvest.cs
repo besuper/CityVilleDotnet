@@ -43,7 +43,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
 
         if (gameItem is null)
             throw new Exception($"Can't find game item for {itemName}");
-        
+
         var className = obj.GetClassName();
 
         if (!obj.CanHarvest())
@@ -56,7 +56,9 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
             if (!user.RemoveEnergy(energyCost))
                 return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
         }
-        
+
+        var hasContract = obj.ContractName is not null;
+
         var coinMultiplier = className.IsBusiness() ? Math.Max(obj.Visits ?? 0, 1) : 1;
         var (coinYield, cashYield) = obj.Harvest();
         var secureRands = user.CollectDoobersRewards(itemName, coinMultiplier: coinMultiplier);
@@ -68,14 +70,12 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
         user.HandleQuestsProgress("harvestByKeyword", itemName: itemName);
         user.HandleQuestsProgress("harvestResidenceByName", itemName: itemName);
 
-        if (obj.ClassName == BuildingClassType.Plot)
+        if (obj.ClassName == BuildingClassType.Plot || hasContract)
         {
             user.HandleQuestsProgress("harvestPlotByName", itemName: itemName);
 
             if (gameItem.HasMasteries())
-            {
                 user.IncrementMastery(gameItem.Name);
-            }
         }
 
         if (obj.ClassName == BuildingClassType.Business)
