@@ -66,7 +66,7 @@ builder.Services.AddLocalization();
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = LocaleUtils.SUPPORTED_LOCALES.Select(x => new CultureInfo(x)).ToList();
-    
+
     options.DefaultRequestCulture = new RequestCulture("en-US");
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
@@ -101,16 +101,16 @@ builder.Services.AddRateLimiter(options =>
             path.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
             path.EndsWith(".xml", StringComparison.OrdinalIgnoreCase) ||
             path.EndsWith("gateway.php", StringComparison.OrdinalIgnoreCase)
-            )
+           )
         {
             return RateLimitPartition.GetNoLimiter(string.Empty);
         }
-        
+
         var remoteIp = context.Request.Headers["CF-Connecting-IP"].FirstOrDefault()
-            ?? context.Request.Headers["X-Forwarded-For"].FirstOrDefault()?.Split(',', StringSplitOptions.TrimEntries).FirstOrDefault()
-            ?? context.Connection.RemoteIpAddress?.ToString()
-            ?? "unknown";
-        
+                       ?? context.Request.Headers["X-Forwarded-For"].FirstOrDefault()?.Split(',', StringSplitOptions.TrimEntries).FirstOrDefault()
+                       ?? context.Connection.RemoteIpAddress?.ToString()
+                       ?? "unknown";
+
         return RateLimitPartition.GetFixedWindowLimiter(remoteIp, _ => new FixedWindowRateLimiterOptions
         {
             PermitLimit = 50,
@@ -144,11 +144,15 @@ using var scope = app.Services.CreateScope();
 await using var context = scope.ServiceProvider.GetRequiredService<CityVilleDbContext>();
 await context.Database.MigrateAsync();
 
-ServerUtils.CheckRequiredFiles(scope.ServiceProvider.GetRequiredService<ILogger<Program>>());
+var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+ServerUtils.CheckRequiredFiles(logger);
 
 GameSettingsManager.Instance.Initialize(scope.ServiceProvider.GetRequiredService<ILogger<GameSettingsManager>>());
 QuestSettingsManager.Instance.Initialize(scope.ServiceProvider.GetRequiredService<ILogger<QuestSettingsManager>>());
 
 await SamanthaSeeder.SeedAsync(app.Services);
+
+logger.LogInformation("Version {InformationalVersion} loaded", Assembly.GetEntryAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion);
 
 app.Run();
