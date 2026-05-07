@@ -819,7 +819,7 @@ public class Player
 
     public void HandleQuestsProgress(string actionType, string? className = null, string? itemName = null)
     {
-        if(StaticLogger.IsReady()) StaticLogger.Current.LogDebug("Handle quest actionType = {ActionType}, className = {ClassName}, itemName = {ItemName}", actionType, className, itemName);
+        if (StaticLogger.IsReady()) StaticLogger.Current.LogDebug("Handle quest actionType = {ActionType}, className = {ClassName}, itemName = {ItemName}", actionType, className, itemName);
 
         var calculatedResults = new Dictionary<string, int>();
 
@@ -1060,21 +1060,21 @@ public class Player
     public void ProcessGoods(GameItem item, string desiredGoodType = "goods", int? leftToPay = null)
     {
         if (item.Commodity.Count == 0 || item.CommodityRequired is null) throw new Exception("Can't supply item without commodity");
-        if (!item.Commodity.Any(x => x.Name == desiredGoodType)) throw new DomainException(GameErrorType.NotEnoughMoney);
-
+        if (!item.Commodity.Any(x => x.Name == "goods")) desiredGoodType = "premium_goods";
+        
         var toPay = leftToPay ?? item.CommodityRequired.Value;
         var leftGoods = toPay - GetGoodsByType(desiredGoodType);
 
         if (leftGoods > 0)
         {
-            if(desiredGoodType == "premium_goods") throw new DomainException(GameErrorType.NotEnoughMoney);
-            
+            if (desiredGoodType == "premium_goods" || !item.Commodity.Any(x => x.Name == "premium_goods")) throw new DomainException(GameErrorType.NotEnoughMoney);
+
             var toRemove = toPay - leftGoods;
 
             if (toRemove > 0)
             {
                 RemoveGoodByType(desiredGoodType, toRemove);
-                HandleQuestsProgress("openBusinessByCommodityType", itemName: desiredGoodType);
+                //HandleQuestsProgress("openBusinessByCommodityType", itemName: desiredGoodType);
             }
 
             ProcessGoods(item, "premium_goods", leftGoods);
@@ -1082,7 +1082,8 @@ public class Player
         else
         {
             RemoveGoodByType(desiredGoodType, toPay);
-            
+
+            // Only trigger openBusinessByCommodityType if we use 100% of the resource
             HandleQuestsProgress("openBusinessByCommodityType", itemName: desiredGoodType);
         }
     }

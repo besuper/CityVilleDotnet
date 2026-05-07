@@ -33,7 +33,7 @@ public class ProcessGoodsTest
         MasteryItems = [],
         CommodityRequired = 15
     };
-    
+
     private static readonly GameItem ItemNoPremiumGoods = new GameItem
     {
         Name = "test_bus",
@@ -44,6 +44,25 @@ public class ProcessGoodsTest
             {
                 Name = "goods",
                 Default = 1
+            }
+        ],
+        Gates = new GatesContainer
+        {
+            Gates = []
+        },
+        MasteryItems = [],
+        CommodityRequired = 15
+    };
+
+    private static readonly GameItem ItemOnlyPremiumGoods = new GameItem
+    {
+        Name = "test_bus",
+        Type = "business",
+        Commodity =
+        [
+            new CommodityItem()
+            {
+                Name = "premium_goods"
             }
         ],
         Gates = new GatesContainer
@@ -68,7 +87,7 @@ public class ProcessGoodsTest
 
         player.Goods.Should().Be(25 - DefaultItem.CommodityRequired);
     }
-    
+
     [Fact]
     public void Player_ProcessGoods_UseGoodsAndPremiumGoods()
     {
@@ -84,7 +103,7 @@ public class ProcessGoodsTest
         player.Goods.Should().Be(0);
         player.PremiumGoods.Should().Be(490);
     }
-    
+
     [Fact]
     public void Player_ProcessGoods_OnlyUsePremiumGoods()
     {
@@ -100,7 +119,7 @@ public class ProcessGoodsTest
         player.Goods.Should().Be(0);
         player.PremiumGoods.Should().Be(485);
     }
-    
+
     [Fact]
     public void Player_ProcessGoods_NotEnoughGoodsAndPremiumGoods()
     {
@@ -114,11 +133,11 @@ public class ProcessGoodsTest
         var act = () => player.ProcessGoods(DefaultItem);
 
         act.Should().Throw<DomainException>().Which.Reason.Should().Be(GameErrorType.NotEnoughMoney);
-        
+
         player.Goods.Should().Be(0);
         player.PremiumGoods.Should().Be(0);
     }
-    
+
     [Fact]
     public void Player_ProcessGoods_NotEnoughGoodsNoPremiumGoods()
     {
@@ -132,8 +151,42 @@ public class ProcessGoodsTest
         var act = () => player.ProcessGoods(ItemNoPremiumGoods);
 
         act.Should().Throw<DomainException>().Which.Reason.Should().Be(GameErrorType.NotEnoughMoney);
-        
+
         player.Goods.Should().Be(0);
         player.PremiumGoods.Should().Be(500);
+    }
+
+    [Fact]
+    public void Player_ProcessGoods_OnlyUsePremiumGoods_PremiumItem()
+    {
+        var faker = new Faker();
+        var player = faker.Player();
+        player.Quests.Clear();
+
+        player.SetGoods(0);
+        player.SetPremiumGoods(500);
+
+        player.ProcessGoods(ItemOnlyPremiumGoods);
+
+        player.Goods.Should().Be(0);
+        player.PremiumGoods.Should().Be(485);
+    }
+
+    [Fact]
+    public void Player_ProcessGoods_OnlyUsePremiumGoods_NotEnoughPremiumGoods_PremiumItem()
+    {
+        var faker = new Faker();
+        var player = faker.Player();
+        player.Quests.Clear();
+
+        player.SetGoods(0);
+        player.SetPremiumGoods(5);
+
+        var act = () => player.ProcessGoods(ItemOnlyPremiumGoods);
+
+        act.Should().Throw<DomainException>().Which.Reason.Should().Be(GameErrorType.NotEnoughMoney);
+
+        player.Goods.Should().Be(0);
+        player.PremiumGoods.Should().Be(5);
     }
 }
