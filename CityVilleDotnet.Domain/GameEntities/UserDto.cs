@@ -11,6 +11,7 @@ public class UserDto
     [JsonPropertyName("userInfo")] public required UserInfoDto UserInfo { get; set; }
     [JsonPropertyName("franchises")] public List<FranchiseDto> Franchises { get; set; } = new();
     [JsonPropertyName("featureData")] public required ASObject FeatureData { get; set; }
+    [JsonPropertyName("crews")] public Dictionary<string, List<string>> Crews { get; set; } = [];
 }
 
 public static class UserDtoMapper
@@ -30,6 +31,10 @@ public static class UserDtoMapper
 
         return new UserDto()
         {
+            Crews = model.GetWorld().Objects.Where(o => o.CrewMembers.Count > 0).ToDictionary(
+                o => o.WorldFlatId.ToString(),
+                o => o.CrewMembers.Select(m => m.Player?.Snuid.ToString() ?? "-1").ToList()
+            ),
             UserInfo = new UserInfoDto
             {
                 CreationTimestamp = model.CreationTimestamp,

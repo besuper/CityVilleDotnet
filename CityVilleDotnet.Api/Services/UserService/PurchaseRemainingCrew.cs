@@ -11,12 +11,10 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-public class PurchaseCrewMember(CityVilleDbContext context, ILogger<PurchaseCrewMember> logger) : AmfService<PurchaseCrewMemberRequest>
+public class PurchaseRemainingCrew(CityVilleDbContext context, ILogger<PurchaseCrewMember> logger) : AmfService<PurchaseRemainingCrewRequest>
 {
-    public override async Task<ASObject> HandlePacket(PurchaseCrewMemberRequest request, Guid playerId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(PurchaseRemainingCrewRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        logger.LogDebug("Purchasing crew member for {RequestObjectId} for gate {RequestGateName}", request.ObjectId, request.GateName);
-
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.World)
@@ -41,11 +39,23 @@ public class PurchaseCrewMember(CityVilleDbContext context, ILogger<PurchaseCrew
         if (key.CashCost is null)
             throw new Exception("Cash cost is null on key");
 
-        if (key.CashCost > player.Cash)
+        var remainingCrew = key.Amount - building.CrewMembers.Count;
+
+        if (remainingCrew <= 0) throw new Exception("Crew is full");
+
+        var totalCost = key.CashCost.Value * remainingCrew;
+
+        if (totalCost > player.Cash)
             return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
 
-        player.RemoveCash(key.CashCost.Value);
-        building.AddCrewMember(null);
+        logger.LogDebug("Purchased remaining crew for {RequestObjectId} for gate {RequestGateName} for {totalCost} cash", request.ObjectId, request.GateName, totalCost);
+        
+        player.RemoveCash(totalCost);
+
+        for (var i = 0; i < remainingCrew; i++)
+        {
+            building.AddCrewMember(null);
+        }
 
         await context.SaveChangesAsync(cancellationToken);
 
@@ -53,15 +63,15 @@ public class PurchaseCrewMember(CityVilleDbContext context, ILogger<PurchaseCrew
     }
 }
 
-public class PurchaseCrewMemberRequest
+public class PurchaseRemainingCrewRequest
 {
     [AmfParam(0)] public int ObjectId { get; set; }
     [AmfParam(1)] public string? GateName { get; set; }
 }
 
-public class PurchaseCrewMemberValidator : AbstractValidator<PurchaseCrewMemberRequest>
+public class PurchaseRemainingCrewValidator : AbstractValidator<PurchaseRemainingCrewRequest>
 {
-    public PurchaseCrewMemberValidator()
+    public PurchaseRemainingCrewValidator()
     {
         RuleFor(x => x.GateName).MaximumLength(32);
     }

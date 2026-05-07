@@ -23,7 +23,8 @@ public class WorldObjectConfiguration : IEntityTypeConfiguration<WorldObject>
         builder.HasIndex(x => x.ClassName);
 
         builder.HasOne(x => x.FranchiseLocation);
-
+        builder.HasMany(x => x.CrewMembers).WithOne().IsRequired();
+        
         builder.Property(x => x.ActivationTime);
         builder.Property(x => x.InactiveTime);
         builder.Property(x => x.StreakLength);

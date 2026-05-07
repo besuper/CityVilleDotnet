@@ -66,6 +66,7 @@ public class WorldObject
     public long? ActivationTime { get; private set; }
     public long? InactiveTime { get; private set; }
     public int StreakLength { get; private set; }
+    public List<CrewMember> CrewMembers { get; private set; } = [];
 
     public void UpdateStreakData(int activeDuration, int inactiveDuration)
     {
@@ -550,5 +551,10 @@ public class WorldObject
     public WorldObject GetGreenHousePlot()
     {
         return new WorldObject("plot_crop", BuildingClassType.Plot, ContractName, Deleted, TempId, State, Direction, BuildTime, PlantTime, X, Y, Z ?? 0, 0);
+    }
+
+    public void AddCrewMember(Player? crew)
+    {
+        CrewMembers.Add(new CrewMember(crew));
     }
 }

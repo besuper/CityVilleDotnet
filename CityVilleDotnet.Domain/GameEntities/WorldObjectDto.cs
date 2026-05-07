@@ -58,8 +58,9 @@ public class WorldObjectDto
     [JsonPropertyName("endPosition")] public WorldObjectPositionDto? EndPosition { get; set; }
 
     [JsonPropertyName("mechanicData")] public required Dictionary<string, object?> MechanicData { get; set; }
+
     // TODO: Implement Gates
-    //[JsonPropertyName("gates")] public List<object>? Gates { get; set; }
+    [JsonPropertyName("gates")] public required List<object> Gates { get; set; } = [];
 
     [JsonPropertyName("itemOwner")] public string? ItemOwner { get; set; }
 
@@ -119,7 +120,8 @@ public static class WorldObjectDtoMapper
                 }
                 : null,
             BuiltFloorCount = model.BuiltFloorCount,
-            MechanicData = new Dictionary<string, object?>()
+            MechanicData = new Dictionary<string, object?>(),
+            Gates = []
         };
 
         // FIXME: Not enough (not sure if it is the right way to implement this)
@@ -189,10 +191,32 @@ public static class WorldObjectDtoMapper
 
             dto.State = WorldObjectState.Static.ToDescriptionString(); // restore to static state
         }
-        
+
         if (model.ClassName == BuildingClassType.Mall)
         {
             dto.MechanicData["slots"] = new List<object>();
+        }
+
+        if (model.ClassName == BuildingClassType.ConstructionSite)
+        {
+            var targetGameItem = GameSettingsManager.Instance.GetItem(model.GetItemName());
+            
+            var gates = targetGameItem?.GetGates() ?? [];
+
+            foreach (var buildGate in gates.Where(x => x.Name == "build"))
+            {
+                var keysObj = new ASObject();
+                
+                foreach (var key in buildGate.Keys.Where(k => k is not null))
+                    keysObj[key!.Name] = key.Amount;
+
+                dto.Gates.Add(new ASObject
+                {
+                    { "name", buildGate.Name },
+                    { "type", buildGate.Type },
+                    { "keys", keysObj },
+                });
+            }
         }
 
         return dto;

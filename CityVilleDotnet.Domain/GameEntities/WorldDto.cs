@@ -1,6 +1,7 @@
 using CityVilleDotnet.Domain.Entities;
 using System.Text.Json.Serialization;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using FluorineFx;
 
@@ -46,7 +47,7 @@ public static class WorldDtoMapper
             Objects = model.Objects.Select(x => x.ToDto()).ToList(),
             ThemeCollections = model.ThemeCollections,
             LastExpansionTier = 0,
-            WorldId = "world_main"
+            WorldId = model.Type.ToDescriptionString()
         };
     }
 

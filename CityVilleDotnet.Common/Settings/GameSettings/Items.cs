@@ -100,7 +100,7 @@ public class GameItem
     [XmlElement("randomModifierGroups")] public RandomModifierGroupsContainer? RandomModifierGroups { get; set; }
     [XmlElement("energyCost")] public EnergyCost? EnergyCost { get; set; }
     [XmlElement("mechanics")] public MechanicsContainer? Mechanics { get; set; }
-    [XmlElement("gates")] public required GatesContainer Gates { get; set; }
+    [XmlElement("gates")] public required GatesContainer? Gates { get; set; }
     [XmlElement("sizeX")] public int? SizeX { get; set; }
     [XmlElement("sizeY")] public int? SizeY { get; set; }
     [XmlElement("bridgeparts")] public BridgePartsContainer? BridgeParts { get; set; }
@@ -123,7 +123,7 @@ public class GameItem
 
     public List<GatesItem> GetGates()
     {
-        return Gates.Gates ?? [];
+        return Gates?.Gates ?? [];
     }
 
     public bool HasMasteries()
@@ -239,7 +239,15 @@ public class GateKey
     [XmlAttribute("name")] public required string Name { get; set; }
     [XmlAttribute("viral")] public string? Viral { get; set; }
     [XmlAttribute("amount")] public int Amount { get; set; }
-    [XmlAttribute("cashCost")] public string? CashCost { get; set; }
+
+    [XmlAttribute("cashCost")]
+    public string? CashCostString
+    {
+        get => CashCost?.ToString();
+        set => CashCost = string.IsNullOrEmpty(value) ? null : int.Parse(value);
+    }
+
+    [XmlIgnore] public int? CashCost { get; set; }
     [XmlElement("member")] public List<MemberKey>? Members { get; set; }
 }
 
