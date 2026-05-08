@@ -1,4 +1,5 @@
 using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
 using FluentValidation;
@@ -40,6 +41,13 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
         if (player.CountInventoryItem(PermitName) < requiredPermit)
             throw new Exception($"You need {requiredPermit} {PermitName} to expand this city");
 
+        if (item.Cost is not null)
+        {
+            if (player.Gold < item.Cost.Value) return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
+
+            player.RemoveCoins(item.Cost.Value);
+        }
+
         var world = player.GetWorld();
 
         if (world.MapRects.Any(m => m.X == request.Coordinates.X && m.Y == request.Coordinates.Y))
@@ -47,7 +55,7 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
             logger.LogError("Map expansion already exist {PlayerSnuid} {MapRectsCount} | {CoordinatesX} {CoordinatesY}", player.Snuid, world.MapRects.Count, request.Coordinates.X, request.Coordinates.Y);
             return new CityVilleResponse();
         }
-        
+
         var newMapRect = new MapRect
         {
             X = request.Coordinates.X,

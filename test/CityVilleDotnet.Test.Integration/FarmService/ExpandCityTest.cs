@@ -1,5 +1,6 @@
 using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.FarmService;
+using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Factory.InventoryItem;
 using CityVilleDotnet.Factory.MapRect;
@@ -23,6 +24,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var permit = Faker.InventoryItem(itemName: "permits", amount: 5);
         var world = Faker.World();
         var user = Faker.Player(world: world);
+        user.SetGold(20000);
         user.InventoryItems.Add(permit);
 
         await Context.AddAsync(user);
@@ -63,6 +65,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var updatedPlayer = await Context.Set<Player>().FirstOrDefaultAsync(u => u.Id == user.Id);
 
         updatedPlayer!.ExpansionsPurchased.Should().Be(1);
+        updatedPlayer.Gold.Should().Be(0);
 
         var updatedPermit = await Context.Set<InventoryItem>().FirstOrDefaultAsync(i => i.Name == "permits");
 
@@ -77,6 +80,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var permit = Faker.InventoryItem(itemName: "permits", amount: 5);
         var world = Faker.World();
         var user = Faker.Player(world: world);
+        user.SetGold(20000);
         user.InventoryItems.Add(permit);
 
         await Context.AddAsync(user);
@@ -110,6 +114,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
     {
         var world = Faker.World();
         var user = Faker.Player(world: world);
+        user.SetGold(20000);
 
         await Context.AddAsync(user);
         await Context.SaveChangesAsync();
@@ -133,6 +138,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var permit = Faker.InventoryItem(itemName: "permits", amount: 5);
         var world = Faker.World();
         var user = Faker.Player(world: world);
+        user.SetGold(20000);
         user.InventoryItems.Add(permit);
 
         await Context.AddAsync(user);
@@ -149,5 +155,39 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var act = () => handler.HandlePacket(request, user.Id, CancellationToken.None);
 
         await act.Should().ThrowAsync<Exception>().WithMessage("*Can't find item*");
+    }
+
+    [Fact]
+    public async Task ExpandCity_NotEnoughMoney()
+    {
+        var permit = Faker.InventoryItem(itemName: "permits", amount: 5);
+        var world = Faker.World();
+        var user = Faker.Player(world: world);
+        user.SetGold(150);
+        user.InventoryItems.Add(permit);
+
+        await Context.AddAsync(user);
+        await Context.SaveChangesAsync();
+
+        var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
+        var request = new ExpandCityRequest
+        {
+            ItemName = ExpansionItemName,
+            Coordinates = new ExpandCityCoordinates { X = 40, Y = 40 },
+            Trees =
+            [
+                new ExpandCityTree { Id = 1, ItemName = TreeItemName, X = 42, Y = 42 },
+                new ExpandCityTree { Id = 2, ItemName = TreeItemName, X = 44, Y = 44 }
+            ]
+        };
+
+        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+
+        response["errorType"].Should().Be(GameErrorType.NotEnoughMoney);
+
+        var updatedPlayer = await Context.Set<Player>().FirstOrDefaultAsync(u => u.Id == user.Id);
+
+        updatedPlayer.Should().NotBeNull();
+        updatedPlayer.Gold.Should().Be(150);
     }
 }

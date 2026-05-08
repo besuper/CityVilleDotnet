@@ -112,6 +112,7 @@
             <gates/>
         </item>
         <item name="expansion_18x18" type="expansion" height="18" width="18">
+            <cost>20000</cost>
             <sizeX>18</sizeX>
             <sizeY>18</sizeY>
             <gates/>
