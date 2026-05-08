@@ -122,6 +122,58 @@
             <sizeY>1</sizeY>
             <gates/>
         </item>
+        <item name="test_bus" type="business" buyable="true">
+            <keyword>Business</keyword>
+            <keyword>Business_Restaurant</keyword>
+            <requiredLevel>1</requiredLevel>
+            <cost>200</cost>
+            <commodityReq>15</commodityReq>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <growTime>0.010425</growTime>
+            <construction>construction_3x3_2stage</construction>
+            <headquarters>hq_bakery</headquarters>
+            <commodity name="goods" default="1"/>
+            <commodity name="premium_goods"/>
+        </item>
+        <item name="test_bus_2" type="business" derivesFrom="test_bus" buyable="false">
+            <keyword>Business</keyword>
+            <keyword>Business_Restaurant</keyword>
+            <requiredLevel>1</requiredLevel>
+            <cost>200</cost>
+            <commodityReq>50</commodityReq>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <growTime>0.010425</growTime>
+            <construction>construction_3x3_2stage</construction>
+            <headquarters>hq_bakery</headquarters>
+        </item>
+        <item name="test_bus_goods" type="business" buyable="true">
+            <keyword>Business</keyword>
+            <keyword>Business_Restaurant</keyword>
+            <requiredLevel>1</requiredLevel>
+            <cost>200</cost>
+            <commodityReq>15</commodityReq>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <growTime>0.010425</growTime>
+            <construction>construction_3x3_2stage</construction>
+            <headquarters>hq_bakery</headquarters>
+            <commodity name="goods" default="1"/>
+        </item>
+        <item name="test_bus_premium_goods" type="business" buyable="true">
+            <keyword>Business</keyword>
+            <keyword>Business_Restaurant</keyword>
+            <requiredLevel>1</requiredLevel>
+            <cost>200</cost>
+            <commodityReq>15</commodityReq>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <growTime>0.010425</growTime>
+            <construction>construction_3x3_2stage</construction>
+            <headquarters>hq_bakery</headquarters>
+            <commodity name="premium_goods" />
+        </item>
     </items>
 
     <levels_cv_level_regrade_var_0>
