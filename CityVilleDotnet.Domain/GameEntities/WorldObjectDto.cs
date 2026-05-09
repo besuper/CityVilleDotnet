@@ -57,10 +57,10 @@ public class WorldObjectDto
 
     [JsonPropertyName("endPosition")] public WorldObjectPositionDto? EndPosition { get; set; }
 
-    [JsonPropertyName("mechanicData")] public required Dictionary<string, object?> MechanicData { get; set; }
+    [JsonPropertyName("mechanicData")] public Dictionary<string, object?> MechanicData { get; set; } = new Dictionary<string, object?>();
 
     // TODO: Implement Gates
-    [JsonPropertyName("gates")] public required List<object> Gates { get; set; } = [];
+    [JsonPropertyName("gates")] public List<object> Gates { get; set; } = [];
 
     [JsonPropertyName("itemOwner")] public string? ItemOwner { get; set; }
 
@@ -196,13 +196,13 @@ public static class WorldObjectDtoMapper
         if (model.ClassName == BuildingClassType.ConstructionSite)
         {
             var targetGameItem = GameSettingsManager.Instance.GetItem(model.GetItemName());
-            
+
             var gates = targetGameItem?.GetGates() ?? [];
 
             foreach (var buildGate in gates.Where(x => x.Name == "build"))
             {
                 var keysObj = new ASObject();
-                
+
                 foreach (var key in buildGate.Keys.Where(k => k is not null))
                     keysObj[key!.Name] = key.Amount;
 
