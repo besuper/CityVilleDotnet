@@ -176,6 +176,20 @@ public class GameItem
 
         return item;
     }
+    
+    public GameItem GetDeepParent()
+    {
+        if (DerivesFrom is not null)
+        {
+            var parentItem = GameSettingsManager.Instance.GetItem(DerivesFrom);
+
+            if (parentItem is null) return this;
+
+            return parentItem.GetDeepParent();
+        }
+
+        return this;
+    }
 }
 
 [Serializable]
@@ -294,6 +308,57 @@ public class UpgradeItem
 {
     [XmlAttribute("item")] public required string Name { get; set; }
     [XmlAttribute("cashcost")] public string? CashCost { get; set; }
+    [XmlElement("requirements")] public UpgradeRequirementsContainer? Requirements { get; set; }
+    [XmlElement("rewards")] public UpgradeRewardsContainer? Rewards { get; set; }
+    [XmlElement("helpers")] public UpgradeHelpersContainer? Helpers { get; set; }
+
+    public int GetRequiredLevel() => int.Parse(Requirements?.GetValue("level") ?? "0");
+    public int GetRequiredUpgradeActions() => int.Parse(Requirements?.GetValue("upgrade_actions") ?? "0");
+    public int GetXpReward() => int.Parse(Rewards?.GetValue("xp") ?? "0");
+}
+
+[Serializable]
+public class UpgradeRequirementsContainer
+{
+    [XmlElement("requirement")] public List<UpgradeRequirement> Requirements { get; set; } = [];
+
+    public string? GetValue(string type) => Requirements.FirstOrDefault(x => x.Type == type)?.Value;
+}
+
+[Serializable]
+public class UpgradeRequirement
+{
+    [XmlAttribute("type")] public required string Type { get; set; }
+    [XmlAttribute("value")] public required string Value { get; set; }
+}
+
+[Serializable]
+public class UpgradeRewardsContainer
+{
+    [XmlElement("reward")] public List<UpgradeReward> Rewards { get; set; } = [];
+
+    public string? GetValue(string type) => Rewards.FirstOrDefault(x => x.Type == type)?.Value;
+}
+
+[Serializable]
+public class UpgradeReward
+{
+    [XmlAttribute("type")] public required string Type { get; set; }
+    [XmlAttribute("value")] public required string Value { get; set; }
+}
+
+[Serializable]
+public class UpgradeHelpersContainer
+{
+    [XmlElement("helper")] public List<UpgradeHelper> Helpers { get; set; } = [];
+}
+
+[Serializable]
+public class UpgradeHelper
+{
+    [XmlAttribute("type")] public required string Type { get; set; }
+    [XmlAttribute("max")] public int Max { get; set; }
+    [XmlAttribute("actionValue")] public int ActionValue { get; set; }
 }
 
 [Serializable]

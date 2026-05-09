@@ -254,6 +254,8 @@ public class Player
 
     public void RemoveCash(int amount)
     {
+        if (amount > Cash) throw new DomainException(GameErrorType.NotEnoughMoney);
+        
         Cash -= amount;
     }
 

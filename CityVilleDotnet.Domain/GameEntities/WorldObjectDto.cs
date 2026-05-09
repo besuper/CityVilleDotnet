@@ -124,13 +124,9 @@ public static class WorldObjectDtoMapper
             Gates = []
         };
 
-        // FIXME: Not enough (not sure if it is the right way to implement this)
         if (model.ClassName == BuildingClassType.Bridge)
         {
-            var item = GameSettingsManager.Instance.GetItem(model.ItemName);
-
-            if (item?.DerivesFrom is not null)
-                item = GameSettingsManager.Instance.GetItem(item.DerivesFrom);
+            var item = GameSettingsManager.Instance.GetItem(model.ItemName)?.GetDeepParent();
 
             var rightPart = item?.BridgeParts?.Parts.FirstOrDefault(p => p.Type == "right");
 
