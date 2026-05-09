@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.WorldService.Common;
+using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
@@ -15,7 +16,7 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x!.Objects.Where(o => o.X == request.Building.Position.X && o.Y == request.Building.Position.Y))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
@@ -34,15 +35,28 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
         // TODO: Check if crew members are purchased
         // TODO: Check requirements (population, ...)
 
+        var requiredLevel = gameItem.Upgrade.GetRequiredLevel();
+
+        if (requiredLevel > 0 && player.Level < requiredLevel)
+            return new CityVilleResponse().Error(GameErrorType.InvalidState);
+
+        var requiredUpgradeActions = gameItem.Upgrade.GetRequiredUpgradeActions();
+
+        if (requiredUpgradeActions > 0 && (obj.UpgradeActionCount ?? 0) < requiredUpgradeActions)
+            return new CityVilleResponse().Error(GameErrorType.InvalidState);
+
         var newItemName = gameItem.Upgrade.Name;
 
         if (gameItem.Upgrade.CashCost is not null)
-        {
             player.RemoveCash(Convert.ToInt32(gameItem.Upgrade.CashCost));
-        }
 
         obj.UpgradeBuilding(gameItem.GetFirstDeriveItem(gameItem), newItemName);
         world.CalculatePopulation();
+
+        var xpReward = gameItem.Upgrade.GetXpReward();
+
+        if (xpReward > 0)
+            player.AddXp(xpReward);
 
         await context.SaveChangesAsync(cancellationToken);
 

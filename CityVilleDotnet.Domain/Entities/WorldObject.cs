@@ -334,6 +334,23 @@ public class WorldObject
         {
             State = WorldObjectState.Grown;
         }
+
+        if (ClassName == BuildingClassType.Business)
+        {
+            State = WorldObjectState.ClosedHarvestable;
+
+            var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
+
+            if (gameItem is null)
+                throw new Exception("Can't find game item for business building");
+
+            var maxVisits = gameItem.CommodityRequired;
+
+            if (maxVisits is null)
+                throw new Exception("Can't find max visits for business building");
+
+            Visits = maxVisits;
+        }
     }
 
     public void MoveTo(int x, int y, int z, int direction)
@@ -556,5 +573,10 @@ public class WorldObject
     public void AddCrewMember(Player? crew)
     {
         CrewMembers.Add(new CrewMember(crew));
+    }
+
+    public void SetUpgradeAction(int amount)
+    {
+        UpgradeActionCount = amount;
     }
 }
