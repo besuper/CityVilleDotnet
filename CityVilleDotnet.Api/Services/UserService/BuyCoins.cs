@@ -1,9 +1,7 @@
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
-using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
-using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluentValidation;
 using FluorineFx;
@@ -26,16 +24,10 @@ public class BuyCoins(CityVilleDbContext context) : AmfService<BuyCoinsRequest>
 
         if (gameItem.Cost is not null && gameItem.Cost > 0)
         {
-            if (player.Gold < gameItem.Cost)
-                return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
-
             player.RemoveCoins(gameItem.Cost.Value);
         }
         else if (gameItem.Cash is not null && gameItem.Cash > 0)
         {
-            if (player.Cash < gameItem.Cash)
-                return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
-
             player.RemoveCash(gameItem.Cash.Value);
         }
 

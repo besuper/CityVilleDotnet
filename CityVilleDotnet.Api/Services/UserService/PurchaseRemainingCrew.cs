@@ -18,7 +18,7 @@ public class PurchaseRemainingCrew(CityVilleDbContext context, ILogger<PurchaseC
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId))
             .ThenInclude(x => x.CrewMembers)
             .ThenInclude(x => x.Player)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");

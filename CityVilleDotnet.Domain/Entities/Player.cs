@@ -160,7 +160,7 @@ public class Player
     public bool RemoveEnergy(int amount)
     {
         var currentEnergy = CalculateCurrentEnergy();
-        if (currentEnergy.CurrentNewEnergy < amount) return false;
+        if (currentEnergy.CurrentNewEnergy < amount) throw new DomainException(GameErrorType.NotEnoughMoney);
 
         var wasAtMax = Energy >= EnergyMax;
         Energy -= amount;
@@ -255,7 +255,7 @@ public class Player
     public void RemoveCash(int amount)
     {
         if (amount > Cash) throw new DomainException(GameErrorType.NotEnoughMoney);
-        
+
         Cash -= amount;
     }
 
@@ -330,11 +330,15 @@ public class Player
 
     public void RemoveCoins(int amount)
     {
+        if (Gold < amount) throw new DomainException(GameErrorType.NotEnoughMoney);
+
         Gold -= amount;
     }
 
     public void RemoveGoods(int amount)
     {
+        if (Goods < amount) throw new DomainException(GameErrorType.NotEnoughMoney);
+        
         Goods -= amount;
     }
 

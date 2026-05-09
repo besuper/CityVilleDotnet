@@ -1,6 +1,5 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
-using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
@@ -42,14 +41,7 @@ public class GreenHouseStorage(CityVilleDbContext context) : AmfService<GreenHou
             if (gameItem.NumCrop is null) throw new Exception("Num crop not found");
             
             if (contractItem.Cost is not null)
-            {
-                var totalCost = contractItem.Cost.Value * gameItem.NumCrop.Value;
-                
-                if (totalCost > player.Gold)
-                    return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
-
-                player.RemoveCoins(totalCost);
-            }
+                player.RemoveCoins(contractItem.Cost.Value * gameItem.NumCrop.Value);
             
             worldObj.StartContract(plotName, WorldObjectState.Planted);
         }

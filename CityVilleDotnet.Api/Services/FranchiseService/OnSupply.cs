@@ -38,9 +38,7 @@ public sealed class OnSupply(CityVilleDbContext context) : AmfService<OnSupplyRe
         var commodityCost = (gameItem.CommodityRequired ?? 0) / 2;
 
         if (commodityCost > 0)
-        {
             user.RemoveGoods(commodityCost);
-        }
 
         // FIXME: Move MoneyCollected to harvest in receiver city with the money harvested
         location.TimeLastSupplied = ServerUtils.GetCurrentTimeSeconds();

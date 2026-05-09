@@ -14,9 +14,9 @@ internal sealed class Sell(CityVilleDbContext context) : AmfService<SellRequest>
     {
         var user = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x!.World)
-            .ThenInclude(x => x!.Objects)
-            .Include(x => x!.InventoryItems)
+            .Include(x => x.World)
+            .ThenInclude(x => x!.Objects.Where(o => o.X == request.Building.Position.X && o.Y == request.Building.Position.Y))
+            .Include(x => x.InventoryItems)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (user is null) throw new Exception("Player not found");

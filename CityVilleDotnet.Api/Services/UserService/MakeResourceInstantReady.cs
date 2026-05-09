@@ -31,9 +31,6 @@ public class MakeResourceInstantReady(CityVilleDbContext context, ILogger<MakeRe
         var cost = obj.GetCostToMakeReady();
 
         logger.LogDebug("Bought instant finish for {BuildingClassType} cost {Cost}", obj.ClassName, cost);
-        
-        if (player.Cash < cost)
-            return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
 
         player.RemoveCash(cost);
         obj.SetReadyToHarvest();

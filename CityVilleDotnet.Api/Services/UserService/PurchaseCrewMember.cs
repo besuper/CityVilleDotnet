@@ -1,6 +1,5 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
-using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
@@ -20,7 +19,7 @@ public class PurchaseCrewMember(CityVilleDbContext context, ILogger<PurchaseCrew
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId))
             .ThenInclude(x => x.CrewMembers)
             .ThenInclude(x => x.Player)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
@@ -40,9 +39,6 @@ public class PurchaseCrewMember(CityVilleDbContext context, ILogger<PurchaseCrew
 
         if (key.CashCost is null)
             throw new Exception("Cash cost is null on key");
-
-        if (key.CashCost > player.Cash)
-            return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
 
         player.RemoveCash(key.CashCost.Value);
         building.AddCrewMember(null);

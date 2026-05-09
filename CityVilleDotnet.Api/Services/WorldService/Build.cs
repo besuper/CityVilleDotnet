@@ -1,9 +1,7 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.WorldService.Common;
-using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
-using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +15,7 @@ internal sealed class Build(CityVilleDbContext context) : AmfService<BuildReques
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x!.Objects.Where(o => o.X == request.Building.Position.X && o.Y == request.Building.Position.Y))
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.InventoryItems)
             .Include(x => x.Collections)
@@ -41,29 +39,17 @@ internal sealed class Build(CityVilleDbContext context) : AmfService<BuildReques
 
         if (gameItem.EnergyCost?.Build is not null)
         {
-            var energyCost = int.Parse(gameItem.EnergyCost.Build);
-
-            if (!player.RemoveEnergy(energyCost))
-            {
-                // FIXME: Return error response
-                return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
-            }
+            player.RemoveEnergy(int.Parse(gameItem.EnergyCost.Build));
         }
         else if (gameItem.EnergyCostPerBuild is not null)
         {
-            if (!player.RemoveEnergy(gameItem.EnergyCostPerBuild.Value))
-            {
-                // FIXME: Return error response
-                return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
-            }
+            player.RemoveEnergy(gameItem.EnergyCostPerBuild.Value);
         }
 
         obj.AddConstructionStage();
 
         if (obj.Stage != gameItem.NumberOfStages)
-        {
             player.CollectDoobersRewards(obj.TargetBuildingName!, construction: true);
-        }
 
         await context.SaveChangesAsync(cancellationToken);
 

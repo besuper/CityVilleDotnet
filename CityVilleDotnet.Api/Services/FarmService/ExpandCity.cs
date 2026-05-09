@@ -42,11 +42,7 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
             throw new Exception($"You need {requiredPermit} {PermitName} to expand this city");
 
         if (item.Cost is not null)
-        {
-            if (player.Gold < item.Cost.Value) return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
-
             player.RemoveCoins(item.Cost.Value);
-        }
 
         var world = player.GetWorld();
 

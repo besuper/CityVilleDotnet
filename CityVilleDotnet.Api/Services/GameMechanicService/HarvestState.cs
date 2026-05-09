@@ -1,6 +1,5 @@
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
-using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
@@ -14,39 +13,34 @@ internal sealed class HarvestState(CityVilleDbContext context) : AmfService<Harv
 {
     public override async Task<ASObject> HandlePacket(HarvestStateRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var user = await context.Set<Player>()
+        var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId))
             .Include(x => x.InventoryItems)
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (user is null) throw new Exception("Player not found");
+        if (player is null) throw new Exception("Player not found");
 
-        var world = user.GetWorld();
+        var world = player.GetWorld();
 
         var obj = world.GetBuildingById(request.ObjectId) ?? throw new Exception($"Can't find building with id {request.ObjectId}");
 
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName) ?? throw new Exception($"Can't find game item for {obj.ItemName}");
 
         if (gameItem.EnergyCost?.Harvest is not null)
-        {
-            var energyCost = int.Parse(gameItem.EnergyCost.Harvest);
-
-            if (!user.RemoveEnergy(energyCost))
-                return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
-        }
+            player.RemoveEnergy(int.Parse(gameItem.EnergyCost.Harvest));
 
         obj.Harvest();
-        user.CollectDoobersRewards(obj.GetItemName());
+        player.CollectDoobersRewards(obj.GetItemName());
 
-        user.HandleQuestsProgress("harvestByClass", className: obj.GetClassName().ToString());
-        user.HandleQuestsProgress("harvestBusinessByName", itemName: obj.GetItemName());
-        user.HandleQuestsProgress("harvestBusinessByClass", className: obj.GetClassName().ToString());
-        user.CheckCompletedQuests();
+        player.HandleQuestsProgress("harvestByClass", className: obj.GetClassName().ToString());
+        player.HandleQuestsProgress("harvestBusinessByName", itemName: obj.GetItemName());
+        player.HandleQuestsProgress("harvestBusinessByClass", className: obj.GetClassName().ToString());
+        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 
