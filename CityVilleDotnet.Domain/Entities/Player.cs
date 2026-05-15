@@ -54,12 +54,16 @@ public class Player
 
     public Player(ApplicationUser appUser, World world)
     {
+        var settings = GameSettingsManager.Instance.GetSettings();
+        
         Id = Guid.NewGuid();
-        Cash = 900;
-        Gold = 50000;
-        Energy = 12;
-        EnergyMax = 12;
-        Goods = 100;
+        Cash = settings.StartingCash;
+        Gold = settings.StartingGold;
+        Energy = settings.StartingEnergy;
+        EnergyMax = settings.StartingEnergyMax;
+        Goods = settings.StartingCommodities;
+        Xp = settings.StartingXp;
+        Level = settings.StartingLevel;
         PremiumGoods = 0;
         Username = appUser.UserName!;
         CreationTimestamp = (int)ServerUtils.GetCurrentTime();

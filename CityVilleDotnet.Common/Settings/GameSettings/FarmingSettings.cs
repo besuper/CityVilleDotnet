@@ -53,4 +53,13 @@ public class FarmingSettings
     [XmlAttribute("instantReadyResidenceCostConstant5")] public double InstantReadyResidenceCostConstant5 { get; set; }
     [XmlAttribute("instantReadyResidenceCostConstant6")] public double InstantReadyResidenceCostConstant6 { get; set; }
     [XmlAttribute("instantReadyResidenceCostConstant7")] public double InstantReadyResidenceCostConstant7 { get; set; }
+    
+    [XmlAttribute("startingEnergy")] public int StartingEnergy { get; set; }
+    [XmlAttribute("startingEnergyMax")] public int StartingEnergyMax { get; set; }
+    [XmlAttribute("startingGold")] public int StartingGold { get; set; }
+    [XmlAttribute("startingCash")] public int StartingCash { get; set; }
+    [XmlAttribute("startingLevel")] public int StartingLevel { get; set; }
+    [XmlAttribute("startingLightLevel")] public int StartingLightLevel { get; set; }
+    [XmlAttribute("startingXp")] public int StartingXp { get; set; }
+    [XmlAttribute("startingCommodities")] public int StartingCommodities { get; set; }
 }
