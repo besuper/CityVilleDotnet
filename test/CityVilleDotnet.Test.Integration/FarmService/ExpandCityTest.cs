@@ -1,6 +1,7 @@
 using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.FarmService;
 using CityVilleDotnet.Common.Enums;
+using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Factory.InventoryItem;
 using CityVilleDotnet.Factory.MapRect;
@@ -181,9 +182,9 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             ]
         };
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var act = () => handler.HandlePacket(request, user.Id, CancellationToken.None);
 
-        response["errorType"].Should().Be(GameErrorType.NotEnoughMoney);
+        (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.NotEnoughMoney);
 
         var updatedPlayer = await Context.Set<Player>().FirstOrDefaultAsync(u => u.Id == user.Id);
 
