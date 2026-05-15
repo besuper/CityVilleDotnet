@@ -66,24 +66,8 @@
 
 	function getRuntimeVars() {
 		console.log("getRuntimeVars called");
-
-		const weatherSettings = {
-			"forecast": [1, 0, 0, 0, 0, 0, 0]
-		};
-
-		return {
-			"WEATHER": JSON.stringify(weatherSettings),
-			"CITY_AT_NIGHT_GAME_MODE": 1,
-
-			"MAX_VISIBLE_NPCS": 150,
-			"MIN_VISIBLE_NPCS": 10,
-			"MAXIMUM_ACTIVE_TAXIS": 5,
-			"MAXIMUM_ACTIVE_CARS": 10,
-
-			"SHRINK_RAY_CAP": 100,
-			"SUBSCRIPTION_ENABLE_ZDC": 1,
-			"BUY_ALL_DISCOUNT_RATE": 0
-		};
+		
+		return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.RuntimeVars));
 	}
 
 	function getExperiments() {

@@ -28,7 +28,8 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
     public long ServerTime { get; set; } = 0;
 
     public bool EnableCheat => configuration.GetValue<bool>("enableCheat");
-
+    public Dictionary<string, object> RuntimeVars => configuration.GetSection("runtimeVars").Get<Dictionary<string, object>>() ?? new Dictionary<string, object>();
+    
     public async Task<IActionResult> OnGetAsync()
     {
         var currentUser = await userManager.GetUserAsync(User);
