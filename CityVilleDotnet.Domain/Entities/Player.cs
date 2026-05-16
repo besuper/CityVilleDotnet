@@ -289,6 +289,7 @@ public class Player
             Energy = energy;
             EnergyMax = energyMax;
             TimeBeforeNextEnergy = (int)ServerUtils.GetCurrentTime();
+            AddCash(GameSettingsManager.Instance.GetSettings().CashGainedPerLevel);
 
             UpdateEnergy();
 

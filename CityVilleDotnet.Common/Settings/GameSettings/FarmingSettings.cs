@@ -62,4 +62,5 @@ public class FarmingSettings
     [XmlAttribute("startingLightLevel")] public int StartingLightLevel { get; set; }
     [XmlAttribute("startingXp")] public int StartingXp { get; set; }
     [XmlAttribute("startingCommodities")] public int StartingCommodities { get; set; }
+    [XmlAttribute("cashGainedPerLevel")] public int CashGainedPerLevel { get; set; }
 }
