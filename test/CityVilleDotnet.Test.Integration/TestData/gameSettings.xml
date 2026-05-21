@@ -5,7 +5,12 @@
              friendVisitPlotRepGain="1" friendHelpDefaultGoodsReward="15"
              friendVisitBusinessRepGain="1" friendHelpDefaultCoinReward="25"
              friendVisitWildernessRepGain="1" friendVisitResidenceRepGain="1"
-             franchise1DailyBonus="25" welcomeTrainQuestAmount="250"/>
+             franchise1DailyBonus="25" welcomeTrainQuestAmount="250"
+             startingEnergy="12" startingEnergyMax="12" 
+             startingGold="7000" startingCash="5" 
+             startingLevel="1" startingLightLevel="1" 
+             startingXp="0" startingPopulation="0" 
+             startingCommodities="100" />
 
     <citysim>
         <populations>

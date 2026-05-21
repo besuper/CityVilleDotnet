@@ -1,10 +1,12 @@
 using AwesomeAssertions;
 using Bogus;
 using CityVilleDotnet.Factory.Player;
+using CityVilleDotnet.Test.Domain.Fixtures;
 
 namespace CityVilleDotnet.Test.Domain.Inventory;
 
-public class PlayerInventoryTest
+[Collection("Domain")]
+public class PlayerInventoryTest(DomainFixture fixture)
 {
     [Fact]
     public void Player_AddItem_Success()
