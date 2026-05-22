@@ -241,6 +241,7 @@ public class WorldObject
 
             State = WorldObjectState.Plowed;
             UpgradeActionCount = (UpgradeActionCount ?? 0) + 1;
+            ContractName = null;
         }
         else
         {
