@@ -135,4 +135,13 @@
     <data name="EmptyPendingFriendsRequests" xml:space="preserve">
         <value>No pending friend requests.</value>
     </data>
+    <data name="Remove" xml:space="preserve">
+        <value>Remove</value>
+    </data>
+    <data name="RemoveFriend" xml:space="preserve">
+        <value>Remove friend</value>
+    </data>
+    <data name="RemoveFriendConfirm" xml:space="preserve">
+        <value>Are you sure you want to remove</value>
+    </data>
 </root>

@@ -249,6 +249,45 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         return RedirectToPage("/Friends/List");
     }
 
+    public async Task<IActionResult> OnGetRemove(string userName, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(userName))
+        {
+            TempData["Error"] = "Invalid username.";
+            return RedirectToPage("/Friends/List");
+        }
+
+        var user = await GetCurrentUserAsync(ct);
+
+        if (user?.AppUser is null)
+            return RedirectToPage("/Account/Login");
+
+        CurrentUser = user.AppUser;
+
+        var friendship = await dbContext.Set<Friend>()
+            .Include(x => x.FriendPlayer)
+            .FirstOrDefaultAsync(x => x.Player.Id == user.Id && x.FriendPlayer.Username == userName, ct);
+
+        if (friendship is null)
+        {
+            TempData["Error"] = "Friend not found.";
+            return RedirectToPage("/Friends/List");
+        }
+
+        var targetFriendship = await dbContext.Set<Friend>()
+            .FirstOrDefaultAsync(x => x.Player.Id == friendship.FriendPlayer!.Id && x.FriendPlayer!.Id == user.Id, ct);
+
+        dbContext.Set<Friend>().Remove(friendship);
+
+        if (targetFriendship is not null)
+            dbContext.Set<Friend>().Remove(targetFriendship);
+
+        TempData["Success"] = $"{userName} has been removed from your friends.";
+
+        await dbContext.SaveChangesAsync(ct);
+        return RedirectToPage("/Friends/List");
+    }
+
     private async Task<Player?> GetCurrentUserAsync(CancellationToken ct)
     {
         CurrentUser = await userManager.GetUserAsync(User);

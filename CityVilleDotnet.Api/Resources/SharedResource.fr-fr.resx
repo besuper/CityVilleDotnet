@@ -125,4 +125,13 @@
     <data name="EmptyPendingFriendsRequests" xml:space="preserve">
         <value>Aucune demande d'ami en attente.</value>
     </data>
+    <data name="Remove" xml:space="preserve">
+        <value>Supprimer</value>
+    </data>
+    <data name="RemoveFriend" xml:space="preserve">
+        <value>Supprimer l'ami</value>
+    </data>
+    <data name="RemoveFriendConfirm" xml:space="preserve">
+        <value>Êtes-vous sûr de vouloir supprimer</value>
+    </data>
 </root>

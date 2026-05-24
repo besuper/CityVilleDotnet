@@ -62,6 +62,11 @@
 					<div class="text-muted small">
 						<i class="bi bi-star-fill text-warning"></i> @Localizer["Level"] @item.Level
 					</div>
+					<div class="mt-2">
+						<button type="button" class="btn btn-sm btn-outline-danger cv-remove-friend" data-username="@item.UserName" data-toggle="modal" data-target="#removeFriendModal">
+							<i class="bi bi-person-x mr-1"></i>@Localizer["Remove"]
+						</button>
+					</div>
 				</div>
 			</div>
 		}
@@ -180,3 +185,35 @@ else
 		@Localizer["EmptyPendingFriendsRequests"]
 	</div>
 }
+
+<div class="modal fade" id="removeFriendModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title font-weight-bold"><i class="bi bi-person-x mr-2 text-danger"></i>@Localizer["RemoveFriend"]</h5>
+				<button type="button" class="close" data-dismiss="modal">
+					<i class="bi bi-x-lg" style="font-size:0.875rem;"></i>
+				</button>
+			</div>
+			<div class="modal-body">
+				<p class="mb-0">@Localizer["RemoveFriendConfirm"] <strong id="removeFriendName"></strong> ?</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["Cancel"]</button>
+				<a id="removeFriendConfirm" href="#" class="btn btn-danger">
+					<i class="bi bi-person-x mr-1"></i>@Localizer["Remove"]
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	document.querySelectorAll('.cv-remove-friend').forEach(function (btn) {
+		btn.addEventListener('click', function () {
+			var userName = this.dataset.username;
+			document.getElementById('removeFriendName').textContent = userName;
+			document.getElementById('removeFriendConfirm').href = '?handler=Remove&userName=' + encodeURIComponent(userName);
+		});
+	});
+</script>
