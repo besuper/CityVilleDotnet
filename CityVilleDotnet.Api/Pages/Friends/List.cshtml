@@ -1,4 +1,4 @@
-﻿@page
+@page
 @inject Microsoft.Extensions.Localization.IStringLocalizer<Resources.SharedResource> Localizer
 @{
 	Layout = "Shared/_GameLayout";
@@ -6,95 +6,177 @@
 
 @model CityVilleDotnet.Api.Pages.Friends.ListModel
 
-@section Header {
-	<script type="text/javascript" src="/jquery.min.js"></script>
+@if (TempData["Error"] != null)
+{
+	<div class="alert alert-danger fade show d-flex align-items-center justify-content-between" role="alert">
+		<span><i class="bi bi-exclamation-triangle-fill mr-2"></i>@TempData["Error"]</span>
+		<button type="button" class="btn btn-sm ml-3" data-dismiss="alert">
+			<i class="bi bi-x-lg"></i>
+		</button>
+	</div>
+}
+@if (TempData["Success"] != null)
+{
+	<div class="alert alert-success fade show d-flex align-items-center justify-content-between" role="alert">
+		<span><i class="bi bi-check-circle-fill mr-2"></i>@TempData["Success"]</span>
+		<button type="button" class="btn btn-sm ml-3" data-dismiss="alert">
+			<i class="bi bi-x-lg"></i>
+		</button>
+	</div>
 }
 
-<div class="gamePage">
-	<div class="main">
-		@if (TempData["Error"] != null)
-		{
-			<div class="alert alert-error">@TempData["Error"]</div>
-		}
-		@if (TempData["Success"] != null)
-		{
-			<div class="alert alert-success">@TempData["Success"]</div>
-		}
-
-		<form asp-page-handler="AddFriend" method="post" class="add-friend">
-			<label>@Localizer["AddFriend"]</label>
-			<div>
-				<input type="text" asp-for="Username" placeholder="@Localizer["EnterUsername"]"/>
-				<button type="submit">@Localizer["AddFriend"]</button>
+<div class="card border-0 shadow-sm mb-4">
+	<div class="card-body">
+		<h6 class="font-weight-bold text-dark mb-3">
+			<i class="bi bi-person-plus-fill mr-2 text-primary"></i>@Localizer["AddFriend"]
+		</h6>
+		<form asp-page-handler="AddFriend" method="post">
+			<div class="input-group">
+				<input type="text" class="form-control" asp-for="Username" placeholder="@Localizer["EnterUsername"]"/>
+				<div class="input-group-append">
+					<button type="submit" class="btn btn-primary font-weight-bold">
+						<i class="bi bi-person-plus mr-1"></i>@Localizer["AddFriend"]
+					</button>
+				</div>
 			</div>
 		</form>
-
-		<h2 class="section-title">@Localizer["Friends"]
-			(@Model.Friends.Count(x => x.Status == Domain.Entities.FriendshipStatus.Accepted))</h2>
-
-		@{
-			var acceptedFriends = Model.Friends.Where(x => x.Status == Domain.Entities.FriendshipStatus.Accepted).ToList();
-		}
-
-		@if (acceptedFriends.Any())
-		{
-			<div class="friends">
-				@foreach (var item in acceptedFriends)
-				{
-					<div class="friend">
-						<img src="/blank.png" alt="@item.UserName's avatar"/>
-						<div class="friend-content">
-							<div>@item.UserName</div>
-							<div>@Localizer["Level"] @item.Level</div>
-						</div>
-					</div>
-				}
-			</div>
-		}
-		else
-		{
-			<div class="empty-state">@Localizer["EmptyFriends"]</div>
-		}
-
-		<h2 class="section-title">@Localizer["PendingFriendsRequests"]
-			(@Model.Friends.Count(x => x.Status == Domain.Entities.FriendshipStatus.Pending))</h2>
-
-		@{
-			var pendingFriends = Model.Friends.Where(x => x.Status == Domain.Entities.FriendshipStatus.Pending).ToList();
-		}
-
-		@if (pendingFriends.Any())
-		{
-			<div class="friends">
-				@foreach (var item in pendingFriends)
-				{
-					<div class="friend">
-						<img src="/blank.png" alt="@item.UserName's avatar"/>
-						<div class="friend-content">
-							<div>@item.UserName</div>
-							<div>@Localizer["Level"] @item.Level</div>
-							<div class="interactions">
-								@if (!item.Requested)
-								{
-									<a class="cancel" asp-page-handler="Cancel" asp-route-userName="@item.UserName"
-									   title="Cancel friend request">@Localizer["Cancel"]</a>
-								}
-								else
-								{
-									<a class="accept" asp-page-handler="Accept" asp-route-userName="@item.UserName"
-									   title="Accept friend request">@Localizer["Accept"]</a>
-									<a class="reject" asp-page-handler="Reject" asp-route-userName="@item.UserName"
-									   title="Reject friend request">@Localizer["Reject"]</a>
-								}
-							</div>
-						</div>
-					</div>
-				}
-			</div>
-		}
-		else
-		{
-			<div class="empty-state">@Localizer["EmptyPendingFriendsRequests"]</div>
-		}
 	</div>
 </div>
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+	<h5 class="font-weight-bold text-dark mb-0">
+		<i class="bi bi-people-fill mr-2 text-primary"></i>@Localizer["Friends"]
+		<span class="badge badge-primary ml-1">@Model.AcceptedTotalCount</span>
+	</h5>
+</div>
+
+@if (Model.AcceptedFriends.Any())
+{
+	<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 mb-3">
+		@foreach (var item in Model.AcceptedFriends)
+		{
+			<div class="col mb-3">
+				<div class="card border-0 shadow-sm h-100 text-center p-3">
+					<img src="/blank.png" alt="@item.UserName" class="rounded-circle mx-auto mb-2 border" style="width:56px;height:56px;object-fit:cover;"/>
+					<div class="font-weight-bold text-dark small">@item.UserName</div>
+					<div class="text-muted small">
+						<i class="bi bi-star-fill text-warning"></i> @Localizer["Level"] @item.Level
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+
+	@if (Model.AcceptedTotalPages > 1)
+	{
+		<nav class="mb-4">
+			<ul class="pagination pagination-sm justify-content-center">
+				<li class="page-item @(Model.AcceptedPage <= 1 ? "disabled" : "")">
+					<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@(Model.AcceptedPage - 1)" asp-route-pendingPage="@Model.PendingPage">
+						<i class="bi bi-chevron-left"></i>
+					</a>
+				</li>
+				@for (var i = 1; i <= Model.AcceptedTotalPages; i++)
+				{
+					<li class="page-item @(i == Model.AcceptedPage ? "active" : "")">
+						<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@i" asp-route-pendingPage="@Model.PendingPage">@i</a>
+					</li>
+				}
+				<li class="page-item @(Model.AcceptedPage >= Model.AcceptedTotalPages ? "disabled" : "")">
+					<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@(Model.AcceptedPage + 1)" asp-route-pendingPage="@Model.PendingPage">
+						<i class="bi bi-chevron-right"></i>
+					</a>
+				</li>
+			</ul>
+		</nav>
+	}
+}
+else
+{
+	<div class="text-center text-muted py-4 mb-4">
+		<i class="bi bi-people display-4 d-block mb-2 text-secondary"></i>
+		@Localizer["EmptyFriends"]
+	</div>
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+	<h5 class="font-weight-bold text-dark mb-0">
+		<i class="bi bi-hourglass-split mr-2 text-warning"></i>@Localizer["PendingFriendsRequests"]
+		@if (Model.PendingTotalCount > 0)
+		{
+			<span class="badge badge-warning ml-1">@Model.PendingTotalCount</span>
+		}
+	</h5>
+</div>
+
+@if (Model.PendingFriends.Any())
+{
+	<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 mb-3">
+		@foreach (var item in Model.PendingFriends)
+		{
+			<div class="col mb-3">
+				<div class="card border-0 shadow-sm h-100 text-center p-3">
+					<img src="/blank.png" alt="@item.UserName" class="rounded-circle mx-auto mb-2 border" style="width:56px;height:56px;object-fit:cover;"/>
+					<div class="font-weight-bold text-dark small mb-1">@item.UserName</div>
+					<div class="text-muted small mb-2">
+						<i class="bi bi-star-fill text-warning"></i> @Localizer["Level"] @item.Level
+					</div>
+					<div class="d-flex justify-content-center flex-wrap gap-1">
+						@if (!item.Requested)
+						{
+							<a class="btn btn-sm btn-outline-secondary"
+							   asp-page-handler="Cancel" asp-route-userName="@item.UserName"
+							   title="Cancel friend request">
+								<i class="bi bi-x-lg mr-1"></i>@Localizer["Cancel"]
+							</a>
+						}
+						else
+						{
+							<a class="btn btn-sm btn-success"
+							   asp-page-handler="Accept" asp-route-userName="@item.UserName"
+							   title="Accept friend request">
+								<i class="bi bi-check-lg mr-1"></i>@Localizer["Accept"]
+							</a>
+							<a class="btn btn-sm btn-outline-danger"
+							   asp-page-handler="Reject" asp-route-userName="@item.UserName"
+							   title="Reject friend request">
+								<i class="bi bi-x-lg mr-1"></i>@Localizer["Reject"]
+							</a>
+						}
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+
+	@if (Model.PendingTotalPages > 1)
+	{
+		<nav class="mb-4">
+			<ul class="pagination pagination-sm justify-content-center">
+				<li class="page-item @(Model.PendingPage <= 1 ? "disabled" : "")">
+					<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@Model.AcceptedPage" asp-route-pendingPage="@(Model.PendingPage - 1)">
+						<i class="bi bi-chevron-left"></i>
+					</a>
+				</li>
+				@for (var i = 1; i <= Model.PendingTotalPages; i++)
+				{
+					<li class="page-item @(i == Model.PendingPage ? "active" : "")">
+						<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@Model.AcceptedPage" asp-route-pendingPage="@i">@i</a>
+					</li>
+				}
+				<li class="page-item @(Model.PendingPage >= Model.PendingTotalPages ? "disabled" : "")">
+					<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@Model.AcceptedPage" asp-route-pendingPage="@(Model.PendingPage + 1)">
+						<i class="bi bi-chevron-right"></i>
+					</a>
+				</li>
+			</ul>
+		</nav>
+	}
+}
+else
+{
+	<div class="text-center text-muted py-4">
+		<i class="bi bi-hourglass display-4 d-block mb-2 text-secondary"></i>
+		@Localizer["EmptyPendingFriendsRequests"]
+	</div>
+}

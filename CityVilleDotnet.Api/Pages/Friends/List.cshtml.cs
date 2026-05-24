@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
@@ -13,12 +12,24 @@ namespace CityVilleDotnet.Api.Pages.Friends;
 [Authorize]
 public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbContext dbContext) : PageModel
 {
+    private const int PageSize = 12;
+
     public ApplicationUser? CurrentUser { get; set; }
-    public List<FriendDto> Friends { get; set; } = [];
+    public List<FriendDto> AcceptedFriends { get; set; } = [];
+    public List<FriendDto> PendingFriends { get; set; } = [];
+
+    public int AcceptedTotalCount { get; set; }
+    public int PendingTotalCount { get; set; }
+
+    public int AcceptedPage { get; set; } = 1;
+    public int PendingPage { get; set; } = 1;
+
+    public int AcceptedTotalPages => (int)Math.Ceiling(AcceptedTotalCount / (double)PageSize);
+    public int PendingTotalPages => (int)Math.Ceiling(PendingTotalCount / (double)PageSize);
 
     [BindProperty] public string? Username { get; set; }
 
-    public async Task<IActionResult> OnGetAsync(CancellationToken ct)
+    public async Task<IActionResult> OnGetAsync(int acceptedPage = 1, int pendingPage = 1, CancellationToken ct = default)
     {
         var user = await GetCurrentUserAsync(ct);
 
@@ -26,17 +37,34 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             return RedirectToPage("/Account/Login");
 
         CurrentUser = user.AppUser;
+        AcceptedPage = Math.Max(1, acceptedPage);
+        PendingPage = Math.Max(1, pendingPage);
 
-        Friends = await dbContext.Set<Player>()
+        var allFriends = await dbContext.Set<Player>()
             .AsNoTracking()
             .Where(x => x.AppUser!.Id.Equals(CurrentUser.Id))
-            .Include(x => x.AppUser)
             .Include(x => x.Friends)
             .ThenInclude(x => x.FriendPlayer)
             .SelectMany(x => x.Friends, (_, friend) => friend)
-            .Where(x => x.FriendPlayer!.Snuid != -1) // Remove samantha
+            .Where(x => x.FriendPlayer!.Snuid != -1)
             .Select(x => x.ToDto())
             .ToListAsync(ct);
+
+        var accepted = allFriends.Where(x => x.Status == FriendshipStatus.Accepted).OrderBy(x => x.UserName).ToList();
+        var pending = allFriends.Where(x => x.Status == FriendshipStatus.Pending).OrderBy(x => x.UserName).ToList();
+
+        AcceptedTotalCount = accepted.Count;
+        PendingTotalCount = pending.Count;
+
+        AcceptedFriends = accepted
+            .Skip((AcceptedPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+
+        PendingFriends = pending
+            .Skip((PendingPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
 
         ViewData["PlayerName"] = user.Username;
         ViewData["PlayerLevel"] = user.Level;
@@ -168,9 +196,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         dbContext.Set<Friend>().Remove(friendship);
 
         if (targetFriendship is not null)
-        {
             dbContext.Set<Friend>().Remove(targetFriendship);
-        }
 
         TempData["Success"] = $"Friend request from {userName} rejected.";
 

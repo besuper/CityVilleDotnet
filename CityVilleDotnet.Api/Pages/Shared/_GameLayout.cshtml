@@ -23,10 +23,12 @@
 <nav class="navbar navbar-expand-lg cv-navbar sticky-top border-bottom bg-white">
     <div class="container">
         <a class="d-flex align-items-center text-decoration-none py-2" href="#">
-            <span class="font-outfit font-weight-bold h5 text-dark">CityVille<span class="text-primary">.NET</span></span>
+            <span class="font-outfit font-weight-bold h5 text-dark">CityVille<span
+                    class="text-primary">.NET</span></span>
         </a>
 
-        <button class="navbar-toggler border-secondary rounded" type="button" data-toggle="collapse" data-target="#cvNavbar">
+        <button class="navbar-toggler border-secondary rounded" type="button" data-toggle="collapse"
+                data-target="#cvNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -53,8 +55,9 @@
                      data-toggle="dropdown" aria-expanded="false">
                     <img class="rounded mr-2" src="/blank.png" alt="Profile"/>
                     <div class="d-none d-lg-block">
-                        <div class="font-weight-bold text-dark" style="font-size:0.875rem;line-height:1.2;">@ViewData["PlayerName"]</div>
-                        <div class="text-info" style="font-size:0.7rem;"><i class="bi bi-star-fill"></i> @Localizer["Level"] @ViewData["PlayerLevel"]
+                        <div class="font-weight-bold text-dark small">@ViewData["PlayerName"]</div>
+                        <div class="text-info small"><i
+                                class="bi bi-star-fill"></i> @Localizer["Level"] @ViewData["PlayerLevel"]
                         </div>
                     </div>
                     <svg class="cv-chevron d-none d-lg-block text-secondary ml-2" xmlns="http://www.w3.org/2000/svg"
@@ -67,7 +70,8 @@
                     <li>
                         <a class="dropdown-item d-flex align-items-center rounded py-2 px-3 text-secondary"
                            href="#">
-                            <svg class="mr-2" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                            <svg class="mr-2" width="15" height="15" viewBox="0 0 16 16" fill="none"
+                                 stroke="currentColor"
                                  stroke-width="1.4" stroke-linecap="round">
                                 <circle cx="8" cy="5" r="3"/>
                                 <path d="M2 15c0-3 2.5-5 6-5s6 2 6 5"/>
@@ -78,7 +82,8 @@
                     <li>
                         <a class="dropdown-item d-flex align-items-center rounded py-2 px-3 text-secondary"
                            href="#">
-                            <svg class="mr-2" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                            <svg class="mr-2" width="15" height="15" viewBox="0 0 16 16" fill="none"
+                                 stroke="currentColor"
                                  stroke-width="1.4" stroke-linecap="round">
                                 <circle cx="8" cy="8" r="2.5"/>
                                 <path
@@ -93,7 +98,8 @@
                     <li>
                         <a class="dropdown-item d-flex align-items-center rounded py-2 px-3 text-danger"
                            asp-page="/Account/Logout" title="Logout">
-                            <svg class="mr-2" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                            <svg class="mr-2" width="15" height="15" viewBox="0 0 16 16" fill="none"
+                                 stroke="currentColor"
                                  stroke-width="1.4" stroke-linecap="round">
                                 <path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3M11 11l3-3-3-3M6 8h8"/>
                             </svg>
@@ -108,7 +114,7 @@
 
 <div class="container py-4 flex-grow-1">
     <div class="d-flex justify-content-center">
-        <div>
+        <div class="w-100">
             @RenderBody()
         </div>
     </div>
@@ -117,14 +123,17 @@
 <footer class="mt-auto">
     <div style="max-width:760px; margin: 0 auto;">
         <hr class="my-2">
-        <p class="text-center text-muted mb-3" style="font-size:0.75rem;">
-            CityVilleDotnet build: @(Assembly.GetEntryAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "dev")
+        <p class="text-center text-muted small mb-3">
+            CityVilleDotnet
+            build: @(Assembly.GetEntryAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "dev")
         </p>
     </div>
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+        integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+        crossorigin="anonymous"></script>
 </body>
 </html>
