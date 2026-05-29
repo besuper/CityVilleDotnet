@@ -14,7 +14,7 @@ public class Player
 {
     public Guid Id { get; }
     public int Snuid { get; set; }
-    public int LastTrackingTimestamp { get; private set; }
+    public DateTimeOffset LastTrackingTimestamp { get; private set; }
     public bool SfxDisabled { get; private set; }
     public bool MusicDisabled { get; private set; }
     public List<InventoryItem> InventoryItems { get; set; } = [];
@@ -37,7 +37,7 @@ public class Player
     public int RollCounter { get; private set; }
     public bool IsNew { get; private set; } = true;
     public bool FirstDay { get; private set; } = true;
-    public int CreationTimestamp { get; private set; }
+    public DateTimeOffset CreationTimestamp { get; private set; }
     public string Username { get; private set; }
     public List<LotOrder> LotOrders { get; set; } = [];
     public List<VisitorHelpOrder> VisitorHelpOrders { get; set; } = [];
@@ -66,7 +66,7 @@ public class Player
         Level = settings.StartingLevel;
         PremiumGoods = 0;
         Username = appUser.UserName!;
-        CreationTimestamp = (int)ServerUtils.GetCurrentTime();
+        CreationTimestamp = DateTimeOffset.Now;
         World = world;
         AppUser = appUser;
 
@@ -134,7 +134,7 @@ public class Player
 
     public void UpdateTracking()
     {
-        LastTrackingTimestamp = (int)ServerUtils.GetCurrentTime();
+        LastTrackingTimestamp = DateTimeOffset.Now;
     }
 
     public void UpdateSettings(bool musicDisabled, bool sfxDisabled)

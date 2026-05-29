@@ -37,7 +37,7 @@ public static class UserDtoMapper
             ),
             UserInfo = new UserInfoDto
             {
-                CreationTimestamp = model.CreationTimestamp,
+                CreationTimestamp = model.CreationTimestamp.ToUnixTimeMilliseconds(),
                 FirstDay = model.FirstDay,
                 IsNew = model.IsNew,
                 CompletedQuests = model.Quests.Where(q => q.QuestType == QuestType.Completed).Select(q => q.Name).ToList(),
@@ -71,7 +71,7 @@ public static class UserDtoMapper
                         Count = model.CountInventoryItems(),
                         Items = new ASObject(model.InventoryItems.ToDictionary(x => x.Name, x => (object)x.Amount))
                     },
-                    LastTrackingTimestamp = model.LastTrackingTimestamp,
+                    LastTrackingTimestamp = model.LastTrackingTimestamp.ToUnixTimeMilliseconds(),
                     Level = model.Level,
                     Licenses = new ASObject(model.Licenses.ToDictionary(x => x.Name, x => (object)x.Amount)),
                     Neighbors = model.Friends

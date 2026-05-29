@@ -15,7 +15,7 @@ public class UserInfoDto
     public bool FirstDay { get; set; }
 
     [JsonPropertyName("creationTimestamp")]
-    public int CreationTimestamp { get; set; } = 0;
+    public long CreationTimestamp { get; set; } = 0;
 
     [JsonPropertyName("username")]
     public required string Username { get; set; }
