@@ -16,20 +16,24 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
     public ApplicationUser? CurrentUser { get; set; }
     public List<FriendDto> AcceptedFriends { get; set; } = [];
-    public List<FriendDto> PendingFriends { get; set; } = [];
+    public List<FriendDto> SentFriends { get; set; } = [];
+    public List<FriendDto> ReceivedFriends { get; set; } = [];
 
     public int AcceptedTotalCount { get; set; }
-    public int PendingTotalCount { get; set; }
+    public int SentTotalCount { get; set; }
+    public int ReceivedTotalCount { get; set; }
 
     public int AcceptedPage { get; set; } = 1;
-    public int PendingPage { get; set; } = 1;
+    public int SentPage { get; set; } = 1;
+    public int ReceivedPage { get; set; } = 1;
 
     public int AcceptedTotalPages => (int)Math.Ceiling(AcceptedTotalCount / (double)PageSize);
-    public int PendingTotalPages => (int)Math.Ceiling(PendingTotalCount / (double)PageSize);
+    public int SentTotalPages => (int)Math.Ceiling(SentTotalCount / (double)PageSize);
+    public int ReceivedTotalPages => (int)Math.Ceiling(ReceivedTotalCount / (double)PageSize);
 
     [BindProperty] public string? Username { get; set; }
 
-    public async Task<IActionResult> OnGetAsync(int acceptedPage = 1, int pendingPage = 1, CancellationToken ct = default)
+    public async Task<IActionResult> OnGetAsync(int acceptedPage = 1, int sentPage = 1, int receivedPage = 1, CancellationToken ct = default)
     {
         var user = await GetCurrentUserAsync(ct);
 
@@ -38,7 +42,8 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         CurrentUser = user.AppUser;
         AcceptedPage = Math.Max(1, acceptedPage);
-        PendingPage = Math.Max(1, pendingPage);
+        SentPage = Math.Max(1, sentPage);
+        ReceivedPage = Math.Max(1, receivedPage);
 
         var allFriends = await dbContext.Set<Player>()
             .AsNoTracking()
@@ -51,18 +56,25 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             .ToListAsync(ct);
 
         var accepted = allFriends.Where(x => x.Status == FriendshipStatus.Accepted).OrderBy(x => x.UserName).ToList();
-        var pending = allFriends.Where(x => x.Status == FriendshipStatus.Pending).OrderBy(x => x.UserName).ToList();
+        var sent = allFriends.Where(x => x.Status == FriendshipStatus.Pending && !x.Requested).OrderBy(x => x.UserName).ToList();
+        var received = allFriends.Where(x => x.Status == FriendshipStatus.Pending && x.Requested).OrderBy(x => x.UserName).ToList();
 
         AcceptedTotalCount = accepted.Count;
-        PendingTotalCount = pending.Count;
+        SentTotalCount = sent.Count;
+        ReceivedTotalCount = received.Count;
 
         AcceptedFriends = accepted
             .Skip((AcceptedPage - 1) * PageSize)
             .Take(PageSize)
             .ToList();
 
-        PendingFriends = pending
-            .Skip((PendingPage - 1) * PageSize)
+        SentFriends = sent
+            .Skip((SentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+
+        ReceivedFriends = received
+            .Skip((ReceivedPage - 1) * PageSize)
             .Take(PageSize)
             .ToList();
 

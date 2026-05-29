@@ -144,4 +144,16 @@
     <data name="RemoveFriendConfirm" xml:space="preserve">
         <value>Are you sure you want to remove</value>
     </data>
+    <data name="SentFriendsRequests" xml:space="preserve">
+        <value>Sent Requests</value>
+    </data>
+    <data name="EmptySentFriendsRequests" xml:space="preserve">
+        <value>No sent friend requests.</value>
+    </data>
+    <data name="ReceivedFriendsRequests" xml:space="preserve">
+        <value>Received Requests</value>
+    </data>
+    <data name="EmptyReceivedFriendsRequests" xml:space="preserve">
+        <value>No received friend requests.</value>
+    </data>
 </root>

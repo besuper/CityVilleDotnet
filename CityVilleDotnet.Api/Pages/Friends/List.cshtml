@@ -77,18 +77,18 @@
 		<nav class="mb-4">
 			<ul class="pagination pagination-sm justify-content-center">
 				<li class="page-item @(Model.AcceptedPage <= 1 ? "disabled" : "")">
-					<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@(Model.AcceptedPage - 1)" asp-route-pendingPage="@Model.PendingPage">
+					<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@(Model.AcceptedPage - 1)" asp-route-sentPage="@Model.SentPage" asp-route-receivedPage="@Model.ReceivedPage">
 						<i class="bi bi-chevron-left"></i>
 					</a>
 				</li>
 				@for (var i = 1; i <= Model.AcceptedTotalPages; i++)
 				{
 					<li class="page-item @(i == Model.AcceptedPage ? "active" : "")">
-						<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@i" asp-route-pendingPage="@Model.PendingPage">@i</a>
+						<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@i" asp-route-sentPage="@Model.SentPage" asp-route-receivedPage="@Model.ReceivedPage">@i</a>
 					</li>
 				}
 				<li class="page-item @(Model.AcceptedPage >= Model.AcceptedTotalPages ? "disabled" : "")">
-					<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@(Model.AcceptedPage + 1)" asp-route-pendingPage="@Model.PendingPage">
+					<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@(Model.AcceptedPage + 1)" asp-route-sentPage="@Model.SentPage" asp-route-receivedPage="@Model.ReceivedPage">
 						<i class="bi bi-chevron-right"></i>
 					</a>
 				</li>
@@ -106,18 +106,84 @@ else
 
 <div class="d-flex align-items-center justify-content-between mb-3">
 	<h5 class="font-weight-bold text-dark mb-0">
-		<i class="bi bi-hourglass-split mr-2 text-warning"></i>@Localizer["PendingFriendsRequests"]
-		@if (Model.PendingTotalCount > 0)
+		<i class="bi bi-send mr-2 text-warning"></i>@Localizer["SentFriendsRequests"]
+		@if (Model.SentTotalCount > 0)
 		{
-			<span class="badge badge-warning ml-1">@Model.PendingTotalCount</span>
+			<span class="badge badge-warning ml-1">@Model.SentTotalCount</span>
 		}
 	</h5>
 </div>
 
-@if (Model.PendingFriends.Any())
+@if (Model.SentFriends.Any())
 {
 	<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 mb-3">
-		@foreach (var item in Model.PendingFriends)
+		@foreach (var item in Model.SentFriends)
+		{
+			<div class="col mb-3">
+				<div class="card border-0 shadow-sm h-100 text-center p-3">
+					<img src="/blank.png" alt="@item.UserName" class="rounded-circle mx-auto mb-2 border" style="width:56px;height:56px;object-fit:cover;"/>
+					<div class="font-weight-bold text-dark small mb-1">@item.UserName</div>
+					<div class="text-muted small mb-2">
+						<i class="bi bi-star-fill text-warning"></i> @Localizer["Level"] @item.Level
+					</div>
+					<div class="d-flex justify-content-center">
+						<a class="btn btn-sm btn-outline-secondary"
+						   asp-page-handler="Cancel" asp-route-userName="@item.UserName"
+						   title="Cancel friend request">
+							<i class="bi bi-x-lg mr-1"></i>@Localizer["Cancel"]
+						</a>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+
+	@if (Model.SentTotalPages > 1)
+	{
+		<nav class="mb-4">
+			<ul class="pagination pagination-sm justify-content-center">
+				<li class="page-item @(Model.SentPage <= 1 ? "disabled" : "")">
+					<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@Model.AcceptedPage" asp-route-sentPage="@(Model.SentPage - 1)" asp-route-receivedPage="@Model.ReceivedPage">
+						<i class="bi bi-chevron-left"></i>
+					</a>
+				</li>
+				@for (var i = 1; i <= Model.SentTotalPages; i++)
+				{
+					<li class="page-item @(i == Model.SentPage ? "active" : "")">
+						<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@Model.AcceptedPage" asp-route-sentPage="@i" asp-route-receivedPage="@Model.ReceivedPage">@i</a>
+					</li>
+				}
+				<li class="page-item @(Model.SentPage >= Model.SentTotalPages ? "disabled" : "")">
+					<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@Model.AcceptedPage" asp-route-sentPage="@(Model.SentPage + 1)" asp-route-receivedPage="@Model.ReceivedPage">
+						<i class="bi bi-chevron-right"></i>
+					</a>
+				</li>
+			</ul>
+		</nav>
+	}
+}
+else
+{
+	<div class="text-center text-muted py-4 mb-4">
+		<i class="bi bi-send display-4 d-block mb-2 text-secondary"></i>
+		@Localizer["EmptySentFriendsRequests"]
+	</div>
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+	<h5 class="font-weight-bold text-dark mb-0">
+		<i class="bi bi-inbox mr-2 text-info"></i>@Localizer["ReceivedFriendsRequests"]
+		@if (Model.ReceivedTotalCount > 0)
+		{
+			<span class="badge badge-info ml-1">@Model.ReceivedTotalCount</span>
+		}
+	</h5>
+</div>
+
+@if (Model.ReceivedFriends.Any())
+{
+	<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 mb-3">
+		@foreach (var item in Model.ReceivedFriends)
 		{
 			<div class="col mb-3">
 				<div class="card border-0 shadow-sm h-100 text-center p-3">
@@ -127,50 +193,39 @@ else
 						<i class="bi bi-star-fill text-warning"></i> @Localizer["Level"] @item.Level
 					</div>
 					<div class="d-flex justify-content-center flex-wrap gap-1">
-						@if (!item.Requested)
-						{
-							<a class="btn btn-sm btn-outline-secondary"
-							   asp-page-handler="Cancel" asp-route-userName="@item.UserName"
-							   title="Cancel friend request">
-								<i class="bi bi-x-lg mr-1"></i>@Localizer["Cancel"]
-							</a>
-						}
-						else
-						{
-							<a class="btn btn-sm btn-success"
-							   asp-page-handler="Accept" asp-route-userName="@item.UserName"
-							   title="Accept friend request">
-								<i class="bi bi-check-lg mr-1"></i>@Localizer["Accept"]
-							</a>
-							<a class="btn btn-sm btn-outline-danger"
-							   asp-page-handler="Reject" asp-route-userName="@item.UserName"
-							   title="Reject friend request">
-								<i class="bi bi-x-lg mr-1"></i>@Localizer["Reject"]
-							</a>
-						}
+						<a class="btn btn-sm btn-success"
+						   asp-page-handler="Accept" asp-route-userName="@item.UserName"
+						   title="Accept friend request">
+							<i class="bi bi-check-lg mr-1"></i>@Localizer["Accept"]
+						</a>
+						<a class="btn btn-sm btn-outline-danger"
+						   asp-page-handler="Reject" asp-route-userName="@item.UserName"
+						   title="Reject friend request">
+							<i class="bi bi-x-lg mr-1"></i>@Localizer["Reject"]
+						</a>
 					</div>
 				</div>
 			</div>
 		}
 	</div>
 
-	@if (Model.PendingTotalPages > 1)
+	@if (Model.ReceivedTotalPages > 1)
 	{
 		<nav class="mb-4">
 			<ul class="pagination pagination-sm justify-content-center">
-				<li class="page-item @(Model.PendingPage <= 1 ? "disabled" : "")">
-					<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@Model.AcceptedPage" asp-route-pendingPage="@(Model.PendingPage - 1)">
+				<li class="page-item @(Model.ReceivedPage <= 1 ? "disabled" : "")">
+					<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@Model.AcceptedPage" asp-route-sentPage="@Model.SentPage" asp-route-receivedPage="@(Model.ReceivedPage - 1)">
 						<i class="bi bi-chevron-left"></i>
 					</a>
 				</li>
-				@for (var i = 1; i <= Model.PendingTotalPages; i++)
+				@for (var i = 1; i <= Model.ReceivedTotalPages; i++)
 				{
-					<li class="page-item @(i == Model.PendingPage ? "active" : "")">
-						<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@Model.AcceptedPage" asp-route-pendingPage="@i">@i</a>
+					<li class="page-item @(i == Model.ReceivedPage ? "active" : "")">
+						<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@Model.AcceptedPage" asp-route-sentPage="@Model.SentPage" asp-route-receivedPage="@i">@i</a>
 					</li>
 				}
-				<li class="page-item @(Model.PendingPage >= Model.PendingTotalPages ? "disabled" : "")">
-					<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@Model.AcceptedPage" asp-route-pendingPage="@(Model.PendingPage + 1)">
+				<li class="page-item @(Model.ReceivedPage >= Model.ReceivedTotalPages ? "disabled" : "")">
+					<a class="page-link" asp-page="/Friends/List" asp-route-acceptedPage="@Model.AcceptedPage" asp-route-sentPage="@Model.SentPage" asp-route-receivedPage="@(Model.ReceivedPage + 1)">
 						<i class="bi bi-chevron-right"></i>
 					</a>
 				</li>
@@ -181,8 +236,8 @@ else
 else
 {
 	<div class="text-center text-muted py-4">
-		<i class="bi bi-hourglass display-4 d-block mb-2 text-secondary"></i>
-		@Localizer["EmptyPendingFriendsRequests"]
+		<i class="bi bi-inbox display-4 d-block mb-2 text-secondary"></i>
+		@Localizer["EmptyReceivedFriendsRequests"]
 	</div>
 }
 

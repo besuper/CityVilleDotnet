@@ -138,4 +138,16 @@
     <data name="RemoveFriendConfirm" xml:space="preserve">
         <value>¿Estás seguro de que quieres eliminar</value>
     </data>
+    <data name="SentFriendsRequests" xml:space="preserve">
+        <value>Solicitudes enviadas</value>
+    </data>
+    <data name="EmptySentFriendsRequests" xml:space="preserve">
+        <value>No hay solicitudes de amistad enviadas.</value>
+    </data>
+    <data name="ReceivedFriendsRequests" xml:space="preserve">
+        <value>Solicitudes recibidas</value>
+    </data>
+    <data name="EmptyReceivedFriendsRequests" xml:space="preserve">
+        <value>No hay solicitudes de amistad recibidas.</value>
+    </data>
 </root>
