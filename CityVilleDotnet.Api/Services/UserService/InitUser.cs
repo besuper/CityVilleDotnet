@@ -44,7 +44,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
         // Handle energy regeneration
         var trackedUser = await context.Set<Player>()
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects.Where(y => y.TempId != -1))
+            .ThenInclude(x => x!.Objects.Where(y => y.TempId != -1 || y.StreakLength > 0))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (trackedUser is null)

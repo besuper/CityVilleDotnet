@@ -28,7 +28,7 @@ public class Player
     public int SocialXp { get; private set; }
     public int Energy { get; private set; }
     public int EnergyMax { get; private set; }
-    public int TimeBeforeNextEnergy { get; private set; }
+    public long TimeBeforeNextEnergy { get; private set; }
     public List<SeenFlag> SeenFlags { get; set; } = new();
     public int ExpansionsPurchased { get; private set; }
     public List<Collection> Collections { get; private set; } = [];
@@ -143,18 +143,24 @@ public class Player
         SfxDisabled = sfxDisabled;
     }
 
+    public int GetEnergyMax()
+    {
+        return EnergyMax + GetWorld().Objects.Where(o => o.StreakLength > 0).Sum(o => o.StreakLength);
+    }
+
     private Energy CalculateCurrentEnergy()
     {
-        var elapsedTime = (int)ServerUtils.GetCurrentTime() - TimeBeforeNextEnergy;
+        var maxEnergy = GetEnergyMax();
+        var elapsedTime = ServerUtils.GetCurrentTime() - TimeBeforeNextEnergy;
         var timeToRegen = GameSettingsManager.Instance.GetSettings().EnergyRegenerationSeconds * 1000;
         var toRecover = Math.Floor(elapsedTime / timeToRegen);
-        var currentNewEnergy = Math.Min(Energy + (int)toRecover, EnergyMax);
+        var currentNewEnergy = Math.Min(Energy + (int)toRecover, maxEnergy);
         var timeSinceLastRegen = elapsedTime % timeToRegen;
         var timeUntilNextRegen = timeToRegen - timeSinceLastRegen;
 
         if (timeSinceLastRegen < 0)
         {
-            currentNewEnergy = EnergyMax;
+            currentNewEnergy = maxEnergy;
             timeSinceLastRegen = 0;
         }
 
@@ -166,16 +172,17 @@ public class Player
         var currentEnergy = CalculateCurrentEnergy();
         if (currentEnergy.CurrentNewEnergy < amount) throw new DomainException(GameErrorType.NotEnoughMoney);
 
-        var wasAtMax = Energy >= EnergyMax;
+        var maxEnergy = GetEnergyMax();
+        var wasAtMax = Energy >= maxEnergy;
         Energy -= amount;
 
-        if (wasAtMax && Energy < EnergyMax)
+        if (wasAtMax && Energy < maxEnergy)
         {
-            TimeBeforeNextEnergy = (int)ServerUtils.GetCurrentTime();
+            TimeBeforeNextEnergy = ServerUtils.GetCurrentTime();
         }
-        else if (Energy < EnergyMax)
+        else if (Energy < maxEnergy)
         {
-            TimeBeforeNextEnergy = (int)ServerUtils.GetCurrentTime() - (int)(currentEnergy.TimeToRegen - currentEnergy.TimeUntilNextRegen);
+            TimeBeforeNextEnergy = ServerUtils.GetCurrentTime() - (long)(currentEnergy.TimeToRegen - currentEnergy.TimeUntilNextRegen);
         }
 
         return true;
@@ -184,10 +191,11 @@ public class Player
     public void UpdateEnergy()
     {
         var currentEnergy = CalculateCurrentEnergy();
-
-        if (Energy >= EnergyMax)
+        var maxEnergy = GetEnergyMax();
+        
+        if (Energy >= GetEnergyMax())
         {
-            TimeBeforeNextEnergy = (int)ServerUtils.GetCurrentTime();
+            TimeBeforeNextEnergy = ServerUtils.GetCurrentTime();
         }
         else
         {
@@ -195,7 +203,7 @@ public class Player
             StaticLogger.Current.LogDebug("Updating energy for player {PlayerId} - Current: {CurrentEnergy}", Id, currentEnergy);
 
             Energy = currentEnergy.CurrentNewEnergy;
-            TimeBeforeNextEnergy = (int)ServerUtils.GetCurrentTime() - (int)currentEnergy.TimeSinceLastRegen;
+            TimeBeforeNextEnergy = ServerUtils.GetCurrentTime() - (long)currentEnergy.TimeSinceLastRegen;
         }
     }
 
@@ -209,19 +217,19 @@ public class Player
 
         StaticLogger.Current.LogDebug("New energy after addition: {NewEnergy}", Energy);
 
-        if (Energy >= EnergyMax)
+        if (Energy >= GetEnergyMax())
         {
-            TimeBeforeNextEnergy = (int)ServerUtils.GetCurrentTime();
+            TimeBeforeNextEnergy = ServerUtils.GetCurrentTime();
         }
         else
         {
-            TimeBeforeNextEnergy = (int)ServerUtils.GetCurrentTime() - (int)(currentEnergy.TimeToRegen - currentEnergy.TimeUntilNextRegen);
+            TimeBeforeNextEnergy = ServerUtils.GetCurrentTime() - (long)(currentEnergy.TimeToRegen - currentEnergy.TimeUntilNextRegen);
         }
     }
 
     public int GetLastCheckEnergyTimestamp()
     {
-        if (Energy >= EnergyMax)
+        if (Energy >= GetEnergyMax())
             return (int)ServerUtils.GetCurrentTimeSeconds();
 
         var currentEnergy = CalculateCurrentEnergy();
@@ -288,7 +296,7 @@ public class Player
             Level = level;
             Energy = energy;
             EnergyMax = energyMax;
-            TimeBeforeNextEnergy = (int)ServerUtils.GetCurrentTime();
+            TimeBeforeNextEnergy = ServerUtils.GetCurrentTime();
             AddCash(GameSettingsManager.Instance.GetSettings().CashGainedPerLevel);
 
             UpdateEnergy();
@@ -795,7 +803,7 @@ public class Player
         // TODO: Implement bonus based on index 1 => 25 coins, 2 => 50 coins ...
         var baseBonus = GameSettingsManager.Instance.GetSettings().Franchise1DailyBonus;
 
-        var currentTime = (long)ServerUtils.GetCurrentTimeSeconds();
+        var currentTime = ServerUtils.GetCurrentTimeSeconds();
 
         // TODO: Add server check
         franchise.TimeLastCollected = currentTime;
