@@ -1078,7 +1078,9 @@ public class Player
 
     public void ProcessGoods(GameItem item, string desiredGoodType = "goods", int? leftToPay = null)
     {
-        if (item.CommodityRequired is null) throw new Exception("Can't supply item without commodity req");
+        var commodityReq = item.GetCommodityRequired();
+        
+        if (commodityReq is null) throw new Exception("Can't supply item without commodity req");
         if (item.Commodity.Count == 0)
         {
             var parentItem = item.GetFirstDeriveItem(item);
@@ -1091,7 +1093,7 @@ public class Player
         if (item.Commodity.Count == 0) throw new Exception("Can't supply item without commodity");
         if (!item.Commodity.Any(x => x.Name == "goods")) desiredGoodType = "premium_goods";
 
-        var toPay = leftToPay ?? item.CommodityRequired.Value;
+        var toPay = leftToPay ?? commodityReq.Value;
         var leftGoods = toPay - GetGoodsByType(desiredGoodType);
 
         if (leftGoods > 0)

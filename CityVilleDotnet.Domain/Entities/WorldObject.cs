@@ -314,7 +314,7 @@ public class WorldObject
         if (gameItem is null)
             throw new Exception("Can't find game item for business building");
 
-        var maxVisits = gameItem.CommodityRequired;
+        var maxVisits = gameItem.GetCommodityRequired();
 
         if (maxVisits is null)
             throw new Exception("Can't find max visits for business building");
@@ -345,7 +345,7 @@ public class WorldObject
             if (gameItem is null)
                 throw new Exception("Can't find game item for business building");
 
-            var maxVisits = gameItem.CommodityRequired;
+            var maxVisits = gameItem.GetCommodityRequired();
 
             if (maxVisits is null)
                 throw new Exception("Can't find max visits for business building");

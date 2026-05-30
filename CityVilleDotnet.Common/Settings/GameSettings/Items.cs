@@ -190,6 +190,19 @@ public class GameItem
 
         return this;
     }
+    
+    // Sometimes _2 or _3 versions like bus_honeymoon_cafe doesn't have CommodityRequired
+    public int? GetCommodityRequired()
+    {
+        if (CommodityRequired is null)
+        {
+            var parent = GetDeepParent();
+
+            return parent.CommodityRequired;
+        }
+
+        return CommodityRequired;
+    }
 }
 
 [Serializable]
