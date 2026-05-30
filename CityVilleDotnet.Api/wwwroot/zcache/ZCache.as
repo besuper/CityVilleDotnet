@@ -13,6 +13,7 @@ package
         private static const STORAGE_REQUEST_BYTES:uint = 4096 * 1024 * 1024;
         private static const MAX_FLUSH_PER_FRAME:int = 1;
         private static const BUCKET_SIZE:int = 50;
+        private static const TTL_MS:Number = 30 * 24 * 60 * 60 * 1000;
 
         private var _ns:String;
         private var _indexSO:SharedObject;
@@ -28,6 +29,15 @@ package
         private var _indexDirty:Boolean = false;
 
         private var _assetCounter:int = 0;
+
+        private var _gets:int = 0;
+        private var _hits:int = 0;
+        private var _hitBytes:uint = 0;
+        private var _flops:int = 0;
+        private var _puts:int = 0;
+        private var _putBytes:uint = 0;
+        private var _generationMismatches:int = 0;
+        private var _flushes:int = 0;
 
         public function ZCache()
         {
@@ -67,6 +77,15 @@ package
 
                 _assetCounter = _indexSO.data.assetCounter;
 
+                _gets = 0;
+                _hits = 0;
+                _hitBytes = 0;
+                _flops = 0;
+                _puts = 0;
+                _putBytes = 0;
+                _generationMismatches = 0;
+                _flushes = 0;
+
                 _indexSO.flush(STORAGE_REQUEST_BYTES);
 
                 addEventListener(Event.ENTER_FRAME, onEnterFrame);
@@ -95,6 +114,7 @@ package
                 }
                 _dirtyQueue.length = 0;
                 _dirtySet = {};
+                _flushes++;
                 return true;
             }
             catch (e:Error)
@@ -151,13 +171,18 @@ package
                     _indexSO.data.assetCounter = _assetCounter;
                 }
 
-                _indexSO.data[key] = { bucket: bucketName, generation: gen, length: len };
+                var bytes:ByteArray = toByteArray(data);
+
+                _indexSO.data[key] = { bucket: bucketName, generation: gen, length: bytes.length, storedAt: new Date().getTime() };
                 _indexDirty = true;
 
                 var so:SharedObject = getOrOpenBucket(bucketName);
                 so.data[key] = data;
 
                 markDirty(bucketName);
+
+                _puts++;
+                _putBytes += bytes.length;
 
                 return true;
             }
@@ -176,12 +201,23 @@ package
                 var indexEntry:Object = _indexSO.data[key];
                 if (!indexEntry) return null;
 
+                if (!indexEntry.hasOwnProperty("storedAt") || (new Date().getTime() - Number(indexEntry.storedAt)) > TTL_MS)
+                {
+                    var expiredSO:SharedObject = getOrOpenBucket(indexEntry.bucket);
+                    if (expiredSO) delete expiredSO.data[key];
+                    delete _indexSO.data[key];
+                    _indexDirty = true;
+                    markDirty(indexEntry.bucket);
+                    return null;
+                }
+
                 if (options && options.hasOwnProperty("generation"))
                 {
                     if (indexEntry.hasOwnProperty("generation") &&
                         indexEntry.generation != null &&
                         indexEntry.generation != options.generation)
                     {
+                        _generationMismatches++;
                         var staleSO:SharedObject = getOrOpenBucket(indexEntry.bucket);
                         if (staleSO) delete staleSO.data[key];
                         delete _indexSO.data[key];
@@ -192,10 +228,16 @@ package
                 }
 
                 var so:SharedObject = getOrOpenBucket(indexEntry.bucket);
+                _gets++;
                 if (so && so.data.hasOwnProperty(key))
                 {
-                    return so.data[key];
+                    var value:* = so.data[key];
+                    var valueBytes:ByteArray = toByteArray(value);
+                    _hits++;
+                    _hitBytes += valueBytes.length;
+                    return value;
                 }
+                _flops++;
                 return null;
             }
             catch (e:Error)
@@ -279,22 +321,45 @@ package
 
         public function get stats():Object
         {
-            if (!_allowed) return { cardinality: 0, size: 0 };
+            if (!_allowed) return { cardinality: 0, size: 0, gets: 0, hits: 0, hitBytes: 0, flops: 0, puts: 0, putBytes: 0, generationMismatches: 0, flushes: 0 };
 
             var count:int = 0;
-            var totalSize:uint = _indexSO.size;
+            var totalSize:uint = 0;
             for (var key:String in _indexSO.data)
             {
                 if (key == "assetCounter") continue;
+                var entry:Object = _indexSO.data[key];
+                if (entry && entry.hasOwnProperty("length"))
+                    totalSize += uint(entry.length);
                 count++;
             }
 
             return {
                 cardinality: count,
-                size: totalSize
+                size: totalSize,
+                gets: _gets,
+                hits: _hits,
+                hitBytes: _hitBytes,
+                flops: _flops,
+                puts: _puts,
+                putBytes: _putBytes,
+                generationMismatches: _generationMismatches,
+                flushes: _flushes
             };
         }
         
+        private function toByteArray(data:*):ByteArray
+        {
+            if (data is ByteArray)
+            {
+                return data as ByteArray;
+            }
+            var ba:ByteArray = new ByteArray();
+            ba.writeObject(data);
+            ba.position = 0;
+            return ba;
+        }
+
         private function getOrOpenBucket(bucketName:String):SharedObject
         {
             if (_openBuckets[bucketName])
