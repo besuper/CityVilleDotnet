@@ -20,7 +20,10 @@ public class BuyEnergy(CityVilleDbContext context) : AmfService<BuyEnergyRequest
         if (gameItem is null) throw new Exception($"Game item {request.ItemName} not found");
         if (gameItem.Cash is null || gameItem.EnergyRewards is null) throw new Exception($"Game item {request.ItemName} doesn't have cash or energy reward");
 
-        var player = await context.Set<Player>().FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
+        var player = await context.Set<Player>()
+            .Include(x => x.World)
+            .ThenInclude(x => x!.Objects.Where(o => o.StreakLength > 0))
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Can't find player");
 
