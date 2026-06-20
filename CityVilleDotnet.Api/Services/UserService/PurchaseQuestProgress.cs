@@ -3,7 +3,6 @@ using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
-using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
 using FluentValidation;
 using FluorineFx;
@@ -20,6 +19,8 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.SeenFlags)
             .Include(x => x.InventoryItems)
+            .Include(x => x.World)
+            .ThenInclude(x => x!.Objects.Where(o => o.StreakLength > 0))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         logger.LogDebug("Quest {QuestName} at {TaskIndex} is purchased", request.QuestName, request.TaskIndex);
