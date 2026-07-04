@@ -66,6 +66,7 @@ public class WorldObject
     public long? ActivationTime { get; private set; }
     public long? InactiveTime { get; private set; }
     public int StreakLength { get; private set; }
+    public bool GivenFreeItem { get; private set; }
     public List<CrewMember> CrewMembers { get; private set; } = [];
 
     public void UpdateStreakData(int activeDuration, int inactiveDuration)
@@ -97,6 +98,11 @@ public class WorldObject
                 InactiveTime = now;
             }
         }
+    }
+
+    public void MarkFreeItemGiven()
+    {
+        GivenFreeItem = true;
     }
 
     public void Supply(int maxStreakLength)

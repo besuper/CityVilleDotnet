@@ -16,7 +16,7 @@ public class GreenHouseStorage(CityVilleDbContext context) : AmfService<GreenHou
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId))
+            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
@@ -32,7 +32,7 @@ public class GreenHouseStorage(CityVilleDbContext context) : AmfService<GreenHou
 
             var world = player.GetWorld();
 
-            var worldObj = world.GetBuildingById(request.ObjectId) ?? throw new Exception("Building not found");
+            var worldObj = world.GetBuildingByClientId(request.ObjectId) ?? throw new Exception("Building not found");
 
             if (worldObj.GetClassName() != BuildingClassType.GreenHouse) throw new Exception($"Can't update green house storage for {worldObj.GetClassName()}");
 

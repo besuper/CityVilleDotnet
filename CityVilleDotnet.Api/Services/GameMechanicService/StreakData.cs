@@ -17,14 +17,14 @@ internal sealed class StreakData(CityVilleDbContext context) : AmfService<Streak
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId))
+            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
 
         var world = player.GetWorld();
 
-        var obj = world.GetBuildingById(request.ObjectId) ?? throw new Exception($"Can't find building with id {request.ObjectId}");
+        var obj = world.GetBuildingByClientId(request.ObjectId) ?? throw new Exception($"Can't find building with id {request.ObjectId}");
 
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName) ?? throw new Exception($"Can't find game item for {obj.ItemName}");
 

@@ -166,6 +166,23 @@
             <headquarters>hq_bakery</headquarters>
             <commodity name="goods" default="1"/>
         </item>
+        <item name="test_marina" type="decoration" buyable="true">
+            <requiredLevel>1</requiredLevel>
+            <cost>500</cost>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="load">
+                    <mechanic type="givenFreeItem" className="GiveFreeItemMechanic" priority="5" freeItem="test_ferry" blockOthers="false" xOffset="-3" yOffset="6"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_ferry" type="decoration" buyable="false">
+            <sizeX>3</sizeX>
+            <sizeY>2</sizeY>
+            <gates/>
+        </item>
         <item name="test_bus_premium_goods" type="business" buyable="true">
             <keyword>Business</keyword>
             <keyword>Business_Restaurant</keyword>

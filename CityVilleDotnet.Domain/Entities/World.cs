@@ -99,6 +99,11 @@ public class World
         return Objects.FirstOrDefault(w => w.WorldFlatId == id);
     }
 
+    public WorldObject? GetBuildingByClientId(int id)
+    {
+        return Objects.FirstOrDefault(w => w.WorldFlatId == id || w.TempId == id);
+    }
+
     public int CountBuildingByName(string name)
     {
         return Objects.Count(x => x.ItemName.Equals(name));

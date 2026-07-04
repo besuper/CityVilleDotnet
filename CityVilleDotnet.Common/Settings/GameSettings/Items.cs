@@ -434,6 +434,9 @@ public class MechanicItem
     [XmlAttribute("maxStreakLength")] public int MaxStreakLength { get; set; }
     [XmlAttribute("blockOthers")] public bool BlockOthers { get; set; }
     [XmlAttribute("pick")] public string? Pick { get; set; }
+    [XmlAttribute("freeItem")] public string? FreeItem { get; set; }
+    [XmlAttribute("xOffset")] public int XOffset { get; set; }
+    [XmlAttribute("yOffset")] public int YOffset { get; set; }
 }
 
 [Serializable]

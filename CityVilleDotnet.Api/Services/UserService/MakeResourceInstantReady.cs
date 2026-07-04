@@ -15,13 +15,13 @@ public class MakeResourceInstantReady(CityVilleDbContext context, ILogger<MakeRe
     {
         var player = await context.Set<Player>()
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.BuildingId))
+            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.BuildingId || o.TempId == request.BuildingId))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
 
         var world = player.GetWorld();
-        var obj = world.GetBuildingById(request.BuildingId);
+        var obj = world.GetBuildingByClientId(request.BuildingId);
 
         if (obj is null) throw new Exception("Building not found");
 

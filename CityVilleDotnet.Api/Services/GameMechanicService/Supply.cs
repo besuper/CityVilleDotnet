@@ -16,7 +16,7 @@ internal sealed class Supply(CityVilleDbContext context) : AmfService<SupplyRequ
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId))
+            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
@@ -26,7 +26,7 @@ internal sealed class Supply(CityVilleDbContext context) : AmfService<SupplyRequ
 
         var world = player.GetWorld();
 
-        var obj = world.GetBuildingById(request.ObjectId) ?? throw new Exception($"Can't find building with id {request.ObjectId}");
+        var obj = world.GetBuildingByClientId(request.ObjectId) ?? throw new Exception($"Can't find building with id {request.ObjectId}");
 
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName) ?? throw new Exception($"Can't find game item for {obj.ItemName}");
 

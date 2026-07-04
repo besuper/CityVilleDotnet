@@ -175,6 +175,11 @@ public static class WorldObjectDtoMapper
                         { "streakLength", model.StreakLength }
                     };
                 }
+
+                if (mechanic.Type == "givenFreeItem")
+                {
+                    dto.MechanicData["givenFreeItem"] = model.GivenFreeItem;
+                }
             }
         }
 

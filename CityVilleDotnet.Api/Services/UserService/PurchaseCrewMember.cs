@@ -19,13 +19,13 @@ public class PurchaseCrewMember(CityVilleDbContext context, ILogger<PurchaseCrew
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId))
+            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
             .ThenInclude(x => x.CrewMembers)
             .ThenInclude(x => x.Player)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         var world = player.GetWorld();
-        var building = world.GetBuildingById(request.ObjectId) ?? throw new Exception("Target building not found");
+        var building = world.GetBuildingByClientId(request.ObjectId) ?? throw new Exception("Target building not found");
 
         var gameItem = GameSettingsManager.Instance.GetItem(building.GetItemName()) ?? throw new Exception("Game item not found");
 
