@@ -68,6 +68,20 @@ public class WorldObject
     public int StreakLength { get; private set; }
     public bool GivenFreeItem { get; private set; }
     public List<CrewMember> CrewMembers { get; private set; } = [];
+    public List<WorldObjectMechanicCounter> MechanicCounters { get; private set; } = [];
+
+    public void IncrementMechanicCounter(string mechanicType)
+    {
+        var counter = MechanicCounters.FirstOrDefault(x => x.MechanicType == mechanicType);
+
+        if (counter is null)
+        {
+            counter = new WorldObjectMechanicCounter(mechanicType);
+            MechanicCounters.Add(counter);
+        }
+
+        counter.Increment();
+    }
 
     public void UpdateStreakData(int activeDuration, int inactiveDuration)
     {

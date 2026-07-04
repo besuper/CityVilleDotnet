@@ -17,6 +17,7 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
             .AsSplitQuery()
             .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.MechanicCounters)
             .Include(x => x.World)
             .ThenInclude(x => x!.MapRects)
             .FirstOrDefaultAsync(x => x.Snuid == request.TargetUsedId, cancellationToken);

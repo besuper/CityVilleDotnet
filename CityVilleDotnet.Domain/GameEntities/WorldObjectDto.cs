@@ -124,6 +124,11 @@ public static class WorldObjectDtoMapper
             Gates = []
         };
 
+        foreach (var counter in model.MechanicCounters)
+        {
+            dto.MechanicData[counter.MechanicType] = counter.Count;
+        }
+
         if (model.ClassName == BuildingClassType.Bridge)
         {
             var item = GameSettingsManager.Instance.GetItem(model.ItemName)?.GetDeepParent();
