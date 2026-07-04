@@ -110,4 +110,41 @@ public static class WorldDtoMapper
 
         return new ASObject { { "commodity", commodityObj } };
     }
+    
+    public static ASObject BuildIncentivizedExpansions(this World world)
+    {
+        var expansions = new ASObject();
+        var cellToId = new ASObject();
+        var failureCount = new ASObject();
+
+        foreach (var expansion in world.IncentivizedExpansions)
+        {
+            if (expansion.IsCompleted)
+            {
+                expansions[expansion.ExpansionId] = null;
+            }
+            else if (expansion.IsActive())
+            {
+                expansions[expansion.ExpansionId] = new ASObject
+                {
+                    { "x", expansion.X!.Value },
+                    { "y", expansion.Y!.Value },
+                    { "start", expansion.StartTimestamp ?? 0 },
+                };
+
+                cellToId[$"{expansion.X}_{expansion.Y}"] = expansion.ExpansionId;
+            }
+
+            if (expansion.FailureCount > 0)
+                failureCount[expansion.ExpansionId] = expansion.FailureCount;
+        }
+
+        return new ASObject
+        {
+            { "expansions", expansions },
+            { "cellToId", cellToId },
+            { "parentExpansions", new ASObject() },
+            { "failureCount", failureCount },
+        };
+    }
 }

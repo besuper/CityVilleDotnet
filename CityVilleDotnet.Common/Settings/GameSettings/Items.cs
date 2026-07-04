@@ -16,6 +16,8 @@ public class GameItem
     [XmlAttribute("type")] public required string Type { get; set; }
     [XmlAttribute("behavior")] public string? Behavior { get; set; }
     [XmlAttribute("sellSendsToInventory")] public string? SellSendsToInventory { get; set; }
+    [XmlAttribute("interactOnLock")] public string? InteractOnLockString { get; set; }
+    [XmlIgnore] public bool InteractOnLock => InteractOnLockString == "true";
     [XmlIgnore] public int? Height { get; set; }
 
     [XmlAttribute("height")]
@@ -435,6 +437,7 @@ public class MechanicItem
     [XmlAttribute("blockOthers")] public bool BlockOthers { get; set; }
     [XmlAttribute("pick")] public string? Pick { get; set; }
     [XmlAttribute("freeItem")] public string? FreeItem { get; set; }
+    [XmlAttribute("itemNames")] public string? ItemNames { get; set; }
     [XmlAttribute("xOffset")] public int XOffset { get; set; }
     [XmlAttribute("yOffset")] public int YOffset { get; set; }
 }

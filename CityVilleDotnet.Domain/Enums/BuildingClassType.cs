@@ -62,5 +62,6 @@ public enum BuildingClassType
     ThemePark = 57,
     CustomResidence = 58,
     EnvironmentTile = 59,
-    Amphitheater = 60
+    Amphitheater = 60,
+    Portal = 61
 }

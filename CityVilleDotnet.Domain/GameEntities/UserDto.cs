@@ -202,15 +202,7 @@ public static class UserDtoMapper
                 },
                 { "remodel", new ASObject() { { "enabled", false } } },
                 { "gardens", new ASObject() },
-                {
-                    "incentivizedExpansions", new ASObject()
-                    {
-                        { "expansions", new ASObject() },
-                        { "cellToId", new ASObject() },
-                        { "parentExpansions", new ASObject() },
-                        { "failureCount", new ASObject() },
-                    }
-                },
+                { "incentivizedExpansions", model.GetWorld().BuildIncentivizedExpansions() },
                 { "helperClicks", new ASObject() },
                 { "viralAck", new ASObject() },
                 { "matchup", new ASObject() },

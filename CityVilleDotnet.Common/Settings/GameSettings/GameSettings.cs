@@ -18,5 +18,6 @@ public class GameSettings
     [XmlElement("collections")] public required CollectionContainer Collections { get; set; }
     [XmlElement("expansionRequirements")] public required ExpansionsGate Expansions { get; set; }
     [XmlElement("worldRects")] public required WorldRectsContainer WorldRects { get; set; }
+    [XmlElement("dynamicExpansions")] public DynamicExpansionsContainer? DynamicExpansions { get; set; }
     [XmlElement("citysim")] public required CitySim CitySim { get; set; }
 }

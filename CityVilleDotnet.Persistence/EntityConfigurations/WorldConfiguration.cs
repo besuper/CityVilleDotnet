@@ -18,5 +18,6 @@ public class WorldConfiguration : IEntityTypeConfiguration<World>
 
         builder.HasMany(x => x.MapRects);
         builder.HasMany(x => x.Objects);
+        builder.HasMany(x => x.IncentivizedExpansions);
     }
 }

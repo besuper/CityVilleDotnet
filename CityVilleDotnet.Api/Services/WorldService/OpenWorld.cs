@@ -22,8 +22,11 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
             .AsSplitQuery()
             .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.MechanicCounters)
             .Include(x => x.World)
             .ThenInclude(x => x!.MapRects)
+            .Include(x => x.World)
+            .ThenInclude(x => x!.IncentivizedExpansions)
             .FirstOrDefaultAsync(x => x.Snuid == request.OwnerId, cancellationToken);
 
         if (playerToLoad is null)

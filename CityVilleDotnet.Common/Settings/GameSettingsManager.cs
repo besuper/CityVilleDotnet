@@ -12,6 +12,7 @@ public class GameSettingsManager
     private readonly Dictionary<string, RandomModifierTable> _randomModifiers;
     private readonly Dictionary<string, RandomModifierPack> _randomModifierPacks;
     private readonly Dictionary<string, WorldRectItem> _worldRects;
+    private readonly Dictionary<string, DynamicExpansionItem> _dynamicExpansions;
     private FarmingSettings _farmSettings;
     private List<LevelItem> _levels = [];
     private List<ReputationItem> _reputationLevels = [];
@@ -25,6 +26,7 @@ public class GameSettingsManager
         _randomModifiers = new Dictionary<string, RandomModifierTable>();
         _randomModifierPacks = new Dictionary<string, RandomModifierPack>();
         _worldRects = new Dictionary<string, WorldRectItem>();
+        _dynamicExpansions = new Dictionary<string, DynamicExpansionItem>();
         _isInitialized = false;
     }
 
@@ -112,6 +114,14 @@ public class GameSettingsManager
             {
                 _worldRects[worldRect.Name] = worldRect;
             }
+
+            if (gameSettings.DynamicExpansions is not null)
+            {
+                foreach (var dynamicExpansion in gameSettings.DynamicExpansions.Expansions)
+                {
+                    _dynamicExpansions[dynamicExpansion.Id] = dynamicExpansion;
+                }
+            }
         }
 
         logger.LogInformation("Loaded gameSettings.xml with {ItemsCount} items", _items.Count);
@@ -122,6 +132,7 @@ public class GameSettingsManager
         logger.LogInformation("Loaded {CollectionsCount} collections", _collections.Count);
         logger.LogInformation("Loaded {WorldRectsCount} world rects", _worldRects.Count);
         logger.LogInformation("Loaded {ExpansionsCount} expansions", _expansions.Count);
+        logger.LogInformation("Loaded {DynamicExpansionsCount} dynamic expansions", _dynamicExpansions.Count);
 
         _isInitialized = true;
     }
@@ -182,6 +193,14 @@ public class GameSettingsManager
             throw new InvalidOperationException("GameSettingsManager not initialized");
 
         return _collections.FirstOrDefault(x => x.Name == collectionName);
+    }
+
+    public DynamicExpansionItem? GetDynamicExpansion(string name)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return _dynamicExpansions.TryGetValue(name, out var item) ? item : null;
     }
 
     public WorldRectItem? GetWorldRect(string name)

@@ -130,6 +130,7 @@ app.UseStaticFiles();
 app.UseMiddleware<FallbackAssetMiddleware>();
 app.UseRateLimiter();
 app.UseRouting();
+app.MapGet("/", () => Results.Redirect("/Game"));
 app.MapRazorPages();
 app.UseAuthentication();
 app.UseAuthorization();

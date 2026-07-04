@@ -26,6 +26,8 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
             .AsSplitQuery()
             .Include(x => x.World)
             .ThenInclude(x => x!.MapRects)
+            .Include(x => x.World)
+            .ThenInclude(x => x!.IncentivizedExpansions)
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
@@ -71,7 +73,7 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
                 BuildingClassType.Wilderness,
                 null,
                 false,
-                -1,
+                tree.Id,
                 WorldObjectState.Static,
                 0,
                 ServerUtils.GetCurrentTime(),
@@ -90,6 +92,29 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
                 newId = newTree.WorldFlatId
             });
         }
+        
+        var finalIds = new List<int>();
+        var incentivizedExpansion = world.IncentivizedExpansions.FirstOrDefault(e => e.IsActive() && e.X == request.Coordinates.X && e.Y == request.Coordinates.Y);
+
+        if (incentivizedExpansion is not null)
+        {
+            var config = GameSettingsManager.Instance.GetDynamicExpansion(incentivizedExpansion.ExpansionId);
+
+            if (config is not null)
+            {
+                var rewards = config.GetRewards().Where(r => r.Callback == "embedRewardInWorld" && !r.IsInventoryOnly());
+                var tempIds = request.TempIds ?? [];
+
+                foreach (var (reward, tempId) in rewards.Zip(tempIds))
+                {
+                    var rewardObj = world.EmbedDynamicExpansionObject(reward, incentivizedExpansion.X!.Value, incentivizedExpansion.Y!.Value, tempId);
+
+                    finalIds.Add(rewardObj.WorldFlatId);
+                }
+            }
+
+            incentivizedExpansion.Complete();
+        }
 
         player.IncrementExpansionsPurchased();
         var removedItem = player.RemoveItem(PermitName, requiredPermit);
@@ -104,7 +129,11 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse().Data(remappedIds);
+        return new CityVilleResponse().Data(new ASObject
+        {
+            { "trees", remappedIds },
+            { "finalIds", finalIds },
+        });
     }
 }
 
@@ -113,6 +142,7 @@ public sealed class ExpandCityRequest
     [AmfParam(0)] public string ItemName { get; set; } = string.Empty;
     [AmfParam(1)] public ExpandCityCoordinates Coordinates { get; set; } = new();
     [AmfParam(2)] public ExpandCityTree[] Trees { get; set; } = [];
+    [AmfParam(3)] public int[]? TempIds { get; set; }
 }
 
 public class ExpandCityCoordinates

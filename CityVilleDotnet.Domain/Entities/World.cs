@@ -1,5 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Settings.GameSettings;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Enums;
 using Humanizer;
 
@@ -20,6 +22,7 @@ public class World
     public List<string> ThemeCollections { get; set; } = [];
     public List<MapRect> MapRects { get; set; } = [];
     public List<WorldObject> Objects { get; set; } = [];
+    public List<IncentivizedExpansion> IncentivizedExpansions { get; set; } = [];
     public WorldType Type { get; set; } = WorldType.Main;
 
     public World()
@@ -139,6 +142,56 @@ public class World
     public void RemoveBuilding(WorldObject obj)
     {
         Objects.Remove(obj);
+    }
+
+    public WorldObject EmbedDynamicExpansionObject(DynamicExpansionObjectItem definition, int baseX, int baseY, int tempId)
+    {
+        var item = GameSettingsManager.Instance.GetItem(definition.ItemName);
+
+        if (item is null) throw new Exception($"Can't find item {definition.ItemName}");
+
+        var obj = new WorldObject(
+            definition.ItemName,
+            Enum.Parse<BuildingClassType>(item.Type.Pascalize()),
+            null,
+            false,
+            tempId,
+            WorldObjectState.Static,
+            definition.Direction,
+            ServerUtils.GetCurrentTime(),
+            ServerUtils.GetCurrentTime(),
+            baseX + definition.XOffset,
+            baseY + definition.YOffset,
+            0,
+            GetAvailableBuildingId()
+        );
+
+        if (definition.IsConstruction() && item.Construction is not null)
+        {
+            var constructionItem = GameSettingsManager.Instance.GetItem(item.Construction);
+
+            if (constructionItem?.NumberOfStages is null)
+                throw new Exception($"Construction item not found with {item.Construction}");
+
+            obj.SetAsConstructionSite(item.Construction, constructionItem.NumberOfStages.Value);
+        }
+
+        AddBuilding(obj);
+
+        return obj;
+    }
+
+    public IncentivizedExpansion GetOrCreateIncentivizedExpansion(string expansionId)
+    {
+        var expansion = IncentivizedExpansions.FirstOrDefault(x => x.ExpansionId == expansionId);
+
+        if (expansion is null)
+        {
+            expansion = new IncentivizedExpansion(expansionId);
+            IncentivizedExpansions.Add(expansion);
+        }
+
+        return expansion;
     }
 
     public void AddMapRect(MapRect mapRect)
