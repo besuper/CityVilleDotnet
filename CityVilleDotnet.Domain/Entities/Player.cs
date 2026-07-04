@@ -459,11 +459,14 @@ public class Player
                         return namedModifiers.Modifiers;
                 }
 
-                return null;
+                // Client falls back to the default table when the group roll doesn't resolve (selectLocalRandomModifiers)
             }
         }
 
-        return gameItem.RandomModifiersList.FirstOrDefault()?.Modifiers;
+        // Client fallback is the table named "default", else the first one (Item::randomModifiersXml)
+        var defaultModifiers = gameItem.RandomModifiersList.FirstOrDefault(rm => rm.Name == "default") ?? gameItem.RandomModifiersList.FirstOrDefault();
+
+        return defaultModifiers?.Modifiers;
     }
 
     // From Player::processRandomModifiersFromConfig
@@ -471,6 +474,16 @@ public class Player
     {
         foreach (var itemModifier in modifiers)
         {
+            // From client: ConstructionSite modifier filtering (processRandomModifiersWithTable XML filter)
+            // Client keeps a modifier only if allowOnBuild="true", or if allowOnBuild is absent AND type="xp"
+            if (construction)
+            {
+                if (itemModifier.HasAllowOnBuildAttribute && !itemModifier.AllowOnBuild)
+                    continue;
+                if (!itemModifier.HasAllowOnBuildAttribute && itemModifier.Type != "xp")
+                    continue;
+            }
+
             // Skip validates by default, we should validate before but not necessary
             if (!string.IsNullOrEmpty(itemModifier.Validate))
             {
@@ -491,17 +504,18 @@ public class Player
                 }
             }
 
+            var modifierTable = GameSettingsManager.Instance.GetRandomModifier(itemModifier.TableName);
+
+            // Client only rolls when the table exists, otherwise the roll counter must not move (processRandomModifiersFromConfig)
+            if (modifierTable is null) continue;
+
             IncrementRollCounter();
 
-            var modifierTable = GameSettingsManager.Instance.GetRandomModifier(itemModifier.TableName);
-            var rollRange = modifierTable?.RollRange ?? 99;
-            var secureRand = SecureRand.GenerateRand(0, rollRange, RollCounter, Snuid.ToString());
+            var secureRand = SecureRand.GenerateRand(0, modifierTable.RollRange, RollCounter, Snuid.ToString());
 
             StaticLogger.Current.LogDebug("SecureRand for {DebugName}: rollCounter={PlayerRollCounter} => {SecureRand}", gameItem.Name, RollCounter, secureRand);
 
             secureRands.Add(secureRand);
-
-            if (modifierTable is null) continue;
 
             StaticLogger.Current.LogDebug("Checking random table named {ModifierTableName} type {ModifierTableType} with rand {SecureRand}", modifierTable.Name, modifierTable.Type, secureRand);
 
@@ -516,7 +530,7 @@ public class Player
 
                     if (secureRand < currentRollPercent && !found)
                     {
-                        ApplyRollRewards(roll, itemModifier.Multiplier, coinMultiplier, construction);
+                        ApplyRollRewards(roll, itemModifier.Multiplier, coinMultiplier);
                         found = true;
                     }
 
@@ -526,36 +540,33 @@ public class Player
         }
     }
 
-    private void ApplyRollRewards(Roll roll, double multiplier, int coinMultiplier = 1, bool construction = false)
+    private void ApplyRollRewards(Roll roll, double multiplier, int coinMultiplier = 1)
     {
         foreach (var (rewardType, rewardElements) in roll.Rewards)
         {
-            // Construction build stages only apply xp and item/profit (check: ConstructionSite.makeDoobers)
-            if (construction && rewardType is not ("xp" or "item" or "profit"))
-                continue;
-
-            var totalAmount = rewardElements.Sum(x => x.Amount) / roll.Divisor;
-
-            switch (rewardType)
+            foreach (var element in rewardElements)
             {
-                case "coin":
-                    var coinAmount = (int)Math.Ceiling(totalAmount * multiplier * coinMultiplier);
-                    AddCoins(coinAmount);
-                    StaticLogger.Current.LogDebug("Found coin {CoinAmount}", coinAmount);
-                    break;
-                case "xp":
-                    var xpAmount = (int)(totalAmount * multiplier);
-                    AddXp(xpAmount);
-                    StaticLogger.Current.LogDebug("Found xp {XpAmount}", xpAmount);
-                    break;
-                case "energy":
-                    var energyAmount = (int)(totalAmount * multiplier);
-                    AddEnergy(energyAmount);
-                    StaticLogger.Current.LogDebug("Found energy {EnergyAmount}", energyAmount);
-                    break;
-                case "collectable":
-                    foreach (var element in rewardElements)
-                    {
+                var amount = (int)Math.Ceiling(element.Amount / roll.Divisor * multiplier);
+
+                switch (rewardType)
+                {
+                    case "coin":
+                        var coinAmount = (int)Math.Ceiling(element.Amount / roll.Divisor * multiplier * coinMultiplier);
+                        if (coinAmount <= 0) break;
+                        AddCoins(coinAmount);
+                        StaticLogger.Current.LogDebug("Found coin {CoinAmount}", coinAmount);
+                        break;
+                    case "xp":
+                        if (amount <= 0) break;
+                        AddXp(amount);
+                        StaticLogger.Current.LogDebug("Found xp {XpAmount}", amount);
+                        break;
+                    case "energy":
+                        if (amount <= 0) break;
+                        AddEnergy(amount);
+                        StaticLogger.Current.LogDebug("Found energy {EnergyAmount}", amount);
+                        break;
+                    case "collectable":
                         var collectionName = GameSettingsManager.Instance.GetCollectionByItemName(element.Name);
 
                         if (collectionName is not null)
@@ -569,40 +580,36 @@ public class Player
                             StaticLogger.Current.LogWarning("Collection for item {CollectableName} not found",
                                 element.Name);
                         }
-                    }
 
-                    break;
-                case "food" or "goods":
-                    var goodsAmount = (int)(totalAmount * multiplier);
-                    AddGoods(goodsAmount);
-                    StaticLogger.Current.LogDebug("Found goods {GoodsAmount}", goodsAmount);
-                    break;
-                case "premium_goods":
-                    var premiumGoodsAmount = (int)(totalAmount * multiplier);
-                    AddPremiumGoods(premiumGoodsAmount);
-                    StaticLogger.Current.LogDebug("Found premium goods {PremiumGoodsAmount}", premiumGoodsAmount);
-                    break;
-                case "cash":
-                    var cashAmount = (int)(totalAmount * multiplier);
-                    AddCash(cashAmount);
-                    StaticLogger.Current.LogDebug("Found cash {CashAmount}", cashAmount);
-                    break;
-                case "rep":
-                    var repAmount = (int)(totalAmount * multiplier);
-                    AddSocialXp(repAmount);
-                    StaticLogger.Current.LogDebug("Found rep {RepAmount}", repAmount);
-                    break;
-                case "item" or "profit":
-                    foreach (var element in rewardElements)
-                    {
+                        break;
+                    case "food" or "goods":
+                        if (amount <= 0) break;
+                        AddGoods(amount);
+                        StaticLogger.Current.LogDebug("Found goods {GoodsAmount}", amount);
+                        break;
+                    case "premium_goods":
+                        if (amount <= 0) break;
+                        AddPremiumGoods(amount);
+                        StaticLogger.Current.LogDebug("Found premium goods {PremiumGoodsAmount}", amount);
+                        break;
+                    case "cash":
+                        if (amount <= 0) break;
+                        AddCash(amount);
+                        StaticLogger.Current.LogDebug("Found cash {CashAmount}", amount);
+                        break;
+                    case "rep":
+                        if (amount <= 0) break;
+                        AddSocialXp(amount);
+                        StaticLogger.Current.LogDebug("Found rep {RepAmount}", amount);
+                        break;
+                    case "item" or "profit":
                         AddItem(element.Name, 1);
                         StaticLogger.Current.LogDebug("Found item drop {ItemName}", element.Name);
-                    }
-
-                    break;
-                default:
-                    StaticLogger.Current.LogWarning("Unhandled reward type {RewardType}", rewardType);
-                    break;
+                        break;
+                    default:
+                        StaticLogger.Current.LogWarning("Unhandled reward type {RewardType}", rewardType);
+                        break;
+                }
             }
         }
     }

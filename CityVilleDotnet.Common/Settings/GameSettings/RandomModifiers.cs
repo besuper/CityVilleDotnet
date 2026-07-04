@@ -19,13 +19,18 @@ public class RandomModifier
 
     [XmlAttribute("tableName")] public required string TableName { get; set; }
 
-    [XmlIgnore] public bool AllowOnBuild { get; set; }
+    [XmlIgnore] public bool AllowOnBuild { get; private set; }
+    [XmlIgnore] public bool HasAllowOnBuildAttribute { get; private set; }
 
     [XmlAttribute("allowOnBuild")]
     public string? AllowOnBuildString
     {
-        get => AllowOnBuild.ToString().ToLower();
-        set => AllowOnBuild = string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
+        get => HasAllowOnBuildAttribute ? AllowOnBuild.ToString().ToLower() : null;
+        set
+        {
+            HasAllowOnBuildAttribute = true;
+            AllowOnBuild = string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     [XmlAttribute("validate")] public string? Validate { get; set; }
