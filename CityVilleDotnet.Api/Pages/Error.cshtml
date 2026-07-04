@@ -1,0 +1,29 @@
+@page
+@model CityVilleDotnet.Api.Pages.ErrorModel
+
+<div class="d-flex align-items-center justify-content-center min-vh-100 bg-light px-3">
+    <div class="text-center py-5">
+        <img src="assets/hashed/2cc59e7fe28f63ad3e1b643b7ab660f6.png"  alt="Samantha"/>
+        <h2 class="mb-3">Something went wrong</h2>
+        <p class="text-muted mb-4">
+            An unexpected error occurred while processing your request. Please try again later.
+        </p>
+        
+        @if (Model.ShowExceptionDetails)
+        {
+            <div class="card shadow-sm text-left mt-5">
+                <div class="card-header bg-danger text-white">
+                    <strong>Error details</strong>
+                    @if (!string.IsNullOrEmpty(Model.ExceptionPath))
+                    {
+                        <span class="ml-2 small">@Model.ExceptionPath</span>
+                    }
+                </div>
+                <div class="card-body">
+                    <p class="font-weight-bold text-danger">@Model.ExceptionMessage</p>
+                    <pre class="bg-light p-3 rounded small mb-0" style="overflow-x: auto;"><code>@Model.ExceptionStackTrace</code></pre>
+                </div>
+            </div>
+        }
+    </div>
+</div>

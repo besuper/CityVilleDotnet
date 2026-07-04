@@ -124,6 +124,8 @@ builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Confi
 
 var app = builder.Build();
 
+app.UseExceptionHandler("/Error");
+
 app.UseStaticFiles();
 app.UseMiddleware<FallbackAssetMiddleware>();
 app.UseRateLimiter();
