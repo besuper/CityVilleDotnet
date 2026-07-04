@@ -28,5 +28,6 @@ public class UserInfoDto
 
     [JsonPropertyName("world_summary")] public ASObject WorldSummary { get; set; } = [];
     [JsonPropertyName("CompletedQuests")] public List<string> CompletedQuests { get; set; } = [];
+    [JsonPropertyName("questsExpired")] public List<string> QuestsExpired { get; set; } = [];
     [JsonPropertyName("lastPlayedWorldId")] public required string LastPlayedWorldId { get; set; }
 }

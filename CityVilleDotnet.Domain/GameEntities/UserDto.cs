@@ -41,6 +41,7 @@ public static class UserDtoMapper
                 FirstDay = model.FirstDay,
                 IsNew = model.IsNew,
                 CompletedQuests = model.Quests.Where(q => q.QuestType == QuestType.Completed).Select(q => q.Name).ToList(),
+                QuestsExpired = model.Quests.Where(q => q.QuestType == QuestType.Expired).Select(q => q.Name).ToList(),
                 LastPlayedWorldId = model.LastPlayedWorldType.ToDescriptionString(),
                 Player = new PlayerDto
                 {

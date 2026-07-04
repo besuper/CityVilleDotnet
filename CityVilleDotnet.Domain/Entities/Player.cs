@@ -1033,6 +1033,15 @@ public class Player
         Quests.AddRange(newQuests);
     }
 
+    public void ExpireQuest(string questName)
+    {
+        var quest = Quests.FirstOrDefault(x => x.Name == questName && x.QuestType == QuestType.Active);
+
+        if (quest is null) return;
+
+        quest.QuestType = QuestType.Expired;
+    }
+
     public List<SocialNetworkUserDto> GetSocialNetworkUserFriendsList(string baseUrl)
     {
         return Friends.Where(f => !f.FriendPlayer.IsSamantha()).Select(friend => friend.ToSocialNetworkUserDto(baseUrl)).ToList();
