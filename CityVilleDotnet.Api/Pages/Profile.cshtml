@@ -1,0 +1,146 @@
+@page
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Resources.SharedResource> Localizer
+@{
+	Layout = "Shared/_GameLayout";
+}
+
+@model CityVilleDotnet.Api.Pages.ProfileModel
+
+<div class="card border-0 shadow-sm mb-4">
+	<div class="card-body">
+		<div class="d-flex align-items-center flex-wrap">
+			<img src="/blank.png" alt="@Model.UserName" class="rounded-circle border mr-3" style="width:72px;height:72px;object-fit:cover;"/>
+			<div class="mr-auto">
+				<h4 class="font-outfit font-weight-bold text-dark mb-1">@Model.UserName</h4>
+				<div class="text-info font-weight-bold">
+					<i class="bi bi-star-fill"></i> @Localizer["Level"] @Model.Level
+				</div>
+				<div class="text-muted small mt-1">
+					<i class="bi bi-calendar3 mr-1"></i>@Localizer["MemberSince"] @Model.CreationTimestamp.ToString("dd MMM yyyy")
+				</div>
+			</div>
+		</div>
+
+		<div class="mt-4">
+			<div class="d-flex justify-content-between align-items-center mb-1">
+				<span class="small font-weight-bold text-secondary">@Localizer["XP"]</span>
+				@if (Model.IsMaxLevel)
+				{
+					<span class="small text-muted">@Model.Xp.ToString("N0")</span>
+				}
+				else
+				{
+					<span class="small text-muted">@Model.Xp.ToString("N0") / @Model.NextLevelXp.ToString("N0")</span>
+				}
+			</div>
+			<div class="progress" style="height:10px;">
+				<div class="progress-bar bg-info" role="progressbar" style="width:@(Model.XpProgressPercent)%"
+				     aria-valuenow="@Model.XpProgressPercent" aria-valuemin="0" aria-valuemax="100"></div>
+			</div>
+			@if (!Model.IsMaxLevel)
+			{
+				<div class="text-muted small mt-1 text-right">
+					@Localizer["NextLevel"] @(Model.Level + 1)
+				</div>
+			}
+		</div>
+	</div>
+</div>
+
+<h6 class="font-weight-bold text-dark mb-3">
+	<i class="bi bi-wallet2 mr-2 text-primary"></i>@Localizer["Resources"]
+</h6>
+<div class="row row-cols-2 row-cols-md-4 mb-4">
+	<div class="col mb-3">
+		<div class="card border-0 shadow-sm h-100 text-center p-3">
+			<i class="bi bi-coin text-warning h4 mb-2"></i>
+			<div class="font-weight-bold text-dark">@Model.Gold.ToString("N0")</div>
+			<div class="text-muted small">@Localizer["Gold"]</div>
+		</div>
+	</div>
+	<div class="col mb-3">
+		<div class="card border-0 shadow-sm h-100 text-center p-3">
+			<i class="bi bi-gem text-info h4 mb-2"></i>
+			<div class="font-weight-bold text-dark">@Model.Cash.ToString("N0")</div>
+			<div class="text-muted small">@Localizer["Cash"]</div>
+		</div>
+	</div>
+	<div class="col mb-3">
+		<div class="card border-0 shadow-sm h-100 text-center p-3">
+			<i class="bi bi-box-seam text-success h4 mb-2"></i>
+			<div class="font-weight-bold text-dark">@Model.Goods.ToString("N0")</div>
+			<div class="text-muted small">@Localizer["Goods"]</div>
+		</div>
+	</div>
+	<div class="col mb-3">
+		<div class="card border-0 shadow-sm h-100 text-center p-3">
+			<i class="bi bi-box2-heart text-danger h4 mb-2"></i>
+			<div class="font-weight-bold text-dark">@Model.PremiumGoods.ToString("N0")</div>
+			<div class="text-muted small">@Localizer["PremiumGoods"]</div>
+		</div>
+	</div>
+</div>
+
+<h6 class="font-weight-bold text-dark mb-3">
+	<i class="bi bi-graph-up-arrow mr-2 text-primary"></i>@Localizer["Progression"]
+</h6>
+<div class="row row-cols-2 row-cols-md-4 mb-4">
+	<div class="col mb-3">
+		<div class="card border-0 shadow-sm h-100 text-center p-3">
+			<i class="bi bi-lightning-charge-fill text-warning h4 mb-2"></i>
+			<div class="font-weight-bold text-dark">@Model.Energy / @Model.EnergyMax</div>
+			<div class="text-muted small">@Localizer["Energy"]</div>
+		</div>
+	</div>
+	<div class="col mb-3">
+		<div class="card border-0 shadow-sm h-100 text-center p-3">
+			<i class="bi bi-people-fill text-info h4 mb-2"></i>
+			<div class="font-weight-bold text-dark">@Localizer["Level"] @Model.SocialLevel</div>
+			<div class="text-muted small">@Localizer["SocialLevel"]</div>
+		</div>
+	</div>
+	<div class="col mb-3">
+		<div class="card border-0 shadow-sm h-100 text-center p-3">
+			<i class="bi bi-heart-fill text-danger h4 mb-2"></i>
+			<div class="font-weight-bold text-dark">@Model.SocialXp.ToString("N0")</div>
+			<div class="text-muted small">@Localizer["SocialXp"]</div>
+		</div>
+	</div>
+	<div class="col mb-3">
+		<div class="card border-0 shadow-sm h-100 text-center p-3">
+			<i class="bi bi-person-hearts text-primary h4 mb-2"></i>
+			<div class="font-weight-bold text-dark">@Model.FriendsCount.ToString("N0")</div>
+			<div class="text-muted small">@Localizer["Friends"]</div>
+		</div>
+	</div>
+</div>
+
+<h6 class="font-weight-bold text-dark mb-3">
+	<i class="bi bi-buildings mr-2 text-primary"></i>@Localizer["City"]
+</h6>
+<div class="card border-0 shadow-sm mb-4">
+	<div class="card-body">
+		<div class="row">
+			<div class="col-6 col-md-3 mb-3 mb-md-0 text-center">
+				<i class="bi bi-geo-alt-fill text-primary h4 mb-2 d-block"></i>
+				<div class="font-weight-bold text-dark">@Model.WorldName</div>
+				<div class="text-muted small">@Localizer["CityName"]</div>
+			</div>
+			<div class="col-6 col-md-3 mb-3 mb-md-0 text-center">
+				<i class="bi bi-people text-success h4 mb-2 d-block"></i>
+				<div class="font-weight-bold text-dark">@Model.Population.ToString("N0") / @Model.PopulationCap.ToString("N0")</div>
+				<div class="text-muted small">@Localizer["Population"]</div>
+			</div>
+			<div class="col-6 col-md-3 text-center">
+				<i class="bi bi-arrows-fullscreen text-info h4 mb-2 d-block"></i>
+				<div class="font-weight-bold text-dark">@Model.SizeX × @Model.SizeY</div>
+				<div class="text-muted small">@Localizer["MapSize"]</div>
+			</div>
+			<div class="col-6 col-md-3 text-center">
+				<i class="bi bi-bounding-box text-warning h4 mb-2 d-block"></i>
+				<div class="font-weight-bold text-dark">@Model.ExpansionsPurchased.ToString("N0")</div>
+				<div class="text-muted small">@Localizer["Expansions"]</div>
+			</div>
+		</div>
+	</div>
+</div>

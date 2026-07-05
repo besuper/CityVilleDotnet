@@ -150,4 +150,37 @@
     <data name="EmptyReceivedFriendsRequests" xml:space="preserve">
         <value>No hay solicitudes de amistad recibidas.</value>
     </data>
+    <data name="MemberSince" xml:space="preserve">
+        <value>Miembro desde el</value>
+    </data>
+    <data name="NextLevel" xml:space="preserve">
+        <value>Siguiente nivel:</value>
+    </data>
+    <data name="Progression" xml:space="preserve">
+        <value>Progresión</value>
+    </data>
+    <data name="Energy" xml:space="preserve">
+        <value>Energía</value>
+    </data>
+    <data name="SocialLevel" xml:space="preserve">
+        <value>Nivel social</value>
+    </data>
+    <data name="SocialXp" xml:space="preserve">
+        <value>XP social</value>
+    </data>
+    <data name="City" xml:space="preserve">
+        <value>Ciudad</value>
+    </data>
+    <data name="CityName" xml:space="preserve">
+        <value>Nombre de la ciudad</value>
+    </data>
+    <data name="Population" xml:space="preserve">
+        <value>Población</value>
+    </data>
+    <data name="MapSize" xml:space="preserve">
+        <value>Tamaño del mapa</value>
+    </data>
+    <data name="Expansions" xml:space="preserve">
+        <value>Expansiones</value>
+    </data>
 </root>
