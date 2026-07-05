@@ -603,7 +603,17 @@ public class Player
                         StaticLogger.Current.LogDebug("Found rep {RepAmount}", amount);
                         break;
                     case "item" or "profit":
-                        AddItem(element.Name, 1);
+                        // client never stores population items => InventoryCheckManager::onPopulationAdd
+                        var populationQuantity = GameSettingsManager.Instance.GetItem(element.Name)?.GetPopulationAddQuantity();
+
+                        if (populationQuantity is not null)
+                        {
+                            var addedPopulation = GetWorld().AddBonusPopulation(populationQuantity.Value);
+                            StaticLogger.Current.LogDebug("Found population item {ItemName}, distributed {Population} population", element.Name, addedPopulation);
+                            break;
+                        }
+
+                        AddItem(element.Name);
                         StaticLogger.Current.LogDebug("Found item drop {ItemName}", element.Name);
                         break;
                     default:

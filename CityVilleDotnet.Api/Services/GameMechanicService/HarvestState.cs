@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.GameMechanicService;
 
-internal sealed class HarvestState(CityVilleDbContext context) : AmfService<HarvestStateRequest>
+public sealed class HarvestState(CityVilleDbContext context) : AmfService<HarvestStateRequest>
 {
     public override async Task<ASObject> HandlePacket(HarvestStateRequest request, Guid playerId, CancellationToken cancellationToken)
     {
@@ -30,6 +30,15 @@ internal sealed class HarvestState(CityVilleDbContext context) : AmfService<Harv
         var obj = world.GetBuildingByClientId(request.ObjectId) ?? throw new Exception($"Can't find building with id {request.ObjectId}");
 
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName) ?? throw new Exception($"Can't find game item for {obj.ItemName}");
+
+        if (gameItem.CanYieldPopulationItems())
+        {
+            await context.Entry(world).Collection(x => x.Objects)
+                .Query()
+                .Where(x => x.ClassName == BuildingClassType.Residence)
+                .Include(x => x.MechanicCounters)
+                .LoadAsync(cancellationToken);
+        }
 
         if (gameItem.EnergyCost?.Harvest is not null)
             player.RemoveEnergy(int.Parse(gameItem.EnergyCost.Harvest));

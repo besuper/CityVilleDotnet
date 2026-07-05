@@ -8,6 +8,7 @@ using CityVilleDotnet.Factory.MapRect;
 using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Test.Integration.Fixtures;
+using FluorineFx;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -47,9 +48,12 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 
         response["errorType"].Should().Be(0);
 
-        var data = response["data"] as List<object>;
+        var data = response["data"] as ASObject;
         data.Should().NotBeNull();
-        data.Should().HaveCount(2);
+
+        var remappedTrees = data!["trees"] as List<object>;
+        remappedTrees.Should().NotBeNull();
+        remappedTrees.Should().HaveCount(2);
 
         var mapRect = await Context.Set<MapRect>().FirstOrDefaultAsync(m => m.X == 40 && m.Y == 40);
 

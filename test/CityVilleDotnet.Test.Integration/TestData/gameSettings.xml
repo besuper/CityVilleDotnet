@@ -183,6 +183,22 @@
             <sizeY>2</sizeY>
             <gates/>
         </item>
+        <item name="test_bridge" type="bridge" buyable="false">
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <energyCost harvest="5"/>
+            <randomModifiers>
+                <modifier type="item" tableName="test_populationtable"/>
+            </randomModifiers>
+            <gates/>
+        </item>
+        <item name="test_population_add" type="popitem" consumable="true" buyable="false">
+            <inventoryChecks>
+                <inventoryCheck type="add" callback="onPopulationAdd">
+                    <params quantity="10" isPopulationItem="true"/>
+                </inventoryCheck>
+            </inventoryChecks>
+        </item>
         <item name="test_bus_premium_goods" type="business" buyable="true">
             <keyword>Business</keyword>
             <keyword>Business_Restaurant</keyword>
@@ -215,6 +231,11 @@
     <randomModifierTables>
         <randomModifierTable type="item" name="test_droptable">
             <roll percent="100">
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="item" name="test_populationtable">
+            <roll percent="100">
+                <item name="test_population_add"/>
             </roll>
         </randomModifierTable>
     </randomModifierTables>

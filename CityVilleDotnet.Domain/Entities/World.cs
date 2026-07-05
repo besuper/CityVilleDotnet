@@ -54,6 +54,22 @@ public class World
         return Population;
     }
 
+    public int AddBonusPopulation(int amount)
+    {
+        var remaining = amount;
+
+        foreach (var obj in Objects.Where(x => x.ClassName == BuildingClassType.Residence))
+        {
+            if (remaining <= 0) break;
+
+            remaining -= obj.AddBonusPopulation(remaining);
+        }
+
+        Population += amount - remaining;
+
+        return amount - remaining;
+    }
+
     public void CalculatePopulation()
     {
         var currentPopulation = 0;
@@ -82,7 +98,7 @@ public class World
             populationCap += itemCap;
             minPopulation += itemMin;
             maxPopulation += itemMax;
-            currentPopulation += itemMin;
+            currentPopulation += itemMin + Math.Clamp(item.GetBonusPopulation(), 0, Math.Max(0, itemMax - itemMin));
         }
 
         PopulationCap = populationCap;

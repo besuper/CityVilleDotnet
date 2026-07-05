@@ -17,6 +17,7 @@ public class SendToStorage(CityVilleDbContext context) : AmfService<SendToStorag
             .AsSplitQuery()
             .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.MechanicCounters)
             .Include(x => x.InventoryItems)
             .ThenInclude(x => x.StoredObject)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))

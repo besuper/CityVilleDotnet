@@ -83,6 +83,40 @@ public class WorldObject
         counter.Increment();
     }
 
+    public int GetBonusPopulation()
+    {
+        return MechanicCounters.FirstOrDefault(x => x.MechanicType == "population_value_increase")?.Count ?? 0;
+    }
+
+    public int AddBonusPopulation(int amount)
+    {
+        var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
+        var population = gameItem?.Population ?? gameItem?.GetFirstDeriveItem(gameItem).Population;
+
+        if (population?.Min is null || population.Max is null) return 0;
+
+        var maxIncrease = population.Max.Value - population.Min.Value;
+
+        if (maxIncrease <= 0) return 0;
+
+        var current = GetBonusPopulation();
+        var newValue = Math.Clamp(current + amount, 0, maxIncrease);
+
+        if (newValue == current) return 0;
+
+        var counter = MechanicCounters.FirstOrDefault(x => x.MechanicType == "population_value_increase");
+
+        if (counter is null)
+        {
+            counter = new WorldObjectMechanicCounter("population_value_increase");
+            MechanicCounters.Add(counter);
+        }
+
+        counter.Add(newValue - current);
+
+        return newValue - current;
+    }
+
     public void UpdateStreakData(int activeDuration, int inactiveDuration)
     {
         var now = ServerUtils.GetCurrentTimeSeconds();

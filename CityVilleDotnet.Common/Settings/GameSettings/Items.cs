@@ -109,6 +109,7 @@ public class GameItem
     [XmlElement("keyword")] public List<string> Keywords { get; set; } = [];
     [XmlElement("mastery")] public required List<MasteryItem> MasteryItems { get; set; }
     [XmlElement("storageUnit")] public StorageUnitItem? StorageUnit { get; set; }
+    [XmlElement("inventoryChecks")] public InventoryChecksContainer? InventoryChecks { get; set; }
     [XmlIgnore] public int? NumCrop { get; set; }
 
     [XmlElement("numCrop")]
@@ -205,6 +206,66 @@ public class GameItem
 
         return CommodityRequired;
     }
+
+    public int? GetPopulationAddQuantity()
+    {
+        var check = InventoryChecks?.Checks.FirstOrDefault(x => x.Params?.IsPopulationItem == true && x.Type == "add");
+
+        return check?.Params?.Quantity;
+    }
+
+    public bool CanYieldPopulationItems()
+    {
+        foreach (var randomModifiers in RandomModifiersList)
+        {
+            foreach (var modifier in randomModifiers.Modifiers ?? [])
+            {
+                var table = GameSettingsManager.Instance.GetRandomModifier(modifier.TableName);
+
+                if (table is null) continue;
+
+                foreach (var roll in table.Rolls)
+                {
+                    if (!roll.Rewards.TryGetValue("item", out var elements)) continue;
+
+                    if (elements.Any(x => GameSettingsManager.Instance.GetItem(x.Name)?.GetPopulationAddQuantity() is not null))
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+[Serializable]
+public class InventoryChecksContainer
+{
+    [XmlElement("inventoryCheck")] public required List<InventoryCheckItem> Checks { get; set; }
+}
+
+[Serializable]
+public class InventoryCheckItem
+{
+    [XmlAttribute("type")] public required string Type { get; set; }
+    [XmlAttribute("callback")] public string? Callback { get; set; }
+    [XmlElement("params")] public InventoryCheckParams? Params { get; set; }
+}
+
+[Serializable]
+public class InventoryCheckParams
+{
+    [XmlIgnore] public int? Quantity { get; set; }
+
+    [XmlAttribute("quantity")]
+    public string? QuantityString
+    {
+        get => Quantity?.ToString();
+        set => Quantity = string.IsNullOrEmpty(value) ? null : int.Parse(value);
+    }
+
+    [XmlAttribute("isPopulationItem")] public string? IsPopulationItemString { get; set; }
+    [XmlIgnore] public bool IsPopulationItem => IsPopulationItemString == "true";
 }
 
 [Serializable]

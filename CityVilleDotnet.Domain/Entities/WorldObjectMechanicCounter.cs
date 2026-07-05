@@ -19,4 +19,9 @@ public class WorldObjectMechanicCounter
     {
         Count++;
     }
+
+    public void Add(int amount)
+    {
+        Count += amount;
+    }
 }

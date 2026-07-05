@@ -17,6 +17,7 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
             .AsSplitQuery()
             .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.MechanicCounters)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
