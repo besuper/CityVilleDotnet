@@ -52,6 +52,10 @@ public class GameItem
     [XmlElement("centerPart")] public string? BridgeCenterPart { get; set; }
     [XmlElement("rightPart")] public string? BridgeRightPart { get; set; }
 
+    [XmlElement("grantedExpansionType")] public string? GrantedExpansionType { get; set; }
+    [XmlElement("grantedExpansionsOnPlace")] public string? GrantedExpansionsOnPlace { get; set; }
+    [XmlElement("grantedExpansionsOnFinish")] public string? GrantedExpansionsOnFinish { get; set; }
+
     [XmlElement("population")] public PopulationItem? Population { get; set; }
     [XmlElement("upgrade")] public UpgradeItem? Upgrade { get; set; }
 

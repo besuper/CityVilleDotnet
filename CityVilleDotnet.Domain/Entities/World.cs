@@ -216,6 +216,38 @@ public class World
         MapRects.Add(mapRect);
     }
 
+    public void GrantFreeExpansions(string? expansionCoords, string? expansionType)
+    {
+        if (string.IsNullOrEmpty(expansionCoords) || string.IsNullOrEmpty(expansionType)) return;
+
+        var expansionItem = GameSettingsManager.Instance.GetItem(expansionType);
+
+        if (expansionItem?.Width is null || expansionItem.Height is null) return;
+
+        var width = expansionItem.Width.Value;
+        var height = expansionItem.Height.Value;
+
+        // coordinates are a flat list of x|y pairs, "-12|-36" (see client ExpansionManager.onProcessGrantedExpansionsFromMapResource)
+        var coords = expansionCoords.Split('|');
+
+        for (var i = 0; i + 1 < coords.Length; i += 2)
+        {
+            if (!int.TryParse(coords[i], out var x) || !int.TryParse(coords[i + 1], out var y)) continue;
+
+            var intersectsTerritory = MapRects.Any(r => x < r.X + r.Width && r.X < x + width && y < r.Y + r.Height && r.Y < y + height);
+
+            if (intersectsTerritory) continue;
+
+            MapRects.Add(new MapRect
+            {
+                X = x,
+                Y = y,
+                Width = width,
+                Height = height
+            });
+        }
+    }
+
     public string SetWorldName(string name)
     {
         var newName = name.Trim();

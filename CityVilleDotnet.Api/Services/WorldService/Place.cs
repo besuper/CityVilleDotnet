@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
-internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : AmfService<PlaceRequest>
+public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : AmfService<PlaceRequest>
 {
     public override async Task<ASObject> HandlePacket(PlaceRequest request, Guid playerId, CancellationToken cancellationToken)
     {
@@ -26,6 +26,8 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
             .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
+            .Include(x => x.World)
+            .ThenInclude(x => x!.MapRects)
             .Include(x => x.InventoryItems)
             .Include(x => x.SeenFlags)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
@@ -139,6 +141,8 @@ internal sealed class Place(CityVilleDbContext context, ILogger<Place> logger) :
         }
 
         world.AddBuilding(obj);
+
+        world.GrantFreeExpansions(gameItem.GrantedExpansionsOnPlace, gameItem.GrantedExpansionType);
 
         if (player.HasItem(request.Building.ItemName))
         {

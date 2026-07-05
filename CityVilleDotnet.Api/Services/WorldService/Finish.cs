@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.WorldService.Common;
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
-internal sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequest>
+public sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequest>
 {
     public override async Task<ASObject> HandlePacket(FinishRequest request, Guid playerId, CancellationToken cancellationToken)
     {
@@ -20,6 +21,8 @@ internal sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequ
             .Include(x => x.World)
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.MechanicCounters)
+            .Include(x => x.World)
+            .ThenInclude(x => x!.MapRects)
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.Collections)
@@ -44,6 +47,11 @@ internal sealed class Finish(CityVilleDbContext context) : AmfService<FinishRequ
             newObject.UpdateWorldFlatId(world.GetAvailableBuildingId());
             world.AddBuilding(newObject);
         }
+
+        var finishedItem = GameSettingsManager.Instance.GetItem(obj.GetItemName());
+
+        if (finishedItem is not null)
+            world.GrantFreeExpansions(finishedItem.GrantedExpansionsOnFinish, finishedItem.GrantedExpansionType);
 
         world.CalculatePopulation();
 

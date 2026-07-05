@@ -192,6 +192,18 @@
             </randomModifiers>
             <gates/>
         </item>
+        <item name="test_expand_12_12" type="expansion" height="12" width="12">
+            <gates/>
+        </item>
+        <item name="test_bridge_expansion" type="bridge" buyable="false">
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <construction>construction_3x3_2stage</construction>
+            <grantedExpansionType>test_expand_12_12</grantedExpansionType>
+            <grantedExpansionsOnPlace>-12|-36</grantedExpansionsOnPlace>
+            <grantedExpansionsOnFinish>-12|-48</grantedExpansionsOnFinish>
+            <gates/>
+        </item>
         <item name="test_population_add" type="popitem" consumable="true" buyable="false">
             <inventoryChecks>
                 <inventoryCheck type="add" callback="onPopulationAdd">
