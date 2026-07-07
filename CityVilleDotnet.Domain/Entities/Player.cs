@@ -853,7 +853,7 @@ public class Player
         return World != null && World.Objects.Count != 0;
     }
 
-    public void HandleQuestsProgress(string actionType, string? className = null, string? itemName = null)
+    public void HandleQuestsProgress(string actionType, string? className = null, string? itemName = null, int amount = 0)
     {
         if (StaticLogger.IsReady()) StaticLogger.Current.LogDebug("Handle quest actionType = {ActionType}, className = {ClassName}, itemName = {ItemName}", actionType, className, itemName);
 
@@ -947,6 +947,11 @@ public class Player
                             if (task.Type == className)
                                 quest.Progress[index] += 1;
 
+                            break;
+                        case "deliver":
+                            if (task.Type == itemName)
+                                quest.Progress[index] += amount;
+                                
                             break;
                     }
                 }
