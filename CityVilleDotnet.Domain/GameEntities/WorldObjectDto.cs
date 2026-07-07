@@ -168,11 +168,6 @@ public static class WorldObjectDtoMapper
             {
                 if (mechanic.Type == "streakData")
                 {
-                    var activeDuration = mechanic.ActiveDuration;
-                    var inactiveDuration = mechanic.InactiveDuration;
-
-                    model.UpdateStreakData(activeDuration, inactiveDuration);
-
                     dto.MechanicData["streakData"] = new ASObject
                     {
                         { "activationTime", model.ActivationTime ?? -1 },

@@ -44,9 +44,14 @@ internal sealed class StreakData(CityVilleDbContext context) : AmfService<Streak
         if (!request.ExtraData.TryGetValue("action", out var action))
             throw new Exception("Action not found in extra data");
 
+        var negativeStreakRewards = gameItem.GetNegativeStreakRewards();
+
+        obj.UpdateStreakData(mechanic.ActiveDuration, mechanic.InactiveDuration, mechanic.MaxStreakLength, negativeStreakRewards);
+
         if (action.Equals("supply"))
         {
-            obj.UpdateStreakData(mechanic.ActiveDuration, mechanic.InactiveDuration);
+            if (obj.ActivationTime.HasValue)
+                return new CityVilleResponse().Error(GameErrorType.InvalidState);
 
             if (mechanic.ConsumableType is not null && mechanic.ConsumableQuantity > 0)
             {
@@ -69,13 +74,9 @@ internal sealed class StreakData(CityVilleDbContext context) : AmfService<Streak
                         player.RemovePremiumGoods(mechanic.ConsumableQuantity);
                         break;
                 }
-                
-                obj.Supply(mechanic.MaxStreakLength);
             }
-        }
-        else if (action.Equals("timerExpired"))
-        {
-            obj.UpdateStreakData(mechanic.ActiveDuration, mechanic.InactiveDuration);
+
+            obj.Supply(mechanic.MaxStreakLength, gameItem.GetPositiveStreakRewards(), gameItem.GetStreakMaxEffect());
         }
 
         await context.SaveChangesAsync(cancellationToken);

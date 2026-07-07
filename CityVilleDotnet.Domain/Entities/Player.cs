@@ -145,7 +145,7 @@ public class Player
 
     public int GetEnergyMax()
     {
-        return EnergyMax + GetWorld().Objects.Where(o => o.StreakLength > 0).Sum(o => o.StreakLength);
+        return EnergyMax + GetWorld().Objects.Where(o => o.EnergyModifier > 0).Sum(o => o.EnergyModifier);
     }
 
     private Energy CalculateCurrentEnergy()
@@ -1020,11 +1020,16 @@ public class Player
                         quest.Progress[index] = value;
                         continue;
                     case "countNumAtThisStreak":
-                    case "checkStreakEffect":
                         var count = GetWorld().CountStreakByItemName(task.Type);
 
                         if (count >= task.Streak)
                             quest.Progress[index] = count;
+                        continue;
+                    case "checkStreakEffect":
+                        var effect = GetWorld().GetStreakEffectByItemName(task.Type);
+
+                        if (effect >= task.Streak)
+                            quest.Progress[index] = effect;
                         continue;
                 }
             }

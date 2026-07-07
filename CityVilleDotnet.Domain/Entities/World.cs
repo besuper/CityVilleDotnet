@@ -302,4 +302,13 @@ public class World
 
         return obj.StreakLength;
     }
+
+    public int GetStreakEffectByItemName(string itemName)
+    {
+        var obj = Objects.FirstOrDefault(o => o.EnergyModifier > 0 && o.GetDeepItemName() == itemName);
+
+        if (obj is null) return 0;
+
+        return obj.EnergyModifier;
+    }
 }

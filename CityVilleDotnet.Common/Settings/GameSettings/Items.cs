@@ -114,6 +114,10 @@ public class GameItem
     [XmlElement("mastery")] public required List<MasteryItem> MasteryItems { get; set; }
     [XmlElement("storageUnit")] public StorageUnitItem? StorageUnit { get; set; }
     [XmlElement("inventoryChecks")] public InventoryChecksContainer? InventoryChecks { get; set; }
+    [XmlElement("positiveStreak")] public string? PositiveStreak { get; set; }
+    [XmlElement("negativeStreak")] public string? NegativeStreak { get; set; }
+    [XmlElement("positiveStreakMaxEffect")] public int PositiveStreakMaxEffect { get; set; }
+    [XmlElement("startingStreakValue")] public int StartingStreakValue { get; set; }
     [XmlIgnore] public int? NumCrop { get; set; }
 
     [XmlElement("numCrop")]
@@ -126,6 +130,28 @@ public class GameItem
     public bool HasKeyword(string keyword)
     {
         return Keywords.Contains(keyword);
+    }
+
+    public int[] GetPositiveStreakRewards()
+    {
+        return ParseStreakRewards(PositiveStreak);
+    }
+
+    public int[] GetNegativeStreakRewards()
+    {
+        return ParseStreakRewards(NegativeStreak);
+    }
+
+    public int GetStreakMaxEffect()
+    {
+        return StartingStreakValue > 0 ? StartingStreakValue : PositiveStreakMaxEffect;
+    }
+
+    private static int[] ParseStreakRewards(string? rewards)
+    {
+        if (string.IsNullOrEmpty(rewards)) return [];
+
+        return rewards.Split(',').Select(int.Parse).ToArray();
     }
 
     public List<GatesItem> GetGates()

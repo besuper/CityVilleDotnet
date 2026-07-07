@@ -66,6 +66,7 @@ public class WorldObject
     public long? ActivationTime { get; private set; }
     public long? InactiveTime { get; private set; }
     public int StreakLength { get; private set; }
+    public int EnergyModifier { get; private set; }
     public bool GivenFreeItem { get; private set; }
     public List<CrewMember> CrewMembers { get; private set; } = [];
     public List<WorldObjectMechanicCounter> MechanicCounters { get; private set; } = [];
@@ -117,35 +118,47 @@ public class WorldObject
         return newValue - current;
     }
 
-    public void UpdateStreakData(int activeDuration, int inactiveDuration)
+    public void UpdateStreakData(int activeDuration, int inactiveDuration, int maxStreakLength, int[] negativeStreakRewards)
     {
         var now = ServerUtils.GetCurrentTimeSeconds();
 
         if (ActivationTime.HasValue)
         {
-            var elapsed = now - ActivationTime.Value;
+            if (now - ActivationTime.Value < activeDuration)
+                return;
 
-            if (elapsed >= activeDuration)
-            {
-                InactiveTime = ActivationTime.Value + activeDuration;
-                ActivationTime = null;
-            }
+            InactiveTime = ActivationTime.Value + activeDuration;
+            ActivationTime = null;
+        }
 
+        if (!InactiveTime.HasValue || inactiveDuration <= 0)
             return;
-        }
+        
+        var remaining = inactiveDuration - (now - InactiveTime.Value);
 
-        if (InactiveTime.HasValue)
+        while (remaining < 0)
         {
-            var elapsedInactive = now - InactiveTime.Value;
-
-            if (elapsedInactive >= inactiveDuration)
-            {
-                if (StreakLength > 0)
-                    StreakLength--;
-
-                InactiveTime = now;
-            }
+            ApplyNegativeStreak(maxStreakLength, negativeStreakRewards);
+            remaining += inactiveDuration;
         }
+
+        InactiveTime = now - (inactiveDuration - remaining);
+    }
+
+    private void ApplyNegativeStreak(int maxStreakLength, int[] negativeStreakRewards)
+    {
+        if (StreakLength > 0)
+            StreakLength = 0;
+
+        if (maxStreakLength <= 0 || StreakLength > -maxStreakLength)
+            StreakLength--;
+
+        if (negativeStreakRewards.Length == 0)
+            return;
+
+        var index = Math.Min(-StreakLength, negativeStreakRewards.Length) - 1;
+
+        EnergyModifier = Math.Max(0, EnergyModifier - negativeStreakRewards[index]);
     }
 
     public void MarkFreeItemGiven()
@@ -153,18 +166,26 @@ public class WorldObject
         GivenFreeItem = true;
     }
 
-    public void Supply(int maxStreakLength)
+    public void Supply(int maxStreakLength, int[] positiveStreakRewards, int maxEffect)
     {
-        var currentTime = ServerUtils.GetCurrentTimeSeconds();
-
-        ActivationTime = currentTime;
+        ActivationTime = ServerUtils.GetCurrentTimeSeconds();
         InactiveTime = null;
 
         if (StreakLength < 0)
             StreakLength = 0;
 
-        if (StreakLength < maxStreakLength)
+        if (maxStreakLength <= 0 || StreakLength < maxStreakLength)
             StreakLength++;
+
+        if (positiveStreakRewards.Length == 0)
+            return;
+
+        var index = Math.Min(StreakLength, positiveStreakRewards.Length) - 1;
+
+        EnergyModifier += positiveStreakRewards[index];
+
+        if (maxEffect > 0 && EnergyModifier > maxEffect)
+            EnergyModifier = maxEffect;
     }
 
     public void SetAsConstructionSite(string itemName, int maxStages)

@@ -20,7 +20,7 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
             .Include(x => x.SeenFlags)
             .Include(x => x.InventoryItems)
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects.Where(o => o.StreakLength > 0))
+            .ThenInclude(x => x!.Objects.Where(o => o.EnergyModifier > 0))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         logger.LogDebug("Quest {QuestName} at {TaskIndex} is purchased", request.QuestName, request.TaskIndex);

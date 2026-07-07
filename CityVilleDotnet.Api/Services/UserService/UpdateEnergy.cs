@@ -12,7 +12,7 @@ public class UpdateEnergy(CityVilleDbContext context, ILogger<UpdateEnergy> logg
     {
         var player = await context.Set<Player>()
             .Include(x => x.World)
-            .ThenInclude(x => x!.Objects.Where(o => o.StreakLength > 0))
+            .ThenInclude(x => x!.Objects.Where(o => o.EnergyModifier > 0))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");

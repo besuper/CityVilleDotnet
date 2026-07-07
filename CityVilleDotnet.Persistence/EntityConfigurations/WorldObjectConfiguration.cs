@@ -29,5 +29,6 @@ public class WorldObjectConfiguration : IEntityTypeConfiguration<WorldObject>
         builder.Property(x => x.ActivationTime);
         builder.Property(x => x.InactiveTime);
         builder.Property(x => x.StreakLength);
+        builder.Property(x => x.EnergyModifier);
     }
 }

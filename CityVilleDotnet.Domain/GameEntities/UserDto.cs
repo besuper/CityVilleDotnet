@@ -24,9 +24,9 @@ public static class UserDtoMapper
 
         var energyModifiers = new Dictionary<string, int>();
 
-        foreach (var obj in model.GetWorld().Objects.Where(o => o.StreakLength > 0))
+        foreach (var obj in model.GetWorld().Objects.Where(o => o.EnergyModifier > 0))
         {
-            energyModifiers[$"{obj.WorldFlatId}"] = obj.StreakLength;
+            energyModifiers[$"{obj.WorldFlatId}"] = obj.EnergyModifier;
         }
 
         return new UserDto()
