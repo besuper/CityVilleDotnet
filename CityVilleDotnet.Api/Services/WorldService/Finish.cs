@@ -57,6 +57,7 @@ public sealed class Finish(CityVilleDbContext context) : AmfService<FinishReques
 
         player.HandleQuestsProgress(""); // Empty actionType to force recheck counts
         player.HandleQuestsProgress("finishConstructionByName", itemName: obj.GetItemName());
+        player.HandleQuestsProgress("finishConstructionByKeyword", itemName: obj.GetItemName());
         player.HandleQuestsProgress("finishConstructionByClass", className: obj.GetClassName().ToString());
         player.CheckCompletedQuests();
 

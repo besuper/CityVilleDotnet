@@ -931,6 +931,7 @@ public class Player
                         case "placeByKeyword":
                         case "harvestByKeyword":
                         case "openBusinessByKeyword":
+                        case "finishConstructionByKeyword":
                             if (itemName is null)
                                 throw new Exception("Can't validate byKeyword action without itemName");
 
