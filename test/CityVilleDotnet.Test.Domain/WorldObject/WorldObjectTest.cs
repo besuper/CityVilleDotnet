@@ -57,4 +57,78 @@ public class WorldObjectTest(DomainFixture fixture)
         applied.Should().Be(0);
         decoration.GetBonusPopulation().Should().Be(0);
     }
+
+    [Fact]
+    public void WorldObject_StartRemodel_SetsSkinAndResetsBuilds()
+    {
+        var faker = new Faker();
+        var residence = faker.WorldObject(itemName: "test_res_base");
+
+        residence.StartRemodel("test_res_skin");
+
+        residence.IsRemodeling().Should().BeTrue();
+        residence.RemodelItemName.Should().Be("test_res_skin");
+        residence.RemodelBuilds.Should().Be(0);
+    }
+
+    [Fact]
+    public void WorldObject_AddRemodelBuild_ReturnsTrueWhenGateIsReached()
+    {
+        var faker = new Faker();
+        var residence = faker.WorldObject(itemName: "test_res_base");
+        residence.StartRemodel("test_res_skin");
+
+        residence.AddRemodelBuild().Should().BeFalse();
+        residence.AddRemodelBuild().Should().BeFalse();
+        residence.AddRemodelBuild().Should().BeTrue();
+
+        residence.RemodelBuilds.Should().Be(3);
+    }
+
+    [Fact]
+    public void WorldObject_AddRemodelBuild_NotRemodeling_ThrowsException()
+    {
+        var faker = new Faker();
+        var residence = faker.WorldObject(itemName: "test_res_base");
+
+        var act = () => residence.AddRemodelBuild();
+
+        act.Should().Throw<Exception>();
+    }
+
+    [Fact]
+    public void WorldObject_GetRemodelRequiredBuilds_SkinItem_ResolvesFromBaseItem()
+    {
+        var faker = new Faker();
+        var residence = faker.WorldObject(itemName: "test_res_skin");
+        residence.StartRemodel("test_res_skin_premium");
+
+        residence.GetRemodelRequiredBuilds().Should().Be(3);
+    }
+
+    [Fact]
+    public void WorldObject_FinishRemodel_SwapsItemNameAndReturnsXp()
+    {
+        var faker = new Faker();
+        var residence = faker.WorldObject(itemName: "test_res_base");
+        residence.StartRemodel("test_res_skin");
+
+        var xp = residence.FinishRemodel();
+
+        xp.Should().Be(4);
+        residence.ItemName.Should().Be("test_res_skin");
+        residence.IsRemodeling().Should().BeFalse();
+        residence.RemodelBuilds.Should().BeNull();
+    }
+
+    [Fact]
+    public void WorldObject_FinishRemodel_NotRemodeling_ThrowsException()
+    {
+        var faker = new Faker();
+        var residence = faker.WorldObject(itemName: "test_res_base");
+
+        var act = () => residence.FinishRemodel();
+
+        act.Should().Throw<Exception>();
+    }
 }

@@ -38,6 +38,8 @@ public class FarmingSettings
     public required int Franchise1DailyBonus { get; set; }
 
     [XmlAttribute("welcomeTrainQuestAmount")] public int WelcomeTrainQuestAmount { get; set; }
+
+    [XmlAttribute("remodelingRequiredLevel")] public int RemodelingRequiredLevel { get; set; }
     
     [XmlAttribute("boostGrowMultiplier")] public double BoostGrowMultiplier { get; set; }
     [XmlAttribute("boostGrowInstantHourLimit")] public int BoostGrowInstantHourLimit { get; set; }

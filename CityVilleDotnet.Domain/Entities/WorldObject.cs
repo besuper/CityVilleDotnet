@@ -68,6 +68,8 @@ public class WorldObject
     public int StreakLength { get; private set; }
     public int EnergyModifier { get; private set; }
     public bool GivenFreeItem { get; private set; }
+    public string? RemodelItemName { get; private set; }
+    public int? RemodelBuilds { get; private set; }
     public List<CrewMember> CrewMembers { get; private set; } = [];
     public List<WorldObjectMechanicCounter> MechanicCounters { get; private set; } = [];
 
@@ -427,6 +429,54 @@ public class WorldObject
 
             Visits = maxVisits;
         }
+    }
+
+    public void StartRemodel(string skinItemName)
+    {
+        RemodelItemName = skinItemName;
+        RemodelBuilds = 0;
+    }
+
+    public bool IsRemodeling()
+    {
+        return RemodelItemName is not null;
+    }
+
+    public bool AddRemodelBuild()
+    {
+        if (RemodelItemName is null) throw new Exception("Building is not being remodeled");
+
+        RemodelBuilds = (RemodelBuilds ?? 0) + 1;
+
+        return RemodelBuilds >= GetRemodelRequiredBuilds();
+    }
+
+    public int GetRemodelRequiredBuilds()
+    {
+        if (RemodelItemName is null) throw new Exception("Building is not being remodeled");
+
+        var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
+        var baseItem = gameItem?.GetFirstDeriveItem(gameItem);
+        var definition = baseItem?.GetRemodelDefinitionByName(RemodelItemName);
+        var gate = baseItem?.GetGates().FirstOrDefault(x => x.Name == definition?.GateName);
+        var amount = gate?.Keys.FirstOrDefault(x => x?.Name == "builds")?.Amount;
+
+        if (amount is null) throw new Exception($"Can't find remodel gate for {RemodelItemName}");
+
+        return amount.Value;
+    }
+
+    public int FinishRemodel()
+    {
+        if (RemodelItemName is null) throw new Exception("Building is not being remodeled");
+
+        var skinItem = GameSettingsManager.Instance.GetItem(RemodelItemName);
+
+        ItemName = RemodelItemName;
+        RemodelItemName = null;
+        RemodelBuilds = null;
+
+        return skinItem?.RemodelXp ?? 0;
     }
 
     public void MoveTo(int x, int y, int z, int direction)

@@ -118,6 +118,8 @@ public class GameItem
     [XmlElement("negativeStreak")] public string? NegativeStreak { get; set; }
     [XmlElement("positiveStreakMaxEffect")] public int PositiveStreakMaxEffect { get; set; }
     [XmlElement("startingStreakValue")] public int StartingStreakValue { get; set; }
+    [XmlElement("remodelXp")] public int? RemodelXp { get; set; }
+    [XmlElement("remodels")] public RemodelsContainer? Remodels { get; set; }
     [XmlIgnore] public int? NumCrop { get; set; }
 
     [XmlElement("numCrop")]
@@ -157,6 +159,11 @@ public class GameItem
     public List<GatesItem> GetGates()
     {
         return Gates?.Gates ?? [];
+    }
+
+    public RemodelDefinitionItem? GetRemodelDefinitionByName(string itemName)
+    {
+        return Remodels?.Definitions.FirstOrDefault(x => x.Item == itemName);
     }
 
     public bool HasMasteries()
@@ -342,6 +349,23 @@ public class EnergyCost
 public class GatesContainer
 {
     [XmlElement("gate")] public required List<GatesItem>? Gates { get; set; }
+}
+
+[Serializable]
+public class RemodelsContainer
+{
+    [XmlElement("remodel")] public List<RemodelDefinitionItem> Definitions { get; set; } = [];
+}
+
+[Serializable]
+public class RemodelDefinitionItem
+{
+    [XmlAttribute("item")] public required string Item { get; set; }
+    [XmlAttribute("gateName")] public string? GateName { get; set; }
+    [XmlAttribute("requirementsName")] public string? RequirementsName { get; set; }
+    [XmlAttribute("overrideCost")] public int OverrideCost { get; set; }
+    [XmlAttribute("overrideCash")] public int OverrideCash { get; set; }
+    [XmlAttribute("isBaseModel")] public bool IsBaseModel { get; set; }
 }
 
 [Serializable]

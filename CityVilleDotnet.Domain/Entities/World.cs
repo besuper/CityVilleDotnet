@@ -128,6 +128,18 @@ public class World
         return Objects.Count(x => x.ItemName.Equals(name));
     }
 
+    public int CountConstructionOrBuildingByName(string name)
+    {
+        return Objects.Count(x => x.ItemName.Equals(name) || name.Equals(x.TargetBuildingName));
+    }
+
+    private static readonly string[] RemodelHeadquartersNames = ["mun_constructioncompany", "mun_constructioncompany_2", "mun_constructioncompany_3"];
+
+    public bool HasRemodelHeadquarters()
+    {
+        return Objects.Any(x => RemodelHeadquartersNames.Contains(x.ItemName));
+    }
+
     public int CountBuildingByRegex(string pattern)
     {
         var regex = new Regex(pattern);

@@ -17,6 +17,7 @@ public class WorldObjectConfiguration : IEntityTypeConfiguration<WorldObject>
         builder.Property(x => x.TargetBuildingName).IsRequired(false).HasMaxLength(64);
         builder.Property(x => x.State).HasMaxLength(32);
         builder.Property(x => x.ContractName).IsRequired(false).HasMaxLength(64);
+        builder.Property(x => x.RemodelItemName).IsRequired(false).HasMaxLength(64);
 
         builder.HasIndex(x => new { x.Id, x.WorldFlatId }).IsUnique();
         builder.HasIndex(x => x.WorldFlatId);

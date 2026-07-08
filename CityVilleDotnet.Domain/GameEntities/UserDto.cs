@@ -200,7 +200,7 @@ public static class UserDtoMapper
                         { "numExpansionsPurchased", model.ExpansionsPurchased },
                     }
                 },
-                { "remodel", new ASObject() { { "enabled", false } } },
+                { "remodel", new ASObject() { { "enabled", model.GetWorld().HasRemodelHeadquarters() } } },
                 { "gardens", new ASObject() },
                 { "incentivizedExpansions", model.GetWorld().BuildIncentivizedExpansions() },
                 { "helperClicks", new ASObject() },

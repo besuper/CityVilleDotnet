@@ -6,6 +6,7 @@
              friendVisitBusinessRepGain="1" friendHelpDefaultCoinReward="25"
              friendVisitWildernessRepGain="1" friendVisitResidenceRepGain="1"
              franchise1DailyBonus="25" welcomeTrainQuestAmount="250"
+             remodelingRequiredLevel="2"
              startingEnergy="12" startingEnergyMax="12" 
              startingGold="7000" startingCash="5" 
              startingLevel="1" startingLightLevel="1" 
@@ -210,6 +211,39 @@
                     <params quantity="10" isPopulationItem="true"/>
                 </inventoryCheck>
             </inventoryChecks>
+        </item>
+        <item name="test_res_base" type="residence" buyable="true">
+            <requiredLevel>1</requiredLevel>
+            <cost>100</cost>
+            <population min="20" max="80" cap="60"/>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates>
+                <gate type="construction" name="remodelGate">
+                    <key name="builds" amount="3"/>
+                </gate>
+            </gates>
+            <remodels>
+                <remodel item="test_res_base" gateName="remodelGate" overrideCost="150" isBaseModel="true"/>
+                <remodel item="test_res_skin" gateName="remodelGate"/>
+                <remodel item="test_res_skin_premium" gateName="remodelGate"/>
+            </remodels>
+        </item>
+        <item name="test_res_skin" type="residence" derivesFrom="test_res_base" buyable="false">
+            <remodelXp>4</remodelXp>
+            <cost>500</cost>
+            <population min="30" max="90" cap="70"/>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates/>
+        </item>
+        <item name="test_res_skin_premium" type="residence" derivesFrom="test_res_base" buyable="false">
+            <remodelXp>2</remodelXp>
+            <cash>5</cash>
+            <population min="30" max="90" cap="70"/>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates/>
         </item>
         <item name="test_bus_premium_goods" type="business" buyable="true">
             <keyword>Business</keyword>

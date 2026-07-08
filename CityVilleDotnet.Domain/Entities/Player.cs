@@ -892,6 +892,7 @@ public class Player
                         case "onValidCityName":
                         case "incrementalExpansionCount":
                         case "expand":
+                        case "buildingremodeled":
                             quest.Progress[index] += 1;
                             break;
                         case "harvestByClass":
@@ -965,20 +966,19 @@ public class Player
 
                 switch (actionTask)
                 {
-                    // FIXME: countConstructionOrBuildingByName
                     case "countWorldObjectByName":
                     case "countConstructionOrBuildingByName":
                     {
-                        if (splitType is null)
+                        //bus_toyota1_zyngage,bus_toyota1_zyngage_2,bus_toyota1_zyngage_3
+                        var names = splitType ?? [taskType];
+
+                        if (!calculatedResults.TryGetValue(resultKey, out value))
                         {
-                            if (!calculatedResults.TryGetValue(resultKey, out value))
-                                calculatedResults[resultKey] = value = GetWorld().CountBuildingByName(task.Type);
-                        }
-                        else
-                        {
-                            //bus_toyota1_zyngage,bus_toyota1_zyngage_2,bus_toyota1_zyngage_3
-                            if (!calculatedResults.TryGetValue(resultKey, out value))
-                                calculatedResults[resultKey] = value = splitType.Sum(x => GetWorld().CountBuildingByName(x));
+                            value = actionTask.Equals("countConstructionOrBuildingByName")
+                                ? names.Sum(x => GetWorld().CountConstructionOrBuildingByName(x))
+                                : names.Sum(x => GetWorld().CountBuildingByName(x));
+
+                            calculatedResults[resultKey] = value;
                         }
 
                         quest.Progress[index] = value;

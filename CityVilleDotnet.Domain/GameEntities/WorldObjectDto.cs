@@ -129,6 +129,16 @@ public static class WorldObjectDtoMapper
             dto.MechanicData[counter.MechanicType] = counter.Count;
         }
 
+        if (model.RemodelItemName is not null)
+        {
+            dto.MechanicData["remodel"] = new ASObject
+            {
+                { "itemName", model.RemodelItemName },
+                { "gate", new ASObject { { "builds", model.RemodelBuilds ?? 0 } } },
+                { "complete", false }
+            };
+        }
+
         if (model.ClassName == BuildingClassType.Bridge)
         {
             var item = GameSettingsManager.Instance.GetItem(model.ItemName)?.GetDeepParent();

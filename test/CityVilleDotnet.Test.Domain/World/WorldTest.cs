@@ -91,4 +91,36 @@ public class WorldTest(DomainFixture fixture)
         world.PopulationMin.Should().Be(20);
         world.PopulationMax.Should().Be(80);
     }
+
+    [Fact]
+    public void World_HasRemodelHeadquarters_WithHeadquarters_ReturnsTrue()
+    {
+        var faker = new Faker();
+        var headquarters = faker.WorldObject(itemName: "mun_constructioncompany", className: BuildingClassType.Municipal);
+        var world = faker.World(objects: [headquarters]);
+
+        world.HasRemodelHeadquarters().Should().BeTrue();
+    }
+
+    [Fact]
+    public void World_HasRemodelHeadquarters_WithoutHeadquarters_ReturnsFalse()
+    {
+        var faker = new Faker();
+        var world = faker.World(objects: [faker.WorldObject(itemName: "res_cottage3")]);
+
+        world.HasRemodelHeadquarters().Should().BeFalse();
+    }
+
+    [Fact]
+    public void World_CountConstructionOrBuildingByName_CountsFinishedAndConstructionTarget()
+    {
+        var faker = new Faker();
+        var finished = faker.WorldObject(itemName: "mun_visitorcenter", className: BuildingClassType.Municipal);
+        var underConstruction = faker.WorldObject(itemName: "mun_visitorcenter", className: BuildingClassType.Municipal);
+        underConstruction.SetAsConstructionSite("construction_3x3_2stage", 2);
+        var world = faker.World(objects: [finished, underConstruction]);
+
+        world.CountConstructionOrBuildingByName("mun_visitorcenter").Should().Be(2);
+        world.CountBuildingByName("mun_visitorcenter").Should().Be(1);
+    }
 }
