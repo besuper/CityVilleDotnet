@@ -22,6 +22,12 @@ public sealed class Finish(CityVilleDbContext context) : AmfService<FinishReques
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.MechanicCounters)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.StorageItems)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.Slots)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.MapRects)
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
@@ -52,6 +58,9 @@ public sealed class Finish(CityVilleDbContext context) : AmfService<FinishReques
 
         if (finishedItem is not null)
             world.GrantFreeExpansions(finishedItem.GrantedExpansionsOnFinish, finishedItem.GrantedExpansionType);
+
+        if (obj.GetClassName() == BuildingClassType.ZooEnclosure)
+            obj.GrantInitialZooAnimal(player.Snuid);
 
         world.CalculatePopulation();
 

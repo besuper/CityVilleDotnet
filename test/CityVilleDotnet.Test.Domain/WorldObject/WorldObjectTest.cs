@@ -131,4 +131,27 @@ public class WorldObjectTest(DomainFixture fixture)
 
         act.Should().Throw<Exception>();
     }
+
+    [Fact]
+    public void WorldObject_RollRandomZooAnimal_ReturnsAnimalFromLootTableAndStoresIt()
+    {
+        var faker = new Faker();
+        var enclosure = faker.WorldObject(itemName: "test_enclosure");
+
+        var animal = enclosure.RollRandomZooAnimal();
+
+        animal.Should().BeOneOf("test_animal_common", "test_animal_uncommon", "test_animal_rare");
+        enclosure.StorageItems.Should().ContainSingle(x => x.Name == animal);
+    }
+
+    [Fact]
+    public void WorldObject_RollRandomZooAnimal_NoLootTable_ThrowsException()
+    {
+        var faker = new Faker();
+        var enclosure = faker.WorldObject(itemName: "unknown_enclosure");
+
+        var act = () => enclosure.RollRandomZooAnimal();
+
+        act.Should().Throw<Exception>();
+    }
 }

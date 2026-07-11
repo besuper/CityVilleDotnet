@@ -17,6 +17,12 @@ internal sealed class Sell(CityVilleDbContext context) : AmfService<SellRequest>
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.MechanicCounters)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.StorageItems)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.Slots)
             .Include(x => x.InventoryItems)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 

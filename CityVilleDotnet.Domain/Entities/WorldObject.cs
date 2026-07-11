@@ -1,3 +1,6 @@
+using System.Buffers.Binary;
+using System.Security.Cryptography;
+using System.Text;
 using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Settings.GameSettings;
@@ -72,6 +75,8 @@ public class WorldObject
     public int? RemodelBuilds { get; private set; }
     public List<CrewMember> CrewMembers { get; private set; } = [];
     public List<WorldObjectMechanicCounter> MechanicCounters { get; private set; } = [];
+    public List<WorldObjectStorageItem> StorageItems { get; private set; } = [];
+    public List<WorldObjectSlot> Slots { get; private set; } = [];
 
     public void IncrementMechanicCounter(string mechanicType)
     {
@@ -199,6 +204,94 @@ public class WorldObject
     public void MarkFreeItemGiven()
     {
         GivenFreeItem = true;
+    }
+
+    public void AddToStorage(string itemName, int amount = 1)
+    {
+        var item = StorageItems.FirstOrDefault(x => x.Name == itemName);
+
+        if (item is null)
+            StorageItems.Add(new WorldObjectStorageItem(itemName, amount));
+        else
+            item.AddAmount(amount);
+    }
+
+    public void RemoveFromStorage(string itemName, int amount = 1)
+    {
+        var item = StorageItems.FirstOrDefault(x => x.Name == itemName);
+
+        if (item is null || item.Amount < amount)
+            throw new Exception($"Not enough {itemName} in storage of object {WorldFlatId}");
+
+        item.RemoveAmount(amount);
+
+        if (item.Amount <= 0)
+            StorageItems.Remove(item);
+    }
+
+    public void FillSlot(int slotIndex, string itemName, int numSlots)
+    {
+        if (slotIndex < 0 || slotIndex >= numSlots)
+            throw new Exception($"Invalid slot index {slotIndex} on object {WorldFlatId}");
+
+        if (Slots.Any(x => x.SlotIndex == slotIndex))
+            throw new Exception($"Slot {slotIndex} is already filled on object {WorldFlatId}");
+
+        Slots.Add(new WorldObjectSlot(slotIndex, itemName));
+    }
+
+    public string EmptySlot(int slotIndex)
+    {
+        var slot = Slots.FirstOrDefault(x => x.SlotIndex == slotIndex);
+
+        if (slot is null)
+            throw new Exception($"Slot {slotIndex} is already empty on object {WorldFlatId}");
+
+        Slots.Remove(slot);
+
+        return slot.ItemName;
+    }
+
+    public int FillNextSlot(string itemName, int numSlots)
+    {
+        for (var i = 0; i < numSlots; i++)
+        {
+            if (Slots.Any(x => x.SlotIndex == i)) continue;
+
+            Slots.Add(new WorldObjectSlot(i, itemName));
+
+            return i;
+        }
+
+        throw new Exception($"No empty slot available on object {WorldFlatId}");
+    }
+
+    public string RollRandomZooAnimal()
+    {
+        var lootTable = GameSettingsManager.Instance.GetLootTable($"zoo_animals_{GetItemName()}")
+            ?? throw new Exception($"No loot table defined for enclosure {GetItemName()}");
+
+        var animalName = lootTable.RollItemName();
+
+        AddToStorage(animalName);
+
+        return animalName;
+    }
+
+    public void GrantInitialZooAnimal(int snuid)
+    {
+        var commons = GameSettingsManager.Instance.GetItemsByKeyword(GetItemName())
+            .Where(x => x.HasKeyword("zoo_animal") && x.Rarity == "common")
+            .ToList();
+
+        if (commons.Count == 0) return;
+
+        // client grants itself the animal locally without sending a transaction
+        // (ZooEnclosure.addRandomAnimal): index = first 8 hex chars of MD5("{uid}::{itemName}") % count
+        var hash = MD5.HashData(Encoding.UTF8.GetBytes($"{snuid}::{GetItemName()}"));
+        var index = (int)(BinaryPrimitives.ReadUInt32BigEndian(hash) % (uint)commons.Count);
+
+        AddToStorage(commons[index].Name);
     }
 
     public void Supply(int maxStreakLength, int[] positiveStreakRewards, int maxEffect)

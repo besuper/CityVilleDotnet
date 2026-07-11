@@ -286,6 +286,14 @@
         </randomModifierTable>
     </randomModifierTables>
 
+    <lootTables>
+        <lootTable name="zoo_animals_test_enclosure" totalWeight="100">
+            <lootItem handler="returnItemName" itemName="test_animal_common" weight="70"/>
+            <lootItem handler="returnItemName" itemName="test_animal_uncommon" weight="25"/>
+            <lootItem handler="returnItemName" itemName="test_animal_rare" weight="5"/>
+        </lootTable>
+    </lootTables>
+
     <collections>
         <collection name="testcollection">
             <collectables>

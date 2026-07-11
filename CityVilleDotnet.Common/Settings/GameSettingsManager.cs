@@ -11,6 +11,7 @@ public class GameSettingsManager
     private readonly Dictionary<string, GameItem?> _items;
     private readonly Dictionary<string, RandomModifierTable> _randomModifiers;
     private readonly Dictionary<string, RandomModifierPack> _randomModifierPacks;
+    private readonly Dictionary<string, LootTable> _lootTables;
     private readonly Dictionary<string, WorldRectItem> _worldRects;
     private readonly Dictionary<string, DynamicExpansionItem> _dynamicExpansions;
     private readonly Dictionary<string, WorldConfigItem> _worldConfigs;
@@ -26,6 +27,7 @@ public class GameSettingsManager
         _items = new Dictionary<string, GameItem?>();
         _randomModifiers = new Dictionary<string, RandomModifierTable>();
         _randomModifierPacks = new Dictionary<string, RandomModifierPack>();
+        _lootTables = new Dictionary<string, LootTable>();
         _worldRects = new Dictionary<string, WorldRectItem>();
         _dynamicExpansions = new Dictionary<string, DynamicExpansionItem>();
         _worldConfigs = new Dictionary<string, WorldConfigItem>();
@@ -99,6 +101,14 @@ public class GameSettingsManager
                 }
             }
 
+            if (gameSettings.LootTables?.Tables is not null)
+            {
+                foreach (var lootTable in gameSettings.LootTables.Tables)
+                {
+                    _lootTables[lootTable.Name] = lootTable;
+                }
+            }
+
             _levels = gameSettings.Levels.Levels;
             _reputationLevels = gameSettings.Reputation.Levels;
             _farmSettings = gameSettings.Farming;
@@ -139,6 +149,7 @@ public class GameSettingsManager
         logger.LogInformation("Loaded {ReputationLevelsCount} social levels", _reputationLevels.Count);
         logger.LogInformation("Loaded {RandomModifiersCount} random modifiers", _randomModifiers.Count);
         logger.LogInformation("Loaded {RandomModifierPacksCount} random modifier packs", _randomModifierPacks.Count);
+        logger.LogInformation("Loaded {LootTablesCount} loot tables", _lootTables.Count);
         logger.LogInformation("Loaded {CollectionsCount} collections", _collections.Count);
         logger.LogInformation("Loaded {WorldRectsCount} world rects", _worldRects.Count);
         logger.LogInformation("Loaded {ExpansionsCount} expansions", _expansions.Count);
@@ -156,12 +167,28 @@ public class GameSettingsManager
         return _items.TryGetValue(itemName, out var item) ? item : null;
     }
 
+    public IReadOnlyList<GameItem> GetItemsByKeyword(string keyword)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return _items.Select(x => x.Value).Where(x => x.HasKeyword(keyword)).ToList();
+    }
+
     public RandomModifierTable? GetRandomModifier(string name)
     {
         if (!_isInitialized)
             throw new InvalidOperationException("GameSettingsManager not initialized");
 
         return _randomModifiers.TryGetValue(name, out var item) ? item : null;
+    }
+
+    public LootTable? GetLootTable(string name)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return _lootTables.TryGetValue(name, out var table) ? table : null;
     }
 
     public List<RandomModifier>? GetRandomModifierPackModifiers(string packId)

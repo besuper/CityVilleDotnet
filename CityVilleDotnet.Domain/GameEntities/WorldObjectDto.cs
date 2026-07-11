@@ -208,6 +208,28 @@ public static class WorldObjectDtoMapper
             dto.MechanicData["slots"] = new List<object>();
         }
 
+        if (model.ClassName == BuildingClassType.ZooEnclosure)
+        {
+            var storage = new ASObject();
+
+            foreach (var storageItem in model.StorageItems)
+            {
+                storage[storageItem.Name] = storageItem.Amount;
+            }
+
+            var numSlots = gameItem?.Mechanics?.GetMechanicByGameMode("all")?.GetMechanicItemByType("slots")?.NumSlots ?? 3;
+            var slots = new List<object?>();
+
+            for (var i = 0; i < numSlots; i++)
+            {
+                slots.Add(model.Slots.FirstOrDefault(x => x.SlotIndex == i)?.ItemName);
+            }
+
+            dto.MechanicData["storage"] = storage;
+            dto.MechanicData["slots"] = slots;
+            dto.MechanicData["giftSenders"] = new ASObject();
+        }
+
         if (model.ClassName == BuildingClassType.ConstructionSite)
         {
             var targetGameItem = GameSettingsManager.Instance.GetItem(model.GetItemName());

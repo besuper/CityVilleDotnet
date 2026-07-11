@@ -2,6 +2,7 @@
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
+using FluorineFx;
 
 namespace CityVilleDotnet.Domain.GameEntities;
 
@@ -17,6 +18,7 @@ public class QuestDto
     [JsonPropertyName("expired")] public bool Expired { get; set; }
     [JsonPropertyName("activatedTime")] public long ActivatedTime { get; set; }
     [JsonPropertyName("isNew")] public bool IsNew { get; set; }
+    [JsonPropertyName("extraData")] public ASObject ExtraData { get; set; } = new();
 }
 
 public static class QuestDtoMapper

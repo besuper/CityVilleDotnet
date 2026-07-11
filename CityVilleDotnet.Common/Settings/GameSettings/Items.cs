@@ -121,6 +121,8 @@ public class GameItem
     [XmlElement("startingStreakValue")] public int StartingStreakValue { get; set; }
     [XmlElement("remodelXp")] public int? RemodelXp { get; set; }
     [XmlElement("remodels")] public RemodelsContainer? Remodels { get; set; }
+    [XmlElement("rarity")] public string? Rarity { get; set; }
+    [XmlElement("unlocksItem")] public string? UnlocksItem { get; set; }
     [XmlIgnore] public int? NumCrop { get; set; }
 
     [XmlElement("numCrop")]
@@ -596,8 +598,18 @@ public class MechanicItem
     [XmlAttribute("pick")] public string? Pick { get; set; }
     [XmlAttribute("freeItem")] public string? FreeItem { get; set; }
     [XmlAttribute("itemNames")] public string? ItemNames { get; set; }
+    [XmlAttribute("numSlots")] public int NumSlots { get; set; }
+    [XmlAttribute("restrictByKeywords")] public string? RestrictByKeywords { get; set; }
     [XmlAttribute("xOffset")] public int XOffset { get; set; }
     [XmlAttribute("yOffset")] public int YOffset { get; set; }
+
+    public bool AllowsItem(GameItem? item)
+    {
+        if (RestrictByKeywords is null) return true;
+        if (item is null) return false;
+
+        return RestrictByKeywords.Split(',').Any(item.HasKeyword);
+    }
 }
 
 [Serializable]

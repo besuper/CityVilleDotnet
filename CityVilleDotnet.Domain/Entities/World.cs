@@ -182,6 +182,15 @@ public class World
         return Objects.Count(x => x.ItemName.Equals(name) || name.Equals(x.TargetBuildingName));
     }
 
+    public int CountZooAnimals(string enclosureItemName)
+    {
+        var enclosure = Objects.FirstOrDefault(x => x.ItemName.Equals(enclosureItemName));
+
+        if (enclosure is null) return 0;
+
+        return enclosure.StorageItems.Sum(x => x.Amount) + enclosure.Slots.Count;
+    }
+
     private static readonly string[] RemodelHeadquartersNames = ["mun_constructioncompany", "mun_constructioncompany_2", "mun_constructioncompany_3"];
 
     public bool HasRemodelHeadquarters()

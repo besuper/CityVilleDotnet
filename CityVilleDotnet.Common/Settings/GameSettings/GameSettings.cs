@@ -15,6 +15,7 @@ public class GameSettings
 
     [XmlElement("randomModifierTables")] public required RandomModifierTables Modifiers { get; set; }
     [XmlElement("randomModifierPacks")] public RandomModifierPacksContainer? ModifierPacks { get; set; }
+    [XmlElement("lootTables")] public LootTablesContainer? LootTables { get; set; }
     [XmlElement("collections")] public required CollectionContainer Collections { get; set; }
     [XmlElement("expansionRequirements")] public required ExpansionsGate Expansions { get; set; }
     [XmlElement("worldRects")] public required WorldRectsContainer WorldRects { get; set; }

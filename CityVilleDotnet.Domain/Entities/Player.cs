@@ -940,6 +940,7 @@ public class Player
                         case "sendTourNeighborBusinessByName":
                         case "finishConstructionByName":
                         case "openBusinessByCommodityType":
+                        case "transferFromStorageToDisplay":
                         case "travel":
                         {
                             if (itemName is null)
@@ -1039,6 +1040,14 @@ public class Player
                             calculatedResults[resultKey] = value = GetWorld().CountWorldObjectByKeyword(task.Type);
 
                         quest.Progress[index] = value;
+                        continue;
+                    case "countAnimalsObjects":
+                        if (!calculatedResults.TryGetValue(resultKey, out value))
+                            calculatedResults[resultKey] = value = GetWorld().CountZooAnimals(taskType);
+                        
+                        if (value > quest.Progress[index])
+                            quest.Progress[index] = value;
+
                         continue;
                     case "countNumAtThisStreak":
                         var count = GetWorld().CountStreakByItemName(task.Type);

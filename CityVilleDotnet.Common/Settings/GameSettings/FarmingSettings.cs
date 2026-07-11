@@ -56,6 +56,11 @@ public class FarmingSettings
     [XmlAttribute("instantReadyResidenceCostConstant6")] public double InstantReadyResidenceCostConstant6 { get; set; }
     [XmlAttribute("instantReadyResidenceCostConstant7")] public double InstantReadyResidenceCostConstant7 { get; set; }
     
+    [XmlAttribute("ZooDonationNPCPrice_enclosure_jungle")] public int ZooDonationNpcPriceEnclosureJungle { get; set; }
+    [XmlAttribute("ZooDonationNPCPrice_enclosure_savannah")] public int ZooDonationNpcPriceEnclosureSavannah { get; set; }
+    [XmlAttribute("ZooDonationNPCPrice_enclosure_mountain")] public int ZooDonationNpcPriceEnclosureMountain { get; set; }
+    [XmlAttribute("ZooDonationNPCPrice_enclosure_arctic")] public int ZooDonationNpcPriceEnclosureArctic { get; set; }
+
     [XmlAttribute("startingEnergy")] public int StartingEnergy { get; set; }
     [XmlAttribute("startingEnergyMax")] public int StartingEnergyMax { get; set; }
     [XmlAttribute("startingGold")] public int StartingGold { get; set; }
@@ -65,4 +70,19 @@ public class FarmingSettings
     [XmlAttribute("startingXp")] public int StartingXp { get; set; }
     [XmlAttribute("startingCommodities")] public int StartingCommodities { get; set; }
     [XmlAttribute("cashGainedPerLevel")] public int CashGainedPerLevel { get; set; }
+
+    public int GetZooDonationNpcPrice(string enclosureItemName)
+    {
+        var price = enclosureItemName switch
+        {
+            "enclosure_jungle" => ZooDonationNpcPriceEnclosureJungle,
+            "enclosure_savannah" => ZooDonationNpcPriceEnclosureSavannah,
+            "enclosure_mountain" => ZooDonationNpcPriceEnclosureMountain,
+            "enclosure_arctic" => ZooDonationNpcPriceEnclosureArctic,
+            _ => 0
+        };
+
+        // same fallback as the client: getInt("ZooDonationNPCPrice_" + name, 20)
+        return price > 0 ? price : 20;
+    }
 }
