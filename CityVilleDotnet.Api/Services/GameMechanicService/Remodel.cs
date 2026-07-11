@@ -16,7 +16,7 @@ public sealed class Remodel(CityVilleDbContext context) : AmfService<RemodelRequ
     {
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.MechanicCounters)
             .Include(x => x.InventoryItems)

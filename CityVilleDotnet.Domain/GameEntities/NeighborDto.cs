@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 
 namespace CityVilleDotnet.Domain.GameEntities;
 
@@ -50,7 +51,7 @@ public static class NeighborDtoMapper
             Gold = model.FriendPlayer.Gold,
             Xp = model.FriendPlayer.Xp,
             SocialLevel = model.FriendPlayer.SocialLevel,
-            CityName = model.FriendPlayer.GetWorld().WorldName ?? "Unknown city",
+            CityName = model.FriendPlayer.GetWorldByType(WorldType.Main)?.WorldName ?? "Unknown city",
 
             FirstTimeVisit = false,
             RollCall = false,

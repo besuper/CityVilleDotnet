@@ -48,7 +48,7 @@ public class ProfileModel(UserManager<ApplicationUser> userManager, CityVilleDbC
 
         var player = await dbContext.Set<Player>()
             .AsNoTracking()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == WorldType.Main))
             .FirstOrDefaultAsync(x => x.AppUser!.Id == currentUser.Id, ct);
 
         if (player is null)
@@ -73,13 +73,15 @@ public class ProfileModel(UserManager<ApplicationUser> userManager, CityVilleDbC
         ExpansionsPurchased = player.ExpansionsPurchased;
         CreationTimestamp = player.CreationTimestamp;
 
-        if (player.World is not null)
+        var mainWorld = player.GetWorldByType(WorldType.Main);
+
+        if (mainWorld is not null)
         {
-            WorldName = player.World.WorldName;
-            Population = player.World.GetCurrentPopulation();
-            PopulationCap = player.World.PopulationCap;
-            SizeX = player.World.SizeX;
-            SizeY = player.World.SizeY;
+            WorldName = mainWorld.WorldName;
+            Population = mainWorld.GetCurrentPopulation();
+            PopulationCap = mainWorld.PopulationCap;
+            SizeX = mainWorld.SizeX;
+            SizeY = mainWorld.SizeY;
         }
 
         var levels = GameSettingsManager.Instance.GetLevels();

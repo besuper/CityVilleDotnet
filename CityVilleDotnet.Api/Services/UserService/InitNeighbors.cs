@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
             .AsNoTracking()
             .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
             .ThenInclude(x => x.FriendPlayer)
-            .ThenInclude(x => x.World)
+            .ThenInclude(x => x.Worlds.Where(w => w.Type == WorldType.Main))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null)

@@ -17,7 +17,7 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
             .Include(x => x.Quests)
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 

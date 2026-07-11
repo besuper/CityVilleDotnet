@@ -14,7 +14,7 @@ public class MakeResourceInstantReady(CityVilleDbContext context, ILogger<MakeRe
     public override async Task<ASObject> HandlePacket(MakeResourceInstantReadyRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var player = await context.Set<Player>()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.BuildingId || o.TempId == request.BuildingId))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 

@@ -14,8 +14,9 @@ internal sealed class Sell(CityVilleDbContext context) : AmfService<SellRequest>
     {
         var user = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
-            .ThenInclude(x => x!.Objects.Where(o => o.X == request.Building.Position.X && o.Y == request.Building.Position.Y))
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.MechanicCounters)
             .Include(x => x.InventoryItems)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
@@ -41,6 +42,8 @@ internal sealed class Sell(CityVilleDbContext context) : AmfService<SellRequest>
                 user.AddItem(obj.ItemName);
             }
         }
+
+        world.CalculatePopulation();
 
         await context.SaveChangesAsync(cancellationToken);
 

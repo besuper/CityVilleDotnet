@@ -16,10 +16,17 @@ public class UserDto
 
 public static class UserDtoMapper
 {
-    public static UserDto ToDto(this Player model)
+    public static UserDto ToDto(this Player model, IEnumerable<World>? additionalWorlds = null)
     {
         var activeQuests = model.Quests
             .Where(q => q.QuestType == QuestType.Active)
+            .ToList();
+
+        // The client replaces its whole summaries map on each response, so every world must always be present
+        var summaryWorlds = model.Worlds
+            .Concat(additionalWorlds ?? [])
+            .GroupBy(w => w.Type)
+            .Select(g => g.First())
             .ToList();
 
         var energyModifiers = new Dictionary<string, int>();
@@ -113,65 +120,7 @@ public static class UserDtoMapper
                 World = model.GetWorld().ToDto(),
                 Username = model.Username,
                 WorldName = model.GetWorld().WorldName,
-                // This fix null in setFinishedWorldFTUE after tutorial
-                WorldSummary = new ASObject(new Dictionary<string, object>()
-                {
-                    {
-                        model.GetWorld().Type.ToDescriptionString(), new ASObject(new Dictionary<string, object>()
-                        {
-                            { "world_id", model.GetWorld().Type.ToDescriptionString() },
-                            { "ftueCompleted", !model.IsNew },
-                            {
-                                "items_by_name", model.GetWorld().Objects
-                                    .Where(x => x.ClassName != BuildingClassType.ConstructionSite)
-                                    .GroupBy(x => x.ItemName)
-                                    .ToDictionary(g => g.Key, g => g.Count())
-                            },
-                            {
-                                "construction_items", model.GetWorld().Objects
-                                    .Where(x => x.ClassName == BuildingClassType.ConstructionSite && x.TargetBuildingName != null)
-                                    .GroupBy(x => x.TargetBuildingName)
-                                    .ToDictionary(g => g.Key, g => g.Count())
-                            },
-                            { "malls_items", new ASObject() }, // TODO: Implement containers
-                            { "incentivized_expansion", new ASObject() }, // TODO: Implement specials expansions
-                            { "numberOfExpansions", model.ExpansionsPurchased },
-                            { "number_of_business", model.GetWorld().Objects.Count(x => x.ClassName == BuildingClassType.Business) },
-                            { "populationSummary", model.GetWorld().ToPopulationSummaryDto() },
-                            {
-                                "appraisalSummary", new ASObject() // TODO: Implement appraisal (not used in world_main)
-                                {
-                                    { "id", null },
-                                    { "yield", 0 },
-                                    { "capacity", 0 },
-                                    { "potential", 0 },
-                                }
-                            },
-                            { "commoditySummary", model.GetWorld().ToCommoditySummaryDto() },
-                            {
-                                "savedQuestSequence", activeQuests
-                                    .Where(q => q.Location == QuestLocation.Sidebar)
-                                    .OrderBy(q => q.Order)
-                                    .Select(q => q.Name)
-                                    .ToList()
-                            },
-                            {
-                                "questManagerQuests", activeQuests
-                                    .Where(q => q.Location == QuestLocation.Menu)
-                                    .OrderBy(q => q.Order)
-                                    .Select(q => q.Name)
-                                    .ToList()
-                            },
-                            {
-                                "hiddenQuests", activeQuests
-                                    .Where(q => q.Location == QuestLocation.Hidden)
-                                    .OrderBy(q => q.Order)
-                                    .Select(q => q.Name)
-                                    .ToList()
-                            },
-                        })
-                    }
-                })
+                WorldSummary = new ASObject(summaryWorlds.ToDictionary(w => w.Type.ToDescriptionString(), object (w) => BuildWorldSummary(w, model, activeQuests)))
             },
             Franchises = model.Franchises.Select(x => x.ToDto()).ToList(),
             FeatureData = new ASObject(new Dictionary<string, object>()
@@ -254,6 +203,55 @@ public static class UserDtoMapper
                 { "socialInventory", new ASObject { { "samObjectIds", new ASObject() } } }
             }), // Enable or disable some features for the user
         };
+    }
+    
+    private static ASObject BuildWorldSummary(World world, Player model, List<Quest> activeQuests)
+    {
+        return new ASObject(new Dictionary<string, object>()
+        {
+            { "world_id", world.Type.ToDescriptionString() },
+            { "ftueCompleted", world.Type == WorldType.Main ? !model.IsNew : world.IsFtueCompleted() },
+            {
+                "items_by_name", world.Objects
+                    .Where(x => x.ClassName != BuildingClassType.ConstructionSite)
+                    .GroupBy(x => x.ItemName)
+                    .ToDictionary(g => g.Key, g => g.Count())
+            },
+            {
+                "construction_items", world.Objects
+                    .Where(x => x.ClassName == BuildingClassType.ConstructionSite && x.TargetBuildingName != null)
+                    .GroupBy(x => x.TargetBuildingName)
+                    .ToDictionary(g => g.Key, g => g.Count())
+            },
+            { "malls_items", new ASObject() }, // TODO: Implement containers
+            { "incentivized_expansion", new ASObject() }, // TODO: Implement specials expansions
+            { "numberOfExpansions", model.ExpansionsPurchased },
+            { "number_of_business", world.Objects.Count(x => x.ClassName == BuildingClassType.Business) },
+            { "populationSummary", world.ToPopulationSummaryAsObject() },
+            { "appraisalSummary", world.ToAppraisalSummaryDto() },
+            { "commoditySummary", world.ToCommoditySummaryDto() },
+            {
+                "savedQuestSequence", activeQuests
+                    .Where(q => q.Location == QuestLocation.Sidebar)
+                    .OrderBy(q => q.Order)
+                    .Select(q => q.Name)
+                    .ToList()
+            },
+            {
+                "questManagerQuests", activeQuests
+                    .Where(q => q.Location == QuestLocation.Menu)
+                    .OrderBy(q => q.Order)
+                    .Select(q => q.Name)
+                    .ToList()
+            },
+            {
+                "hiddenQuests", activeQuests
+                    .Where(q => q.Location == QuestLocation.Hidden)
+                    .OrderBy(q => q.Order)
+                    .Select(q => q.Name)
+                    .ToList()
+            },
+        });
     }
 
     private static ASObject BuildOrdersAsObject(Player model)

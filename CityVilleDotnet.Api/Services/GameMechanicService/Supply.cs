@@ -15,7 +15,7 @@ internal sealed class Supply(CityVilleDbContext context) : AmfService<SupplyRequ
     {
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.InventoryItems)

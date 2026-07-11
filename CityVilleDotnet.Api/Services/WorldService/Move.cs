@@ -17,7 +17,7 @@ public class Move(CityVilleDbContext context) : AmfService<MoveRequest>
 
         var user = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.X == originX && o.Y == originY))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 

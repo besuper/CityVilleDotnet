@@ -14,7 +14,7 @@ public class InitialTrees(CityVilleDbContext context) : AmfService<InitialTreesR
     {
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(w => w.WorldFlatId == request.ObjectId || w.TempId == request.ObjectId))
             .Include(x => x.InventoryItems)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);

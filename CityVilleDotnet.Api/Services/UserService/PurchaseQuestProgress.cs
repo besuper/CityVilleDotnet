@@ -19,7 +19,7 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.SeenFlags)
             .Include(x => x.InventoryItems)
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.EnergyModifier > 0))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 

@@ -15,7 +15,7 @@ public class CompleteTutorial(CityVilleDbContext context) : AmfService
             .Include(x => x.Quests)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
-        if (player is null) throw new Exception("Can't to find player with UserId");
+        if (player is null) throw new Exception("Player not found");
 
         player.CompleteTutorial();
 

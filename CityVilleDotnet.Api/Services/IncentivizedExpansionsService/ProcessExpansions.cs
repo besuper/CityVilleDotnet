@@ -16,10 +16,10 @@ public class ProcessExpansions(CityVilleDbContext context, ILogger<ProcessExpans
     {
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
-            .ThenInclude(x => x!.MapRects)
-            .Include(x => x.World)
-            .ThenInclude(x => x!.IncentivizedExpansions)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x.MapRects)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x.IncentivizedExpansions)
             .Include(x => x.InventoryItems)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
@@ -27,6 +27,11 @@ public class ProcessExpansions(CityVilleDbContext context, ILogger<ProcessExpans
 
         var world = player.GetWorld();
         var results = new List<object>();
+
+        if (!world.AreIncentivizedExpansionsEnabled())
+        {
+            return new CityVilleResponse().Data(results);
+        }
 
         foreach (var operation in request.Operations)
         {
@@ -46,7 +51,11 @@ public class ProcessExpansions(CityVilleDbContext context, ILogger<ProcessExpans
                     if (operation.Params.X is null || operation.Params.Y is null)
                         throw new Exception($"Missing coordinates for storeData on {expansionId}");
 
-                    world.GetOrCreateIncentivizedExpansion(expansionId).Store(operation.Params.X.Value, operation.Params.Y.Value, ServerUtils.GetCurrentTime());
+                    var expansion = world.GetOrCreateIncentivizedExpansion(expansionId);
+
+                    if (expansion.IsCompleted) break;
+
+                    expansion.Store(operation.Params.X.Value, operation.Params.Y.Value, ServerUtils.GetCurrentTime());
                     break;
                 }
                 case "recordFailure":
@@ -58,17 +67,25 @@ public class ProcessExpansions(CityVilleDbContext context, ILogger<ProcessExpans
                 }
                 case "grantRewards":
                 {
+                    var expansion = world.GetOrCreateIncentivizedExpansion(expansionId);
+
+                    if (expansion.IsCompleted) break;
+
                     // If placement fail => send to inventory
                     foreach (var reward in config.GetRewards().Where(x => x.Callback == "embedRewardInWorld"))
                     {
                         player.AddItem(reward.ItemName);
                     }
 
-                    world.GetOrCreateIncentivizedExpansion(expansionId).Complete();
+                    expansion.Complete();
                     break;
                 }
                 case "persistExpansionInWorld":
                 {
+                    var expansion = world.IncentivizedExpansions.FirstOrDefault(x => x.ExpansionId == expansionId);
+
+                    if (expansion is not null && expansion.IsCompleted) break;
+
                     if (operation.Params.X is null || operation.Params.Y is null)
                         throw new Exception($"Missing coordinates for persistExpansionInWorld on {expansionId}");
 
@@ -99,6 +116,8 @@ public class ProcessExpansions(CityVilleDbContext context, ILogger<ProcessExpans
                 case "grantFreeExpansion":
                 {
                     var expansion = world.IncentivizedExpansions.FirstOrDefault(x => x.ExpansionId == expansionId);
+
+                    if (expansion is not null && expansion.IsCompleted) break;
 
                     if (expansion is null || !expansion.IsActive())
                         throw new Exception($"Can't grant free expansion, {expansionId} is not active");

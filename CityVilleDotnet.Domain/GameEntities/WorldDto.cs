@@ -29,6 +29,11 @@ public class WorldDto
 
     [JsonPropertyName("currentThemeCollections")]
     public List<string> ThemeCollections { get; set; } = [];
+
+    [JsonPropertyName("worldCreated")] public string? WorldCreated { get; set; }
+
+    // The client reads it from the cached world blob when switching worlds (OpenWorld.setupWorld)
+    [JsonPropertyName("featureData")] public ASObject? FeatureData { get; set; }
 }
 
 public static class WorldDtoMapper
@@ -42,12 +47,18 @@ public static class WorldDtoMapper
             MapRects = model.MapRects.Select(x => x.ToDto()).ToList(),
             CitySim = new CitySimDto()
             {
-                PopulationSummary = model.ToPopulationSummaryDto()
+                PopulationSummary = model.ToPopulationSummaryDto(),
+                AppraisalSummary = model.ToAppraisalSummaryDto()
             },
             Objects = model.Objects.Select(x => x.ToDto()).ToList(),
             ThemeCollections = model.ThemeCollections,
             LastExpansionTier = 0,
-            WorldId = model.Type.ToDescriptionString()
+            WorldId = model.Type.ToDescriptionString(),
+            WorldCreated = model.WorldCreated,
+            FeatureData = new ASObject
+            {
+                { "incentivizedExpansions", model.BuildIncentivizedExpansions() }
+            }
         };
     }
 
@@ -70,6 +81,72 @@ public static class WorldDtoMapper
                     }
                 }
             })
+        };
+    }
+
+    // TODO: Implement everything in DTO (avoid raw AsObject)
+    public static ASObject ToPopulationSummaryAsObject(this World model)
+    {
+        return new ASObject
+        {
+            {
+                "segments", new ASObject
+                {
+                    {
+                        "citizen", new ASObject
+                        {
+                            { "id", "citizen" },
+                            { "minimum", model.PopulationMin },
+                            { "yield", model.Population },
+                            { "maximum", model.PopulationMax },
+                            { "capacity", model.PopulationCap },
+                            { "potential", model.PotentialPopulation }
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    public static ASObject ToAppraisalSummaryDto(this World model)
+    {
+        var appraisalId = model.GetAppraisalId();
+
+        var minimum = 0;
+        var yield = 0;
+        var maximum = 0;
+        var capacity = 0;
+        var potential = 0;
+
+        if (appraisalId is not null)
+        {
+            foreach (var obj in model.Objects)
+            {
+                var appraisal = GameSettingsManager.Instance.GetItem(obj.GetItemName())?.GetAppraisal(appraisalId);
+
+                if (appraisal is null) continue;
+
+                if (obj.ClassName == BuildingClassType.ConstructionSite)
+                {
+                    potential += appraisal.EffectiveMin;
+                    continue;
+                }
+
+                minimum += appraisal.EffectiveMin;
+                yield += appraisal.EffectiveMin + Math.Clamp(obj.GetBonusAppraisal(), 0, Math.Max(0, appraisal.EffectiveMax - appraisal.EffectiveMin));
+                maximum += appraisal.EffectiveMax;
+                capacity += appraisal.Cap ?? 0;
+            }
+        }
+
+        return new ASObject
+        {
+            { "id", appraisalId },
+            { "minimum", minimum },
+            { "yield", yield },
+            { "maximum", maximum },
+            { "capacity", capacity },
+            { "potential", potential },
         };
     }
 

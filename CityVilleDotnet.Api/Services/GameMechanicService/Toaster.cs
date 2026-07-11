@@ -14,7 +14,7 @@ public class Toaster(CityVilleDbContext context) : AmfService<ToasterRequest>
     {
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(w => w.WorldFlatId == request.ObjectId || w.TempId == request.ObjectId))
             .ThenInclude(x => x.MechanicCounters)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);

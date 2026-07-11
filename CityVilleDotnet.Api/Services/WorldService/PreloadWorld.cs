@@ -1,5 +1,7 @@
-﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.GameWorlds;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
@@ -11,22 +13,26 @@ public class PreloadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger)
 {
     public override async Task<ASObject> HandlePacket(PreloadWorldRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        logger.LogInformation("LoadWorld for user {UserId} visiting {VisitUserId}", playerId, request.VisitUserId);
+        logger.LogInformation("PreloadWorld for user {UserId} visiting {VisitUserId} world {WorldType}", playerId, request.VisitUserId, request.Type);
+
+        await DowntownWorldFactory.EnsureCreatedAsync(context, playerId, request.VisitUserId, request.Type, cancellationToken);
 
         var user = await context.Set<Player>()
             .AsSplitQuery()
             .AsNoTracking()
             .Include(x => x.Quests)
             .Include(x => x.InventoryItems)
-            .Include(x => x.World)
-            .ThenInclude(x => x!.MapRects)
-            .Include(x => x.World)
-            .ThenInclude(x => x!.Objects)
-            .ThenInclude(x => x.MechanicCounters)
+            .Include(x => x.Worlds.Where(w => w.Type == request.Type))
+            .ThenInclude(w => w.MapRects)
+            .Include(x => x.Worlds.Where(w => w.Type == request.Type))
+            .ThenInclude(w => w.Objects)
+            .ThenInclude(o => o.MechanicCounters)
+            .Include(x => x.Worlds.Where(w => w.Type == request.Type))
+            .ThenInclude(w => w.IncentivizedExpansions)
             .Include(x => x.SeenFlags)
             .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
             .ThenInclude(x => x.FriendPlayer)
-            .ThenInclude(x => x.World)
+            .ThenInclude(x => x.Worlds.Where(w => w.Type == WorldType.Main))
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.Licenses)
@@ -39,7 +45,19 @@ public class PreloadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger)
         if (user is null)
             throw new Exception($"Unable to find user with Player.Uid {request.VisitUserId}");
 
-        var dtoUser = user.ToDto();
+        // In-memory only (AsNoTracking) so the DTO targets the requested world
+        user.SwitchWorld(request.Type);
+
+        logger.LogInformation("PreloadWorld sending world {WorldType} with population {Population}/{PopulationCap}",
+            user.GetWorld().Type, user.GetWorld().Population, user.GetWorld().PopulationCap);
+
+        // Rows only, the summaries of the non active worlds are built from the persisted fields
+        var allWorlds = await context.Set<World>()
+            .AsNoTracking()
+            .Where(w => w.Player!.Id == user.Id)
+            .ToListAsync(cancellationToken);
+
+        var dtoUser = user.ToDto(allWorlds);
 
         var response = (ASObject)AmfConverter.Convert(dtoUser.UserInfo);
         response!["franchises"] = new List<object>();
@@ -51,4 +69,5 @@ public class PreloadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger)
 public sealed class PreloadWorldRequest
 {
     [AmfParam(0)] public int VisitUserId { get; set; }
+    [AmfParam(1)] public WorldType Type { get; set; }
 }

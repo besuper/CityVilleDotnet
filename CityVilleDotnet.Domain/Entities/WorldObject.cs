@@ -91,6 +91,39 @@ public class WorldObject
         return MechanicCounters.FirstOrDefault(x => x.MechanicType == "population_value_increase")?.Count ?? 0;
     }
 
+    public int GetBonusAppraisal()
+    {
+        return MechanicCounters.FirstOrDefault(x => x.MechanicType == "appraisal_value_increase")?.Count ?? 0;
+    }
+
+    public int AddBonusAppraisal(int amount, string appraisalId)
+    {
+        var appraisal = GameSettingsManager.Instance.GetItem(ItemName)?.GetAppraisal(appraisalId);
+
+        if (appraisal is null) return 0;
+
+        var maxIncrease = appraisal.EffectiveMax - appraisal.EffectiveMin;
+
+        if (maxIncrease <= 0) return 0;
+
+        var current = GetBonusAppraisal();
+        var newValue = Math.Clamp(current + amount, 0, maxIncrease);
+
+        if (newValue == current) return 0;
+
+        var counter = MechanicCounters.FirstOrDefault(x => x.MechanicType == "appraisal_value_increase");
+
+        if (counter is null)
+        {
+            counter = new WorldObjectMechanicCounter("appraisal_value_increase");
+            MechanicCounters.Add(counter);
+        }
+
+        counter.Add(newValue - current);
+
+        return newValue - current;
+    }
+
     public int AddBonusPopulation(int amount)
     {
         var gameItem = GameSettingsManager.Instance.GetItem(ItemName);

@@ -23,10 +23,10 @@ public static class SamanthaSeeder
 
         var samanthaUser = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(u => u.World)
-            .ThenInclude(w => w!.Objects)
-            .Include(u => u.World)
-            .ThenInclude(w => w!.MapRects)
+            .Include(u => u.Worlds.Where(w => w.Type == WorldType.Main))
+            .ThenInclude(w => w.Objects)
+            .Include(u => u.Worlds.Where(w => w.Type == WorldType.Main))
+            .ThenInclude(w => w.MapRects)
             .FirstOrDefaultAsync(u => u.Snuid == SamanthaSnuid);
 
         var mapRects = GetMapRects();
@@ -34,8 +34,10 @@ public static class SamanthaSeeder
 
         if (samanthaUser is not null)
         {
-            if (samanthaUser.World is not null)
-                context.Remove(samanthaUser.GetWorld());
+            var existingWorld = samanthaUser.GetWorldByType(WorldType.Main);
+
+            if (existingWorld is not null)
+                context.Remove(existingWorld);
 
             var world = new World("City Sam", 36, 36, 0, 0, 0, 0, 0, mapRects, objects);
             samanthaUser.SetWorld(world);

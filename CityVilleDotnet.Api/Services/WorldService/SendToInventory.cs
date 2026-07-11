@@ -14,9 +14,12 @@ internal sealed class SendToInventory(CityVilleDbContext context) : AmfService<S
     {
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.MechanicCounters)
             .Include(x => x.InventoryItems)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
@@ -41,6 +44,8 @@ internal sealed class SendToInventory(CityVilleDbContext context) : AmfService<S
 
         world.RemoveBuilding(obj);
         context.Set<WorldObject>().Remove(obj);
+
+        world.CalculatePopulation();
 
         await context.SaveChangesAsync(cancellationToken);
 

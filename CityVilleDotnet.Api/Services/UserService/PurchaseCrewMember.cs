@@ -18,7 +18,7 @@ public class PurchaseCrewMember(CityVilleDbContext context, ILogger<PurchaseCrew
 
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
             .ThenInclude(x => x.CrewMembers)
             .ThenInclude(x => x.Player)

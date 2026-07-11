@@ -16,7 +16,7 @@ internal sealed class BuildFloor(CityVilleDbContext context) : AmfService<BuildF
         // TODO: Check if this transaction is only used for headquarters
         var user = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.ClassName == request.Building.ClassName))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 

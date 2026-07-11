@@ -14,8 +14,9 @@ public class PlaceFromStorage(CityVilleDbContext context) : AmfService<PlaceFrom
     {
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.MechanicCounters)
             .Include(x => x.InventoryItems)
             .ThenInclude(x => x.StoredObject)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
@@ -49,6 +50,8 @@ public class PlaceFromStorage(CityVilleDbContext context) : AmfService<PlaceFrom
 
             context.Remove(inventoryItem);
         }
+
+        world.CalculatePopulation();
 
         await context.SaveChangesAsync(cancellationToken);
 

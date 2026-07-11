@@ -18,7 +18,7 @@ public class Explode(CityVilleDbContext context, ILogger<Explode> logger) : AmfS
     {
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(w => w.WorldFlatId == request.ObjectId || w.TempId == request.ObjectId))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 

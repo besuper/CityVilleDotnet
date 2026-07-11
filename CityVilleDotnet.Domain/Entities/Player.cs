@@ -42,7 +42,7 @@ public class Player
     public List<LotOrder> LotOrders { get; set; } = [];
     public List<VisitorHelpOrder> VisitorHelpOrders { get; set; } = [];
     public List<Mastery> Masteries { get; set; } = [];
-    public World? World { get; private set; }
+    public List<World> Worlds { get; set; } = [];
     public List<Quest> Quests { get; } = [];
     public List<Friend> Friends { get; } = [];
     public ApplicationUser? AppUser { get; private set; }
@@ -67,7 +67,7 @@ public class Player
         PremiumGoods = 0;
         Username = appUser.UserName!;
         CreationTimestamp = DateTimeOffset.Now;
-        World = world;
+        Worlds.Add(world);
         AppUser = appUser;
 
         Quests.Add(Quest.Create("q_rename_city", 1, QuestType.Active));
@@ -602,6 +602,11 @@ public class Player
                         AddSocialXp(amount);
                         StaticLogger.Current.LogDebug("Found rep {RepAmount}", amount);
                         break;
+                    case "appraisal":
+                        if (amount <= 0) break;
+                        var addedAppraisal = GetWorld().AddBonusAppraisal(amount);
+                        StaticLogger.Current.LogDebug("Found appraisal {AppraisalAmount}, distributed {DistributedAppraisal}", amount, addedAppraisal);
+                        break;
                     case "item" or "profit":
                         // client never stores population items => InventoryCheckManager::onPopulationAdd
                         var populationQuantity = GameSettingsManager.Instance.GetItem(element.Name)?.GetPopulationAddQuantity();
@@ -838,19 +843,34 @@ public class Player
         if (!IsSamantha())
             throw new Exception("SetWorld is only accessible to Samantha's city");
 
-        World = world;
+        Worlds.RemoveAll(x => x.Type == world.Type);
+        Worlds.Add(world);
     }
 
     public World GetWorld()
     {
-        if (World is null) throw new Exception("GetWorld called on not loaded world");
+        return Worlds.FirstOrDefault(x => x.Type == LastPlayedWorldType)
+               ?? throw new Exception($"GetWorld called but world {LastPlayedWorldType} is not loaded");
+    }
 
-        return World;
+    public World? GetWorldByType(WorldType type)
+    {
+        return Worlds.FirstOrDefault(x => x.Type == type);
+    }
+
+    public void AddWorld(World world)
+    {
+        if (Worlds.Any(x => x.Type == world.Type))
+            throw new Exception($"Player already owns a world of type {world.Type}");
+
+        Worlds.Add(world);
     }
 
     public bool IsWorldLoaded()
     {
-        return World != null && World.Objects.Count != 0;
+        var world = Worlds.FirstOrDefault(x => x.Type == LastPlayedWorldType);
+
+        return world != null && world.Objects.Count != 0;
     }
 
     public void HandleQuestsProgress(string actionType, string? className = null, string? itemName = null, int amount = 0)
@@ -920,6 +940,7 @@ public class Player
                         case "sendTourNeighborBusinessByName":
                         case "finishConstructionByName":
                         case "openBusinessByCommodityType":
+                        case "travel":
                         {
                             if (itemName is null)
                                 throw new Exception("Can't validate byName action without itemName");

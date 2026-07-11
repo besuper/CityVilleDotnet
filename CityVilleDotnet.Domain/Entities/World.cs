@@ -2,6 +2,7 @@
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Settings.GameSettings;
 using CityVilleDotnet.Common.Utils;
+using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using Humanizer;
 
@@ -24,12 +25,14 @@ public class World
     public List<WorldObject> Objects { get; set; } = [];
     public List<IncentivizedExpansion> IncentivizedExpansions { get; set; } = [];
     public WorldType Type { get; set; } = WorldType.Main;
+    public Player? Player { get; set; }
+    public string? WorldCreated { get; private set; }
 
     public World()
     {
     }
 
-    public World(string worldName, int sizeX, int sizeY, int population, int populationMin, int populationMax, int populationCap, int potentialPopulation, List<MapRect> mapRects, List<WorldObject> objects)
+    public World(string worldName, int sizeX, int sizeY, int population, int populationMin, int populationMax, int populationCap, int potentialPopulation, List<MapRect> mapRects, List<WorldObject> objects, WorldType type = WorldType.Main)
     {
         WorldName = worldName;
         SizeX = sizeX;
@@ -41,7 +44,18 @@ public class World
         PotentialPopulation = potentialPopulation;
         MapRects = mapRects;
         Objects = objects;
+        Type = type;
         NextBuildingId = objects.Count > 0 ? objects.Max(o => o.WorldFlatId) + 1 : 1;
+    }
+
+    public void SetWorldCreated(string? stage)
+    {
+        WorldCreated = stage;
+    }
+
+    public bool IsFtueCompleted()
+    {
+        return WorldCreated is null;
     }
 
     public void AddBuilding(WorldObject obj)
@@ -66,6 +80,34 @@ public class World
         }
 
         Population += amount - remaining;
+
+        return amount - remaining;
+    }
+
+    public string? GetAppraisalId()
+    {
+        return GameSettingsManager.Instance.GetWorldConfig(Type.ToDescriptionString())?.AppraisalId;
+    }
+
+    public bool AreIncentivizedExpansionsEnabled()
+    {
+        return GameSettingsManager.Instance.GetWorldConfig(Type.ToDescriptionString())?.EnableIncentivizedExpansions ?? true;
+    }
+
+    public int AddBonusAppraisal(int amount)
+    {
+        var appraisalId = GetAppraisalId();
+
+        if (appraisalId is null) return 0;
+
+        var remaining = amount;
+
+        foreach (var obj in Objects.Where(x => x.ClassName != BuildingClassType.ConstructionSite))
+        {
+            if (remaining <= 0) break;
+
+            remaining -= obj.AddBonusAppraisal(remaining, appraisalId);
+        }
 
         return amount - remaining;
     }
@@ -120,7 +162,14 @@ public class World
 
     public WorldObject? GetBuildingByClientId(int id)
     {
-        return Objects.FirstOrDefault(w => w.WorldFlatId == id || w.TempId == id);
+        var objectByTempId = Objects.FirstOrDefault(w => w.TempId == id);
+
+        if (objectByTempId is null)
+        {
+            return Objects.FirstOrDefault(w => w.WorldFlatId == id);
+        }
+        
+        return objectByTempId;
     }
 
     public int CountBuildingByName(string name)
@@ -288,7 +337,7 @@ public class World
     public void CleanTempIDs()
     {
         // Avoid IDs conflict after refresh
-        foreach (var obj in Objects)
+        foreach (var obj in Objects.Where(o => o.TempId != -1))
         {
             obj.CleanTempId();
         }

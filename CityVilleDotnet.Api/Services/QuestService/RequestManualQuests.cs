@@ -20,7 +20,7 @@ public class RequestManualQuests(CityVilleDbContext context, ILogger<RequestManu
             .AsSplitQuery()
             .Include(x => x.Quests)
             .Include(x => x!.InventoryItems)
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null)

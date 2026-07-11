@@ -11,7 +11,8 @@ public class UpdateEnergy(CityVilleDbContext context, ILogger<UpdateEnergy> logg
     public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
         var player = await context.Set<Player>()
-            .Include(x => x.World)
+            .AsSplitQuery()
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.EnergyModifier > 0))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 

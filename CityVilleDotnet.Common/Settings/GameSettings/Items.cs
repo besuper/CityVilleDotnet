@@ -57,6 +57,7 @@ public class GameItem
     [XmlElement("grantedExpansionsOnFinish")] public string? GrantedExpansionsOnFinish { get; set; }
 
     [XmlElement("population")] public PopulationItem? Population { get; set; }
+    [XmlElement("appraisal")] public List<AppraisalDefinitionItem> Appraisals { get; set; } = [];
     [XmlElement("upgrade")] public UpgradeItem? Upgrade { get; set; }
 
     [XmlElement("cost")] public int? Cost { get; set; }
@@ -251,6 +252,11 @@ public class GameItem
         return check?.Params?.Quantity;
     }
 
+    public AppraisalDefinitionItem? GetAppraisal(string appraisalId)
+    {
+        return Appraisals.FirstOrDefault(x => x.Id == appraisalId);
+    }
+
     public bool CanYieldPopulationItems()
     {
         foreach (var randomModifiers in RandomModifiersList)
@@ -431,6 +437,43 @@ public class PopulationItem
     }
 
     [XmlIgnore] public int? Cap { get; set; }
+}
+
+[Serializable]
+public class AppraisalDefinitionItem
+{
+    [XmlAttribute("id")] public string Id { get; set; } = string.Empty;
+
+    [XmlAttribute("min")]
+    public string? MinString
+    {
+        get => Min?.ToString();
+        set => Min = string.IsNullOrEmpty(value) ? 0 : int.Parse(value);
+    }
+
+    [XmlIgnore] public int? Min { get; set; }
+
+    [XmlAttribute("max")]
+    public string? MaxString
+    {
+        get => Max?.ToString();
+        set => Max = string.IsNullOrEmpty(value) ? 0 : int.Parse(value);
+    }
+
+    [XmlIgnore] public int? Max { get; set; }
+
+    [XmlAttribute("cap")]
+    public string? CapString
+    {
+        get => Cap?.ToString();
+        set => Cap = string.IsNullOrEmpty(value) ? 0 : int.Parse(value);
+    }
+
+    [XmlIgnore] public int? Cap { get; set; }
+
+    // The client falls back on the other attribute when one is missing
+    public int EffectiveMin => Min ?? Max ?? 0;
+    public int EffectiveMax => Max ?? Min ?? 0;
 }
 
 [Serializable]

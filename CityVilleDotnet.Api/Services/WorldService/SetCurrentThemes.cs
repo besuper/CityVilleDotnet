@@ -12,7 +12,7 @@ public sealed class SetCurrentThemes(CityVilleDbContext context) : AmfService<Se
     public override async Task<ASObject> HandlePacket(SetCurrentThemesRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var player = await context.Set<Player>()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");

@@ -13,6 +13,7 @@ public class GameSettingsManager
     private readonly Dictionary<string, RandomModifierPack> _randomModifierPacks;
     private readonly Dictionary<string, WorldRectItem> _worldRects;
     private readonly Dictionary<string, DynamicExpansionItem> _dynamicExpansions;
+    private readonly Dictionary<string, WorldConfigItem> _worldConfigs;
     private FarmingSettings _farmSettings;
     private List<LevelItem> _levels = [];
     private List<ReputationItem> _reputationLevels = [];
@@ -27,6 +28,7 @@ public class GameSettingsManager
         _randomModifierPacks = new Dictionary<string, RandomModifierPack>();
         _worldRects = new Dictionary<string, WorldRectItem>();
         _dynamicExpansions = new Dictionary<string, DynamicExpansionItem>();
+        _worldConfigs = new Dictionary<string, WorldConfigItem>();
         _isInitialized = false;
     }
 
@@ -122,6 +124,14 @@ public class GameSettingsManager
                     _dynamicExpansions[dynamicExpansion.Id] = dynamicExpansion;
                 }
             }
+
+            if (gameSettings.WorldConfigs is not null)
+            {
+                foreach (var worldConfig in gameSettings.WorldConfigs.WorldConfigs)
+                {
+                    _worldConfigs[worldConfig.Name] = worldConfig;
+                }
+            }
         }
 
         logger.LogInformation("Loaded gameSettings.xml with {ItemsCount} items", _items.Count);
@@ -133,6 +143,7 @@ public class GameSettingsManager
         logger.LogInformation("Loaded {WorldRectsCount} world rects", _worldRects.Count);
         logger.LogInformation("Loaded {ExpansionsCount} expansions", _expansions.Count);
         logger.LogInformation("Loaded {DynamicExpansionsCount} dynamic expansions", _dynamicExpansions.Count);
+        logger.LogInformation("Loaded {WorldConfigsCount} world configs", _worldConfigs.Count);
 
         _isInitialized = true;
     }
@@ -209,6 +220,14 @@ public class GameSettingsManager
             throw new InvalidOperationException("GameSettingsManager not initialized");
 
         return _worldRects.TryGetValue(name, out var rect) ? rect : null;
+    }
+
+    public WorldConfigItem? GetWorldConfig(string name)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return _worldConfigs.TryGetValue(name, out var config) ? config : null;
     }
 
     public IReadOnlyCollection<ExpansionSetting> GetExpansions()

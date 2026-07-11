@@ -1,4 +1,5 @@
-﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.GameWorlds;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
@@ -12,14 +13,19 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
 {
     public override async Task<ASObject> HandlePacket(LoadWorldRequest request, Guid playerId, CancellationToken cancellationToken)
     {
+        logger.LogDebug("LoadWorld for user {UserId} targeting {TargetUserId} world {WorldType}", playerId, request.TargetUsedId, request.Type);
+
+        var firstTimeLoaded = await DowntownWorldFactory.EnsureCreatedAsync(context, playerId, request.TargetUsedId, request.Type, cancellationToken);
+
         var playerToLoad = await context.Set<Player>()
-            .AsNoTracking()
             .AsSplitQuery()
-            .Include(x => x.World)
-            .ThenInclude(x => x!.Objects)
-            .ThenInclude(x => x.MechanicCounters)
-            .Include(x => x.World)
-            .ThenInclude(x => x!.MapRects)
+            .Include(x => x.Worlds.Where(w => w.Type == request.Type))
+            .ThenInclude(w => w.Objects)
+            .ThenInclude(o => o.MechanicCounters)
+            .Include(x => x.Worlds.Where(w => w.Type == request.Type))
+            .ThenInclude(w => w.MapRects)
+            .Include(x => x.Worlds.Where(w => w.Type == request.Type))
+            .ThenInclude(w => w.IncentivizedExpansions)
             .FirstOrDefaultAsync(x => x.Snuid == request.TargetUsedId, cancellationToken);
 
         if (playerToLoad is null)
@@ -40,22 +46,30 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
             currentPlayer.CheckCompletedQuests();
 
             await context.SaveChangesAsync(cancellationToken);
+
+            // In-memory only so the DTO targets the requested world, must stay after SaveChangesAsync
+            playerToLoad.SwitchWorld(request.Type);
         }
         else
         {
-            var trackedPlayer = await context.Set<Player>().FirstOrDefaultAsync(x => x.Snuid == request.TargetUsedId, cancellationToken);
+            if (playerToLoad.GetWorldByType(request.Type) is null)
+                throw new Exception($"World {request.Type} does not exist for player {playerId}");
 
-            if (trackedPlayer is null)
-                throw new Exception($"Unable to find player with Player.Uid {request.TargetUsedId}");
-
-            trackedPlayer.SwitchWorld(request.Type);
             playerToLoad.SwitchWorld(request.Type);
-        }
 
-        var dtoUser = playerToLoad.ToDto();
+            await context.SaveChangesAsync(cancellationToken);
+        }
+        
+        var allWorlds = await context.Set<World>()
+            .AsNoTracking()
+            .Where(w => w.Player!.Id == playerToLoad.Id)
+            .ToListAsync(cancellationToken);
+
+        var dtoUser = playerToLoad.ToDto(allWorlds);
 
         var response = (ASObject)AmfConverter.Convert(dtoUser.UserInfo);
         response!["franchises"] = new List<object>();
+        response["firstTimeLoaded"] = firstTimeLoaded;
 
         return new CityVilleResponse().Data(response);
     }

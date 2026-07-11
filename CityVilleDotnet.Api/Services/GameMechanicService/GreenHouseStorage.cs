@@ -15,7 +15,7 @@ public class GreenHouseStorage(CityVilleDbContext context) : AmfService<GreenHou
     {
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 

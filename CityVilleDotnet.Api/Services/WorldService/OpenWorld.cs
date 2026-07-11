@@ -1,4 +1,5 @@
 using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.GameWorlds;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
@@ -14,25 +15,38 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
     {
         // Called after visiting friend, might be used to load player world back and move to different player worlds
 
-        // TODO: Update this to support other worlds type (world_main)
         logger.LogDebug("OpenWorld for user {UserId} targeting {OwnerId} world {WorldType}", playerId, request.OwnerId, request.WorldType);
+
+        var firstTimeLoaded = await DowntownWorldFactory.EnsureCreatedAsync(context, playerId, request.OwnerId, request.WorldType, cancellationToken);
 
         var playerToLoad = await context.Set<Player>()
             .AsNoTracking()
             .AsSplitQuery()
-            .Include(x => x.World)
-            .ThenInclude(x => x!.Objects)
-            .ThenInclude(x => x.MechanicCounters)
-            .Include(x => x.World)
-            .ThenInclude(x => x!.MapRects)
-            .Include(x => x.World)
-            .ThenInclude(x => x!.IncentivizedExpansions)
+            .Include(x => x.Worlds.Where(w => w.Type == request.WorldType))
+            .ThenInclude(w => w.Objects)
+            .ThenInclude(o => o.MechanicCounters)
+            .Include(x => x.Worlds.Where(w => w.Type == request.WorldType))
+            .ThenInclude(w => w.MapRects)
+            .Include(x => x.Worlds.Where(w => w.Type == request.WorldType))
+            .ThenInclude(w => w.IncentivizedExpansions)
             .FirstOrDefaultAsync(x => x.Snuid == request.OwnerId, cancellationToken);
 
         if (playerToLoad is null)
             throw new Exception($"Unable to find player with Player.Uid {request.OwnerId}");
 
-        var dtoUser = playerToLoad.ToDto();
+        // In-memory only (AsNoTracking) so the DTO targets the requested world
+        playerToLoad.SwitchWorld(request.WorldType);
+
+        logger.LogInformation("OpenWorld sending world {WorldType} with population {Population}/{PopulationCap}",
+            playerToLoad.GetWorld().Type, playerToLoad.GetWorld().Population, playerToLoad.GetWorld().PopulationCap);
+
+        // Rows only, the summaries of the non active worlds are built from the persisted fields
+        var allWorlds = await context.Set<World>()
+            .AsNoTracking()
+            .Where(w => w.Player!.Id == playerToLoad.Id)
+            .ToListAsync(cancellationToken);
+
+        var dtoUser = playerToLoad.ToDto(allWorlds);
 
         var response = (ASObject)AmfConverter.Convert(dtoUser.UserInfo);
 
@@ -72,7 +86,7 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
         response["citySim"] = AmfConverter.Convert(dtoUser.UserInfo.World!.CitySim);
         response["featureData"] = AmfConverter.Convert(featuredData);
         response["visitDeltas"] = new ASObject();
-        response["firstTimeLoaded"] = false;
+        response["firstTimeLoaded"] = firstTimeLoaded;
         response["crews"] = null;
         response["ugc"] = null;
         response["orders"] = new List<object>();

@@ -20,7 +20,7 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
                 && o.TransmissionStatus == TransmissionStatus.Received
                 && o.SenderId == request.SenderId.ToString() // FIXME: Change all IDs to int
                 && o.LotId == request.LotId))
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);

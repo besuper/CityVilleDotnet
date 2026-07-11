@@ -15,7 +15,7 @@ internal sealed class BuyUpgradeAction(CityVilleDbContext context) : AmfService<
     {
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.X == request.Building.Position.X && o.Y == request.Building.Position.Y))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 

@@ -29,7 +29,7 @@ public class MakeTypeInstantReady(CityVilleDbContext context, ILogger<MakeTypeIn
             throw new Exception($"Building type not supported {request.BuildingType}");
 
         var player = await context.Set<Player>()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.ClassName == buildingType && o.State == WorldObjectState.Planted))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 

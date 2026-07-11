@@ -34,11 +34,13 @@ internal sealed class ProcessVisitsBatch(CityVilleDbContext context) : AmfServic
 
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(w => ids.Contains(w.WorldFlatId) || ids.Contains(w.TempId)))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
-        foreach (var obj in player.GetWorld().Objects)
+        var world = player.GetWorld();
+
+        foreach (var obj in world.Objects)
         {
             var id = ids.Contains(obj.WorldFlatId) ? obj.WorldFlatId
                 : ids.Contains(obj.TempId) ? obj.TempId

@@ -23,10 +23,10 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
 
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.MapRects)
             .Include(x => x.InventoryItems)
             .Include(x => x.SeenFlags)

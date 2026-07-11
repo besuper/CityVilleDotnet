@@ -15,8 +15,8 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
     {
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
-            .ThenInclude(x => x!.Objects)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.MechanicCounters)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 

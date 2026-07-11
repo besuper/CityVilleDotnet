@@ -15,7 +15,7 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.VisitorHelpOrders.Where(o => o.SenderId == request.SenderId))
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == WorldType.Main))
             .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.WorldObjectId))
             .Include(x => x.InventoryItems)
             .Include(x => x.Collections)
@@ -37,7 +37,7 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
 
         if (request.Action == "harvest")
         {
-            var world = player.GetWorld();
+            var world = player.GetWorldByType(WorldType.Main) ?? throw new Exception("Main world not loaded");
             var obj = world.GetBuildingById(request.WorldObjectId) ?? throw new Exception($"Can't find building with id {request.WorldObjectId}");
 
             if (obj.CanHarvest())
@@ -73,7 +73,7 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
 
         if (request.Action == "")
         {
-            var world = player.GetWorld();
+            var world = player.GetWorldByType(WorldType.Main) ?? throw new Exception("Main world not loaded");
             var obj = world.GetBuildingById(request.WorldObjectId) ?? throw new Exception($"Can't find building with id {request.WorldObjectId}");
 
             if (obj.GetClassName() == BuildingClassType.Plot && obj.State == WorldObjectState.Planted)

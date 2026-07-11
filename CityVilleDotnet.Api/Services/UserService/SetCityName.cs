@@ -12,7 +12,7 @@ public class SetCityName(CityVilleDbContext context) : AmfService<SetCityNameReq
     public override async Task<ASObject> HandlePacket(SetCityNameRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var world = await context.Set<Player>()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         var name = world.GetWorld().SetWorldName(request.CityName);

@@ -21,7 +21,7 @@ public class BuyEnergy(CityVilleDbContext context) : AmfService<BuyEnergyRequest
         if (gameItem.Cash is null || gameItem.EnergyRewards is null) throw new Exception($"Game item {request.ItemName} doesn't have cash or energy reward");
 
         var player = await context.Set<Player>()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.EnergyModifier > 0))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 

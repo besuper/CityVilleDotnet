@@ -15,7 +15,7 @@ public class GreenHouseHarvest(CityVilleDbContext context) : AmfService<GreenHou
     {
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.World)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)

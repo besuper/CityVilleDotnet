@@ -1,0 +1,1083 @@
+{
+	"world_id": "world_downtown",
+	"mapRects": [
+		{
+			"x": 36,
+			"y": 0,
+			"width": 12,
+			"height": 12
+		},
+		{
+			"x": 48,
+			"y": 0,
+			"width": 12,
+			"height": 12
+		},
+		{
+			"x": 60,
+			"y": 0,
+			"width": 12,
+			"height": 12
+		},
+		{
+			"x": 36,
+			"y": 12,
+			"width": 12,
+			"height": 12
+		},
+		{
+			"x": 48,
+			"y": 12,
+			"width": 12,
+			"height": 12
+		},
+		{
+			"x": 60,
+			"y": 12,
+			"width": 12,
+			"height": 12
+		},
+		{
+			"x": 36,
+			"y": 24,
+			"width": 12,
+			"height": 12
+		},
+		{
+			"x": 48,
+			"y": 24,
+			"width": 12,
+			"height": 12
+		},
+		{
+			"x": 60,
+			"y": 24,
+			"width": 12,
+			"height": 12
+		}
+	],
+	"sizeX": 36,
+	"sizeY": 36,
+	"objects": [
+		{
+			"itemName": "pbus_winebar",
+			"className": "Business",
+			"state": "closed",
+			"direction": 0,
+			"position": {
+				"x": 65,
+				"y": 21
+			},
+			"tempId": -1,
+			"id": 1
+		},
+		{
+			"itemName": "res_old_style_mansion",
+			"className": "Residence",
+			"state": "planted",
+			"direction": 0,
+			"position": {
+				"x": 65,
+				"y": 13
+			},
+			"tempId": -1,
+			"id": 2
+		},
+		{
+			"itemName": "res_portal2",
+			"className": "Residence",
+			"state": "planted",
+			"direction": 0,
+			"position": {
+				"x": 65,
+				"y": 18
+			},
+			"tempId": -1,
+			"id": 3
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 62,
+				"y": 21
+			},
+			"tempId": -1,
+			"id": 4
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 62,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 6
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 62,
+				"y": 15
+			},
+			"tempId": -1,
+			"id": 7
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 62,
+				"y": 18
+			},
+			"tempId": -1,
+			"id": 8
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 62,
+				"y": 24
+			},
+			"tempId": -1,
+			"id": 12
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 62,
+				"y": 27
+			},
+			"tempId": -1,
+			"id": 13
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 62,
+				"y": 30
+			},
+			"tempId": -1,
+			"id": 14
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 62,
+				"y": 33
+			},
+			"tempId": -1,
+			"id": 15
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 61,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 16
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 61,
+				"y": 13
+			},
+			"tempId": -1,
+			"id": 17
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 61,
+				"y": 14
+			},
+			"tempId": -1,
+			"id": 18
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 61,
+				"y": 15
+			},
+			"tempId": -1,
+			"id": 19
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 61,
+				"y": 16
+			},
+			"tempId": -1,
+			"id": 20
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 61,
+				"y": 17
+			},
+			"tempId": -1,
+			"id": 21
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 61,
+				"y": 18
+			},
+			"tempId": -1,
+			"id": 22
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 61,
+				"y": 19
+			},
+			"tempId": -1,
+			"id": 23
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 61,
+				"y": 20
+			},
+			"tempId": -1,
+			"id": 24
+		},
+		{
+			"itemName": "road-2",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 60,
+				"y": 21
+			},
+			"tempId": -1,
+			"id": 26
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 60,
+				"y": 14
+			},
+			"tempId": -1,
+			"id": 27
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 60,
+				"y": 16
+			},
+			"tempId": -1,
+			"id": 28
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 60,
+				"y": 18
+			},
+			"tempId": -1,
+			"id": 29
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 60,
+				"y": 19
+			},
+			"tempId": -1,
+			"id": 30
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 60,
+				"y": 20
+			},
+			"tempId": -1,
+			"id": 31
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 60,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 32
+		},
+		{
+			"itemName": "deco_courtlight",
+			"className": "Decoration",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 60,
+				"y": 15
+			},
+			"tempId": -1,
+			"id": 33
+		},
+		{
+			"itemName": "deco_courtlight",
+			"className": "Decoration",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 60,
+				"y": 17
+			},
+			"tempId": -1,
+			"id": 34
+		},
+		{
+			"itemName": "deco_courtlight",
+			"className": "Decoration",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 59,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 35
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 58,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 37
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 57,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 38
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 57,
+				"y": 21
+			},
+			"tempId": -1,
+			"id": 39
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 56,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 40
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 56,
+				"y": 9
+			},
+			"tempId": -1,
+			"id": 41
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 55,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 42
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 54,
+				"y": 21
+			},
+			"tempId": -1,
+			"id": 43
+		},
+		{
+			"itemName": "deco_courtlight",
+			"className": "Decoration",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 54,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 44
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 53,
+				"y": 9
+			},
+			"tempId": -1,
+			"id": 45
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 53,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 46
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 52,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 47
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 51,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 48
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 51,
+				"y": 21
+			},
+			"tempId": -1,
+			"id": 49
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 50,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 50
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 50,
+				"y": 9
+			},
+			"tempId": -1,
+			"id": 51
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 49,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 52
+		},
+		{
+			"itemName": "mun_centralpark",
+			"className": "Municipal",
+			"state": "planted",
+			"direction": 0,
+			"position": {
+				"x": 48,
+				"y": 13
+			},
+			"tempId": -1,
+			"id": 53
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 48,
+				"y": 21
+			},
+			"tempId": -1,
+			"id": 54
+		},
+		{
+			"itemName": "deco_courtlight",
+			"className": "Decoration",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 48,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 55
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 47,
+				"y": 9
+			},
+			"tempId": -1,
+			"id": 56
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 47,
+				"y": 20
+			},
+			"tempId": -1,
+			"id": 57
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 47,
+				"y": 19
+			},
+			"tempId": -1,
+			"id": 58
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 47,
+				"y": 17
+			},
+			"tempId": -1,
+			"id": 59
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 47,
+				"y": 15
+			},
+			"tempId": -1,
+			"id": 60
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 47,
+				"y": 13
+			},
+			"tempId": -1,
+			"id": 61
+		},
+		{
+			"itemName": "deco_citysidewalk",
+			"className": "Sidewalk",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 47,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 62
+		},
+		{
+			"itemName": "deco_courtlight",
+			"className": "Decoration",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 47,
+				"y": 18
+			},
+			"tempId": -1,
+			"id": 63
+		},
+		{
+			"itemName": "deco_courtlight",
+			"className": "Decoration",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 47,
+				"y": 16
+			},
+			"tempId": -1,
+			"id": 64
+		},
+		{
+			"itemName": "deco_courtlight",
+			"className": "Decoration",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 47,
+				"y": 14
+			},
+			"tempId": -1,
+			"id": 65
+		},
+		{
+			"itemName": "deco_courtlight",
+			"className": "Decoration",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 47,
+				"y": 8
+			},
+			"tempId": -1,
+			"id": 66
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 45,
+				"y": 21
+			},
+			"tempId": -1,
+			"id": 67
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 44,
+				"y": 18
+			},
+			"tempId": -1,
+			"id": 68
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 44,
+				"y": 15
+			},
+			"tempId": -1,
+			"id": 69
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 44,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 70
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 44,
+				"y": 9
+			},
+			"tempId": -1,
+			"id": 71
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 44,
+				"y": 24
+			},
+			"tempId": -1,
+			"id": 72
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 44,
+				"y": 27
+			},
+			"tempId": -1,
+			"id": 73
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 44,
+				"y": 6
+			},
+			"tempId": -1,
+			"id": 74
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 44,
+				"y": 3
+			},
+			"tempId": -1,
+			"id": 75
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 44,
+				"y": 0
+			},
+			"tempId": -1,
+			"id": 76
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 42,
+				"y": 21
+			},
+			"tempId": -1,
+			"id": 77
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 41,
+				"y": 9
+			},
+			"tempId": -1,
+			"id": 78
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 39,
+				"y": 21
+			},
+			"tempId": -1,
+			"id": 79
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 38,
+				"y": 18
+			},
+			"tempId": -1,
+			"id": 80
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 38,
+				"y": 15
+			},
+			"tempId": -1,
+			"id": 81
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 38,
+				"y": 12
+			},
+			"tempId": -1,
+			"id": 82
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 38,
+				"y": 9
+			},
+			"tempId": -1,
+			"id": 83
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 38,
+				"y": 6
+			},
+			"tempId": -1,
+			"id": 84
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 38,
+				"y": 3
+			},
+			"tempId": -1,
+			"id": 85
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 38,
+				"y": 0
+			},
+			"tempId": -1,
+			"id": 86
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 38,
+				"y": 24
+			},
+			"tempId": -1,
+			"id": 87
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 38,
+				"y": 27
+			},
+			"tempId": -1,
+			"id": 88
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 38,
+				"y": 30
+			},
+			"tempId": -1,
+			"id": 89
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 38,
+				"y": 33
+			},
+			"tempId": -1,
+			"id": 90
+		},
+		{
+			"itemName": "road",
+			"className": "Road",
+			"state": "static",
+			"direction": 0,
+			"position": {
+				"x": 36,
+				"y": 21
+			},
+			"tempId": -1,
+			"id": 91
+		}
+	]
+}
