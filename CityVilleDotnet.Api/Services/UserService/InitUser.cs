@@ -61,6 +61,8 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
         // Handle energy regeneration
         var trackedUser = await context.Set<Player>()
             .AsSplitQuery()
+            .Include(x => x.Quests)
+            .Include(x => x.InventoryItems)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(y => y.TempId != -1 || y.EnergyModifier > 0))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
@@ -84,6 +86,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
 
         trackedUser.UpdateEnergy();
         trackedUser.GetWorld().CleanTempIDs();
+        trackedUser.SpawnEligibleQuests();
         
         user.GetWorld().CleanTempIDs();
         user.UpdateEnergy(); // This will not save

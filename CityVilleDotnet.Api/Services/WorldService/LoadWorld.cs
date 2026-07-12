@@ -53,7 +53,6 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
 
             await context.SaveChangesAsync(cancellationToken);
 
-            // In-memory only so the DTO targets the requested world, must stay after SaveChangesAsync
             playerToLoad.SwitchWorld(request.Type);
         }
         else

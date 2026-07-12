@@ -14,6 +14,16 @@ public class QuestItem
 {
     [XmlAttribute("name")] public required string Name { get; set; }
 
+    [XmlAttribute("spawns_from")] public string? SpawnsFrom { get; set; }
+
+    [XmlAttribute("worlds")] public string? Worlds { get; set; }
+
+    [XmlAttribute("validate")] public string? Validate { get; set; }
+
+    [XmlAttribute("visible")] public string? Visible { get; set; }
+
+    [XmlElement("experiment")] public List<QuestExperiment>? Experiments { get; set; }
+
     [XmlElement("tasks")] public required TasksContainer Tasks { get; set; }
 
     [XmlElement("init")] public InitContainer? Init { get; set; }
@@ -39,6 +49,14 @@ public class QuestItem
         get => RequiredPopulation?.ToString();
         set => RequiredPopulation = string.IsNullOrEmpty(value) ? null : int.Parse(value);
     }
+}
+
+[Serializable]
+public class QuestExperiment
+{
+    [XmlAttribute("name")] public string? Name { get; set; }
+
+    [XmlAttribute("variants")] public string? Variants { get; set; }
 }
 
 [Serializable]

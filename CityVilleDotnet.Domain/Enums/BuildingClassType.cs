@@ -63,5 +63,8 @@ public enum BuildingClassType
     CustomResidence = 58,
     EnvironmentTile = 59,
     Amphitheater = 60,
-    Portal = 61
+    Portal = 61,
+    FarmersMarket = 62,
+    TaxiDispatch = 63,
+    XPromoBuilding = 64
 }

@@ -140,4 +140,12 @@ public class QuestSettingsManager
 
         return _items.TryGetValue(itemName, out var item) ? item : null;
     }
+
+    public IEnumerable<QuestItem> GetAllQuests()
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("QuestSettingsManager not initialized");
+
+        return _items.Values;
+    }
 }

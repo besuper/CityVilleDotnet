@@ -3,8 +3,10 @@ using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Settings.GameSettings;
+using CityVilleDotnet.Common.Settings.QuestSettings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Enums;
+using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.GameEntities;
 using Microsoft.Extensions.Logging;
 
@@ -1102,6 +1104,55 @@ public class Player
         }
 
         Quests.AddRange(newQuests);
+    }
+
+    public void SpawnEligibleQuests()
+    {
+        if (IsNew) return;
+
+        var worldId = LastPlayedWorldType.ToDescriptionString();
+        var population = GetWorld().GetCurrentPopulation();
+
+        foreach (var item in QuestSettingsManager.Instance.GetAllQuests())
+        {
+            if (item.SpawnsFrom != "noparent") continue;
+            if (item.Visible != "true") continue;
+            if (!string.IsNullOrEmpty(item.Validate)) continue;
+            if (item.Experiments is { Count: > 0 }) continue;
+            if (item.RequiredLevel is not null && Level < item.RequiredLevel) continue;
+            if (item.RequiredPopulation is not null && population < item.RequiredPopulation) continue;
+
+            var worlds = string.IsNullOrEmpty(item.Worlds)
+                ? [WorldType.Main.ToDescriptionString()]
+                : item.Worlds.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+            if (!worlds.Contains(worldId)) continue;
+
+            if (Quests.Any(q => q.Name == item.Name)) continue;
+
+            Quests.Add(Quest.Create(item.Name, item.Tasks.Tasks.Count, QuestType.Active));
+            GrantQuestStartItems(item);
+        }
+    }
+
+    public void GrantQuestStartItems(QuestItem questItem)
+    {
+        var granted = false;
+
+        if (questItem.Init?.Functions is not null)
+        {
+            foreach (var function in questItem.Init.Functions.Where(f => f.Name == "grantItemOnInit"))
+            {
+                AddItem(function.ItemName);
+                granted = true;
+            }
+        }
+
+        if (!granted && QuestSettingsManager.QuestStartInventoryItem.TryGetValue(questItem.Name, out var items))
+        {
+            foreach (var item in items)
+                AddItem(item);
+        }
     }
 
     public void ExpireQuest(string questName)

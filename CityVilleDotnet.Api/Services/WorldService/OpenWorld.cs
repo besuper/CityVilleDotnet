@@ -1,6 +1,7 @@
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Common.GameWorlds;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
@@ -40,7 +41,6 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
         if (playerToLoad is null)
             throw new Exception($"Unable to find player with Player.Uid {request.OwnerId}");
 
-        // In-memory only (AsNoTracking) so the DTO targets the requested world
         playerToLoad.SwitchWorld(request.WorldType);
 
         logger.LogInformation("OpenWorld sending world {WorldType} with population {Population}/{PopulationCap}",
@@ -78,12 +78,19 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
 
         if (playerToLoad.Id == playerId)
         {
-            var trackedPlayer = await context.Set<Player>().FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
+            var trackedPlayer = await context.Set<Player>()
+                .Include(x => x.Quests)
+                .Include(x => x.InventoryItems)
+                .Include(x => x.Worlds.Where(w => w.Type == request.WorldType))
+                .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
             if (trackedPlayer is null)
                 throw new Exception("Unable to find player");
 
             trackedPlayer.SwitchWorld(request.WorldType);
+            trackedPlayer.SpawnEligibleQuests();
+            
+            trackedPlayer.HandleQuestsProgress("travel", itemName: request.WorldType.ToDescriptionString());
 
             await context.SaveChangesAsync(cancellationToken);
         }
