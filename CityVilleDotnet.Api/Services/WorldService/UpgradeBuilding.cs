@@ -18,6 +18,7 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.MechanicCounters)
+            .Include(x => x.SeenFlags)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
@@ -53,11 +54,8 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
 
         obj.UpgradeBuilding(gameItem.GetFirstDeriveItem(gameItem), newItemName);
         world.CalculatePopulation();
-
-        var xpReward = gameItem.Upgrade.GetXpReward();
-
-        if (xpReward > 0)
-            player.AddXp(xpReward);
+        
+        player.GiveUpgradeRewards(gameItem.Upgrade?.Rewards?.Rewards ?? []);
 
         await context.SaveChangesAsync(cancellationToken);
 

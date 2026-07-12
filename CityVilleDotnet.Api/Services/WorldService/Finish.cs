@@ -63,6 +63,9 @@ public sealed class Finish(CityVilleDbContext context) : AmfService<FinishReques
             obj.GrantInitialZooAnimal(player.Snuid);
 
         world.CalculatePopulation();
+        
+        if(finishedItem?.Population?.Min is not null)
+            player.HandleQuestsProgress("incrementalPopulationCount", amount: finishedItem.Population.Min.Value);
 
         player.HandleQuestsProgress(""); // Empty actionType to force recheck counts
         player.HandleQuestsProgress("finishConstructionByName", itemName: obj.GetItemName());

@@ -2,6 +2,7 @@
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,8 @@ public class OnTradeIn(CityVilleDbContext context) : AmfService<OnTradeInRequest
 
         var player = await context.Set<Player>()
             .AsSplitQuery()
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x.Objects.Where(o => o.EnergyModifier > 0))
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.InventoryItems)

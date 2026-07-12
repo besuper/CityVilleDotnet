@@ -57,6 +57,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
                 return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
         }
 
+        var contractName = obj.ContractName;
         var hasContract = obj.ContractName is not null;
 
         var coinMultiplier = className.IsBusiness() ? Math.Max(obj.Visits ?? 0, 1) : 1;
@@ -67,8 +68,10 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
         logger.LogDebug("Secure rands {SecureRandsCount}", secureRands.Count);
 
         user.HandleQuestsProgress("harvestByClass", className: className.ToString());
-        user.HandleQuestsProgress("harvestByKeyword", itemName: itemName);
-        user.HandleQuestsProgress("harvestResidenceByName", itemName: itemName);
+        user.HandleQuestsProgress("harvestByKeyword", itemName: itemName); 
+        user.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);// Should always be real itemName
+        user.HandleQuestsProgress("harvestItemByName", itemName: obj.ItemName);// Should always be real itemName
+        user.HandleQuestsProgress("harvestContractByName", itemName: contractName);
 
         if (obj.ClassName == BuildingClassType.Plot || hasContract)
         {

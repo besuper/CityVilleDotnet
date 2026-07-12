@@ -18,6 +18,7 @@ public class QuestDto
     [JsonPropertyName("expired")] public bool Expired { get; set; }
     [JsonPropertyName("activatedTime")] public long ActivatedTime { get; set; }
     [JsonPropertyName("isNew")] public bool IsNew { get; set; }
+    // TODO: Persist this, task like incrementalPopulationCount will loose its progress after reload
     [JsonPropertyName("extraData")] public ASObject ExtraData { get; set; } = new();
 }
 

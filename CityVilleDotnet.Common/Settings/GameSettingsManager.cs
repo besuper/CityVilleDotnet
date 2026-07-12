@@ -167,6 +167,23 @@ public class GameSettingsManager
         return _items.TryGetValue(itemName, out var item) ? item : null;
     }
 
+    public List<string> GetOrderedUpgradeChainByRoot(string root)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        var chain = new List<string>();
+        var item = GetItem(root);
+
+        while (item is not null)
+        {
+            chain.Add(item.Name);
+            item = item.Upgrade?.Name is not null ? GetItem(item.Upgrade.Name) : null;
+        }
+
+        return chain;
+    }
+
     public IReadOnlyList<GameItem> GetItemsByKeyword(string keyword)
     {
         if (!_isInitialized)

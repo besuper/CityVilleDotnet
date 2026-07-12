@@ -489,7 +489,6 @@ public class UpgradeItem
 
     public int GetRequiredLevel() => int.Parse(Requirements?.GetValue("level") ?? "0");
     public int GetRequiredUpgradeActions() => int.Parse(Requirements?.GetValue("upgrade_actions") ?? "0");
-    public int GetXpReward() => int.Parse(Rewards?.GetValue("xp") ?? "0");
 }
 
 [Serializable]
@@ -511,8 +510,6 @@ public class UpgradeRequirement
 public class UpgradeRewardsContainer
 {
     [XmlElement("reward")] public List<UpgradeReward> Rewards { get; set; } = [];
-
-    public string? GetValue(string type) => Rewards.FirstOrDefault(x => x.Type == type)?.Value;
 }
 
 [Serializable]
@@ -520,6 +517,9 @@ public class UpgradeReward
 {
     [XmlAttribute("type")] public required string Type { get; set; }
     [XmlAttribute("value")] public required string Value { get; set; }
+
+    [XmlIgnore]
+    public int IntValue => int.Parse(Value);
 }
 
 [Serializable]

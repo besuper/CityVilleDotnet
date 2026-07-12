@@ -182,6 +182,11 @@ public class World
         return Objects.Count(x => x.ItemName.Equals(name) || name.Equals(x.TargetBuildingName));
     }
 
+    public int CountBuildingByNames(IReadOnlyCollection<string> names)
+    {
+        return Objects.Count(x => names.Contains(x.ItemName));
+    }
+
     public int CountZooAnimals(string enclosureItemName)
     {
         var enclosure = Objects.FirstOrDefault(x => x.ItemName.Equals(enclosureItemName));

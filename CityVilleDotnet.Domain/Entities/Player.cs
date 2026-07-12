@@ -875,7 +875,7 @@ public class Player
 
     public void HandleQuestsProgress(string actionType, string? className = null, string? itemName = null, int amount = 0)
     {
-        if (StaticLogger.IsReady()) StaticLogger.Current.LogDebug("Handle quest actionType = {ActionType}, className = {ClassName}, itemName = {ItemName}", actionType, className, itemName);
+        if (StaticLogger.IsReady()) StaticLogger.Current.LogDebug("Handle quest actionType = {ActionType}, className = {ClassName}, itemName = {ItemName}, amount = {Amount}", actionType, className, itemName, amount);
 
         var calculatedResults = new Dictionary<string, int>();
 
@@ -942,6 +942,8 @@ public class Player
                         case "openBusinessByCommodityType":
                         case "transferFromStorageToDisplay":
                         case "travel":
+                        case "harvestContractByName":
+                        case "harvestItemByName":
                         {
                             if (itemName is null)
                                 throw new Exception("Can't validate byName action without itemName");
@@ -974,7 +976,9 @@ public class Player
                         case "deliver":
                             if (task.Type == itemName)
                                 quest.Progress[index] += amount;
-                                
+                            break;
+                        case "incrementalPopulationCount":
+                            quest.Progress[index] += amount;
                             break;
                     }
                 }
@@ -1011,6 +1015,22 @@ public class Player
                     {
                         if (!calculatedResults.TryGetValue(resultKey, out value))
                             calculatedResults[resultKey] = value = GetWorld().CountBuildingByRegex(task.Type);
+
+                        quest.Progress[index] = value;
+                        continue;
+                    }
+                    case "countUpgradeItemByRootName":
+                    {
+                        if (!calculatedResults.TryGetValue(resultKey, out value))
+                        {
+                            var roots = splitType ?? [taskType];
+                            var descendants = roots
+                                .SelectMany(root => GameSettingsManager.Instance.GetOrderedUpgradeChainByRoot(root).Skip(1))
+                                .ToList();
+
+                            value = descendants.Count > 0 ? GetWorld().CountBuildingByNames(descendants) : 0;
+                            calculatedResults[resultKey] = value;
+                        }
 
                         quest.Progress[index] = value;
                         continue;
@@ -1183,6 +1203,30 @@ public class Player
 
             // Only trigger openBusinessByCommodityType if we use 100% of the resource
             HandleQuestsProgress("openBusinessByCommodityType", itemName: desiredGoodType);
+        }
+    }
+
+    public void GiveUpgradeRewards(List<UpgradeReward> rewards)
+    {
+        foreach (var reward in rewards)
+        {
+            switch (reward.Type)
+            {
+                case "energy":
+                    AddEnergy(reward.IntValue);
+                    break;
+                case "coin":
+                    AddCoins(reward.IntValue);
+                    break;
+                case "itemUnlock":
+                    SetSeenFlag(reward.Value);
+                    break;
+                case "xp":
+                    AddXp(reward.IntValue);
+                    break;
+            }
+            
+            StaticLogger.Current.LogDebug("Added upgrade reward {Type} {Amount}", reward.Type, reward.Value);
         }
     }
 }
