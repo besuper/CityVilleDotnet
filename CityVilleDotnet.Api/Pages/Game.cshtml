@@ -65,31 +65,11 @@
 	}
 
 	function getRuntimeVars() {
-		console.log("getRuntimeVars called");
-		
 		return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.RuntimeVars));
 	}
 
 	function getExperiments() {
-		console.log("getExperiments called");
-
-		return [
-			{"name": "cv_global_leaderboard", "variant": 0},
-			{"name": "cv_leader_master", "variant": 0},
-			{"name": "cv_multipop_migrate", "variant": 1},
-			{"name": "cv_defcon_npc_culling", "variant": 3},
-			{"name": "cv_CityatNights_Teaser", "variant": 2},
-			//{"name": "cv_CityatNights_Main", "variant": 0}, // disable it to remove incentivized expansion_cityatnight that is not supported
-			{"name": "cv_CityatNights_Priceunlock", "variant": 6},
-			{"name": "cv_quest_frame", "variant": 3},
-			{"name": "cv_featured_quest_sort", "variant": 3},
-			{"name": "cv_hide_even_more_quests", "variant": 3},
-			{"name": "cv_questhiding", "variant": 1},
-			{"name": "cv_quest_prorated_pricing", "variant": 0},
-			{"name": "cv_quest_sale", "variant": 0},
-			{"name": "cv_downtown", "variant": 1},
-			{"name": "cv_downtown_fullrelease", "variant": 1},
-		];
+		return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Experiments));
 	}
 
 	function getLocaleOverrides() {

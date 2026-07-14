@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using CityVilleDotnet.Common.Utils;
 
 namespace CityVilleDotnet.Api.Pages;
@@ -29,6 +30,7 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
     public bool EnableCheat => configuration.GetValue<bool>("enableCheat");
     public Dictionary<string, object> RuntimeVars => configuration.GetSection("runtimeVars").Get<Dictionary<string, object>>() ?? new Dictionary<string, object>();
+    public List<Experiment> Experiments => configuration.GetSection("experiments").Get<List<Experiment>>() ?? new List<Experiment>();
     
     public async Task<IActionResult> OnGetAsync()
     {
@@ -129,4 +131,10 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         return string.Join("&", flashVars.Select(kvp => $"{kvp.Key}={kvp.Value}"));
     }
+}
+
+public class Experiment
+{
+    [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
+    [JsonPropertyName("variant")] public int Variant { get; set; }
 }
