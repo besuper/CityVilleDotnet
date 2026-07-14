@@ -131,7 +131,7 @@ public class PlayerInventoryTest(DomainFixture fixture)
 
         var act = () => player.RemoveItem(itemName, 5);
 
-        act.Should().Throw<Exception>().WithMessage("Not enough items");
+        act.Should().Throw<Exception>().WithMessage("Not enough items " + itemName);
     }
 
     [Fact]

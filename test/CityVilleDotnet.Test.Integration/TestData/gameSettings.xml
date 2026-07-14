@@ -258,6 +258,31 @@
             <headquarters>hq_bakery</headquarters>
             <commodity name="premium_goods" />
         </item>
+        <item name="test_gated_building" type="municipal" buyable="true">
+            <requiredLevel>1</requiredLevel>
+            <cost>1000</cost>
+            <population min="20" max="80" cap="60"/>
+            <sizeX>4</sizeX>
+            <sizeY>4</sizeY>
+            <construction>construction_3x3_2stage</construction>
+            <gates>
+                <gate name="build">
+                    <key name="test_gate_material" viral="request" amount="2"/>
+                </gate>
+                <gate type="crew" name="pre_upgrade">
+                    <key name="required_crew" amount="6" cashCost="5">
+                        <member name="crew_test_1" amount="1"/>
+                    </key>
+                </gate>
+            </gates>
+        </item>
+        <item name="test_gate_material" type="tool" buyable="false" market="cash" requestable="true">
+            <cash>3</cash>
+            <inventoryLimit>7</inventoryLimit>
+        </item>
+        <item name="test_gate_material_coin" type="tool" buyable="true">
+            <cost>50</cost>
+        </item>
     </items>
 
     <levels_cv_level_regrade_var_0>

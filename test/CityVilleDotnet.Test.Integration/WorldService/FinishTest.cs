@@ -88,6 +88,29 @@ public class FinishTest(DatabaseFixture fixture) : IntegrationTest(fixture)
     }
 
     [Fact]
+    public async Task Finish_InventoryBuildGate_ConsumesGateItems()
+    {
+        var building = Faker.WorldObject(itemName: "test_gated_building", className: BuildingClassType.Municipal, x: 10, y: 20);
+        building.SetAsConstructionSite("construction_3x3_2stage", 2);
+        var world = Faker.World(objects: [building]);
+        var user = Faker.Player(world: world);
+        user.AddItem("test_gate_material", 2);
+
+        await Context.AddAsync(user);
+        await Context.SaveChangesAsync();
+
+        var handler = new Finish(Context);
+        var request = CreateFinishRequest(10, 20);
+
+        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+
+        response["errorType"].Should().Be(0);
+
+        var player = await Context.Set<Player>().Include(x => x.InventoryItems).FirstAsync(x => x.Id == user.Id);
+        player.HasItem("test_gate_material").Should().BeFalse();
+    }
+
+    [Fact]
     public async Task Finish_ItemWithoutGrantedExpansions_DoesNotAddMapRect()
     {
         var building = Faker.WorldObject(itemName: "res_cottage3", className: BuildingClassType.Residence, x: 10, y: 20);

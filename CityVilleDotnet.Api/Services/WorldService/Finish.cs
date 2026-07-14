@@ -16,19 +16,19 @@ public sealed class Finish(CityVilleDbContext context) : AmfService<FinishReques
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.MechanicCounters)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.StorageItems)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.Slots)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.MapRects)
+            .ThenInclude(x => x.MapRects)
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.Collections)
@@ -57,7 +57,12 @@ public sealed class Finish(CityVilleDbContext context) : AmfService<FinishReques
         var finishedItem = GameSettingsManager.Instance.GetItem(obj.GetItemName());
 
         if (finishedItem is not null)
+        {
             world.GrantFreeExpansions(finishedItem.GrantedExpansionsOnFinish, finishedItem.GrantedExpansionType);
+
+            foreach (var consumed in player.ConsumeInventoryGate(finishedItem, "build"))
+                context.Set<InventoryItem>().Remove(consumed);
+        }
 
         if (obj.GetClassName() == BuildingClassType.ZooEnclosure)
             obj.GrantInitialZooAnimal(player.Snuid);

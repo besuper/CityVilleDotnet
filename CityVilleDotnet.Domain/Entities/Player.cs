@@ -106,7 +106,7 @@ public class Player
             throw new Exception($"Item not found in player inventory {itemName}");
 
         if (item.Amount < amount)
-            throw new Exception("Not enough items");
+            throw new Exception($"Not enough items {itemName}");
 
         item.RemoveAmount(amount);
 
@@ -117,6 +117,33 @@ public class Player
         }
 
         return null;
+    }
+
+    public List<InventoryItem> ConsumeInventoryGate(GameItem buildingItem, string gateName)
+    {
+        var removed = new List<InventoryItem>();
+        var gate = buildingItem.GetGates().FirstOrDefault(x => x.Name == gateName);
+
+        if (gate is null) return removed;
+
+        // if null => inventory by default
+        if (!string.IsNullOrEmpty(gate.Type) && gate.Type != "inventory") return removed;
+
+        foreach (var key in gate.Keys)
+        {
+            if (key is null) continue;
+
+            var item = InventoryItems.FirstOrDefault(x => x.Name == key.Name && x.IsMainInventory);
+
+            if (item is null) continue;
+
+            var removeItem = RemoveItem(key.Name, key.Amount);
+            
+            if(removeItem is not null) 
+                removed.Add(removeItem);
+        }
+
+        return removed;
     }
 
     public int CountInventoryItems()
