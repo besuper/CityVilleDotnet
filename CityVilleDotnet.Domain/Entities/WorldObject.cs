@@ -77,6 +77,7 @@ public class WorldObject
     public List<WorldObjectMechanicCounter> MechanicCounters { get; private set; } = [];
     public List<WorldObjectStorageItem> StorageItems { get; private set; } = [];
     public List<WorldObjectSlot> Slots { get; private set; } = [];
+    public List<WorldObjectWorker> Workers { get; private set; } = [];
 
     public void IncrementMechanicCounter(string mechanicType)
     {
@@ -445,6 +446,7 @@ public class WorldObject
             State = WorldObjectState.Plowed;
             UpgradeActionCount = (UpgradeActionCount ?? 0) + 1;
             ContractName = null;
+            Workers.Clear();
         }
         else
         {
@@ -619,6 +621,7 @@ public class WorldObject
         ContractName = contractName;
         PlantTime = ServerUtils.GetCurrentTime();
         State = state;
+        Workers.Clear();
 
         // Why don't ships work like plots?
         // plowed means ready
@@ -825,6 +828,31 @@ public class WorldObject
     public void AddCrewMember(Player? crew)
     {
         CrewMembers.Add(new CrewMember(crew));
+    }
+
+    public int GetMaxWorkers()
+    {
+        if (ContractName is null) return 0;
+
+        return GameSettingsManager.Instance.GetItem(ContractName)?.GetMaxWorkers() ?? 0;
+    }
+
+    public int GetRemainingWorkerSpots()
+    {
+        return Math.Max(GetMaxWorkers() - Workers.Count, 0);
+    }
+
+    public int CountPurchasedWorkers()
+    {
+        return Workers.Count(x => x.IsPurchased());
+    }
+
+    public void AddPurchasedWorker()
+    {
+        if (GetRemainingWorkerSpots() <= 0)
+            throw new Exception($"No worker spot left on object {WorldFlatId}");
+
+        Workers.Add(new WorldObjectWorker(-(CountPurchasedWorkers() + 1)));
     }
 
     public void SetUpgradeAction(int amount)

@@ -198,7 +198,7 @@ public static class UserDtoMapper
                 { "fishing", new ASObject { { "workers", new ASObject() } } },
                 { "area51", new ASObject { { "workers", new ASObject() } } },
                 { "trains", new ASObject { { "workers", new ASObject() } } },
-                { "factories", new ASObject { { "workers", new ASObject() } } }, // TODO: Implement hiring workers
+                { "factories", new ASObject { { "workers", model.GetWorld().ToFactoryWorkersAsObject() } } },
                 { "detectiveGameWorkerManager", new ASObject { { "workers", new ASObject() } } },
                 { "socialInventory", new ASObject { { "samObjectIds", new ASObject() } } }
             }), // Enable or disable some features for the user

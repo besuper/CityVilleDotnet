@@ -188,6 +188,35 @@ public static class WorldDtoMapper
         return new ASObject { { "commodity", commodityObj } };
     }
     
+    // load Global.factoryWorkerManager
+    public static ASObject ToFactoryWorkersAsObject(this World world)
+    {
+        var workers = new ASObject();
+
+        foreach (var obj in world.Objects.Where(x => x.ClassName == BuildingClassType.Factory && x.ContractName is not null))
+        {
+            workers[$"w{obj.WorldFlatId}"] = new ASObject
+            {
+                {
+                    "attributes", new ASObject
+                    {
+                        { "numPurchasedWorkers", obj.CountPurchasedWorkers() },
+                        { "contractName", obj.ContractName! }
+                    }
+                },
+                {
+                    "members", obj.Workers.Select(object (x) => new ASObject
+                    {
+                        { "zid", x.Zid.ToString() },
+                        { "data", new ASObject() }
+                    }).ToList()
+                }
+            };
+        }
+
+        return workers;
+    }
+
     public static ASObject BuildIncentivizedExpansions(this World world)
     {
         var expansions = new ASObject();

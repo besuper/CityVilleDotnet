@@ -20,6 +20,9 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.X == request.Building.Position.X && o.Y == request.Building.Position.Y))
             .ThenInclude(x => x.FranchiseLocation)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x!.Objects.Where(o => o.X == request.Building.Position.X && o.Y == request.Building.Position.Y))
+            .ThenInclude(x => x.Workers)
             .Include(x => x.InventoryItems)
             .Include(x => x.SeenFlags)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
@@ -61,8 +64,16 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
         var hasContract = obj.ContractName is not null;
 
         var coinMultiplier = className.IsBusiness() ? Math.Max(obj.Visits ?? 0, 1) : 1;
+
+        // Factory workers
+        var premiumGoodsMultiplier = 1.0;
+        var workerBonus = gameItem.GetWorkerHarvestBonus();
+
+        if (workerBonus?.Field == "premium_goods" && obj.Workers.Count > 0)
+            premiumGoodsMultiplier += obj.Workers.Count * workerBonus.PercentModifier / 100.0;
+
         var (coinYield, cashYield) = obj.Harvest();
-        var secureRands = user.CollectDoobersRewards(itemName, coinMultiplier: coinMultiplier);
+        var secureRands = user.CollectDoobersRewards(itemName, coinMultiplier: coinMultiplier, premiumGoodsMultiplier: premiumGoodsMultiplier);
 
         logger.LogDebug("Secure rands {Join}", string.Join(",", secureRands.ToArray()));
         logger.LogDebug("Secure rands {SecureRandsCount}", secureRands.Count);
@@ -71,7 +82,11 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
         user.HandleQuestsProgress("harvestByKeyword", itemName: itemName); 
         user.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);// Should always be real itemName
         user.HandleQuestsProgress("harvestItemByName", itemName: obj.ItemName);// Should always be real itemName
-        user.HandleQuestsProgress("harvestContractByName", itemName: contractName);
+
+        if (contractName is not null)
+        {
+            user.HandleQuestsProgress("harvestContractByName", itemName: contractName);
+        }
 
         if (obj.ClassName == BuildingClassType.Plot || hasContract)
         {

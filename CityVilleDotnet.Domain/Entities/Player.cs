@@ -423,7 +423,7 @@ public class Player
     }
 
     // From Player::processRandomModifiers → processRandomModifiersWithTable → processRandomModifiersFromConfig
-    public List<int> CollectDoobersRewards(string itemName, string modifierGroupName = "default", int coinMultiplier = 1, bool construction = false)
+    public List<int> CollectDoobersRewards(string itemName, string modifierGroupName = "default", int coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1)
     {
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
         if (gameItem is null) return [];
@@ -442,7 +442,7 @@ public class Player
             modifiers.AddRange(packModifiers);
 
         // process each modifier (processRandomModifiersFromConfig)
-        ProcessModifiers(gameItem, modifiers, secureRands, coinMultiplier, construction);
+        ProcessModifiers(gameItem, modifiers, secureRands, coinMultiplier, construction, premiumGoodsMultiplier);
 
         return secureRands;
     }
@@ -499,7 +499,7 @@ public class Player
     }
 
     // From Player::processRandomModifiersFromConfig
-    private void ProcessModifiers(GameItem gameItem, List<RandomModifier> modifiers, List<int> secureRands, int coinMultiplier = 1, bool construction = false)
+    private void ProcessModifiers(GameItem gameItem, List<RandomModifier> modifiers, List<int> secureRands, int coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1)
     {
         foreach (var itemModifier in modifiers)
         {
@@ -559,7 +559,7 @@ public class Player
 
                     if (secureRand < currentRollPercent && !found)
                     {
-                        ApplyRollRewards(roll, itemModifier.Multiplier, coinMultiplier);
+                        ApplyRollRewards(roll, itemModifier.Multiplier, coinMultiplier, premiumGoodsMultiplier);
                         found = true;
                     }
 
@@ -569,7 +569,7 @@ public class Player
         }
     }
 
-    private void ApplyRollRewards(Roll roll, double multiplier, int coinMultiplier = 1)
+    private void ApplyRollRewards(Roll roll, double multiplier, int coinMultiplier = 1, double premiumGoodsMultiplier = 1)
     {
         foreach (var (rewardType, rewardElements) in roll.Rewards)
         {
@@ -617,9 +617,10 @@ public class Player
                         StaticLogger.Current.LogDebug("Found goods {GoodsAmount}", amount);
                         break;
                     case "premium_goods":
-                        if (amount <= 0) break;
-                        AddPremiumGoods(amount);
-                        StaticLogger.Current.LogDebug("Found premium goods {PremiumGoodsAmount}", amount);
+                        var premiumGoodsAmount = (int)Math.Ceiling(element.Amount / roll.Divisor * multiplier * premiumGoodsMultiplier);
+                        if (premiumGoodsAmount <= 0) break;
+                        AddPremiumGoods(premiumGoodsAmount);
+                        StaticLogger.Current.LogDebug("Found premium goods {PremiumGoodsAmount}", premiumGoodsAmount);
                         break;
                     case "cash":
                         if (amount <= 0) break;

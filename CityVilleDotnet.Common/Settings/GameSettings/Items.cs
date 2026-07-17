@@ -123,6 +123,8 @@ public class GameItem
     [XmlElement("remodels")] public RemodelsContainer? Remodels { get; set; }
     [XmlElement("rarity")] public string? Rarity { get; set; }
     [XmlElement("unlocksItem")] public string? UnlocksItem { get; set; }
+    [XmlElement("workers")] public WorkersDefinitionItem? Workers { get; set; }
+    [XmlElement("harvestBonuses")] public HarvestBonusesContainer? HarvestBonuses { get; set; }
     [XmlIgnore] public int? NumCrop { get; set; }
 
     [XmlElement("numCrop")]
@@ -257,6 +259,16 @@ public class GameItem
     public AppraisalDefinitionItem? GetAppraisal(string appraisalId)
     {
         return Appraisals.FirstOrDefault(x => x.Id == appraisalId);
+    }
+
+    public int GetMaxWorkers()
+    {
+        return Workers?.GetMaxWorkers() ?? 0;
+    }
+
+    public HarvestBonusItem? GetWorkerHarvestBonus()
+    {
+        return HarvestBonuses?.Bonuses.FirstOrDefault(x => x.Name == "workerBonus");
     }
 
     public bool CanYieldPopulationItems()
@@ -628,6 +640,39 @@ public class CommodityItem
     [XmlAttribute("name")] public required string Name { get; set; }
     [XmlAttribute("capacity")] public int Capacity { get; set; }
     [XmlAttribute("default")] public int Default { get; set; }
+}
+
+[Serializable]
+public class WorkersDefinitionItem
+{
+    [XmlAttribute("cashCost")] public int CashCost { get; set; }
+    [XmlAttribute("amount")] public int Amount { get; set; }
+    [XmlElement("worker")] public List<WorkerSlotItem> Members { get; set; } = [];
+
+    // client falls back to the amount attribute when no members are defined (WorkersDefinition::loadObject)
+    public int GetMaxWorkers()
+    {
+        return Members.Count > 0 ? Members.Count : Amount;
+    }
+}
+
+[Serializable]
+public class WorkerSlotItem
+{
+}
+
+[Serializable]
+public class HarvestBonusesContainer
+{
+    [XmlElement("bonus")] public List<HarvestBonusItem> Bonuses { get; set; } = [];
+}
+
+[Serializable]
+public class HarvestBonusItem
+{
+    [XmlAttribute("name")] public string? Name { get; set; }
+    [XmlAttribute("field")] public string? Field { get; set; }
+    [XmlAttribute("percentModifier")] public double PercentModifier { get; set; }
 }
 
 [Serializable]
