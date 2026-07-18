@@ -9,6 +9,9 @@
 	<script type="text/javascript" src="jquery.min.js"></script>
 	<script type="text/javascript" src="flash_integration.min.js"></script>
 	<script type="text/javascript" src="swfobject.min.js"></script>
+	<script>
+		document.cookie = "nativeFlash=" + (navigator.plugins && navigator.plugins["Shockwave Flash"] ? "1" : "0") + "; path=/; max-age=31536000; SameSite=Lax";
+	</script>
 	<script type="text/javascript" src="ruffle/ruffle.js"></script>
 }
 
