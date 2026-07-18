@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.IO.Compression;
 using System.Threading.RateLimiting;
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
@@ -19,11 +20,12 @@ using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Utils;
 using FluentValidation;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder();
 
-builder.Services.AddDbContext<CityVilleDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
+builder.Services.AddDbContextPool<CityVilleDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
@@ -86,6 +88,17 @@ builder.Services.AddValidatorsFromAssembly(executingAssembly);
 
 ValidatorOptions.Global.LanguageManager.Culture = new System.Globalization.CultureInfo("en");
 
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(["text/xml", "application/xml"]);
+});
+
+builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
+builder.Services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
+
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -126,7 +139,18 @@ var app = builder.Build();
 
 app.UseExceptionHandler("/Error");
 
-app.UseStaticFiles();
+app.UseResponseCompression();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        if (ctx.Context.Request.Path.StartsWithSegments("/assets"))
+        {
+            ctx.Context.Response.Headers.CacheControl = "public, max-age=2592000";
+        }
+    }
+});
 app.UseMiddleware<FallbackAssetMiddleware>();
 app.UseRateLimiter();
 app.UseRouting();

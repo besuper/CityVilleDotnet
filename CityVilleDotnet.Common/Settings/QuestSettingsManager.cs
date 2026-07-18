@@ -6,7 +6,7 @@ namespace CityVilleDotnet.Common.Settings;
 
 public class QuestSettingsManager
 {
-    public static readonly List<string> TaskActions = ["seenQuest"];
+    public static readonly HashSet<string> TaskActions = ["seenQuest"];
     public static readonly Dictionary<string, List<string>> QuestStartInventoryItem = new()
     {
         ["qm_storage_warehouse"] = ["warehouse"],
@@ -120,10 +120,7 @@ public class QuestSettingsManager
 
                 foreach (var task in item.Tasks.Tasks)
                 {
-                    if (!TaskActions.Contains(task.Action))
-                    {
-                        TaskActions.Add(task.Action);
-                    }
+                    TaskActions.Add(task.Action);
                 }
             }
         }

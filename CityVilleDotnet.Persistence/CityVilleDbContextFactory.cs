@@ -8,6 +8,7 @@ public class CityVilleDbContextFactory : IDesignTimeDbContextFactory<CityVilleDb
     public CityVilleDbContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<CityVilleDbContext>();
+        optionsBuilder.UseSqlServer();
 
         return new CityVilleDbContext(optionsBuilder.Options);
     }

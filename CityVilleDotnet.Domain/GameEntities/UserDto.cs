@@ -101,6 +101,12 @@ public static class UserDtoMapper
                             ["name"] = "completed_bridge",
                             ["m_value"] = model.GetWorld().Objects.Count(x => x.ClassName == BuildingClassType.Bridge),
                             ["lastModifiedGlobalEngineTime"] = 0
+                        },
+                        new ASObject
+                        {
+                            ["name"] = "completed_tutorial",
+                            ["m_value"] = model.IsNew ? 0 : 1,
+                            ["lastModifiedGlobalEngineTime"] = 0
                         }
                     ],
                     Wishlist = [], // TODO: Implement wishlist

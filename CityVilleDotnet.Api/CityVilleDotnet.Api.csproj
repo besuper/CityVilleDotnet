@@ -56,11 +56,11 @@
 		<Content Update="wwwroot\swfobject.min.js" CopyToPublishDirectory="Never" />
 		<Content Update="wwwroot\ZYFrameManager.min.js" CopyToPublishDirectory="Never" />
 		<Content Update="wwwroot\**\*.swf" CopyToPublishDirectory="Never" />
-
-		<Content Update="wwwroot\assets\**\*" CopyToPublishDirectory="Never" />
-		<Content Update="wwwroot\assets\default.png" CopyToPublishDirectory="PreserveNewest" />
-		<Content Update="wwwroot\assets\default.css" CopyToPublishDirectory="PreserveNewest" />
-		<Content Update="wwwroot\assets\default.mp3" CopyToPublishDirectory="PreserveNewest" />
+		
+		<Content Remove="wwwroot\assets\**" />
+		<Content Include="wwwroot\assets\default.png" CopyToPublishDirectory="PreserveNewest" />
+		<Content Include="wwwroot\assets\default.css" CopyToPublishDirectory="PreserveNewest" />
+		<Content Include="wwwroot\assets\default.mp3" CopyToPublishDirectory="PreserveNewest" />
 		<Content Update="wwwroot\zcache\ZCache.swf" CopyToPublishDirectory="PreserveNewest" />
 	</ItemGroup>
 
