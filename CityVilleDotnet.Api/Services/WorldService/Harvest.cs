@@ -81,6 +81,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
         user.HandleQuestsProgress("harvestByClass", className: className.ToString());
         user.HandleQuestsProgress("harvestByKeyword", itemName: itemName); 
         user.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);// Should always be real itemName
+        user.HandleQuestsProgress("harvestResidenceByRegEx", itemName: obj.ItemName);// Should always be real itemName
         user.HandleQuestsProgress("harvestItemByName", itemName: obj.ItemName);// Should always be real itemName
 
         if (contractName is not null)
@@ -100,6 +101,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
         {
             user.HandleQuestsProgress("harvestBusinessByName", itemName: itemName);
             user.HandleQuestsProgress("harvestBusinessByClass", className: className.ToString());
+            user.HandleQuestsProgress("harvestBusinessByKeyword", itemName: itemName);
         }
 
         user.CheckCompletedQuests();

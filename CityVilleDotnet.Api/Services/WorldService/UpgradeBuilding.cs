@@ -3,6 +3,7 @@ using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,8 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
             .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.MechanicCounters)
             .Include(x => x.SeenFlags)
+            .Include(x => x.InventoryItems)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
@@ -52,10 +55,13 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
         if (gameItem.Upgrade.CashCost is not null)
             player.RemoveCash(Convert.ToInt32(gameItem.Upgrade.CashCost));
 
+        player.HandleQuestsProgress("upgradeItemByName", itemName: obj.ItemName);
+
         obj.UpgradeBuilding(gameItem.GetFirstDeriveItem(gameItem), newItemName);
         world.CalculatePopulation();
-        
+
         player.GiveUpgradeRewards(gameItem.Upgrade?.Rewards?.Rewards ?? []);
+        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

@@ -187,6 +187,14 @@ public class World
         return Objects.Count(x => names.Contains(x.ItemName));
     }
 
+    public int CountCrewMembersByItemName(string itemName)
+    {
+        return Objects
+            .Where(x => x.ItemName.Equals(itemName))
+            .Select(x => x.CrewMembers.Count)
+            .FirstOrDefault();
+    }
+
     public int CountZooAnimals(string enclosureItemName)
     {
         var enclosure = Objects.FirstOrDefault(x => x.ItemName.Equals(enclosureItemName));

@@ -43,6 +43,7 @@ internal sealed class StartContract(CityVilleDbContext context) : AmfService<Sta
         obj.StartContract(request.Building.ContractName, request.Building.State);
 
         player.HandleQuestsProgress("startContractByClass", className: obj.ClassName.ToString());
+        player.HandleQuestsProgress("startContractByName", itemName: request.Building.ContractName);
         player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);

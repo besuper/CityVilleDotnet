@@ -1,6 +1,7 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,9 @@ public class Move(CityVilleDbContext context) : AmfService<MoveRequest>
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.X == originX && o.Y == originY))
+            .Include(x => x.InventoryItems)
+            .Include(x => x.SeenFlags)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (user is null) throw new Exception("Player not found");
@@ -26,6 +30,9 @@ public class Move(CityVilleDbContext context) : AmfService<MoveRequest>
         var obj = user.GetWorld().GetBuildingByCoord(originX, originY, 0) ?? throw new Exception($"Can't find object at ({originX}, {originY})");
 
         obj.MoveTo(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z, request.Building.Direction);
+
+        user.HandleQuestsProgress("moveByName", itemName: obj.ItemName);
+        user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

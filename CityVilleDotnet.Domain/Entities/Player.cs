@@ -9,6 +9,7 @@ using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.GameEntities;
 using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
 
 namespace CityVilleDotnet.Domain.Entities;
 
@@ -156,6 +157,14 @@ public class Player
         return InventoryItems.Where(x => x.Name == itemName && x.StorageType is null).Sum(x => x.Amount);
     }
 
+    public int CountStorageItemsByType(string type)
+    {
+        return InventoryItems
+            .Where(x => x.StorageType is not null)
+            .Where(x => GameSettingsManager.Instance.GetItem(x.Name)?.Type == type)
+            .Sum(x => x.Amount);
+    }
+
     public bool HasItem(string itemName)
     {
         return InventoryItems.Any(x => x.StorageType is null && x.Name == itemName && x.Amount > 0);
@@ -174,7 +183,12 @@ public class Player
 
     public int GetEnergyMax()
     {
-        return EnergyMax + GetWorld().Objects.Where(o => o.EnergyModifier > 0).Sum(o => o.EnergyModifier);
+        return EnergyMax + GetEnergyModifierTotal();
+    }
+
+    public int GetEnergyModifierTotal()
+    {
+        return GetWorld().Objects.Where(o => o.EnergyModifier > 0).Sum(o => o.EnergyModifier);
     }
 
     private Energy CalculateCurrentEnergy()
@@ -659,6 +673,16 @@ public class Player
         }
     }
 
+    private bool HasCompletedOrTradedInCollection(string collectionName)
+    {
+        var collectionSetting = GameSettingsManager.Instance.GetCollectionByName(collectionName);
+
+        if (collectionSetting is null) return false;
+        if (HasCompletedCollection(collectionSetting)) return true;
+
+        return Collections.Any(x => x.Name == collectionName && x.Completed > 0);
+    }
+
     private bool HasCompletedCollection(CollectionSetting targetCollection)
     {
         var collection = Collections.FirstOrDefault(x => x.Name == targetCollection.Name);
@@ -815,6 +839,11 @@ public class Player
         return null;
     }
 
+    public int GetMasteryLevel(string itemName)
+    {
+        return Masteries.FirstOrDefault(x => x.ItemName == itemName)?.Level ?? 0;
+    }
+
     public void IncrementMastery(string itemName, int amount = 1)
     {
         // TODO: Implement bonusMultiplier with doobers collect
@@ -953,6 +982,7 @@ public class Player
                         case "openBusinessByClass":
                         case "storeItemByClass":
                         case "finishConstructionByClass":
+                        case "instantReadyByClass":
                         {
                             if (className is null)
                                 throw new Exception("Can't validate byClass action without className");
@@ -974,6 +1004,9 @@ public class Player
                         case "travel":
                         case "harvestContractByName":
                         case "harvestItemByName":
+                        case "startContractByName":
+                        case "moveByName":
+                        case "upgradeItemByName":
                         {
                             if (itemName is null)
                                 throw new Exception("Can't validate byName action without itemName");
@@ -983,8 +1016,19 @@ public class Player
 
                             break;
                         }
+                        case "harvestResidenceByRegEx":
+                        {
+                            if (itemName is null)
+                                throw new Exception("Can't validate byRegEx action without itemName");
+
+                            if (Regex.IsMatch(itemName, taskType))
+                                quest.Progress[index] += 1;
+
+                            break;
+                        }
                         case "placeByKeyword":
                         case "harvestByKeyword":
+                        case "harvestBusinessByKeyword":
                         case "openBusinessByKeyword":
                         case "finishConstructionByKeyword":
                             if (itemName is null)
@@ -1084,6 +1128,46 @@ public class Player
                         continue;
                     case "isQuestCompleted":
                         quest.Progress[index] = Quests.Count(q => q.Name == task.Type);
+                        continue;
+                    case "countPlayerMapExpansions":
+                        quest.Progress[index] = ExpansionsPurchased;
+                        continue;
+                    case "countPlayerCropMasteryByType":
+                    {
+                        var names = splitType ?? [taskType];
+
+                        quest.Progress[index] = names.Max(GetMasteryLevel);
+                        continue;
+                    }
+                    case "countStorageObjectsByType":
+                        if (!calculatedResults.TryGetValue(resultKey, out value))
+                            calculatedResults[resultKey] = value = CountStorageItemsByType(task.Type);
+
+                        quest.Progress[index] = value;
+                        continue;
+                    case "countCrewByItemName":
+                    {
+                        var names = splitType ?? [taskType];
+
+                        quest.Progress[index] = names.Sum(x => GetWorld().CountCrewMembersByItemName(x));
+                        continue;
+                    }
+                    case "completeCollectionByName":
+                    {
+                        var names = splitType ?? [taskType];
+
+                        quest.Progress[index] = names.Any(HasCompletedOrTradedInCollection) ? 1 : 0;
+                        continue;
+                    }
+                    case "haveInventoryItems":
+                    {
+                        var names = splitType ?? [taskType];
+
+                        quest.Progress[index] = names.Sum(CountInventoryItem);
+                        continue;
+                    }
+                    case "haveEnergyBonus":
+                        quest.Progress[index] = int.TryParse(taskType, out var energyBonus) && GetEnergyModifierTotal() >= energyBonus ? 1 : 0;
                         continue;
                     case "countWorldObjectByKeyword":
                         if (!calculatedResults.TryGetValue(resultKey, out value))
