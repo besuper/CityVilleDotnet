@@ -37,4 +37,9 @@ public static class QuestDtoMapper
             IsNew = (DateTime.Now - model.CreatedAt) > TimeSpan.FromSeconds(10)
         };
     }
+    
+    public static List<QuestDto> ToQuestComponent(this List<Quest> model)
+    {
+        return model.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()).ToList();
+    }
 }

@@ -18,7 +18,7 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.CrewMembers)
             .Include(x => x.Masteries)
             .Include(x => x.InventoryItems)
@@ -31,7 +31,7 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
 
         return new CityVilleResponse().MetaData(new ASObject
         {
-            ["QuestComponent"] = AmfConverter.Convert(user.Quests.Select(x => x.ToDto()).ToList())
+            ["QuestComponent"] = AmfConverter.Convert(user.Quests.ToQuestComponent())
         });
     }
 }

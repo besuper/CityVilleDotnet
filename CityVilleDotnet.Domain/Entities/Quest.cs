@@ -13,6 +13,7 @@ public class Quest
         Purchased = purchased;
         QuestType = questType;
         CreatedAt = DateTime.Now;
+        Order = 999;
     }
 
     public Quest()

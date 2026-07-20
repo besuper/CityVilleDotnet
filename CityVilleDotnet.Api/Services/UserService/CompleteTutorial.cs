@@ -23,7 +23,7 @@ public class CompleteTutorial(CityVilleDbContext context) : AmfService
 
         var quests = new ASObject()
         {
-            { "QuestComponent", AmfConverter.Convert(player.Quests.Select(x => x.ToDto()).ToList()) }
+            { "QuestComponent", AmfConverter.Convert(player.Quests.ToQuestComponent()) }
         };
 
         return new CityVilleResponse().MetaData(quests);
