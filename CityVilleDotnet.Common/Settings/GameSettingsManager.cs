@@ -82,6 +82,21 @@ public class GameSettingsManager
                     _items[item.Name] = item;
                 }
             }
+            
+            var mechanicPacks = gameSettings.MechanicPacks?.Packs
+                .Where(x => x.Name is not null)
+                .ToDictionary(x => x.Name!, x => x.Mechanics);
+
+            if (mechanicPacks is not null)
+            {
+                foreach (var item in _items.Values)
+                {
+                    if (item?.MechanicPack is null || item.Mechanics is not null) continue;
+
+                    if (mechanicPacks.TryGetValue(item.MechanicPack, out var mechanics))
+                        item.Mechanics = mechanics;
+                }
+            }
 
             foreach (var item in gameSettings.Modifiers.Table)
             {

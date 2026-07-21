@@ -169,6 +169,41 @@ public static class WorldObjectDtoMapper
         }
 
         var gameItem = GameSettingsManager.Instance.GetItem(model.ItemName);
+        
+        if (gameItem?.IsTimedSupplyState() == true)
+        {
+            if (model.State == WorldObjectState.Open && model.PlantTime is not null)
+            {
+                var timestamp = (long)(model.PlantTime.Value / 1000);
+
+                dto.MechanicData["harvestState"] = new ASObject
+                {
+                    { "state", "supplied" },
+                    { "timestamp", timestamp },
+                    { "endTimestamp", timestamp + (gameItem.HarvestLoopConfig?.TimerDuration ?? 0) }
+                };
+            }
+            else
+            {
+                dto.MechanicData["harvestState"] = new ASObject
+                {
+                    { "state", "closed" },
+                    { "timestamp", -1 }
+                };
+            }
+        }
+        else if (gameItem?.IsCustomerSupplyState() == true)
+        {
+            var customersReq = gameItem.GetCommodityRequired() ?? 0;
+
+            dto.MechanicData["harvestState"] = model.State == WorldObjectState.Open || model.State == WorldObjectState.ClosedHarvestable
+                ? new ASObject
+                {
+                    { "customers", Math.Min(model.Visits ?? 0, customersReq) },
+                    { "customersReq", customersReq }
+                }
+                : null;
+        }
 
         if (gameItem?.Mechanics is not null)
         {

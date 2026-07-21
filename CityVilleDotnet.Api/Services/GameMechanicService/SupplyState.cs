@@ -9,17 +9,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.GameMechanicService;
 
-public sealed class HarvestState(CityVilleDbContext context) : AmfService<HarvestStateRequest>
+internal sealed class SupplyState(CityVilleDbContext context) : AmfService<SupplyStateRequest>
 {
-    public override async Task<ASObject> HandlePacket(HarvestStateRequest request, Guid playerId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(SupplyStateRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
             .Include(x => x.InventoryItems)
-            .Include(x => x.Collections)
-            .ThenInclude(x => x.Items)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
@@ -31,29 +29,13 @@ public sealed class HarvestState(CityVilleDbContext context) : AmfService<Harves
 
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName) ?? throw new Exception($"Can't find game item for {obj.ItemName}");
 
-        if (gameItem.CanYieldPopulationItems())
-        {
-            await context.Entry(world).Collection(x => x.Objects)
-                .Query()
-                .Where(x => x.ClassName == BuildingClassType.Residence)
-                .Include(x => x.MechanicCounters)
-                .LoadAsync(cancellationToken);
-        }
+        if (gameItem.GetSupplyStateMechanicClass() is null)
+            throw new Exception($"No supplyState mechanic on {obj.ItemName}");
 
-        if (gameItem.EnergyCost?.Harvest is not null)
-            player.RemoveEnergy(int.Parse(gameItem.EnergyCost.Harvest));
+        player.ProcessGoods(gameItem);
 
-        // CustomerStateHarvestMechanic.applyPayoutMultipliers
-        var coinMultiplier = gameItem.IsCustomerSupplyState()
-            ? Math.Max(obj.Visits ?? 0, 1)
-            : 1;
+        obj.OpenBusiness();
 
-        obj.Harvest();
-        player.CollectDoobersRewards(obj.GetItemName(), coinMultiplier: coinMultiplier);
-
-        player.HandleQuestsProgress("harvestByClass", className: obj.GetClassName().ToString());
-        player.HandleQuestsProgress("harvestBusinessByName", itemName: obj.GetItemName());
-        player.HandleQuestsProgress("harvestBusinessByClass", className: obj.GetClassName().ToString());
         player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
@@ -62,7 +44,7 @@ public sealed class HarvestState(CityVilleDbContext context) : AmfService<Harves
     }
 }
 
-public class HarvestStateRequest
+public class SupplyStateRequest
 {
     [AmfParam(0)] public int ObjectId { get; set; }
 }

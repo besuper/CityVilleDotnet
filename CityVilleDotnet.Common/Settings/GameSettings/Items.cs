@@ -107,6 +107,7 @@ public class GameItem
     [XmlElement("randomModifierGroups")] public RandomModifierGroupsContainer? RandomModifierGroups { get; set; }
     [XmlElement("energyCost")] public EnergyCost? EnergyCost { get; set; }
     [XmlElement("mechanics")] public MechanicsContainer? Mechanics { get; set; }
+    [XmlAttribute("mechanicPack")] public string? MechanicPack { get; set; }
     [XmlElement("gates")] public required GatesContainer? Gates { get; set; }
     [XmlElement("sizeX")] public int? SizeX { get; set; }
     [XmlElement("sizeY")] public int? SizeY { get; set; }
@@ -125,6 +126,7 @@ public class GameItem
     [XmlElement("unlocksItem")] public string? UnlocksItem { get; set; }
     [XmlElement("workers")] public WorkersDefinitionItem? Workers { get; set; }
     [XmlElement("harvestBonuses")] public HarvestBonusesContainer? HarvestBonuses { get; set; }
+    [XmlElement("harvestLoopConfig")] public HarvestLoopConfigItem? HarvestLoopConfig { get; set; }
     [XmlIgnore] public int? NumCrop { get; set; }
 
     [XmlElement("numCrop")]
@@ -192,6 +194,35 @@ public class GameItem
         }
 
         return null;
+    }
+
+    public MechanicItem? GetGameEventMechanic(string type)
+    {
+        if (Mechanics?.GameEventMechanics is null) return null;
+
+        foreach (var gem in Mechanics.GameEventMechanics)
+        {
+            var mechanic = gem.GetMechanicItemByType(type);
+
+            if (mechanic is not null) return mechanic;
+        }
+
+        return null;
+    }
+
+    public string? GetSupplyStateMechanicClass()
+    {
+        return GetGameEventMechanic("supplyState")?.ClassName;
+    }
+
+    public bool IsCustomerSupplyState()
+    {
+        return GetSupplyStateMechanicClass() == "CustomerSupplyMechanic";
+    }
+
+    public bool IsTimedSupplyState()
+    {
+        return GetSupplyStateMechanicClass() == "SupplyMechanic";
     }
 
     public double? GetGrowTime()
@@ -582,6 +613,19 @@ public class MechanicsContainer
 }
 
 [Serializable]
+public class MechanicPacksContainer
+{
+    [XmlElement("mechanicPack")] public List<MechanicPackItem> Packs { get; set; } = [];
+}
+
+[Serializable]
+public class MechanicPackItem
+{
+    [XmlAttribute("name")] public string? Name { get; set; }
+    [XmlElement("mechanics")] public MechanicsContainer? Mechanics { get; set; }
+}
+
+[Serializable]
 public class GameEventMechanicsItem
 {
     [XmlAttribute("gameMode")] public string? GameMode { get; set; }
@@ -659,6 +703,12 @@ public class WorkersDefinitionItem
 [Serializable]
 public class WorkerSlotItem
 {
+}
+
+[Serializable]
+public class HarvestLoopConfigItem
+{
+    [XmlElement("timerDuration")] public int TimerDuration { get; set; }
 }
 
 [Serializable]

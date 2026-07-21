@@ -465,8 +465,8 @@ public class WorldObject
             State = WorldObjectState.Planted;
             PlantTime = ServerUtils.GetCurrentTime();
         }
-
-        if (ClassName.IsBusiness())
+        
+        if (ClassName.IsBusiness() || GameSettingsManager.Instance.GetItem(ItemName)?.GetSupplyStateMechanicClass() is not null)
         {
             State = WorldObjectState.Closed;
             Visits = 0;
@@ -483,7 +483,9 @@ public class WorldObject
 
     public void OpenBusiness()
     {
-        if (!ClassName.IsBusiness()) throw new Exception("Can't open other than business building, class name is: " + ClassName + "");
+        var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
+        
+        if (!ClassName.IsBusiness() && !(gameItem?.IsCustomerSupplyState() ?? false)) throw new Exception("Can't open other than business building, class name is: " + ClassName + "");
         if (State == WorldObjectState.Open || State == WorldObjectState.ClosedHarvestable) throw new Exception("Building is already open");
 
         Visits = 0;
@@ -506,15 +508,17 @@ public class WorldObject
 
     public void UpdateVisits(int visits)
     {
-        if (!ClassName.IsBusiness()) throw new Exception($"Can't update visits on non business building {Id} {ClassName} {State}");
+        var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
+
+        if (!ClassName.IsBusiness() && !(gameItem?.IsCustomerSupplyState() ?? false))
+            throw new Exception($"Can't update visits on non business building {Id} {ClassName} {State}");
+
         if (State != WorldObjectState.Open)
         {
             if (State == WorldObjectState.ClosedHarvestable) return; // If client get out of sync and try to send processVisit while visits are completed, just ignore
 
             throw new Exception($"Can't update visits on non open business building {Id} {ClassName} {State}");
         }
-
-        var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
 
         if (gameItem is null)
             throw new Exception("Can't find game item for business building");
