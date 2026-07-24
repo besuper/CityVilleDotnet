@@ -611,6 +611,17 @@ public class WorldObject
         return skinItem?.RemodelXp ?? 0;
     }
 
+    public void ReplaceWith(string itemName, BuildingClassType className, int direction, int x, int y, int? z, WorldObjectState state)
+    {
+        ItemName = itemName;
+        ClassName = className;
+        X = x;
+        Y = y;
+        Z = z;
+        Direction = direction;
+        State = state;
+    }
+
     public void MoveTo(int x, int y, int z, int direction)
     {
         // TODO: Check if position is free
