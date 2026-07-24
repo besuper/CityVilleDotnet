@@ -12,13 +12,13 @@ public abstract class IntegrationTest(DatabaseFixture fixture) : IAsyncLifetime
     protected CityVilleDbContext Context = null!;
     private IDbContextTransaction _transaction = null!;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         Context = Fixture.CreateDbContext();
         _transaction = await Context.Database.BeginTransactionAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _transaction.RollbackAsync();
         await _transaction.DisposeAsync();
