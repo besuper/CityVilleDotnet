@@ -183,4 +183,22 @@
     <data name="Expansions" xml:space="preserve">
         <value>Expansiones</value>
     </data>
+    <data name="ChoosePicture" xml:space="preserve">
+        <value>Elige una foto</value>
+    </data>
+    <data name="UploadPicture" xml:space="preserve">
+        <value>Subir foto</value>
+    </data>
+    <data name="SelectFile" xml:space="preserve">
+        <value>Por favor selecciona un archivo.</value>
+    </data>
+    <data name="FileTooLarge" xml:space="preserve">
+        <value>Archivo demasiado grande. Tamaño máximo {0} MB.</value>
+    </data>
+    <data name="OnlyPngJpg" xml:space="preserve">
+        <value>Solo se permiten archivos PNG y JPG.</value>
+    </data>
+    <data name="PictureUpdated" xml:space="preserve">
+        <value>Foto de perfil actualizada correctamente.</value>
+    </data>
 </root>

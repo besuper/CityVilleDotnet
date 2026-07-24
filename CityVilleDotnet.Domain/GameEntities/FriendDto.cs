@@ -4,10 +4,11 @@ namespace CityVilleDotnet.Domain.GameEntities;
 
 public class FriendDto
 {
-    public string UserName { get; set; }
+    public string UserName { get; set; } = string.Empty;
     public bool Requested { get; set; }
     public int Level { get; set; }
     public FriendshipStatus Status { get; set; }
+    public string? ProfilePictureUrl { get; set; }
 }
 
 public static class FriendDtoMapper
@@ -19,7 +20,8 @@ public static class FriendDtoMapper
             UserName = model.FriendPlayer.Username,
             Level = model.FriendPlayer.Level,
             Status = model.Status,
-            Requested = model.Requested
+            Requested = model.Requested,
+            ProfilePictureUrl = model.FriendPlayer.ProfilePictureUrl
         };
     }
 }

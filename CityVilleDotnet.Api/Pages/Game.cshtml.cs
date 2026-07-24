@@ -27,6 +27,7 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
     public string UserName { get; set; } = "Steve";
     public int Level { get; set; } = 1;
     public long ServerTime { get; set; } = 0;
+    public string PictureUrl { get; set; } = "/blank.png";
 
     public bool EnableCheat => configuration.GetValue<bool>("enableCheat");
     public Dictionary<string, object> RuntimeVars => configuration.GetSection("runtimeVars").Get<Dictionary<string, object>>() ?? new Dictionary<string, object>();
@@ -53,6 +54,7 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             Uid = user.Snuid.ToString();
             UserName = user.Username;
             Level = user.Level;
+            PictureUrl = user.ProfilePictureUrl ?? "/blank.png";
             FriendList = JsonSerializer.Serialize(user.GetSocialNetworkUserFriendsList($"{Request.Scheme}://{Request.Host}{Request.PathBase}"),
                 new JsonSerializerOptions { WriteIndented = false, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
         }
@@ -63,6 +65,7 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         ViewData["PlayerName"] = UserName;
         ViewData["PlayerLevel"] = Level;
+        ViewData["ProfilePictureUrl"] = PictureUrl;
 
         return Page();
     }

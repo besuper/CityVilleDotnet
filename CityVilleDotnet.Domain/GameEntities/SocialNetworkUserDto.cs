@@ -33,7 +33,7 @@ public static class SocialNetworkUserDtoMapper
             Snid = model.FriendPlayer.Snuid,
             FirstName = model.FriendPlayer.Username,
             Name = model.FriendPlayer.Username,
-            Picture = $"{baseUrl}/blank.png",
+            Picture = model.FriendPlayer.ProfilePictureUrl is not null ? $"{baseUrl}{model.FriendPlayer.ProfilePictureUrl}" : $"{baseUrl}/blank.png",
             Gender = "M",
             Locale = "EN"
         };

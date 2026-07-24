@@ -46,6 +46,7 @@ public class Player
     public List<VisitorHelpOrder> VisitorHelpOrders { get; set; } = [];
     public List<Mastery> Masteries { get; set; } = [];
     public List<World> Worlds { get; set; } = [];
+    public string? ProfilePictureUrl { get; set; }
     public List<Quest> Quests { get; } = [];
     public List<Friend> Friends { get; } = [];
     public ApplicationUser? AppUser { get; private set; }

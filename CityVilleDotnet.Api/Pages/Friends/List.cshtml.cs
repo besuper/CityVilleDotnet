@@ -80,6 +80,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         ViewData["PlayerName"] = user.Username;
         ViewData["PlayerLevel"] = user.Level;
+        ViewData["ProfilePictureUrl"] = user.ProfilePictureUrl ?? "/blank.png";
 
         return Page();
     }
