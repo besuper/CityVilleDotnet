@@ -13,6 +13,6 @@ public class FranchiseConfiguration : IEntityTypeConfiguration<Franchise>
 
         builder.Property(x => x.FranchiseType).HasMaxLength(64);
         builder.Property(x => x.FranchiseName).HasMaxLength(64);
-        builder.HasMany(x => x.Locations).WithOne();
+        builder.HasMany(x => x.Locations).WithOne().IsRequired();
     }
 }

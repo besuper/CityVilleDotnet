@@ -16,6 +16,9 @@ internal sealed class Sell(CityVilleDbContext context) : AmfService<SellRequest>
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.FranchiseLocation)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.MechanicCounters)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects)
@@ -39,6 +42,21 @@ internal sealed class Sell(CityVilleDbContext context) : AmfService<SellRequest>
         if (gameItem is null) throw new Exception($"Can't find item with name {obj.ItemName}");
 
         world.RemoveBuilding(obj);
+
+        if (obj.FranchiseLocation is not null && obj.ItemOwner is not null)
+        {
+            var sender = await context.Set<Player>()
+                .AsSplitQuery()
+                .Include(x => x.Franchises)
+                .ThenInclude(x => x.Locations)
+                .FirstOrDefaultAsync(x => x.Snuid.ToString() == obj.ItemOwner, cancellationToken);
+
+            if (sender is not null)
+            {
+                sender.RemoveFranchiseLocation(user.Snuid.ToString(), obj.WorldFlatId);
+            }
+        }
+
         context.Set<WorldObject>().Remove(obj);
 
         if (gameItem.SellSendsToInventory is not null)

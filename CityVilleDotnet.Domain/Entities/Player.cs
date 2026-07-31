@@ -437,6 +437,23 @@ public class Player
         ExpansionsPurchased++;
     }
 
+    public void RemoveFranchiseLocation(string friendSnuid, int worldFlatId)
+    {
+        foreach (var franchise in Franchises)
+        {
+            var location = franchise.Locations.FirstOrDefault(l => l.Uid == friendSnuid && l.ObjectId == $"{worldFlatId}");
+
+            if (location is null) continue;
+
+            franchise.Locations.Remove(location);
+
+            if (franchise.Locations.Count == 0)
+                Franchises.Remove(franchise);
+
+            return;
+        }
+    }
+
     // From Player::processRandomModifiers → processRandomModifiersWithTable → processRandomModifiersFromConfig
     public List<int> CollectDoobersRewards(string itemName, string modifierGroupName = "default", int coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1)
     {

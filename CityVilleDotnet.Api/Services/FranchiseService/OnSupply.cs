@@ -40,15 +40,13 @@ public sealed class OnSupply(CityVilleDbContext context) : AmfService<OnSupplyRe
         if (commodityCost > 0)
             user.RemoveGoods(commodityCost);
 
-        // FIXME: Move MoneyCollected to harvest in receiver city with the money harvested
         location.TimeLastSupplied = ServerUtils.GetCurrentTimeSeconds();
-        location.MoneyCollected = 100; // MoneyCollected is a server side var, but I don't know how it is calculated
+        location.CommodityLeft = location.CommodityMax;
 
         await context.SaveChangesAsync(cancellationToken);
 
         return new CityVilleResponse().Data(new ASObject
         {
-            // TODO: Implement star level up
             { "star_rating", location.StarRating }
         });
     }

@@ -475,6 +475,33 @@ public class WorldObject
         return (coinYield, cashYield);
     }
 
+    public (int CoinYield, int CashYield) HarvestFranchise()
+    {
+        var coinYield = 0;
+        var cashYield = 0;
+
+        var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
+
+        if (gameItem is not null)
+        {
+            coinYield = gameItem.CoinYield ?? 0;
+            cashYield = gameItem.CashYield ?? 0;
+        }
+
+        if (FranchiseLocation is not null)
+        {
+            FranchiseLocation.CommodityLeft = 0;
+            FranchiseLocation.TimeLastCollected = ServerUtils.GetCurrentTimeSeconds();
+            FranchiseLocation.MoneyCollected += coinYield;
+            FranchiseLocation.CustomersServed++;
+            FranchiseLocation.TryLevelUpStar();
+        }
+
+        Close();
+
+        return (coinYield, cashYield);
+    }
+
     public void HarvestGreenHouse()
     {
         ContractName = null;
@@ -498,6 +525,11 @@ public class WorldObject
         {
             FranchiseLocation.TimeLastOperated = ServerUtils.GetCurrentTimeSeconds();
         }
+    }
+
+    public bool IsFranchiseSupplied()
+    {
+        return FranchiseLocation is not null && FranchiseLocation.CommodityLeft > 0;
     }
 
     public void SetFranchiseLocation(FranchiseLocation franchiseLocation, string itemOwner)

@@ -31,6 +31,7 @@ public class Franchise
             TimeLastOperated = 0, // When receiver opened the business
             TimeLastSupplied = 0, // When sender supplied the business
             TimeLastCollected = 0, // When sender collected the business
+            CommodityLeft = commodityReq,
             CommodityMax = commodityReq
         };
 

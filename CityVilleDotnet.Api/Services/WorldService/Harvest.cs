@@ -49,7 +49,9 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
 
         var className = obj.GetClassName();
 
-        if (!obj.CanHarvest())
+        var isFranchiseHarvest = obj.IsFranchiseSupplied();
+
+        if (!isFranchiseHarvest && !obj.CanHarvest())
             throw new Exception("Building is not harvestable");
 
         if (gameItem.EnergyCost?.Harvest is not null)
@@ -63,26 +65,37 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
         var contractName = obj.ContractName;
         var hasContract = obj.ContractName is not null;
 
-        var coinMultiplier = className.IsBusiness() ? Math.Max(obj.Visits ?? 0, 1) : 1;
+        int coinYield;
+        int cashYield;
+        List<int> secureRands;
 
-        // Factory workers
-        var premiumGoodsMultiplier = 1.0;
-        var workerBonus = gameItem.GetWorkerHarvestBonus();
+        if (isFranchiseHarvest)
+        {
+            (coinYield, cashYield) = obj.HarvestFranchise();
+            secureRands = user.CollectDoobersRewards(itemName, modifierGroupName: "franchise");
+        }
+        else
+        {
+            var coinMultiplier = className.IsBusiness() ? Math.Max(obj.Visits ?? 0, 1) : 1;
 
-        if (workerBonus?.Field == "premium_goods" && obj.Workers.Count > 0)
-            premiumGoodsMultiplier += obj.Workers.Count * workerBonus.PercentModifier / 100.0;
+            var premiumGoodsMultiplier = 1.0;
+            var workerBonus = gameItem.GetWorkerHarvestBonus();
 
-        var (coinYield, cashYield) = obj.Harvest();
-        var secureRands = user.CollectDoobersRewards(itemName, coinMultiplier: coinMultiplier, premiumGoodsMultiplier: premiumGoodsMultiplier);
+            if (workerBonus?.Field == "premium_goods" && obj.Workers.Count > 0)
+                premiumGoodsMultiplier += obj.Workers.Count * workerBonus.PercentModifier / 100.0;
+
+            (coinYield, cashYield) = obj.Harvest();
+            secureRands = user.CollectDoobersRewards(itemName, coinMultiplier: coinMultiplier, premiumGoodsMultiplier: premiumGoodsMultiplier);
+        }
 
         logger.LogDebug("Secure rands {Join}", string.Join(",", secureRands.ToArray()));
         logger.LogDebug("Secure rands {SecureRandsCount}", secureRands.Count);
 
         user.HandleQuestsProgress("harvestByClass", className: className.ToString());
         user.HandleQuestsProgress("harvestByKeyword", itemName: itemName); 
-        user.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);// Should always be real itemName
-        user.HandleQuestsProgress("harvestResidenceByRegEx", itemName: obj.ItemName);// Should always be real itemName
-        user.HandleQuestsProgress("harvestItemByName", itemName: obj.ItemName);// Should always be real itemName
+        user.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);
+        user.HandleQuestsProgress("harvestResidenceByRegEx", itemName: obj.ItemName);
+        user.HandleQuestsProgress("harvestItemByName", itemName: obj.ItemName);
 
         if (contractName is not null)
         {
@@ -115,7 +128,6 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
         {
             ["retCoinYield"] = coinYield,
             ["retCashYield"] = cashYield,
-            //response["doobers"] = AmfConverter.Convert(new List<int>());
             ["secureRands"] = AmfConverter.Convert(secureRands),
             ["objectPopulation"] = objectPopulation,
             ["worldPopulation"] = worldPopulation

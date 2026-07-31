@@ -25,10 +25,7 @@ public sealed class OnCollect(CityVilleDbContext context) : AmfService<OnCollect
 
         var location = franchise.Locations.FirstOrDefault(l => l.Uid == request.NeighborUid);
         if (location is null) throw new Exception($"Can't find franchise location for neighbor {request.NeighborUid}");
-
-        if (location.MoneyCollected <= 0)
-            throw new Exception("No money to collect from this franchise location");
-
+        
         player.AddCoins(location.MoneyCollected);
 
         location.MoneyCollected = 0;

@@ -40,8 +40,18 @@ internal sealed class Clear(CityVilleDbContext context) : AmfService<ClearReques
 
         var secureRands = player.CollectDoobersRewards(obj.ItemName);
 
-        // TODO: Implement remove franchise
         world.RemoveBuilding(obj);
+
+        if (obj.FranchiseLocation is not null && obj.ItemOwner is not null)
+        {
+            var sender = await context.Set<Player>()
+                .Include(x => x.Franchises)
+                .ThenInclude(x => x.Locations)
+                .FirstOrDefaultAsync(x => x.Snuid.ToString() == obj.ItemOwner, cancellationToken);
+
+            if (sender is not null)
+                sender.RemoveFranchiseLocation(player.Snuid.ToString(), obj.WorldFlatId);
+        }
 
         context.Set<WorldObject>().Remove(obj);
 

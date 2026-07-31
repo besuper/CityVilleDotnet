@@ -10,5 +10,9 @@ public class FranchiseLocationConfiguration : IEntityTypeConfiguration<Franchise
     {
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
+
+        builder.Property(x => x.FranchiseName).HasMaxLength(64);
+        builder.Property(x => x.ObjectId).HasMaxLength(64);
+        builder.Property(x => x.Uid).HasMaxLength(64);
     }
 }

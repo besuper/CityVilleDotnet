@@ -33,6 +33,13 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
         if (lotOrder is null)
             throw new Exception($"Can't find pending received order from sender {request.SenderId} for lot {request.LotId}");
 
+        var gameItem = GameSettingsManager.Instance.GetItem(lotOrder.ResourceType);
+
+        if (gameItem is null)
+            throw new Exception($"Game item {lotOrder.ResourceType} not found");
+
+        var hqName = gameItem.HeadquartersName;
+
         var senderPlayer = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x!.LotOrders.Where(o =>
@@ -44,6 +51,8 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
                 && f.FranchiseName == lotOrder.OrderResourceName))
             .ThenInclude(x => x.Locations)
             .Include(x => x!.InventoryItems)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x!.Objects)
             .FirstOrDefaultAsync(x => x.Snuid == request.SenderId, cancellationToken);
 
         if (senderPlayer is null)
@@ -64,13 +73,6 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
         if (newBuilding is null)
             throw new Exception($"Can't find building with WorldFlatId {lotOrder.LotId}");
 
-        var gameItem = GameSettingsManager.Instance.GetItem(lotOrder.ResourceType);
-
-        if (gameItem is null)
-            throw new Exception($"Game item {lotOrder.ResourceType} not found");
-        if (gameItem.HeadquartersName is null)
-            throw new Exception($"Game item {lotOrder.ResourceType} does not have HeadquartersName defined");
-
         senderLotOrder.Accept();
         lotOrder.Accept();
 
@@ -79,7 +81,12 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
         var newLocation = senderFranchise.AddLocation(lotOrder, gameItem.GetCommodityRequired() ?? 1);
         newBuilding.SetFranchiseLocation(newLocation, request.SenderId.ToString());
 
-        senderPlayer.AddItem(gameItem.HeadquartersName);
+        if (hqName is not null
+            && !senderPlayer.HasItem(hqName)
+            && !senderPlayer.GetWorld().Objects.Any(x => x.GetItemName() == hqName))
+        {
+            senderPlayer.AddItem(hqName);
+        }
 
         await context.SaveChangesAsync(cancellationToken);
 
