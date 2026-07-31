@@ -94,6 +94,8 @@ public class GameItem
 
     [XmlElement("goodsYield")] public int? GoodsYield { get; set; }
 
+    [XmlElement("goodsReward")] public int? GoodsReward { get; set; }
+
     [XmlElement("construction")] public string? Construction { get; set; }
 
     [XmlElement("commodityReq")] public int? CommodityRequired { get; set; }
@@ -280,6 +282,14 @@ public class GameItem
         }
 
         return CommodityRequired;
+    }
+
+    public string? GetDefaultCommodityName()
+    {
+        if (Commodity.Count > 1)
+            return Commodity.FirstOrDefault(x => x.Default > 0)?.Name;
+
+        return Commodity.FirstOrDefault()?.Name;
     }
 
     public int? GetPopulationAddQuantity()
