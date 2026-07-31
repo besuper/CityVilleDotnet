@@ -7,6 +7,10 @@ namespace CityVilleDotnet.Common.Settings.GameSettings;
 public class FarmingSettings
 {
     [XmlAttribute("growMultiplier")] public required int GrowMultiplier { get; set; }
+    [XmlAttribute("witherMultiplier")] public required double WitherMultiplier { get; set; }
+    [XmlAttribute("witherRefundMultiplier")] public required double WitherRefundMultiplier { get; set; }
+    [XmlAttribute("plowCost")] public int PlowCost { get; set; }
+    [XmlAttribute("plowXp")] public int PlowXp { get; set; }
     [XmlAttribute("inGameDaySeconds")] public required int InGameDaySeconds { get; set; }
     [XmlAttribute("energyRegenerationSeconds")] public required double EnergyRegenerationSeconds { get; set; }
 

@@ -428,6 +428,33 @@ public class WorldObject
         State = WorldObjectState.Grown;
     }
 
+    public bool IsWithered()
+    {
+        if (State != WorldObjectState.Grown && State != WorldObjectState.Planted) return false;
+        if (PlantTime is null) return false;
+
+        var item = GameSettingsManager.Instance.GetItem(GetItemName());
+
+        if (item is null || !item.AllowWither) return false;
+
+        var growTime = item.GetGrowTime();
+
+        if (growTime is null) return false;
+
+        var settings = GameSettingsManager.Instance.GetSettings();
+        var witherTimeMs = growTime.Value * (settings.InGameDaySeconds * 1000.0) * settings.WitherMultiplier;
+
+        return ServerUtils.GetCurrentTime() - PlantTime.Value >= witherTimeMs;
+    }
+
+    public void Plow()
+    {
+        ContractName = null;
+        PlantTime = null;
+        State = WorldObjectState.Plowed;
+        Workers.Clear();
+    }
+
     public (int CoinYield, int CashYield) Harvest()
     {
         var coinYield = 0;

@@ -18,6 +18,8 @@ public class GameItem
     [XmlAttribute("sellSendsToInventory")] public string? SellSendsToInventory { get; set; }
     [XmlAttribute("interactOnLock")] public string? InteractOnLockString { get; set; }
     [XmlIgnore] public bool InteractOnLock => InteractOnLockString == "true";
+    [XmlAttribute("allowWither")] public string? AllowWitherString { get; set; }
+    [XmlIgnore] public bool AllowWither => AllowWitherString != "false";
     [XmlIgnore] public int? Height { get; set; }
 
     [XmlAttribute("height")]

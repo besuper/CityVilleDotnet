@@ -27,6 +27,8 @@ public class WorldObjectDto
 
     [JsonPropertyName("plantTime")] public double? PlantTime { get; set; }
 
+    [JsonPropertyName("witherOn")] public bool WitherOn { get; set; }
+
     [JsonPropertyName("state")] public required string State { get; set; }
 
     [JsonPropertyName("direction")] public int Direction { get; set; }
@@ -82,6 +84,8 @@ public static class WorldObjectDtoMapper
         if (model.HasGrown())
             model.SetReadyToHarvest();
 
+        var effectiveItem = GameSettingsManager.Instance.GetItem(model.GetItemName());
+
         var dto = new WorldObjectDto()
         {
             ItemName = model.ItemName,
@@ -91,6 +95,7 @@ public static class WorldObjectDtoMapper
             TempId = model.TempId,
             BuildTime = model.BuildTime,
             PlantTime = model.PlantTime,
+            WitherOn = effectiveItem?.AllowWither ?? false, // TODO: Check if WitherOn is related to AllowWither
             CurrentState = model.CurrentState is null ? (int)ConstructionState.Idle : (int)model.CurrentState,
             Stage = model.Stage,
             State = model.State.ToDescriptionString(),
@@ -267,9 +272,7 @@ public static class WorldObjectDtoMapper
 
         if (model.ClassName == BuildingClassType.ConstructionSite)
         {
-            var targetGameItem = GameSettingsManager.Instance.GetItem(model.GetItemName());
-
-            var gates = targetGameItem?.GetGates() ?? [];
+            var gates = effectiveItem?.GetGates() ?? [];
 
             foreach (var buildGate in gates.Where(x => x.Name == "build"))
             {
