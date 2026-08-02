@@ -92,6 +92,24 @@ public class Player
 
     public void AddItem(string itemName, int amount = 1, string? storageKey = null, WorldObject? storedObject = null)
     {
+        if (storageKey is null)
+        {
+            var inventoryLimit = GameSettingsManager.Instance.GetItem(itemName)?.InventoryLimit ?? 0;
+
+            if (inventoryLimit > 0)
+            {
+                var currentAmount = CountInventoryItem(itemName);
+
+                if (currentAmount >= inventoryLimit)
+                {
+                    StaticLogger.Current.LogDebug("Inventory limit {InventoryLimit} reached for {ItemName}", inventoryLimit, itemName);
+                    return;
+                }
+
+                amount = Math.Min(amount, inventoryLimit - currentAmount);
+            }
+        }
+
         var item = InventoryItems.FirstOrDefault(x => x.Name == itemName && x.StorageType == storageKey);
 
         if (item is null)
@@ -124,28 +142,25 @@ public class Player
     public List<InventoryItem> ConsumeInventoryGate(GameItem buildingItem, string gateName)
     {
         var removed = new List<InventoryItem>();
-        var gate = buildingItem.GetGates().FirstOrDefault(x => x.Name == gateName);
 
-        if (gate is null) return removed;
-
-        // if null => inventory by default
-        if (!string.IsNullOrEmpty(gate.Type) && gate.Type != "inventory") return removed;
-
-        foreach (var key in gate.Keys)
+        foreach (var key in buildingItem.GetInventoryGateKeys(gateName))
         {
-            if (key is null) continue;
-
             var item = InventoryItems.FirstOrDefault(x => x.Name == key.Name && x.IsMainInventory);
 
             if (item is null) continue;
 
             var removeItem = RemoveItem(key.Name, key.Amount);
-            
-            if(removeItem is not null) 
+
+            if (removeItem is not null)
                 removed.Add(removeItem);
         }
 
         return removed;
+    }
+
+    public bool HasInventoryGateKeys(GameItem buildingItem, string gateName)
+    {
+        return buildingItem.GetInventoryGateKeys(gateName).All(x => CountInventoryItem(x.Name) >= x.Amount);
     }
 
     public int CountInventoryItems()
@@ -463,15 +478,22 @@ public class Player
         var secureRands = new List<int>();
 
         // From Player::selectLocalRandomModifiers
-        var modifiers = SelectRandomModifiers(gameItem, modifierGroupName, secureRands);
+        var selectedModifiers = SelectRandomModifiers(gameItem, modifierGroupName, secureRands);
 
-        if (modifiers is null || modifiers.Count == 0) return secureRands;
+        if (selectedModifiers is null || selectedModifiers.Count == 0) return secureRands;
+
+        // Client copies the modifiers before appending, the game settings must stay untouched
+        var modifiers = new List<RandomModifier>(selectedModifiers);
 
         // From Player::processRandomModifiersWithTable with (defaultenergyactionpack)
         var packModifiers = GameSettingsManager.Instance.GetRandomModifierPackModifiers("defaultenergyactionpack");
 
         if (packModifiers is not null && packModifiers.Count > 0)
             modifiers.AddRange(packModifiers);
+
+        // Client skips the global tables for construction sites (processRandomModifiersWithTable)
+        if (!construction)
+            modifiers.AddRange(SelectGlobalTableModifiers(gameItem));
 
         // process each modifier (processRandomModifiersFromConfig)
         ProcessModifiers(gameItem, modifiers, secureRands, coinMultiplier, construction, premiumGoodsMultiplier);
@@ -528,6 +550,37 @@ public class Player
         var defaultModifiers = gameItem.RandomModifiersList.FirstOrDefault(rm => rm.Name == "default") ?? gameItem.RandomModifiersList.FirstOrDefault();
 
         return defaultModifiers?.Modifiers;
+    }
+
+    // From Player::processRandomModifiersWithTable, tables registered in the world by GlobalTableModifierMechanic
+    private List<RandomModifier> SelectGlobalTableModifiers(GameItem gameItem)
+    {
+        if (gameItem.Keywords.Count == 0) return [];
+
+        var world = GetWorld();
+
+        var modifiers = new List<RandomModifier>();
+        var registeredKeywords = new HashSet<string>();
+
+        foreach (var mechanic in world.GetGlobalTableModifiers())
+        {
+            if (!gameItem.HasKeyword(mechanic.TargetKeyword!)) continue;
+
+            // a keyword only registers the same table once
+            if (!registeredKeywords.Add($"{mechanic.TargetKeyword}:{mechanic.Table}")) continue;
+
+            if (!GameSettingsManager.Instance.IsValidatorSatisfied(mechanic.Validate, Level)) continue;
+
+            var table = GameSettingsManager.Instance.GetRandomModifier(mechanic.Table!);
+
+            if (table is null) continue;
+
+            modifiers.Add(new RandomModifier { Type = table.Type, TableName = table.Name });
+
+            StaticLogger.Current.LogDebug("Added global table {TableName} for {ItemName} with keyword {Keyword}", table.Name, gameItem.Name, mechanic.TargetKeyword);
+        }
+
+        return modifiers;
     }
 
     // From Player::processRandomModifiersFromConfig

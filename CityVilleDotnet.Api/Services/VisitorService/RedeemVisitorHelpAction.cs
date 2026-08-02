@@ -12,11 +12,13 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
 {
     public override async Task<ASObject> HandlePacket(RedeemVisitorHelpActionRequest request, Guid playerId, CancellationToken cancellationToken)
     {
+        var globalTableProviders = GameSettingsManager.Instance.GetGlobalTableProviders();
+
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.VisitorHelpOrders.Where(o => o.SenderId == request.SenderId))
-            .Include(x => x.Worlds.Where(w => w.Type == WorldType.Main))
-            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.WorldObjectId))
+            .Include(x => x.Worlds.Where(w => w.Type == WorldType.Main)) // TODO: Friends can only help main world?
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.WorldObjectId || globalTableProviders.Contains(o.ItemName)))
             .Include(x => x.InventoryItems)
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)

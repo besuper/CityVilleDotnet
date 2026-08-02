@@ -172,6 +172,16 @@ public class World
         return objectByTempId;
     }
 
+    // From GlobalTableOverrideManager, buildings register their tables when the world is loaded
+    public List<MechanicItem> GetGlobalTableModifiers()
+    {
+        return Objects
+            .Select(x => GameSettingsManager.Instance.GetItem(x.ItemName))
+            .Where(x => x is not null)
+            .SelectMany(x => x!.GetGlobalTableModifiers())
+            .ToList();
+    }
+
     public int CountBuildingByName(string name)
     {
         return Objects.Count(x => x.ItemName.Equals(name));

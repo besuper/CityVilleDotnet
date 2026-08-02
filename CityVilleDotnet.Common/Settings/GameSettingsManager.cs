@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Xml.Serialization;
+using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Settings.GameSettings;
 
 namespace CityVilleDotnet.Common.Settings;
@@ -15,6 +16,8 @@ public class GameSettingsManager
     private readonly Dictionary<string, WorldRectItem> _worldRects;
     private readonly Dictionary<string, DynamicExpansionItem> _dynamicExpansions;
     private readonly Dictionary<string, WorldConfigItem> _worldConfigs;
+    private readonly Dictionary<string, ValidateItem> _validators;
+    private List<string> _globalTableProviders = [];
     private FarmingSettings _farmSettings;
     private List<LevelItem> _levels = [];
     private List<ReputationItem> _reputationLevels = [];
@@ -31,6 +34,7 @@ public class GameSettingsManager
         _worldRects = new Dictionary<string, WorldRectItem>();
         _dynamicExpansions = new Dictionary<string, DynamicExpansionItem>();
         _worldConfigs = new Dictionary<string, WorldConfigItem>();
+        _validators = new Dictionary<string, ValidateItem>();
         _isInitialized = false;
     }
 
@@ -157,6 +161,19 @@ public class GameSettingsManager
                     _worldConfigs[worldConfig.Name] = worldConfig;
                 }
             }
+
+            if (gameSettings.Validators is not null)
+            {
+                foreach (var validator in gameSettings.Validators.Validators)
+                {
+                    _validators[validator.Name] = validator;
+                }
+            }
+
+            _globalTableProviders = _items.Values
+                .Where(x => x is not null && x.GetGlobalTableModifiers().Count > 0)
+                .Select(x => x!.Name)
+                .ToList();
         }
 
         logger.LogInformation("Loaded gameSettings.xml with {ItemsCount} items", _items.Count);
@@ -170,6 +187,8 @@ public class GameSettingsManager
         logger.LogInformation("Loaded {ExpansionsCount} expansions", _expansions.Count);
         logger.LogInformation("Loaded {DynamicExpansionsCount} dynamic expansions", _dynamicExpansions.Count);
         logger.LogInformation("Loaded {WorldConfigsCount} world configs", _worldConfigs.Count);
+        logger.LogInformation("Loaded {ValidatorsCount} validators", _validators.Count);
+        logger.LogInformation("Loaded {GlobalTableProvidersCount} global table providers", _globalTableProviders.Count);
 
         _isInitialized = true;
     }
@@ -287,6 +306,30 @@ public class GameSettingsManager
             throw new InvalidOperationException("GameSettingsManager not initialized");
 
         return _worldConfigs.TryGetValue(name, out var config) ? config : null;
+    }
+
+    public bool IsValidatorSatisfied(string? validatorName, int playerLevel)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        if (string.IsNullOrEmpty(validatorName)) return true;
+
+        if (!_validators.TryGetValue(validatorName, out var validator))
+        {
+            StaticLogger.Current.LogWarning("Can't find validator {ValidatorName}", validatorName);
+            return false;
+        }
+
+        return validator.IsValid(playerLevel);
+    }
+
+    public List<string> GetGlobalTableProviders()
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return _globalTableProviders;
     }
 
     public IReadOnlyCollection<ExpansionSetting> GetExpansions()

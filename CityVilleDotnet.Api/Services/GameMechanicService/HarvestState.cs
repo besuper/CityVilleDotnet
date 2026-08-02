@@ -13,10 +13,12 @@ public sealed class HarvestState(CityVilleDbContext context) : AmfService<Harves
 {
     public override async Task<ASObject> HandlePacket(HarvestStateRequest request, Guid playerId, CancellationToken cancellationToken)
     {
+        var globalTableProviders = GameSettingsManager.Instance.GetGlobalTableProviders();
+
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || globalTableProviders.Contains(o.ItemName)))
             .Include(x => x.InventoryItems)
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)

@@ -52,8 +52,20 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
 
         var newItemName = gameItem.Upgrade.Name;
 
+        // From SlottedContainerUpgradeMechanic, the gate keys are taken when the upgrade is unlocked (AbstractGate::takeKeys)
+        var upgradeGateName = gameItem.GetGameEventMechanic("upgrade")?.GateName;
+
+        if (upgradeGateName is not null && !player.HasInventoryGateKeys(gameItem, upgradeGateName))
+            return new CityVilleResponse().Error(GameErrorType.InvalidState);
+
         if (gameItem.Upgrade.CashCost is not null)
             player.RemoveCash(Convert.ToInt32(gameItem.Upgrade.CashCost));
+
+        if (upgradeGateName is not null)
+        {
+            foreach (var consumed in player.ConsumeInventoryGate(gameItem, upgradeGateName))
+                context.Set<InventoryItem>().Remove(consumed);
+        }
 
         player.HandleQuestsProgress("upgradeItemByName", itemName: obj.ItemName);
 

@@ -120,6 +120,7 @@ public class GameItem
     [XmlElement("mastery")] public required List<MasteryItem> MasteryItems { get; set; }
     [XmlElement("storageUnit")] public StorageUnitItem? StorageUnit { get; set; }
     [XmlElement("inventoryChecks")] public InventoryChecksContainer? InventoryChecks { get; set; }
+    [XmlElement("inventoryLimit")] public int InventoryLimit { get; set; }
     [XmlElement("positiveStreak")] public string? PositiveStreak { get; set; }
     [XmlElement("negativeStreak")] public string? NegativeStreak { get; set; }
     [XmlElement("positiveStreakMaxEffect")] public int PositiveStreakMaxEffect { get; set; }
@@ -172,6 +173,24 @@ public class GameItem
         return Gates?.Gates ?? [];
     }
 
+    // Composite gates only reference their sub gates by name (CompositeGate::takeKeys)
+    public List<GateKey> GetInventoryGateKeys(string gateName)
+    {
+        var gate = GetGates().FirstOrDefault(x => x.Name == gateName);
+
+        if (gate is null) return [];
+
+        var keys = gate.Keys.Where(x => x is not null).Select(x => x!);
+
+        if (gate.Type == "composite")
+            return keys.SelectMany(x => GetInventoryGateKeys(x.Name)).ToList();
+
+        // if null => inventory by default
+        if (!string.IsNullOrEmpty(gate.Type) && gate.Type != "inventory") return [];
+
+        return keys.ToList();
+    }
+
     public RemodelDefinitionItem? GetRemodelDefinitionByName(string itemName)
     {
         return Remodels?.Definitions.FirstOrDefault(x => x.Item == itemName);
@@ -212,6 +231,18 @@ public class GameItem
         }
 
         return null;
+    }
+
+    // From GlobalTableModifierMechanic, the "load" game mode is the state rebuilt every time the world is loaded
+    public List<MechanicItem> GetGlobalTableModifiers()
+    {
+        if (Mechanics?.GameEventMechanics is null) return [];
+
+        return Mechanics.GameEventMechanics
+            .Where(x => x.GameMode == "load")
+            .SelectMany(x => x.Mechanics ?? [])
+            .Where(x => x.Type == "globalTableModifiers" && x.Action == "add" && x.TargetKeyword is not null && x.Table is not null)
+            .ToList();
     }
 
     public string? GetSupplyStateMechanicClass()
@@ -670,6 +701,11 @@ public class MechanicItem
     [XmlAttribute("restrictByKeywords")] public string? RestrictByKeywords { get; set; }
     [XmlAttribute("xOffset")] public int XOffset { get; set; }
     [XmlAttribute("yOffset")] public int YOffset { get; set; }
+    [XmlAttribute("action")] public string? Action { get; set; }
+    [XmlAttribute("gateName")] public string? GateName { get; set; }
+    [XmlAttribute("targetKeyword")] public string? TargetKeyword { get; set; }
+    [XmlAttribute("table")] public string? Table { get; set; }
+    [XmlAttribute("validate")] public string? Validate { get; set; }
 
     public bool AllowsItem(GameItem? item)
     {

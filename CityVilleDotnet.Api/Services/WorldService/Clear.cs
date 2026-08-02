@@ -13,10 +13,12 @@ internal sealed class Clear(CityVilleDbContext context) : AmfService<ClearReques
 {
     public override async Task<ASObject> HandlePacket(ClearRequest request, Guid playerId, CancellationToken cancellationToken)
     {
+        var globalTableProviders = GameSettingsManager.Instance.GetGlobalTableProviders();
+
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects.Where(o => o.X == request.Building.Position.X && o.Y == request.Building.Position.Y))
+            .ThenInclude(x => x.Objects.Where(o => (o.X == request.Building.Position.X && o.Y == request.Building.Position.Y) || globalTableProviders.Contains(o.ItemName)))
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))

@@ -15,13 +15,15 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
 {
     public override async Task<ASObject> HandlePacket(HarvestRequest request, Guid playerId, CancellationToken cancellationToken)
     {
+        var globalTableProviders = GameSettingsManager.Instance.GetGlobalTableProviders();
+
         var user = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects.Where(o => o.X == request.Building.Position.X && o.Y == request.Building.Position.Y))
+            .ThenInclude(x => x.Objects.Where(o => (o.X == request.Building.Position.X && o.Y == request.Building.Position.Y) || globalTableProviders.Contains(o.ItemName)))
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects.Where(o => o.X == request.Building.Position.X && o.Y == request.Building.Position.Y))
+            .ThenInclude(x => x.Objects.Where(o => (o.X == request.Building.Position.X && o.Y == request.Building.Position.Y) || globalTableProviders.Contains(o.ItemName)))
             .ThenInclude(x => x.Workers)
             .Include(x => x.InventoryItems)
             .Include(x => x.SeenFlags)
