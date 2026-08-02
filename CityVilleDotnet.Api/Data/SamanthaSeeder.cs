@@ -37,7 +37,10 @@ public static class SamanthaSeeder
             var existingWorld = samanthaUser.GetWorldByType(WorldType.Main);
 
             if (existingWorld is not null)
+            {
+                context.RemoveRange(existingWorld.Objects);
                 context.Remove(existingWorld);
+            }
 
             var world = new World("City Sam", 36, 36, 0, 0, 0, 0, 0, mapRects, objects);
             samanthaUser.SetWorld(world);

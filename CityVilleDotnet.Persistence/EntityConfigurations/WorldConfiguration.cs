@@ -17,8 +17,8 @@ public class WorldConfiguration : IEntityTypeConfiguration<World>
         builder.Property(x => x.NextBuildingId);
         builder.Property(x => x.WorldCreated).HasMaxLength(32);
 
-        builder.HasMany(x => x.MapRects);
+        builder.HasMany(x => x.MapRects).WithOne().IsRequired();
         builder.HasMany(x => x.Objects);
-        builder.HasMany(x => x.IncentivizedExpansions);
+        builder.HasMany(x => x.IncentivizedExpansions).WithOne().IsRequired();
     }
 }
