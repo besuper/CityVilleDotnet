@@ -4,6 +4,7 @@ obj/
 logs/
 .idea/
 *.swf
+*.user
 *.xml
 !test/**/TestData/*.xml
 *.xml.z

@@ -10,6 +10,7 @@ public static class SamanthaSeeder
     private static readonly Guid SamanthaUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
     private const string SamanthaAppUserId = "00000000-0000-0000-0000-000000000001";
     public const int SamanthaSnuid = -1;
+    private const int WorldVersion = 1;
 
     public static async Task SeedAsync(IServiceProvider serviceProvider)
     {
@@ -18,6 +19,14 @@ public static class SamanthaSeeder
 
         var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>()
             .CreateLogger(nameof(SamanthaSeeder));
+
+        var lastUpdatedWorldVersion = await context.Set<SamanthaWorldVersion>()
+            .OrderByDescending(x => x.UpdatedAt)
+            .Select(x => x.Id)
+            .FirstOrDefaultAsync();
+
+        if (lastUpdatedWorldVersion == WorldVersion)
+            return;
 
         logger.LogInformation("Seeding Samantha's city");
 
@@ -31,6 +40,8 @@ public static class SamanthaSeeder
 
         var mapRects = GetMapRects();
         var objects = GetWorldObjects();
+
+        await context.AddAsync(new SamanthaWorldVersion(WorldVersion, DateTime.Now));
 
         if (samanthaUser is not null)
         {
