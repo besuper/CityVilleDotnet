@@ -220,6 +220,13 @@ public class World
     {
         return Objects.Any(x => RemodelHeadquartersNames.Contains(x.ItemName));
     }
+    
+    public int CountBuildingByClassName(string className)
+    {
+        var classType = Enum.Parse<BuildingClassType>(className);
+        
+        return Objects.Count(x => x.ClassName == classType);
+    }
 
     public int CountBuildingByRegex(string pattern)
     {

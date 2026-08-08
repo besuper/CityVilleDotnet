@@ -1280,6 +1280,14 @@ public class Player
                         if (effect >= task.Streak)
                             quest.Progress[index] = effect;
                         continue;
+                    case "countHeadquarters":
+                        if (!calculatedResults.TryGetValue(resultKey, out value))
+                            calculatedResults[resultKey] = value = GetWorld().CountBuildingByClassName(taskType);
+                        
+                        if (value > quest.Progress[index])
+                            quest.Progress[index] = value;
+                        
+                        continue;
                 }
             }
         }
