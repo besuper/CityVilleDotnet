@@ -66,5 +66,6 @@ public enum BuildingClassType
     Portal = 61,
     FarmersMarket = 62,
     TaxiDispatch = 63,
-    XPromoBuilding = 64
+    XPromoBuilding = 64,
+    PartnerBuild = 65
 }
