@@ -47,7 +47,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
         var pUser = await context.Set<Player>()
             .AsNoTracking()
-            .Where(x => x.AppUser.Id == user.Id)
+            .Where(x => x.AppUser!.Id == user.Id)
             .Select(x => x.Id)
             .FirstOrDefaultAsync(ct);
 
@@ -98,7 +98,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
                     continue;
                 }
 
-                logger.LogDebug("Received request for function {FunctionName} sequence {Sequence}", functionName, sequence);
+                logger.LogInformation("Received request from {player} for {FunctionName} sequence {Sequence} parameters {parameters}", pUser, functionName, sequence, parameters);
 
                 var packageName = functionName.Split('.')[0];
                 var className = functionName.Split('.')[1];
@@ -121,8 +121,6 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
                     var actionType = (string)parameters[0];
 
                     upperClassName = actionType.Pascalize();
-
-                    logger.LogDebug("Parameters {Objects}", (object?)parameters);
                 }
 
                 if (packageName == "GameMechanicService" && upperClassName == "PerformMechanicAction")
@@ -130,8 +128,6 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
                     var mechanicType = (string)parameters[1];
 
                     upperClassName = mechanicType.Pascalize();
-
-                    logger.LogDebug("Parameters {Objects}", (object?)parameters);
                 }
 
                 ASObject? response = null;

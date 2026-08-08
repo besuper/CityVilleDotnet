@@ -159,7 +159,6 @@ app.MapRazorPages();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseSerilogRequestLogging();
 app.UseFastEndpoints();
 
 var options = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
