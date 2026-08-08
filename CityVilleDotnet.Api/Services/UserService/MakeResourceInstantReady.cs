@@ -16,9 +16,7 @@ public class MakeResourceInstantReady(CityVilleDbContext context, ILogger<MakeRe
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.BuildingId || o.TempId == request.BuildingId))
-            .Include(x => x.InventoryItems)
-            .Include(x => x.SeenFlags)
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.BuildingId || o.TempId == request.BuildingId))
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
@@ -40,7 +38,6 @@ public class MakeResourceInstantReady(CityVilleDbContext context, ILogger<MakeRe
         obj.SetReadyToHarvest();
 
         player.HandleQuestsProgress("instantReadyByClass", className: obj.ClassName.ToString());
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
         return GatewayService.CreateEmptyResponse();

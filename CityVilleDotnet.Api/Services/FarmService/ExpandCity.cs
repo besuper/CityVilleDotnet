@@ -25,9 +25,9 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.MapRects)
+            .ThenInclude(x => x.MapRects)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.IncentivizedExpansions)
+            .ThenInclude(x => x.IncentivizedExpansions)
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
@@ -124,8 +124,6 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
 
         player.HandleQuestsProgress("incrementalExpansionCount");
         player.HandleQuestsProgress("expand");
-
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

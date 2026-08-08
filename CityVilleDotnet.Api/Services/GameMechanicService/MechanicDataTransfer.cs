@@ -70,7 +70,6 @@ internal sealed class MechanicDataTransfer(CityVilleDbContext context) : AmfServ
             player.HandleQuestsProgress("transferFromStorageToDisplay", itemName: obj.GetItemName());
 
         player.HandleQuestsProgress("");
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

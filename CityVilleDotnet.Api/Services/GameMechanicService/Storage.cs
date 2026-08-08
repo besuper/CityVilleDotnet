@@ -54,7 +54,6 @@ internal sealed class Storage(CityVilleDbContext context) : AmfService<StorageRe
         obj.AddToStorage(itemName, amount);
 
         player.HandleQuestsProgress("");
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

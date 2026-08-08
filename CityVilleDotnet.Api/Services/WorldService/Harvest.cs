@@ -119,8 +119,6 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
             user.HandleQuestsProgress("harvestBusinessByKeyword", itemName: itemName);
         }
 
-        user.CheckCompletedQuests();
-
         var objectPopulation = gameItem.Population?.Min ?? -1;
         var worldPopulation = world.GetCurrentPopulation();
 

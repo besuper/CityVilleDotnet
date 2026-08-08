@@ -40,7 +40,6 @@ public sealed class Loot(CityVilleDbContext context) : AmfService<LootRequest>
         var animalName = obj.RollRandomZooAnimal();
 
         player.HandleQuestsProgress("");
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

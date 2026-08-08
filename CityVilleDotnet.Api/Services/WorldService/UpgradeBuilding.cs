@@ -73,7 +73,6 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
         world.CalculatePopulation();
 
         player.GiveUpgradeRewards(gameItem.Upgrade?.Rewards?.Rewards ?? []);
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

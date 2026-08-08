@@ -58,7 +58,6 @@ internal sealed class Clear(CityVilleDbContext context) : AmfService<ClearReques
         context.Set<WorldObject>().Remove(obj);
 
         player.HandleQuestsProgress("clearByClass", className: obj.ClassName.ToString()); // Wilderness
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

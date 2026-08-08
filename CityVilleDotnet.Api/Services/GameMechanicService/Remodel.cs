@@ -70,7 +70,6 @@ public sealed class Remodel(CityVilleDbContext context) : AmfService<RemodelRequ
                 world.CalculatePopulation();
 
                 player.HandleQuestsProgress("buildingremodeled");
-                player.CheckCompletedQuests();
             }
         }
         else

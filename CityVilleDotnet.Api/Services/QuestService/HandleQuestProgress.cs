@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
 using FluentValidation;
@@ -17,17 +18,12 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService<Handle
 
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Quests)
-            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x.Objects)
-            .Include(x => x.SeenFlags)
-            .Include(x => x.InventoryItems)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Can't to find user with UserId");
 
         player.HandleQuestsProgress(request.ActionType);
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

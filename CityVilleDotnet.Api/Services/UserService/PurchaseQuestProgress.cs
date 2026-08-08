@@ -17,10 +17,6 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
-            .Include(x => x.SeenFlags)
-            .Include(x => x.InventoryItems)
-            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects.Where(o => o.EnergyModifier > 0))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         logger.LogDebug("Quest {QuestName} at {TaskIndex} is purchased", request.QuestName, request.TaskIndex);
@@ -45,8 +41,6 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
         }
 
         currentQuest.PurchaseProgression(request.TaskIndex);
-
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

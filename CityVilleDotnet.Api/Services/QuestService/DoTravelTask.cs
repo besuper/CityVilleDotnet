@@ -23,7 +23,6 @@ public class DoTravelTask(CityVilleDbContext context) : AmfService<DoTravelTaskR
         if (player is null) throw new Exception("Player not found");
 
         player.HandleQuestsProgress("travel", itemName: request.WorldId);
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

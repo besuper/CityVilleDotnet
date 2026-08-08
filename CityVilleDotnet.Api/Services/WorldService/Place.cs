@@ -24,10 +24,10 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.MapRects)
+            .ThenInclude(x => x.MapRects)
             .Include(x => x.InventoryItems)
             .Include(x => x.SeenFlags)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
@@ -104,7 +104,6 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
                 player.HandleQuestsProgress("placeByClass", className: request.Building.ClassName.ToString());
                 player.HandleQuestsProgress("placeBuildingByName", itemName: request.Building.ItemName);
                 player.HandleQuestsProgress("placeByKeyword", itemName: request.Building.ItemName);
-                player.CheckCompletedQuests();
 
                 await context.SaveChangesAsync(cancellationToken);
 
@@ -169,7 +168,6 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
         player.HandleQuestsProgress("placeByClass", className: request.Building.ClassName.ToString());
         player.HandleQuestsProgress("placeBuildingByName", itemName: request.Building.ItemName);
         player.HandleQuestsProgress("placeByKeyword", itemName: request.Building.ItemName);
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

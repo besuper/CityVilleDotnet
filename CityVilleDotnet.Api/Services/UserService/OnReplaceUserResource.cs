@@ -56,7 +56,6 @@ public class OnReplaceUserResource(CityVilleDbContext context) : AmfService<OnRe
             franchise.AddCitySamLocation(request.OldResourceId, gameItem.GetCommodityRequired() ?? 1);
             
             player.HandleQuestsProgress("citySamHQ");
-            player.CheckCompletedQuests();
         }
         else
         {

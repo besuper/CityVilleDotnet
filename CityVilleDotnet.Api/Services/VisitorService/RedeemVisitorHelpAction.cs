@@ -68,8 +68,6 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
                     player.HandleQuestsProgress("harvestBusinessByName", itemName: itemName);
                     player.HandleQuestsProgress("harvestBusinessByClass", className: className.ToString());
                 }
-
-                player.CheckCompletedQuests();
             }
         }
 

@@ -19,9 +19,7 @@ public class Move(CityVilleDbContext context) : AmfService<MoveRequest>
         var user = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects.Where(o => o.X == originX && o.Y == originY))
-            .Include(x => x.InventoryItems)
-            .Include(x => x.SeenFlags)
+            .ThenInclude(x => x.Objects.Where(o => o.X == originX && o.Y == originY))
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
@@ -32,7 +30,6 @@ public class Move(CityVilleDbContext context) : AmfService<MoveRequest>
         obj.MoveTo(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z, request.Building.Direction);
 
         user.HandleQuestsProgress("moveByName", itemName: obj.ItemName);
-        user.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

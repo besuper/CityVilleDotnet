@@ -21,7 +21,6 @@ public class CompleteWelcomeTrainOrder(CityVilleDbContext context) : AmfService
 
         player.AddGoods(GameSettingsManager.Instance.GetSettings().WelcomeTrainQuestAmount);
         player.HandleQuestsProgress("welcomeTrain");
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

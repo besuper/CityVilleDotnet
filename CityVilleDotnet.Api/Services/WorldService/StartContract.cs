@@ -17,12 +17,9 @@ internal sealed class StartContract(CityVilleDbContext context) : AmfService<Sta
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects.Where(o => o.X == request.Building.Position.X && o.Y == request.Building.Position.Y))
+            .ThenInclude(x => x.Objects.Where(o => o.X == request.Building.Position.X && o.Y == request.Building.Position.Y))
             .ThenInclude(x => x.Workers)
-            .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
-            .Include(x => x.Collections)
-            .ThenInclude(x => x.Items)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
@@ -44,7 +41,6 @@ internal sealed class StartContract(CityVilleDbContext context) : AmfService<Sta
 
         player.HandleQuestsProgress("startContractByClass", className: obj.ClassName.ToString());
         player.HandleQuestsProgress("startContractByName", itemName: request.Building.ContractName);
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

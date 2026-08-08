@@ -16,8 +16,7 @@ internal sealed class SupplyState(CityVilleDbContext context) : AmfService<Suppl
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
-            .Include(x => x.InventoryItems)
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
@@ -33,10 +32,7 @@ internal sealed class SupplyState(CityVilleDbContext context) : AmfService<Suppl
             throw new Exception($"No supplyState mechanic on {obj.ItemName}");
 
         player.ProcessGoods(gameItem);
-
         obj.OpenBusiness();
-
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

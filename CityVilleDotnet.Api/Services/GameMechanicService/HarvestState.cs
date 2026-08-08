@@ -56,7 +56,6 @@ public sealed class HarvestState(CityVilleDbContext context) : AmfService<Harves
         player.HandleQuestsProgress("harvestByClass", className: obj.GetClassName().ToString());
         player.HandleQuestsProgress("harvestBusinessByName", itemName: obj.GetItemName());
         player.HandleQuestsProgress("harvestBusinessByClass", className: obj.GetClassName().ToString());
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 

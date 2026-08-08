@@ -16,9 +16,8 @@ internal sealed class Supply(CityVilleDbContext context) : AmfService<SupplyRequ
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
             .ThenInclude(x => x.FranchiseLocation)
-            .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
@@ -35,7 +34,6 @@ internal sealed class Supply(CityVilleDbContext context) : AmfService<SupplyRequ
         obj.OpenBusiness();
 
         player.HandleQuestsProgress("openBusinessByName", itemName: obj.ItemName);
-        player.CheckCompletedQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 
