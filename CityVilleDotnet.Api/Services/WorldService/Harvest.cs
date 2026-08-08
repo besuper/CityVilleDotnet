@@ -2,6 +2,7 @@
 using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
@@ -86,7 +87,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
             if (workerBonus?.Field == "premium_goods" && obj.Workers.Count > 0)
                 premiumGoodsMultiplier += obj.Workers.Count * workerBonus.PercentModifier / 100.0;
 
-            (coinYield, cashYield) = obj.Harvest();
+            (coinYield, cashYield) = obj.Harvest(ServerUtils.GetActionTime(request.ClientEnqueueTime));
             secureRands = user.CollectDoobersRewards(itemName, coinMultiplier: coinMultiplier, premiumGoodsMultiplier: premiumGoodsMultiplier);
         }
 
@@ -138,6 +139,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
 public class HarvestRequest
 {
     [AmfParam(1)] public BuildingHarvestRequest Building { get; set; } = new();
+    [AmfParam(2)] public long? ClientEnqueueTime { get; set; }
 }
 
 public class BuildingHarvestRequest

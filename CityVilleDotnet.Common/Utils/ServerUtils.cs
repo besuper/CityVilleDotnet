@@ -4,6 +4,8 @@ namespace CityVilleDotnet.Common.Utils;
 
 public static class ServerUtils
 {
+    private const long MaxClientEnqueueDriftMs = 60_000;
+
     private static readonly List<string> RequiredFiles =
     [
         "wwwroot/Preloader.swf",
@@ -26,6 +28,15 @@ public static class ServerUtils
     public static long GetCurrentTimeSeconds()
     {
         return DateTimeOffset.Now.ToUnixTimeSeconds();
+    }
+    
+    public static long GetActionTime(long? clientEnqueueTimeSeconds)
+    {
+        var now = GetCurrentTime();
+
+        if (clientEnqueueTimeSeconds is null or <= 0) return now;
+
+        return Math.Clamp(clientEnqueueTimeSeconds.Value * 1000, now - MaxClientEnqueueDriftMs, now);
     }
 
     public static void CheckRequiredFiles(ILogger logger)

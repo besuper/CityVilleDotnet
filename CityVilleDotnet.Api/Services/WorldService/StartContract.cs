@@ -1,6 +1,7 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
@@ -37,7 +38,7 @@ internal sealed class StartContract(CityVilleDbContext context) : AmfService<Sta
         if (contractItem.Cost is not null)
             player.RemoveCoins(contractItem.Cost.Value);
 
-        obj.StartContract(request.Building.ContractName, request.Building.State);
+        obj.StartContract(request.Building.ContractName, request.Building.State, ServerUtils.GetActionTime(request.ClientEnqueueTime));
 
         player.HandleQuestsProgress("startContractByClass", className: obj.ClassName.ToString());
         player.HandleQuestsProgress("startContractByName", itemName: request.Building.ContractName);
@@ -51,6 +52,7 @@ internal sealed class StartContract(CityVilleDbContext context) : AmfService<Sta
 public class StartContractRequest
 {
     [AmfParam(1)] public BuildingStartContractRequest Building { get; set; } = new();
+    [AmfParam(2)] public long? ClientEnqueueTime { get; set; }
 }
 
 public class BuildingStartContractRequest

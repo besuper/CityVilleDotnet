@@ -455,7 +455,7 @@ public class WorldObject
         Workers.Clear();
     }
 
-    public (int CoinYield, int CashYield) Harvest()
+    public (int CoinYield, int CashYield) Harvest(long? plantTime = null)
     {
         var coinYield = 0;
         var cashYield = 0;
@@ -490,7 +490,7 @@ public class WorldObject
         if (HasGrown())
         {
             State = WorldObjectState.Planted;
-            PlantTime = ServerUtils.GetCurrentTime();
+            PlantTime = plantTime ?? ServerUtils.GetCurrentTime();
         }
         
         if (ClassName.IsBusiness() || GameSettingsManager.Instance.GetItem(ItemName)?.GetSupplyStateMechanicClass() is not null)
@@ -690,10 +690,10 @@ public class WorldObject
         Direction = direction;
     }
 
-    public void StartContract(string contractName, WorldObjectState state)
+    public void StartContract(string contractName, WorldObjectState state, long? plantTime = null)
     {
         ContractName = contractName;
-        PlantTime = ServerUtils.GetCurrentTime();
+        PlantTime = plantTime ?? ServerUtils.GetCurrentTime();
         State = state;
         Workers.Clear();
 
