@@ -37,10 +37,7 @@ public class PurchaseCrewMember(CityVilleDbContext context, ILogger<PurchaseCrew
 
         var key = targetGate.Keys.FirstOrDefault(x => x?.Name == "required_crew") ?? throw new Exception("Can't find required key");
 
-        if (key.CashCost is null)
-            throw new Exception("Cash cost is null on key");
-
-        player.RemoveCash(key.CashCost.Value);
+        player.RemoveCash(key.GetCrewCost());
         building.AddCrewMember(null);
 
         await context.SaveChangesAsync(cancellationToken);

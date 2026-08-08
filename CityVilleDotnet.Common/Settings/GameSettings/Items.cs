@@ -487,6 +487,11 @@ public class GateKey
 
     [XmlIgnore] public int? CashCost { get; set; }
     [XmlElement("member")] public List<MemberKey>? Members { get; set; }
+
+    public int GetCrewCost()
+    {
+        return CashCost ?? GameSettingsManager.Instance.GetSettings().CrewMemberCashCost;
+    }
 }
 
 [Serializable]

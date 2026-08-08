@@ -13,6 +13,9 @@ namespace CityVilleDotnet.Api.Services.UserService;
 
 public class PurchaseRemainingCrew(CityVilleDbContext context, ILogger<PurchaseCrewMember> logger) : AmfService<PurchaseRemainingCrewRequest>
 {
+    private const double BuyAllDiscountThreshold = 0.25;
+    private const double BuyAllDiscountRate = 0.75;
+
     public override async Task<ASObject> HandlePacket(PurchaseRemainingCrewRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var player = await context.Set<Player>()
@@ -36,14 +39,15 @@ public class PurchaseRemainingCrew(CityVilleDbContext context, ILogger<PurchaseC
 
         var key = targetGate.Keys.FirstOrDefault(x => x?.Name == "required_crew") ?? throw new Exception("Can't find required key");
 
-        if (key.CashCost is null)
-            throw new Exception("Cash cost is null on key");
-
         var remainingCrew = key.Amount - building.CrewMembers.Count;
 
         if (remainingCrew <= 0) throw new Exception("Crew is full");
 
-        var totalCost = key.CashCost.Value * remainingCrew;
+        var totalCost = key.GetCrewCost() * remainingCrew;
+
+        // same discount as the client (CrewGate::totalCost) when enough slots are still open
+        if ((double)remainingCrew / key.Amount >= BuyAllDiscountThreshold)
+            totalCost = (int)Math.Floor(totalCost * BuyAllDiscountRate);
 
         if (totalCost > player.Cash)
             return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
