@@ -1056,6 +1056,7 @@ public class Player
                         case "expand":
                         case "buildingremodeled":
                         case "citySamHQ":
+                        case "sendFranchiseSupply":
                             quest.Progress[index] += 1;
                             break;
                         case "harvestByClass":

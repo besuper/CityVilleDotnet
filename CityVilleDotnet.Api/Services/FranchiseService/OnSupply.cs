@@ -2,6 +2,7 @@ using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,7 @@ public sealed class OnSupply(CityVilleDbContext context) : AmfService<OnSupplyRe
             .AsSplitQuery()
             .Include(x => x.Franchises.Where(f => f.FranchiseType == request.FranchiseType))
             .ThenInclude(x => x.Locations)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (user is null) throw new Exception("Player not found");
@@ -43,6 +45,8 @@ public sealed class OnSupply(CityVilleDbContext context) : AmfService<OnSupplyRe
         location.TimeLastSupplied = ServerUtils.GetCurrentTimeSeconds();
         location.CommodityLeft = location.CommodityMax;
 
+        user.HandleQuestsProgress("sendFranchiseSupply");
+        
         await context.SaveChangesAsync(cancellationToken);
 
         return new CityVilleResponse().Data(new ASObject
