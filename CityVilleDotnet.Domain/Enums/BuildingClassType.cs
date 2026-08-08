@@ -67,5 +67,8 @@ public enum BuildingClassType
     FarmersMarket = 62,
     TaxiDispatch = 63,
     XPromoBuilding = 64,
-    PartnerBuild = 65
+    PartnerBuild = 65,
+    StorageFacility = 66,
+    Municipalcenter = 67,
+    PeepCapacityResource = 68
 }
