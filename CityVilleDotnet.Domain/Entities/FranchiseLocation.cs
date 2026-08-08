@@ -17,6 +17,11 @@ public class FranchiseLocation
     public long TimeLastOperated { get; set; }
     public long TimeLastSupplied { get; set; }
 
+    public bool IsOpen()
+    {
+        return TimeLastOperated > 0;
+    }
+
     public bool TryLevelUpStar()
     {
         if (StarRating >= 5) return false;

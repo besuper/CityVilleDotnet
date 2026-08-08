@@ -875,6 +875,15 @@ public class Player
         franchise.SetFranchiseName(franchiseName);
     }
 
+    public int CountOpenFranchiseLocations(string[]? franchiseTypes)
+    {
+        var franchises = franchiseTypes is null
+            ? Franchises
+            : Franchises.Where(x => franchiseTypes.Contains(x.FranchiseType));
+
+        return franchises.Sum(x => x.Locations.Count(location => location.IsOpen()));
+    }
+
     public void GrantCitySamHeadquarters()
     {
         foreach (var franchise in Franchises.Where(x => x.HasCitySamLocation()))
@@ -1280,6 +1289,14 @@ public class Player
 
                         if (effect >= task.Streak)
                             quest.Progress[index] = effect;
+                        continue;
+                    case "countFranchiseExpansionsByName":
+                        if (!calculatedResults.TryGetValue(resultKey, out value))
+                            calculatedResults[resultKey] = value = CountOpenFranchiseLocations(taskType.Length == 0 ? null : splitType ?? [taskType]);
+
+                        if (value > quest.Progress[index])
+                            quest.Progress[index] = value;
+
                         continue;
                     case "countHeadquarters":
                         if (!calculatedResults.TryGetValue(resultKey, out value))

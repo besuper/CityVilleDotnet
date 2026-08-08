@@ -51,7 +51,6 @@ public class InitialVisit(CityVilleDbContext context) : AmfService<InitialVisitR
         }
         
         currentUser.HandleQuestsProgress("neighborVisit", recipientId == -1 ? "-1" : "");
-        currentUser.CheckCompletedQuests();
 
         var response = new ASObject
         {
