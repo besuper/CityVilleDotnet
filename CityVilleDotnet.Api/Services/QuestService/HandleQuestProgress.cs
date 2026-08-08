@@ -2,6 +2,7 @@
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
+using FluentValidation;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +19,9 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService<Handle
             .AsSplitQuery()
             .Include(x => x.Quests)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.Objects)
+            .Include(x => x.SeenFlags)
+            .Include(x => x.InventoryItems)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Can't to find user with UserId");
@@ -40,4 +43,12 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService<Handle
 public class HandleQuestProgressRequest
 {
     [AmfParam(0)] public string ActionType { get; set; } = string.Empty;
+}
+
+public class HandleQuestProgressValidator : AbstractValidator<HandleQuestProgressRequest>
+{
+    public HandleQuestProgressValidator()
+    {
+        RuleFor(x => x.ActionType).NotEmpty().MaximumLength(64);
+    }
 }

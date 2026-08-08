@@ -37,25 +37,7 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
         if (playerToLoad is null)
             throw new Exception($"Unable to find player with Player.Uid {request.TargetUsedId}");
 
-        if (playerToLoad.Id != playerId)
-        {
-            var currentPlayer = await context.Set<Player>()
-                .AsSplitQuery()
-                .Include(x => x.Quests)
-                .Include(x => x.InventoryItems)
-                .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
-
-            if (currentPlayer is null)
-                throw new Exception("Current player not found");
-
-            currentPlayer.HandleQuestsProgress("neighborVisit");
-            currentPlayer.CheckCompletedQuests();
-
-            await context.SaveChangesAsync(cancellationToken);
-
-            playerToLoad.SwitchWorld(request.Type);
-        }
-        else
+        if (playerToLoad.Id == playerId)
         {
             if (playerToLoad.GetWorldByType(request.Type) is null)
                 throw new Exception($"World {request.Type} does not exist for player {playerId}");

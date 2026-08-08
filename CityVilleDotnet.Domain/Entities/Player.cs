@@ -875,6 +875,18 @@ public class Player
         franchise.SetFranchiseName(franchiseName);
     }
 
+    public void GrantCitySamHeadquarters()
+    {
+        foreach (var franchise in Franchises.Where(x => x.HasCitySamLocation()))
+        {
+            var hqName = GameSettingsManager.Instance.GetItem(franchise.FranchiseType)?.HeadquartersName;
+
+            if (hqName is null || HasItem(hqName)) continue;
+
+            AddItem(hqName);
+        }
+    }
+
     public void AddLotOrder(LotOrder lotOrder)
     {
         LotOrders.Add(lotOrder);
@@ -1038,11 +1050,12 @@ public class Player
                         case "popNews":
                         case "sendTrain":
                         case "welcomeTrain":
-                        case "neighborVisit":
+                        //case "neighborVisit":
                         case "onValidCityName":
                         case "incrementalExpansionCount":
                         case "expand":
                         case "buildingremodeled":
+                        case "citySamHQ":
                             quest.Progress[index] += 1;
                             break;
                         case "harvestByClass":
@@ -1054,6 +1067,7 @@ public class Player
                         case "storeItemByClass":
                         case "finishConstructionByClass":
                         case "instantReadyByClass":
+                        case "neighborVisit": // This case is special, if type is empty we accept everything, if not we have to check if it matches who we visit
                         {
                             if (className is null)
                                 throw new Exception("Can't validate byClass action without className");

@@ -1,4 +1,6 @@
-﻿namespace CityVilleDotnet.Domain.Entities;
+﻿using CityVilleDotnet.Common.Utils;
+
+namespace CityVilleDotnet.Domain.Entities;
 
 public class Franchise
 {
@@ -33,6 +35,36 @@ public class Franchise
             TimeLastCollected = 0, // When sender collected the business
             CommodityLeft = commodityReq,
             CommodityMax = commodityReq
+        };
+
+        Locations.Add(newLocation);
+
+        return newLocation;
+    }
+
+    public bool HasCitySamLocation()
+    {
+        return Locations.Any(x => x.Uid == "-1");
+    }
+
+    public FranchiseLocation AddCitySamLocation(int objectId, int commodityMax)
+    {
+        if (HasCitySamLocation())
+            throw new Exception($"Franchise {FranchiseType} already has a location on City Sam's map");
+
+        var currentTime = ServerUtils.GetCurrentTimeSeconds();
+
+        var newLocation = new FranchiseLocation
+        {
+            Uid = "-1",
+            ObjectId = $"{objectId}",
+            FranchiseName = FranchiseName,
+            StarRating = 1,
+            TimeLastOperated = currentTime,
+            TimeLastCollected = currentTime,
+            TimeLastSupplied = 0,
+            CommodityLeft = 0,
+            CommodityMax = commodityMax
         };
 
         Locations.Add(newLocation);

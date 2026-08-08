@@ -1,6 +1,7 @@
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +16,15 @@ public class InitialVisit(CityVilleDbContext context) : AmfService<InitialVisitR
 
         var currentUser = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x!.VisitorHelpOrders)
+            .Include(x => x.VisitorHelpOrders)
             .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
             .ThenInclude(x => x.FriendPlayer)
             .ThenInclude(x => x!.VisitorHelpOrders)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
+            .Include(x => x.InventoryItems)
+            .Include(x => x.SeenFlags)
+            .Include(x => x.Franchises)
+            .ThenInclude(x => x.Locations)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (currentUser is null) throw new Exception("Can't find user with UserId");
@@ -43,6 +49,9 @@ public class InitialVisit(CityVilleDbContext context) : AmfService<InitialVisitR
             context.RemoveRange(sentOrders);
             context.RemoveRange(receivedOrders);
         }
+        
+        currentUser.HandleQuestsProgress("neighborVisit", recipientId == -1 ? "-1" : "");
+        currentUser.CheckCompletedQuests();
 
         var response = new ASObject
         {

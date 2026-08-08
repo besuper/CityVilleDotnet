@@ -1,4 +1,5 @@
 using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Data;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
@@ -16,22 +17,25 @@ public class OnReplaceUserResource(CityVilleDbContext context) : AmfService<OnRe
 {
     public override async Task<ASObject> HandlePacket(OnReplaceUserResourceRequest request, Guid userId, CancellationToken cancellationToken)
     {
+        var gameItem = GameSettingsManager.Instance.GetItem(request.NewResourceName) ?? throw new Exception($"Item {request.NewResourceName} not found");
+
         var player = await context.Set<Player>()
             .AsSplitQuery()
+            .Include(x => x.Franchises)
+            .ThenInclude(x => x.Locations)
+            .Include(x => x.InventoryItems)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.OldResourceId || o.TempId == request.OldResourceId))
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == userId, cancellationToken) ?? throw new Exception("Player not found");
 
         if (request.PlayerUid != player.Snuid)
             throw new Exception("Player uid mismatch");
 
-        if (request.WorldOwnerId != player.Snuid)
+        var isCitySamMap = request.WorldOwnerId == SamanthaSeeder.SamanthaSnuid;
+        
+        if (!isCitySamMap && request.WorldOwnerId != player.Snuid)
             throw new Exception("World owner mismatch");
-
-        var world = player.GetWorld();
-        var obj = world.GetBuildingByClientId(request.OldResourceId) ?? throw new Exception($"Building {request.OldResourceId} not found");
-
-        var gameItem = GameSettingsManager.Instance.GetItem(request.NewResourceName) ?? throw new Exception($"Item {request.NewResourceName} not found");
 
         if (!request.IsGift)
         {
@@ -44,22 +48,37 @@ public class OnReplaceUserResource(CityVilleDbContext context) : AmfService<OnRe
                 player.AddXp(gameItem.XpYield.Value);
         }
 
-        var className = Enum.Parse<BuildingClassType>(gameItem.Type.Pascalize());
-
-        obj.ReplaceWith(request.NewResourceName, className, obj.Direction, obj.X, obj.Y, obj.Z, obj.State);
-
-        if (request.IsUsingConstruction && gameItem.Construction is not null)
+        if (isCitySamMap)
         {
-            var constructionItem = GameSettingsManager.Instance.GetItem(gameItem.Construction);
+            var franchise = player.Franchises.FirstOrDefault(x => x.FranchiseType == request.NewResourceName)
+                            ?? throw new Exception($"Can't find franchise {request.NewResourceName}");
 
-            if (constructionItem?.NumberOfStages is null)
-                throw new Exception($"Construction item not found with {gameItem.Construction}");
-
-            obj.SetAsConstructionSite(gameItem.Construction, constructionItem.NumberOfStages.Value);
+            franchise.AddCitySamLocation(request.OldResourceId, gameItem.GetCommodityRequired() ?? 1);
+            
+            player.HandleQuestsProgress("citySamHQ");
+            player.CheckCompletedQuests();
         }
-        else if (className.IsBusiness())
+        else
         {
-            obj.Close();
+            var obj = player.GetWorld().GetBuildingByClientId(request.OldResourceId) ?? throw new Exception($"Building {request.OldResourceId} not found");
+
+            var className = Enum.Parse<BuildingClassType>(gameItem.Type.Pascalize());
+
+            obj.ReplaceWith(request.NewResourceName, className, obj.Direction, obj.X, obj.Y, obj.Z, obj.State);
+
+            if (request.IsUsingConstruction && gameItem.Construction is not null)
+            {
+                var constructionItem = GameSettingsManager.Instance.GetItem(gameItem.Construction);
+
+                if (constructionItem?.NumberOfStages is null)
+                    throw new Exception($"Construction item not found with {gameItem.Construction}");
+
+                obj.SetAsConstructionSite(gameItem.Construction, constructionItem.NumberOfStages.Value);
+            }
+            else if (className.IsBusiness())
+            {
+                obj.Close();
+            }
         }
 
         await context.SaveChangesAsync(cancellationToken);

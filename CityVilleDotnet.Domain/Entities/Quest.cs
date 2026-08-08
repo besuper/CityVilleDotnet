@@ -86,6 +86,9 @@ public class Quest
 
             if (reward.Energy is not null)
                 player.AddEnergy(int.Parse(reward.Energy));
+
+            if (reward.GrantHeadquarters)
+                player.GrantCitySamHeadquarters();
         }
     }
 

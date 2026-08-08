@@ -140,4 +140,6 @@ public class QuestRewards
     [XmlAttribute("itemUnlock")] public string? ItemUnlock { get; set; }
 
     [XmlAttribute("item")] public string? Item { get; set; }
+
+    [XmlAttribute("grantHQ")] public bool GrantHeadquarters { get; set; }
 }

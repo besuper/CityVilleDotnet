@@ -9,7 +9,7 @@ public static class SamanthaSeeder
 {
     private static readonly Guid SamanthaUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
     private const string SamanthaAppUserId = "00000000-0000-0000-0000-000000000001";
-    private const int SamanthaSnuid = -1;
+    public const int SamanthaSnuid = -1;
 
     public static async Task SeedAsync(IServiceProvider serviceProvider)
     {

@@ -25,8 +25,8 @@ public class PurchaseQuestProgress(CityVilleDbContext context, ILogger<PurchaseQ
 
         logger.LogDebug("Quest {QuestName} at {TaskIndex} is purchased", request.QuestName, request.TaskIndex);
 
-        var currentQuest = player.Quests.FirstOrDefault(x => x.Name == request.QuestName && x.QuestType == QuestType.Active);
-
+        var currentQuest = player.Quests.FirstOrDefault(x => x.Name == request.QuestName);
+        
         if (currentQuest is null) throw new Exception("Quest not found");
 
         var questItem = QuestSettingsManager.Instance.GetItem(request.QuestName);

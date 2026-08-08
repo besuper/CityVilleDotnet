@@ -14,6 +14,7 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
     {
         var player = await context.Set<Player>()
             .AsNoTracking()
+            .AsSplitQuery()
             .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
             .ThenInclude(x => x.FriendPlayer)
             .ThenInclude(x => x.Worlds.Where(w => w.Type == WorldType.Main))
