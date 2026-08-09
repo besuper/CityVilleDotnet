@@ -203,7 +203,7 @@ public static class UserDtoMapper
                 { "downtownpolice", new ASObject { { "workers", new ASObject() } } },
                 { "fishing", new ASObject { { "workers", new ASObject() } } },
                 { "area51", new ASObject { { "workers", new ASObject() } } },
-                { "trains", new ASObject { { "workers", new ASObject() } } },
+                { "trains", new ASObject { { "workers", model.GetWorld().ToTrainWorkersAsObject() } } },
                 { "factories", new ASObject { { "workers", model.GetWorld().ToFactoryWorkersAsObject() } } },
                 { "detectiveGameWorkerManager", new ASObject { { "workers", new ASObject() } } },
                 { "socialInventory", new ASObject { { "samObjectIds", new ASObject() } } }

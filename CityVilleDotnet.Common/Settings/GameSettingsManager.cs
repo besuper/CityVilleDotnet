@@ -17,6 +17,7 @@ public class GameSettingsManager
     private readonly Dictionary<string, DynamicExpansionItem> _dynamicExpansions;
     private readonly Dictionary<string, WorldConfigItem> _worldConfigs;
     private readonly Dictionary<string, ValidateItem> _validators;
+    private readonly Dictionary<string, TieredValueItem> _tieredValues;
     private List<string> _globalTableProviders = [];
     private FarmingSettings _farmSettings;
     private List<LevelItem> _levels = [];
@@ -35,6 +36,7 @@ public class GameSettingsManager
         _dynamicExpansions = new Dictionary<string, DynamicExpansionItem>();
         _worldConfigs = new Dictionary<string, WorldConfigItem>();
         _validators = new Dictionary<string, ValidateItem>();
+        _tieredValues = new Dictionary<string, TieredValueItem>();
         _isInitialized = false;
     }
 
@@ -159,6 +161,14 @@ public class GameSettingsManager
                 foreach (var worldConfig in gameSettings.WorldConfigs.WorldConfigs)
                 {
                     _worldConfigs[worldConfig.Name] = worldConfig;
+                }
+            }
+
+            if (gameSettings.TieredValues is not null)
+            {
+                foreach (var tieredValue in gameSettings.TieredValues.Values)
+                {
+                    _tieredValues[tieredValue.Name] = tieredValue;
                 }
             }
 
@@ -322,6 +332,18 @@ public class GameSettingsManager
         }
 
         return validator.IsValid(playerLevel);
+    }
+
+    public int GetTieredValue(string? tableName, int tier)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        if (string.IsNullOrEmpty(tableName)) return 0;
+
+        if (!_tieredValues.TryGetValue(tableName, out var tieredValue)) return 0;
+
+        return int.TryParse(tieredValue.GetAmount(tier), out var amount) ? amount : 0;
     }
 
     public List<string> GetGlobalTableProviders()

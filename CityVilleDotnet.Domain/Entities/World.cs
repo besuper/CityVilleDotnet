@@ -1,4 +1,6 @@
 ﻿using System.Text.RegularExpressions;
+using CityVilleDotnet.Common.Enums;
+using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Settings.GameSettings;
 using CityVilleDotnet.Common.Utils;
@@ -24,6 +26,7 @@ public class World
     public List<MapRect> MapRects { get; set; } = [];
     public List<WorldObject> Objects { get; set; } = [];
     public List<IncentivizedExpansion> IncentivizedExpansions { get; set; } = [];
+    public TrainOrder? TrainOrder { get; private set; }
     public WorldType Type { get; set; } = WorldType.Main;
     public Player? Player { get; set; }
     public string? WorldCreated { get; private set; }
@@ -185,6 +188,19 @@ public class World
     public int CountBuildingByName(string name)
     {
         return Objects.Count(x => x.ItemName.Equals(name));
+    }
+
+    public void StartTrainOrder(string itemName, TrainOperationType operation, string commodityName, long timeSent)
+    {
+        if (TrainOrder is not null)
+            throw new DomainException(GameErrorType.InvalidState);
+
+        TrainOrder = new TrainOrder(itemName, operation, commodityName, timeSent);
+    }
+
+    public void ClearTrainOrder()
+    {
+        TrainOrder = null;
     }
 
     public int CountConstructionOrBuildingByName(string name)

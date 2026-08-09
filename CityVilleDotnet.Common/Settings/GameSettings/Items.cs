@@ -96,6 +96,16 @@ public class GameItem
 
     [XmlElement("goodsReward")] public int? GoodsReward { get; set; }
 
+    [XmlElement("goods")] public int? Goods { get; set; }
+
+    [XmlElement("trainTripTime")] public int? TrainTripTime { get; set; }
+
+    [XmlElement("trainSpeedUpCost")] public int? TrainSpeedUpCost { get; set; }
+
+    [XmlElement("trainPayout")] public TieredValueReference? TrainPayout { get; set; }
+
+    [XmlElement("trainTourist")] public TieredValueReference? TrainTourist { get; set; }
+
     [XmlElement("construction")] public string? Construction { get; set; }
 
     [XmlElement("commodityReq")] public int? CommodityRequired { get; set; }

@@ -174,6 +174,9 @@ public abstract class AmfService<TRequest> : AmfService where TRequest : new()
             if (targetType == typeof(WorldType))
                 return EnumExtensions.ParseFromDescription<WorldType>(s);
 
+            if (targetType == typeof(TrainOperationType))
+                return EnumExtensions.ParseFromDescription<TrainOperationType>(s);
+
             return Enum.Parse(targetType, s);
         }
 

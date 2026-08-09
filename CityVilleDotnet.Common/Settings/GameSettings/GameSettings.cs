@@ -15,6 +15,8 @@ public class GameSettings
 
     [XmlElement("farming")] public required FarmingSettings Farming { get; set; }
 
+    [XmlElement("tieredValues")] public TieredValuesContainer? TieredValues { get; set; }
+
     [XmlElement("randomModifierTables")] public required RandomModifierTables Modifiers { get; set; }
     [XmlElement("randomModifierPacks")] public RandomModifierPacksContainer? ModifierPacks { get; set; }
     [XmlElement("lootTables")] public LootTablesContainer? LootTables { get; set; }

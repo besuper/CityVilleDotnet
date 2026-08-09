@@ -14,6 +14,9 @@ public class PurchaseWorker(CityVilleDbContext context) : AmfService<PurchaseWor
 {
     public override async Task<ASObject> HandlePacket(PurchaseWorkerRequest request, Guid playerId, CancellationToken cancellationToken)
     {
+        if (request.Feature == WorkerBucket.TrainsFeature)
+            return await PurchaseTrainStop(request, playerId, cancellationToken);
+
         if (request.Feature != WorkerBucket.FactoriesFeature)
             throw new Exception($"Unsupported worker feature {request.Feature}");
 
@@ -37,6 +40,27 @@ public class PurchaseWorker(CityVilleDbContext context) : AmfService<PurchaseWor
 
         player.RemoveCash(contractItem.Workers.CashCost);
         building.AddPurchasedWorker();
+
+        await context.SaveChangesAsync(cancellationToken);
+
+        return GatewayService.CreateEmptyResponse();
+    }
+
+    private async Task<ASObject> PurchaseTrainStop(PurchaseWorkerRequest request, Guid playerId, CancellationToken cancellationToken)
+    {
+        if (request.Bucket != WorkerBucket.TrainsBucket)
+            throw new Exception($"Invalid worker bucket {request.Bucket}");
+
+        var player = await context.Set<Player>()
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x.TrainOrder)
+            .ThenInclude(x => x!.Workers)
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
+
+        var order = player.GetWorld().TrainOrder ?? throw new Exception("No train order in progress");
+
+        player.RemoveCash(order.GetStopCashCost());
+        order.AddPurchasedStop();
 
         await context.SaveChangesAsync(cancellationToken);
 

@@ -434,9 +434,14 @@ public class Player
         Cash += cash;
     }
 
+    public bool HasSeenFlag(string flag)
+    {
+        return SeenFlags.Any(x => x.Key == flag);
+    }
+
     public void SetSeenFlag(string flag)
     {
-        if (!SeenFlags.Any(x => x.Key == flag))
+        if (!HasSeenFlag(flag))
         {
             SeenFlags.Add(new SeenFlag(flag));
         }
@@ -1058,6 +1063,7 @@ public class Player
                         case "seenQuest":
                         case "popNews":
                         case "sendTrain":
+                        case "acceptTrain":
                         case "welcomeTrain":
                         //case "neighborVisit":
                         case "onValidCityName":
@@ -1102,6 +1108,7 @@ public class Player
                         case "startContractByName":
                         case "moveByName":
                         case "upgradeItemByName":
+                        case "acceptTrainByName":
                         {
                             if (itemName is null)
                                 throw new Exception("Can't validate byName action without itemName");

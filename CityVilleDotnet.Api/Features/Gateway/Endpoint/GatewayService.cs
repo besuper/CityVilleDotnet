@@ -104,7 +104,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
                 var className = functionName.Split('.')[1];
                 var upperClassName = className.Pascalize();
 
-                if (QuestSettingsManager.TaskActions.Contains(className))
+                if (!_handlerTypes.ContainsKey($"CityVilleDotnet.Api.Services.{packageName}.{upperClassName}") && QuestSettingsManager.TaskActions.Contains(className))
                 {
                     logger.LogDebug("Handling task quest action {ClassName}", className);
 

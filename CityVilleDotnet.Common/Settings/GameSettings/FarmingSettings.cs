@@ -43,6 +43,8 @@ public class FarmingSettings
 
     [XmlAttribute("welcomeTrainQuestAmount")] public int WelcomeTrainQuestAmount { get; set; }
 
+    [XmlAttribute("trainBonusMult")] public double TrainBonusMult { get; set; }
+
     [XmlAttribute("remodelingRequiredLevel")] public int RemodelingRequiredLevel { get; set; }
     
     [XmlAttribute("boostGrowMultiplier")] public double BoostGrowMultiplier { get; set; }

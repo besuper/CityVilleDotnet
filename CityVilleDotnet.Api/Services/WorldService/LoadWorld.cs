@@ -32,6 +32,9 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
             .ThenInclude(w => w.MapRects)
             .Include(x => x.Worlds.Where(w => w.Type == request.Type))
             .ThenInclude(w => w.IncentivizedExpansions)
+            .Include(x => x.Worlds.Where(w => w.Type == request.Type))
+            .ThenInclude(w => w.TrainOrder)
+            .ThenInclude(o => o!.Workers)
             .FirstOrDefaultAsync(x => x.Snuid == request.TargetUsedId, cancellationToken);
 
         if (playerToLoad is null)

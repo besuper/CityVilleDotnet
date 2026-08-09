@@ -217,6 +217,37 @@ public static class WorldDtoMapper
         return workers;
     }
 
+    // load Global.trainWorkerManager
+    public static ASObject ToTrainWorkersAsObject(this World world)
+    {
+        var workers = new ASObject();
+
+        if (world.TrainOrder is null) return workers;
+
+        workers["w0"] = new ASObject
+        {
+            {
+                "attributes", new ASObject
+                {
+                    { "trainName", world.TrainOrder.ItemName },
+                    { "operation", world.TrainOrder.Operation.ToDescriptionString() },
+                    { "commodityName", world.TrainOrder.CommodityName },
+                    { "timeSent", world.TrainOrder.TimeSent },
+                    { "numPurchasedWorkers", world.TrainOrder.CountPurchasedStops() }
+                }
+            },
+            {
+                "members", world.TrainOrder.Workers.Select(object (x) => new ASObject
+                {
+                    { "zid", x.Zid.ToString() },
+                    { "data", new ASObject() }
+                }).ToList()
+            }
+        };
+
+        return workers;
+    }
+
     public static ASObject BuildIncentivizedExpansions(this World world)
     {
         var expansions = new ASObject();
