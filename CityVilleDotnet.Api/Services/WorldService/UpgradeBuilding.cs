@@ -51,16 +51,16 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
             return new CityVilleResponse().Error(GameErrorType.InvalidState);
 
         var newItemName = gameItem.Upgrade.Name;
+        
+        // By default, upgrade mechanic has a gate linked with a gateName; sometimes not and use pre_upgrade as fallback
+        var upgradeGateName = gameItem.GetGameEventMechanic("upgrade")?.GateName ?? (obj.ClassName == BuildingClassType.Municipal ? "pre_upgrade" : null);
+        var gateKeyCount = upgradeGateName is null ? 0 : gameItem.GetInventoryGateKeys(upgradeGateName).Count;
 
-        // From SlottedContainerUpgradeMechanic, the gate keys are taken when the upgrade is unlocked (AbstractGate::takeKeys)
-        var upgradeGateName = gameItem.GetGameEventMechanic("upgrade")?.GateName;
-
-        if (upgradeGateName is not null && !player.HasInventoryGateKeys(gameItem, upgradeGateName))
-            return new CityVilleResponse().Error(GameErrorType.InvalidState);
-
-        if (gameItem.Upgrade.CashCost is not null)
+        // No inventory gate, just remove the cash
+        if (gateKeyCount == 0 && gameItem.Upgrade.CashCost is not null)
             player.RemoveCash(Convert.ToInt32(gameItem.Upgrade.CashCost));
 
+        // If the item has an inventory gate, we remove the items
         if (upgradeGateName is not null)
         {
             foreach (var consumed in player.ConsumeInventoryGate(gameItem, upgradeGateName))

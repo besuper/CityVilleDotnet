@@ -483,6 +483,9 @@ public class WorldObject
             {
                 coinYield = gameItem.CoinYield ?? 0;
                 cashYield = gameItem.CashYield ?? 0;
+
+                if (gameItem.Upgrade?.GetRequiredUpgradeActions() > 0)
+                    UpgradeActionCount = (UpgradeActionCount ?? 0) + 1;
             }
         }
 
@@ -598,6 +601,7 @@ public class WorldObject
     public void UpgradeBuilding(GameItem item, string newItemName)
     {
         ItemName = newItemName;
+        UpgradeActionCount = 0;
 
         if (ClassName == BuildingClassType.Municipal && item.Behavior == "upgradable")
         {

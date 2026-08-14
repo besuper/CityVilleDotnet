@@ -142,25 +142,22 @@ public class Player
     public List<InventoryItem> ConsumeInventoryGate(GameItem buildingItem, string gateName)
     {
         var removed = new List<InventoryItem>();
-
+        
         foreach (var key in buildingItem.GetInventoryGateKeys(gateName))
         {
-            var item = InventoryItems.FirstOrDefault(x => x.Name == key.Name && x.IsMainInventory);
+            if (key.KeepOnComplete) continue;
 
-            if (item is null) continue;
+            var owned = CountInventoryItem(key.Name);
 
-            var removeItem = RemoveItem(key.Name, key.Amount);
+            if (owned < key.Amount) throw new Exception($"Not enough item {key.Name} to upgrade building");
+
+            var removeItem = RemoveItem(key.Name, key.RemoveAllOnComplete ? owned : key.Amount);
 
             if (removeItem is not null)
                 removed.Add(removeItem);
         }
 
         return removed;
-    }
-
-    public bool HasInventoryGateKeys(GameItem buildingItem, string gateName)
-    {
-        return buildingItem.GetInventoryGateKeys(gateName).All(x => CountInventoryItem(x.Name) >= x.Amount);
     }
 
     public int CountInventoryItems()

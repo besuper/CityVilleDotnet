@@ -196,7 +196,7 @@ public class GameItem
             return keys.SelectMany(x => GetInventoryGateKeys(x.Name)).ToList();
 
         // if null => inventory by default
-        if (!string.IsNullOrEmpty(gate.Type) && gate.Type != "inventory") return [];
+        if (!string.IsNullOrEmpty(gate.Type) && gate.Type is not ("inventory" or "upgrade_inventory")) return [];
 
         return keys.ToList();
     }
@@ -487,6 +487,8 @@ public class GateKey
     [XmlAttribute("name")] public required string Name { get; set; }
     [XmlAttribute("viral")] public string? Viral { get; set; }
     [XmlAttribute("amount")] public int Amount { get; set; }
+    [XmlAttribute("keepOnComplete")] public bool KeepOnComplete { get; set; }
+    [XmlAttribute("removeAllOnComplete")] public bool RemoveAllOnComplete { get; set; }
 
     [XmlAttribute("cashCost")]
     public string? CashCostString
