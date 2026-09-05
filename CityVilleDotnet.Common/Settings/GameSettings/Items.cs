@@ -13,6 +13,7 @@ public class GameItem
 {
     [XmlAttribute("name")] public required string Name { get; set; }
     [XmlAttribute("derivesFrom")] public string? DerivesFrom { get; set; }
+    [XmlAttribute("doNotInherit")] public string? DoNotInherit { get; set; }
     [XmlAttribute("type")] public required string Type { get; set; }
     [XmlAttribute("behavior")] public string? Behavior { get; set; }
     [XmlAttribute("sellSendsToInventory")] public string? SellSendsToInventory { get; set; }
@@ -270,20 +271,6 @@ public class GameItem
         return GetSupplyStateMechanicClass() == "SupplyMechanic";
     }
 
-    public double? GetGrowTime()
-    {
-        if (GrowTime is not null) return GrowTime;
-
-        if (DerivesFrom is not null)
-        {
-            var derivedItem = GameSettingsManager.Instance.GetItem(DerivesFrom);
-
-            return derivedItem?.GetGrowTime();
-        }
-
-        return null;
-    }
-
     public GameItem GetFirstDeriveItem(GameItem item)
     {
         if (item.DerivesFrom is not null)
@@ -296,33 +283,6 @@ public class GameItem
         }
 
         return item;
-    }
-    
-    public GameItem GetDeepParent()
-    {
-        if (DerivesFrom is not null)
-        {
-            var parentItem = GameSettingsManager.Instance.GetItem(DerivesFrom);
-
-            if (parentItem is null) return this;
-
-            return parentItem.GetDeepParent();
-        }
-
-        return this;
-    }
-    
-    // Sometimes _2 or _3 versions like bus_honeymoon_cafe doesn't have CommodityRequired
-    public int? GetCommodityRequired()
-    {
-        if (CommodityRequired is null)
-        {
-            var parent = GetDeepParent();
-
-            return parent.CommodityRequired;
-        }
-
-        return CommodityRequired;
     }
 
     public string? GetDefaultCommodityName()

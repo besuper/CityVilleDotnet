@@ -53,7 +53,7 @@ public class OnReplaceUserResource(CityVilleDbContext context) : AmfService<OnRe
             var franchise = player.Franchises.FirstOrDefault(x => x.FranchiseType == request.NewResourceName)
                             ?? throw new Exception($"Can't find franchise {request.NewResourceName}");
 
-            franchise.AddCitySamLocation(request.OldResourceId, gameItem.GetCommodityRequired() ?? 1);
+            franchise.AddCitySamLocation(request.OldResourceId, gameItem.CommodityRequired ?? 1);
             
             player.HandleQuestsProgress("citySamHQ");
         }

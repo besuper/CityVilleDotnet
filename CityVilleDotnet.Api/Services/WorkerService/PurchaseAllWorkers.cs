@@ -59,7 +59,7 @@ public class PurchaseAllWorkers(CityVilleDbContext context) : AmfService<Purchas
     // Factory::calculateInstantCashCost
     private static int CalculateInstantCashCost(GameItem contractItem, int remainingSpots)
     {
-        var growTimeMinutes = (int)Math.Round((contractItem.GetGrowTime() ?? 0) * 23 * 60);
+        var growTimeMinutes = (int)Math.Round((contractItem.GrowTime ?? 0) * 23 * 60);
         var workersCost = remainingSpots * contractItem.Workers!.CashCost;
 
         return growTimeMinutes switch

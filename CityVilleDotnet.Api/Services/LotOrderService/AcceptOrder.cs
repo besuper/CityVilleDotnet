@@ -78,7 +78,7 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
 
         receiveUser.GetWorld().ReplaceBuildingFromLotOrder(lotOrder);
 
-        var newLocation = senderFranchise.AddLocation(lotOrder, gameItem.GetCommodityRequired() ?? 1);
+        var newLocation = senderFranchise.AddLocation(lotOrder, gameItem.CommodityRequired ?? 1);
         newBuilding.SetFranchiseLocation(newLocation, request.SenderId.ToString());
 
         if (hqName is not null

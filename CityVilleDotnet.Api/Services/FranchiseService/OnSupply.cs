@@ -37,7 +37,7 @@ public sealed class OnSupply(CityVilleDbContext context) : AmfService<OnSupplyRe
         var gameItem = GameSettingsManager.Instance.GetItem(request.FranchiseType);
         if (gameItem is null) throw new Exception($"Can't find game item {request.FranchiseType}");
 
-        var commodityCost = (gameItem.GetCommodityRequired() ?? 0) / 2;
+        var commodityCost = (gameItem.CommodityRequired ?? 0) / 2;
 
         if (commodityCost > 0)
             user.RemoveGoods(commodityCost);

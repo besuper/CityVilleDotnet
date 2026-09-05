@@ -68,6 +68,7 @@ public class GameSettingsManager
         }
 
         var serializer = new XmlSerializer(typeof(GameSettings.GameSettings));
+        var derivedItemsCount = 0;
 
         using (var fileStream = new FileStream(path, FileMode.Open))
         {
@@ -103,6 +104,8 @@ public class GameSettingsManager
                         item.Mechanics = mechanics;
                 }
             }
+
+            derivedItemsCount = GameItemInheritance.Resolve(_items);
 
             foreach (var item in gameSettings.Modifiers.Table)
             {
@@ -186,7 +189,7 @@ public class GameSettingsManager
                 .ToList();
         }
 
-        logger.LogInformation("Loaded gameSettings.xml with {ItemsCount} items", _items.Count);
+        logger.LogInformation("Loaded gameSettings.xml with {ItemsCount} items ({DerivedItemsCount} derived from a parent item)", _items.Count, derivedItemsCount);
         logger.LogInformation("Loaded {LevelsCount} levels", _levels.Count);
         logger.LogInformation("Loaded {ReputationLevelsCount} social levels", _reputationLevels.Count);
         logger.LogInformation("Loaded {RandomModifiersCount} random modifiers", _randomModifiers.Count);

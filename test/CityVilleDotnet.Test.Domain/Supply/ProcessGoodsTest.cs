@@ -27,7 +27,7 @@ public class ProcessGoodsTest(DomainFixture fixture)
 
         player.ProcessGoods(defaultItem);
 
-        player.Goods.Should().Be(25 - defaultItem.GetCommodityRequired());
+        player.Goods.Should().Be(25 - defaultItem.CommodityRequired);
     }
 
     [Fact]

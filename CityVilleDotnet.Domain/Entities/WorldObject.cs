@@ -132,8 +132,7 @@ public class WorldObject
 
     public int AddBonusPopulation(int amount)
     {
-        var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
-        var population = gameItem?.Population ?? gameItem?.GetFirstDeriveItem(gameItem).Population;
+        var population = GameSettingsManager.Instance.GetItem(ItemName)?.Population;
 
         if (population?.Min is null || population.Max is null) return 0;
 
@@ -411,7 +410,7 @@ public class WorldObject
         var timeElapsed = currentTime - PlantTime.Value;
 
         var item = GameSettingsManager.Instance.GetItem(GetItemName());
-        var growTime = item?.GetGrowTime();
+        var growTime = item?.GrowTime;
 
         if (growTime is null) return false;
 
@@ -437,7 +436,7 @@ public class WorldObject
 
         if (item is null || !item.AllowWither) return false;
 
-        var growTime = item.GetGrowTime();
+        var growTime = item.GrowTime;
 
         if (growTime is null) return false;
 
@@ -585,7 +584,7 @@ public class WorldObject
         if (gameItem is null)
             throw new Exception("Can't find game item for business building");
 
-        var maxVisits = gameItem.GetCommodityRequired();
+        var maxVisits = gameItem.CommodityRequired;
 
         if (maxVisits is null)
             throw new Exception("Can't find max visits for business building");
@@ -617,7 +616,7 @@ public class WorldObject
             if (gameItem is null)
                 throw new Exception("Can't find game item for business building");
 
-            var maxVisits = gameItem.GetCommodityRequired();
+            var maxVisits = gameItem.CommodityRequired;
 
             if (maxVisits is null)
                 throw new Exception("Can't find max visits for business building");
@@ -801,7 +800,7 @@ public class WorldObject
             throw new Exception($"Can't water {ClassName}");
 
         var item = GameSettingsManager.Instance.GetItem(GetItemName());
-        var growTime = item?.GetGrowTime();
+        var growTime = item?.GrowTime;
 
         if (growTime is null) throw new Exception("Building can't be watered without growTime");
 
@@ -834,7 +833,7 @@ public class WorldObject
 
         var settings = GameSettingsManager.Instance.GetSettings();
         var currentTime = ServerUtils.GetCurrentTime();
-        var timeUntilReady = (GameSettingsManager.Instance.GetItem(GetItemName())?.GetGrowTime() ?? 0) * 1000.0;
+        var timeUntilReady = (GameSettingsManager.Instance.GetItem(GetItemName())?.GrowTime ?? 0) * 1000.0;
         var growTimeMs = timeUntilReady * settings.InGameDaySeconds * settings.GrowMultiplier;
 
         var hoursLeft = Math.Max((growTimeMs - (currentTime - PlantTime.Value)) / 3600000.0, 0);
@@ -850,7 +849,7 @@ public class WorldObject
 
         var settings = GameSettingsManager.Instance.GetSettings();
         var currentTime = ServerUtils.GetCurrentTime();
-        var timeUntilReady = (GameSettingsManager.Instance.GetItem(GetItemName())?.GetGrowTime() ?? 0) * 1000.0;
+        var timeUntilReady = (GameSettingsManager.Instance.GetItem(GetItemName())?.GrowTime ?? 0) * 1000.0;
         var growTimeMs = timeUntilReady * settings.InGameDaySeconds * settings.GrowMultiplier;
 
         var hoursLeft = Math.Max((growTimeMs - (currentTime - PlantTime.Value)) / 3600000.0, 0);

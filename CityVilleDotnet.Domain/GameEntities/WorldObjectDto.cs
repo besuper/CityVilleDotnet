@@ -146,7 +146,7 @@ public static class WorldObjectDtoMapper
 
         if (model.ClassName == BuildingClassType.Bridge)
         {
-            var item = GameSettingsManager.Instance.GetItem(model.ItemName)?.GetDeepParent();
+            var item = GameSettingsManager.Instance.GetItem(model.ItemName);
 
             var rightPart = item?.BridgeParts?.Parts.FirstOrDefault(p => p.Type == "right");
 
@@ -199,7 +199,7 @@ public static class WorldObjectDtoMapper
         }
         else if (gameItem?.IsCustomerSupplyState() == true)
         {
-            var customersReq = gameItem.GetCommodityRequired() ?? 0;
+            var customersReq = gameItem.CommodityRequired ?? 0;
 
             dto.MechanicData["harvestState"] = model.State == WorldObjectState.Open || model.State == WorldObjectState.ClosedHarvestable
                 ? new ASObject
