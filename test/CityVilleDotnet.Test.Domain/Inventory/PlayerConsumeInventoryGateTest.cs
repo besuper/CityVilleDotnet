@@ -53,7 +53,7 @@ public class PlayerConsumeInventoryGateTest(DomainFixture fixture)
 
         var act = () => player.ConsumeInventoryGate(buildingItem, "build");
 
-        act.Should().Throw<Exception>().WithMessage("Not enough items*");
+        act.Should().Throw<Exception>().WithMessage("Not enough item*");
     }
 
     [Fact]
