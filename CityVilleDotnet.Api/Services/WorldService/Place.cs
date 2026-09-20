@@ -60,22 +60,14 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
 
                     if (childItem is null) continue;
 
-                    var childClassName = Enum.Parse<BuildingClassType>(childItem.Type.Pascalize());
-
-                    var childObj = new WorldObject(
-                        rectObj.ItemName,
-                        childClassName,
-                        null,
-                        false,
+                    var childObj = WorldObject.CreateFromWorldRect(
+                        rectObj,
+                        Enum.Parse<BuildingClassType>(childItem.Type.Pascalize()),
                         -1,
-                        WorldObjectState.Static,
-                        rectObj.Direction,
-                        null,
-                        null,
                         request.Building.Position.X + rectObj.X,
                         request.Building.Position.Y + rectObj.Y,
                         request.Building.Position.Z,
-                        1
+                        world.GetAvailableBuildingId()
                     );
 
                     if (rectObj.UseConstructionSite == "true" && childItem.Construction is not null)
@@ -85,7 +77,6 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
                             childObj.SetAsConstructionSite(childItem.Construction, csItem.NumberOfStages ?? 0);
                     }
 
-                    childObj.UpdateWorldFlatId(world.GetAvailableBuildingId());
                     world.AddBuilding(childObj);
                 }
 

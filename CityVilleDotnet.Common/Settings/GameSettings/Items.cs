@@ -777,6 +777,16 @@ public class WorldRectObject
     [XmlAttribute("id")] public required string Id { get; set; }
     [XmlAttribute("itemName")] public required string ItemName { get; set; }
     [XmlAttribute("useConstructionSite")] public string? UseConstructionSite { get; set; }
+    [XmlAttribute("contract")] public string? Contract { get; set; }
+    [XmlIgnore] public int? ReadyIn { get; set; }
+
+    [XmlAttribute("readyin")]
+    public string? ReadyInString
+    {
+        get => ReadyIn?.ToString();
+        set => ReadyIn = string.IsNullOrEmpty(value) ? null : int.Parse(value);
+    }
+
     [XmlAttribute("direction")] public int Direction { get; set; }
     [XmlAttribute("x")] public int X { get; set; }
     [XmlAttribute("y")] public int Y { get; set; }

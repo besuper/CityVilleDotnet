@@ -2,7 +2,6 @@ using System.Collections;
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
-using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
@@ -58,16 +57,10 @@ public class Explode(CityVilleDbContext context, ILogger<Explode> logger) : AmfS
                 ? Convert.ToInt32(tempIds[rectObj.Id])
                 : -1;
 
-            var childObj = new WorldObject(
-                rectObj.ItemName,
+            var childObj = WorldObject.CreateFromWorldRect(
+                rectObj,
                 Enum.Parse<BuildingClassType>(childItem.Type.Pascalize()),
-                null,
-                false,
                 tempId,
-                WorldObjectState.Static,
-                rectObj.Direction,
-                ServerUtils.GetCurrentTime(),
-                ServerUtils.GetCurrentTime(),
                 owner.X + rectObj.X,
                 owner.Y + rectObj.Y,
                 owner.Z ?? 0,

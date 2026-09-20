@@ -316,8 +316,26 @@ public class WorldObject
             EnergyModifier = maxEffect;
     }
 
+    public static WorldObject CreateFromWorldRect(WorldRectObject rectObj, BuildingClassType className, int tempId, int x, int y, int z, int worldFlatId)
+    {
+        var nowMs = (double)ServerUtils.GetCurrentTime();
+        var nowSeconds = ServerUtils.GetCurrentTimeSeconds();
+
+        var (state, plantTime) = className switch
+        {
+            BuildingClassType.Business => (WorldObjectState.Closed, nowMs),
+            BuildingClassType.Factory => (WorldObjectState.Plowed, nowMs),
+            _ when !className.IsHarvestableResource() => (WorldObjectState.Static, nowMs),
+            _ when rectObj.ReadyIn is not null => (WorldObjectState.Planted, (nowSeconds - 2.75 * 60 + rectObj.ReadyIn.Value) * 1000),
+            _ => (WorldObjectState.Grown, 0d)
+        };
+
+        return new WorldObject(rectObj.ItemName, className, rectObj.Contract, false, tempId, state, rectObj.Direction, nowSeconds, plantTime, x, y, z, worldFlatId);
+    }
+
     public void SetAsConstructionSite(string itemName, int maxStages)
     {
+        State = WorldObjectState.Static;
         Stage = 0;
         FinishedBuilds = 0;
         Builds = 0;
