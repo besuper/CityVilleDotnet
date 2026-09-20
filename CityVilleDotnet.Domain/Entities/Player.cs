@@ -845,6 +845,11 @@ public class Player
         return Collections.Sum(x => x.Items.Count(y => y.Name == itemName));
     }
 
+    public bool HasLicense(string licenseName)
+    {
+        return Licenses.Any(x => x.Name == licenseName);
+    }
+
     public void AddLicense(string licenseName)
     {
         var license = Licenses.FirstOrDefault(x => x.Name == licenseName);
@@ -908,13 +913,6 @@ public class Player
     public void AddVisitorHelpOrder(VisitorHelpOrder order)
     {
         VisitorHelpOrders.Add(order);
-    }
-
-    public int GetNextPermitCost()
-    {
-        var expansionData = GetExpansionData();
-
-        return expansionData != null ? expansionData[2] : 1;
     }
 
     public int[]? GetExpansionData()
