@@ -59,10 +59,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
 
         if (gameItem.EnergyCost?.Harvest is not null)
         {
-            var energyCost = int.Parse(gameItem.EnergyCost.Harvest);
-
-            if (!user.RemoveEnergy(energyCost))
-                return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
+            user.RemoveEnergy(int.Parse(gameItem.EnergyCost.Harvest));
         }
 
         var contractName = obj.ContractName;

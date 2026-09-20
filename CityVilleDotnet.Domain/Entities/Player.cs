@@ -65,6 +65,7 @@ public class Player
         Gold = settings.StartingGold;
         Energy = settings.StartingEnergy;
         EnergyMax = settings.StartingEnergyMax;
+        TimeBeforeNextEnergy = ServerUtils.GetCurrentTime();
         Goods = settings.StartingCommodities;
         Xp = settings.StartingXp;
         Level = settings.StartingLevel;
@@ -223,14 +224,18 @@ public class Player
         return new Energy(currentNewEnergy, timeToRegen, timeUntilNextRegen, timeSinceLastRegen);
     }
 
-    public bool RemoveEnergy(int amount)
+    public void RemoveEnergy(int amount)
     {
         var currentEnergy = CalculateCurrentEnergy();
-        if (currentEnergy.CurrentNewEnergy < amount) throw new DomainException(GameErrorType.NotEnoughMoney);
+        
+        var availableEnergy = Math.Max(Energy, currentEnergy.CurrentNewEnergy);
+        
+        if (availableEnergy < amount) throw new DomainException(GameErrorType.ForceReload);
 
         var maxEnergy = GetEnergyMax();
-        var wasAtMax = Energy >= maxEnergy;
-        Energy -= amount;
+        var wasAtMax = availableEnergy >= maxEnergy;
+
+        Energy = availableEnergy - amount;
 
         if (wasAtMax && Energy < maxEnergy)
         {
@@ -238,17 +243,14 @@ public class Player
         }
         else if (Energy < maxEnergy)
         {
-            TimeBeforeNextEnergy = ServerUtils.GetCurrentTime() - (long)(currentEnergy.TimeToRegen - currentEnergy.TimeUntilNextRegen);
+            TimeBeforeNextEnergy = ServerUtils.GetCurrentTime() - (long)currentEnergy.TimeSinceLastRegen;
         }
-
-        return true;
     }
 
     public void UpdateEnergy()
     {
         var currentEnergy = CalculateCurrentEnergy();
-        var maxEnergy = GetEnergyMax();
-        
+
         if (Energy >= GetEnergyMax())
         {
             TimeBeforeNextEnergy = ServerUtils.GetCurrentTime();
@@ -269,7 +271,7 @@ public class Player
 
         var currentEnergy = CalculateCurrentEnergy();
 
-        Energy += amount;
+        Energy = Math.Max(Energy, currentEnergy.CurrentNewEnergy) + amount;
 
         StaticLogger.Current.LogDebug("New energy after addition: {NewEnergy}", Energy);
 
@@ -279,7 +281,7 @@ public class Player
         }
         else
         {
-            TimeBeforeNextEnergy = ServerUtils.GetCurrentTime() - (long)(currentEnergy.TimeToRegen - currentEnergy.TimeUntilNextRegen);
+            TimeBeforeNextEnergy = ServerUtils.GetCurrentTime() - (long)currentEnergy.TimeSinceLastRegen;
         }
     }
 

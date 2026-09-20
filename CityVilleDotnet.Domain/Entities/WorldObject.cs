@@ -342,6 +342,11 @@ public class WorldObject
         }
     }
 
+    public bool IsConstructionComplete()
+    {
+        return FinishedBuilds is not null && RequiredStages is not null && FinishedBuilds >= RequiredStages;
+    }
+
     public List<WorldObject> FinishConstruction()
     {
         if (TargetBuildingName is null || TargetBuildingClass is null)

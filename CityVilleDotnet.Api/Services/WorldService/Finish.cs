@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.WorldService.Common;
+using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
@@ -42,7 +43,10 @@ public sealed class Finish(CityVilleDbContext context) : AmfService<FinishReques
         var obj = world.GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z) ?? throw new Exception($"Can't find building with ID {request.Building.Id}");
 
         if (obj.Builds is null)
-            throw new Exception($"Can't find `builds` {obj}");
+            return new CityVilleResponse().Error(GameErrorType.ForceReload);
+
+        if (!obj.IsConstructionComplete())
+            return new CityVilleResponse().Error(GameErrorType.InvalidState);
 
         var constructionItemName = obj.ItemName;
 

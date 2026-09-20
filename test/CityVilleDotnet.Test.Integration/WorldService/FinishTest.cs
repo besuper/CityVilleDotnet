@@ -19,6 +19,8 @@ public class FinishTest(DatabaseFixture fixture) : IntegrationTest(fixture)
     {
         var building = Faker.WorldObject(itemName: "test_bridge_expansion", className: BuildingClassType.Bridge, x: x, y: y);
         building.SetAsConstructionSite("construction_3x3_2stage", 2);
+        building.AddConstructionStage();
+        building.AddConstructionStage();
 
         return building;
     }
@@ -92,6 +94,8 @@ public class FinishTest(DatabaseFixture fixture) : IntegrationTest(fixture)
     {
         var building = Faker.WorldObject(itemName: "test_gated_building", className: BuildingClassType.Municipal, x: 10, y: 20);
         building.SetAsConstructionSite("construction_3x3_2stage", 2);
+        building.AddConstructionStage();
+        building.AddConstructionStage();
         var world = Faker.World(objects: [building]);
         var user = Faker.Player(world: world);
         user.AddItem("test_gate_material", 2);
@@ -115,6 +119,10 @@ public class FinishTest(DatabaseFixture fixture) : IntegrationTest(fixture)
     {
         var building = Faker.WorldObject(itemName: "res_cottage3", className: BuildingClassType.Residence, x: 10, y: 20);
         building.SetAsConstructionSite("construction_3x3_4stage", 4);
+
+        for (var stage = 0; stage < 4; stage++)
+            building.AddConstructionStage();
+
         var world = Faker.World(objects: [building]);
         var user = Faker.Player(world: world);
 

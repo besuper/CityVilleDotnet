@@ -1,7 +1,9 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.WorldService.Common;
+using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +29,7 @@ internal sealed class Build(CityVilleDbContext context) : AmfService<BuildReques
         var obj = player.GetWorld().GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z) ?? throw new Exception("Can't find building");
 
         if (obj.Builds is null)
-            throw new Exception("Can't find `builds`");
+            return new CityVilleResponse().Error(GameErrorType.ForceReload);
 
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
 
