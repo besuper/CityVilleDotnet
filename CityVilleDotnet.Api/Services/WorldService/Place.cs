@@ -67,7 +67,7 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
                         childClassName,
                         null,
                         false,
-                        0,
+                        -1,
                         WorldObjectState.Static,
                         rectObj.Direction,
                         null,
@@ -118,7 +118,7 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
             request.Building.ClassName,
             null,
             request.Building.Deleted,
-            request.Building.TempId,
+            request.Building.Id, // Use id from the client as a temp id to avoid desync
             request.Building.State,
             request.Building.Direction,
             ServerUtils.GetCurrentTime(),
@@ -154,12 +154,6 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
         {
             if (gameItem.Cost is not null)
                 player.RemoveCoins(gameItem.Cost.Value);
-        }
-
-        // Set TempId to current clientId to fix harvest
-        if (request.Building.ClassName == BuildingClassType.Business || player.IsNew)
-        {
-            obj.SetTempId(request.Building.Id);
         }
 
         // TODO: Check coins, goods, energy, etc...

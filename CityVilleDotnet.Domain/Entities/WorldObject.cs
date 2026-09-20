@@ -747,13 +747,6 @@ public class WorldObject
         return this;
     }
 
-    public void SetTempId(int id)
-    {
-        if (TempId != -1) throw new Exception("Can't define TempId twice");
-
-        TempId = id;
-    }
-
     public void CleanTempId()
     {
         TempId = -1;
