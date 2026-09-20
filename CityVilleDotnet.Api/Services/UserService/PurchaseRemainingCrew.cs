@@ -41,7 +41,8 @@ public class PurchaseRemainingCrew(CityVilleDbContext context, ILogger<PurchaseC
 
         var remainingCrew = key.Amount - building.CrewMembers.Count;
 
-        if (remainingCrew <= 0) throw new Exception("Crew is full");
+        if (remainingCrew <= 0) 
+            return new CityVilleResponse().Error(GameErrorType.ForceReload); // Probably a desync
 
         var totalCost = key.GetCrewCost() * remainingCrew;
 
@@ -50,7 +51,7 @@ public class PurchaseRemainingCrew(CityVilleDbContext context, ILogger<PurchaseC
             totalCost = (int)Math.Floor(totalCost * BuyAllDiscountRate);
 
         if (totalCost > player.Cash)
-            return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);
+            return new CityVilleResponse().Error(GameErrorType.ForceReload); // Probably a desync
 
         logger.LogDebug("Purchased remaining crew for {RequestObjectId} for gate {RequestGateName} for {totalCost} cash", request.ObjectId, request.GateName, totalCost);
         
