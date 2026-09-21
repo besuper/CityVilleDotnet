@@ -1,12 +1,12 @@
-﻿using CityVilleDotnet.Domain.Entities;
+﻿using CityVilleDotnet.Api.Common.Identity;
+using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
 using FastEndpoints;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Features.Stats.Endpoint;
 
-internal sealed class RecordStats(UserManager<ApplicationUser> userManager, CityVilleDbContext dbContext) : EndpointWithoutRequest
+internal sealed class RecordStats(CityVilleDbContext dbContext) : EndpointWithoutRequest
 {
     public override void Configure()
     {
@@ -15,15 +15,13 @@ internal sealed class RecordStats(UserManager<ApplicationUser> userManager, City
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var currentUser = await userManager.GetUserAsync(HttpContext.User);
-
-        if (currentUser is null)
+        if (HttpContext.User.GetPlayerId() is not { } playerId)
         {
             await Send.OkAsync(cancellation: ct);
             return;
         }
         
-        var player = await dbContext.Set<Player>().FirstOrDefaultAsync(x => x.AppUser!.Id == currentUser.Id, ct);
+        var player = await dbContext.Set<Player>().FirstOrDefaultAsync(x => x.Id == playerId, ct);
         
         if (player is null)
         {

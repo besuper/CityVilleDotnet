@@ -5,20 +5,16 @@ using System.Collections.Frozen;
 using System.Reflection;
 using Humanizer;
 using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.Identity;
 using CityVilleDotnet.Api.Services.QuestService;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Exceptions;
-using Microsoft.AspNetCore.Identity;
-using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Common.Settings;
-using CityVilleDotnet.Domain.Enums;
-using CityVilleDotnet.Persistence;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Features.Gateway.Endpoint;
 
-internal sealed class GatewayService(UserManager<ApplicationUser> userManager, IServiceProvider serviceProvider, ILogger<GatewayService> logger, CityVilleDbContext context) : EndpointWithoutRequest
+internal sealed class GatewayService(IServiceProvider serviceProvider, ILogger<GatewayService> logger) : EndpointWithoutRequest
 {
     private static FrozenDictionary<string, Type> _handlerTypes = FrozenDictionary<string, Type>.Empty;
 
@@ -37,19 +33,11 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var user = await userManager.GetUserAsync(User);
-
-        if (user is null)
+        if (User.GetPlayerId() is not { } playerId)
         {
             await Send.UnauthorizedAsync(ct);
             return;
         }
-
-        var pUser = await context.Set<Player>()
-            .AsNoTracking()
-            .Where(x => x.AppUser!.Id == user.Id)
-            .Select(x => x.Id)
-            .FirstOrDefaultAsync(ct);
 
         using var ms = new MemoryStream();
         await HttpContext.Request.Body.CopyToAsync(ms, ct);
@@ -98,7 +86,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
                     continue;
                 }
 
-                logger.LogInformation("Received request from {player} for {FunctionName} sequence {Sequence} parameters {parameters}", pUser, functionName, sequence, parameters);
+                logger.LogInformation("Received request from {player} for {FunctionName} sequence {Sequence} parameters {parameters}", playerId, functionName, sequence, parameters);
 
                 var packageName = functionName.Split('.')[0];
                 var className = functionName.Split('.')[1];
@@ -134,7 +122,7 @@ internal sealed class GatewayService(UserManager<ApplicationUser> userManager, I
 
                 try
                 {
-                    response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{packageName}.{upperClassName}", parameters, pUser, ct);
+                    response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{packageName}.{upperClassName}", parameters, playerId, ct);
 
                     if (response is null)
                     {

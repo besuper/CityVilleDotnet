@@ -2,6 +2,7 @@ using System.Globalization;
 using System.IO.Compression;
 using System.Threading.RateLimiting;
 using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.Identity;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
@@ -38,6 +39,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         options.User.RequireUniqueEmail = false;
     })
     .AddEntityFrameworkStores<CityVilleDbContext>()
+    .AddClaimsPrincipalFactory<PlayerClaimsPrincipalFactory>()
     .AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(options =>
