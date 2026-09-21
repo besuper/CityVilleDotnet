@@ -1,5 +1,4 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
-using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
@@ -15,16 +14,16 @@ internal sealed class Sell(CityVilleDbContext context) : AmfService<SellRequest>
         var user = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.MechanicCounters)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.StorageItems)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects)
+            .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.Slots)
             .Include(x => x.InventoryItems)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
@@ -33,10 +32,8 @@ internal sealed class Sell(CityVilleDbContext context) : AmfService<SellRequest>
 
         var world = user.GetWorld();
 
-        var obj = world.GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z);
-
-        if (obj is null) throw new Exception("Can't find building");
-
+        var obj = world.GetBuildingByClientId(request.Building.Id) ?? throw new Exception($"Can't find building with id {request.Building.Id}");
+        
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
 
         if (gameItem is null) throw new Exception($"Can't find item with name {obj.ItemName}");
@@ -82,5 +79,5 @@ public class SellRequest
 
 public class SellBuildingRequest
 {
-    [AmfParam("position")] public PerformActionPositionRequest Position { get; set; } = new();
+    [AmfParam("id")] public int Id { get; set; }
 }
