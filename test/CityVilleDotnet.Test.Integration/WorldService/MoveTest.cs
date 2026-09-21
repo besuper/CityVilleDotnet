@@ -29,9 +29,9 @@ public class MoveTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             Building = new MoveBuildingRequest
             {
                 Position = new PerformActionPositionRequest { X = 30, Y = 40, Z = 0 },
-                Direction = 2
-            },
-            MoveParams = [new MoveParamsRequest { OrigX = 10, OrigY = 20 }]
+                Direction = 2,
+                Id = building.WorldFlatId
+            }
         };
 
         var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
@@ -60,9 +60,9 @@ public class MoveTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             Building = new MoveBuildingRequest
             {
                 Position = new PerformActionPositionRequest { X = 30, Y = 40, Z = 0 },
-                Direction = 0
-            },
-            MoveParams = [new MoveParamsRequest { OrigX = 15, OrigY = 35 }]
+                Direction = 0,
+                Id = 0
+            }
         };
 
         var act = () => handler.HandlePacket(request, user.Id, CancellationToken.None);

@@ -12,20 +12,16 @@ public class Move(CityVilleDbContext context) : AmfService<MoveRequest>
 {
     public override async Task<ASObject> HandlePacket(MoveRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        var moveParams = request.MoveParams[0];
-        var originX = moveParams.OrigX;
-        var originY = moveParams.OrigY;
-
         var user = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x.Objects.Where(o => o.X == originX && o.Y == originY))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.Building.Id || o.TempId == request.Building.Id))
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (user is null) throw new Exception("Player not found");
 
-        var obj = user.GetWorld().GetBuildingByCoord(originX, originY, 0) ?? throw new Exception($"Can't find object at ({originX}, {originY})");
+        var obj = user.GetWorld().GetBuildingByClientId(request.Building.Id) ?? throw new Exception($"Can't find object with id ({request.Building.Id})");
 
         obj.MoveTo(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z, request.Building.Direction);
 
@@ -40,17 +36,11 @@ public class Move(CityVilleDbContext context) : AmfService<MoveRequest>
 public class MoveRequest
 {
     [AmfParam(1)] public MoveBuildingRequest Building { get; set; } = new();
-    [AmfParam(3)] public MoveParamsRequest[] MoveParams { get; set; } = [];
 }
 
 public class MoveBuildingRequest
 {
     [AmfParam("position")] public PerformActionPositionRequest Position { get; set; } = new();
     [AmfParam("direction")] public int Direction { get; set; }
-}
-
-public class MoveParamsRequest
-{
-    [AmfParam("origX")] public int OrigX { get; set; }
-    [AmfParam("origY")] public int OrigY { get; set; }
+    [AmfParam("id")] public int Id { get; set; }
 }
