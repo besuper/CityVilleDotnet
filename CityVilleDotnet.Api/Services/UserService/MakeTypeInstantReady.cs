@@ -38,17 +38,9 @@ public class MakeTypeInstantReady(CityVilleDbContext context, ILogger<MakeTypeIn
 
         var world = player.GetWorld();
 
-        var cost = 0;
+        var buildings = world.Objects.Where(o => o.ClassName == buildingType && o.State == WorldObjectState.Planted && !o.HasGrown()).ToList();
 
-        foreach (var obj in world.Objects)
-        {
-            if (obj.HasGrown()) continue;
-
-            cost += obj.GetCostToMakeReady();
-        }
-
-        // FIXME: Cost is not the same as on the client side
-        cost = Math.Max(cost, 1);
+        var cost = (int)Math.Max(Math.Ceiling(buildings.Sum(x => x.GetUnroundedCostToMakeReady())), 1);
 
         logger.LogDebug("Bought instant finish for type {BuildingType} cost {Cost}", buildingType, cost);
 
@@ -57,10 +49,8 @@ public class MakeTypeInstantReady(CityVilleDbContext context, ILogger<MakeTypeIn
 
         player.RemoveCash(cost);
 
-        foreach (var obj in world.Objects)
+        foreach (var obj in buildings)
         {
-            if (obj.HasGrown()) continue;
-
             obj.SetReadyToHarvest();
         }
 

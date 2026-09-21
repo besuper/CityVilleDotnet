@@ -1,4 +1,4 @@
-using System.Buffers.Binary;
+﻿using System.Buffers.Binary;
 using System.Security.Cryptography;
 using System.Text;
 using CityVilleDotnet.Common.Global;
@@ -843,20 +843,23 @@ public class WorldObject
         return new WorldObject(ItemName, ClassName, ContractName, Deleted, TempId, State, Direction, ServerUtils.GetCurrentTime(), ServerUtils.GetCurrentTime(), x, y, z, id);
     }
 
+    private double GetHoursUntilReady()
+    {
+        var settings = GameSettingsManager.Instance.GetSettings();
+        var growTime = GameSettingsManager.Instance.GetItem(GetItemName())?.GrowTime ?? 0;
+        var growTimeMs = growTime * 1000.0 * settings.InGameDaySeconds * settings.GrowMultiplier;
+        var timeLeftMs = growTimeMs - (ServerUtils.GetCurrentTime() - PlantTime!.Value);
+
+        return Math.Max((long)(timeLeftMs / 1000), 0) / 3600.0;
+    }
+
     private double PlotCostToMakeReady()
     {
         if (State != WorldObjectState.Planted || PlantTime is null) return 0;
 
         var settings = GameSettingsManager.Instance.GetSettings();
-        var currentTime = ServerUtils.GetCurrentTime();
-        var timeUntilReady = (GameSettingsManager.Instance.GetItem(GetItemName())?.GrowTime ?? 0) * 1000.0;
-        var growTimeMs = timeUntilReady * settings.InGameDaySeconds * settings.GrowMultiplier;
 
-        var hoursLeft = Math.Max((growTimeMs - (currentTime - PlantTime.Value)) / 3600000.0, 0);
-        var exponent = 0.4;
-        var multiplier = settings.InstantReadyCropCostConstant3;
-
-        return multiplier * Math.Pow(hoursLeft, exponent);
+        return settings.InstantReadyCropCostConstant3 * Math.Pow(GetHoursUntilReady(), 0.4);
     }
 
     private double ResidenceCostToMakeReady()
@@ -864,41 +867,36 @@ public class WorldObject
         if (State != WorldObjectState.Planted || PlantTime is null) return 0;
 
         var settings = GameSettingsManager.Instance.GetSettings();
-        var currentTime = ServerUtils.GetCurrentTime();
-        var timeUntilReady = (GameSettingsManager.Instance.GetItem(GetItemName())?.GrowTime ?? 0) * 1000.0;
-        var growTimeMs = timeUntilReady * settings.InGameDaySeconds * settings.GrowMultiplier;
 
-        var hoursLeft = Math.Max((growTimeMs - (currentTime - PlantTime.Value)) / 3600000.0, 0);
-        var exponent = 0.25;
-        var multiplier = settings.InstantReadyResidenceCostConstant5;
-
-        return multiplier * Math.Pow(hoursLeft, exponent);
+        return settings.InstantReadyResidenceCostConstant5 * Math.Pow(GetHoursUntilReady(), 0.25);
     }
 
-    public int GetCostToMakeReady()
-    {
-        return ClassName switch
-        {
-            BuildingClassType.Plot => (int)Math.Ceiling(PlotCostToMakeReady()),
-            BuildingClassType.Ship => (int)Math.Ceiling(PlotCostToMakeReady()),
-            BuildingClassType.HarvestableShip => (int)Math.Ceiling(HarvestableShipCostToMakeReady()),
-            BuildingClassType.Residence => (int)Math.Ceiling(ResidenceCostToMakeReady()),
-            _ => throw new NotImplementedException()
-        };
-    }
-
-    private double HarvestableShipCostToMakeReady()
+    private double ShipCostToMakeReady()
     {
         var baseCost = PlotCostToMakeReady();
         if (baseCost <= 0) return 0;
 
         var gameItem = GameSettingsManager.Instance.GetItem(GetItemName());
-        var harvestMultiplier = gameItem?.HarvestMultiplier ?? 0;
-        var useHarvestMultForCost = gameItem?.UseHarvestMultForCost ?? false;
+        if (gameItem is null || !gameItem.UseHarvestMultForCost) return baseCost;
 
-        if (!useHarvestMultForCost || harvestMultiplier <= 0) return baseCost;
+        return Math.Max(Math.Ceiling(baseCost), 1) * (1 + (gameItem.HarvestMultiplier ?? 0) / 100.0);
+    }
 
-        return Math.Max(Math.Ceiling(baseCost), 1) * (1 + harvestMultiplier / 100.0);
+    public double GetUnroundedCostToMakeReady()
+    {
+        return ClassName switch
+        {
+            BuildingClassType.Plot => PlotCostToMakeReady(),
+            BuildingClassType.Ship => ShipCostToMakeReady(),
+            BuildingClassType.HarvestableShip => ShipCostToMakeReady(),
+            BuildingClassType.Residence => ResidenceCostToMakeReady(),
+            _ => throw new NotImplementedException()
+        };
+    }
+
+    public int GetCostToMakeReady()
+    {
+        return (int)Math.Max(Math.Ceiling(GetUnroundedCostToMakeReady()), 1);
     }
 
     public string GetDeepItemName()
