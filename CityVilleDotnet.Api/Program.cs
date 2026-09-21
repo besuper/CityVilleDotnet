@@ -93,7 +93,7 @@ builder.Services.AddResponseCompression(options =>
     options.EnableForHttps = true;
     options.Providers.Add<BrotliCompressionProvider>();
     options.Providers.Add<GzipCompressionProvider>();
-    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(["text/xml", "application/xml"]);
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(["text/xml", "application/xml", "application/x-amf"]);
 });
 
 builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
