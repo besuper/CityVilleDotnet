@@ -3,6 +3,7 @@ using System.IO.Compression;
 using System.Threading.RateLimiting;
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Common.Identity;
+using CityVilleDotnet.Api.Common.Logging;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
@@ -20,6 +21,7 @@ using CityVilleDotnet.Api.Middleware;
 using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Utils;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Options;
@@ -51,7 +53,13 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromHours(1);
 });
 
-builder.Services.AddRazorPages().AddViewLocalization();
+builder.Services.AddScoped<IAuthorizationHandler, AdminAuthorizationHandler>();
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(AdminPolicy.Name, policy => policy.RequireAuthenticatedUser().AddRequirements(new AdminRequirement()));
+
+builder.Services.AddSingleton<LogFileReader>();
+
+builder.Services.AddRazorPages(options => options.Conventions.AuthorizeFolder("/Admin", AdminPolicy.Name)).AddViewLocalization();
 builder.Services.AddFastEndpoints();
 builder.Services.AddHttpContextAccessor();
 

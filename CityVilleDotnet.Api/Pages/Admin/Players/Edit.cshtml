@@ -1,0 +1,269 @@
+@page "{id:guid}"
+@using CityVilleDotnet.Domain.Enums
+@model CityVilleDotnet.Api.Pages.Admin.Players.EditModel
+
+@{
+	var player = Model.Player;
+}
+
+<div class="card border-0 shadow-sm mb-4">
+	<div class="card-body d-flex align-items-center flex-wrap">
+		<img src="@(player.ProfilePictureUrl ?? "/blank.png")" alt="@player.Username" class="rounded-circle border mr-3" style="width:56px;height:56px;"/>
+		<div class="mr-auto">
+			<h4 class="font-outfit font-weight-bold text-dark mb-1">
+				@player.Username
+				@if (player.AppUser?.IsAdmin == true)
+				{
+					<span class="badge badge-danger ml-1 small">@Localizer["Admin"]</span>
+				}
+				@if (Model.IsOnline)
+				{
+					<span class="badge badge-success ml-1 small">@Localizer["Online"]</span>
+				}
+			</h4>
+			<div class="text-muted small">
+				Snuid @player.Snuid · <span class="text-monospace">@player.Id</span>
+			</div>
+			<div class="text-muted small">
+				<i class="bi bi-calendar3 mr-1"></i>@Localizer["MemberSince"] @player.CreationTimestamp.ToString("dd/MM/yyyy HH:mm")
+				@if (player.LastTrackingTimestamp > DateTimeOffset.MinValue)
+				{
+					<span class="ml-2"><i class="bi bi-clock-history mr-1"></i>@Localizer["LastActivity"] @player.LastTrackingTimestamp.ToString("dd/MM/yyyy HH:mm:ss")</span>
+				}
+			</div>
+		</div>
+		<a asp-page="/Admin/Players/Index" class="btn btn-outline-secondary btn-sm mt-2 mt-md-0">
+			<i class="bi bi-arrow-left mr-1"></i>@Localizer["Players"]
+		</a>
+	</div>
+</div>
+
+<ul class="nav nav-tabs mb-3" role="tablist">
+	<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#overview" role="tab"><i class="bi bi-person mr-1"></i>@Localizer["Profile"]</a></li>
+	<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#inventory" role="tab"><i class="bi bi-box-seam mr-1"></i>@Localizer["Inventory"] <span class="badge badge-secondary">@player.InventoryItems.Count</span></a></li>
+	<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#quests" role="tab"><i class="bi bi-flag mr-1"></i>@Localizer["Quests"] <span class="badge badge-secondary">@player.Quests.Count</span></a></li>
+	<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#worlds" role="tab"><i class="bi bi-buildings mr-1"></i>@Localizer["Worlds"] <span class="badge badge-secondary">@Model.Worlds.Count</span></a></li>
+</ul>
+
+<div class="tab-content">
+	<div class="tab-pane fade show active" id="overview" role="tabpanel">
+		<div class="card border-0 shadow-sm mb-4">
+			<div class="card-body">
+				<h6 class="font-weight-bold text-dark mb-3"><i class="bi bi-wallet2 mr-2 text-primary"></i>@Localizer["Resources"] &amp; @Localizer["Progression"]</h6>
+				<form method="post" asp-page-handler="UpdatePlayer" asp-route-id="@player.Id">
+					<div class="form-row">
+						<div class="form-group col-6 col-md-3">
+							<label class="small font-weight-bold" for="gold">@Localizer["Gold"]</label>
+							<input type="number" min="0" class="form-control" id="gold" name="input.Gold" value="@player.Gold" required/>
+						</div>
+						<div class="form-group col-6 col-md-3">
+							<label class="small font-weight-bold" for="cash">@Localizer["Cash"]</label>
+							<input type="number" min="0" class="form-control" id="cash" name="input.Cash" value="@player.Cash" required/>
+						</div>
+						<div class="form-group col-6 col-md-3">
+							<label class="small font-weight-bold" for="goods">@Localizer["Goods"]</label>
+							<input type="number" min="0" class="form-control" id="goods" name="input.Goods" value="@player.Goods" required/>
+						</div>
+						<div class="form-group col-6 col-md-3">
+							<label class="small font-weight-bold" for="premiumGoods">@Localizer["PremiumGoods"]</label>
+							<input type="number" min="0" class="form-control" id="premiumGoods" name="input.PremiumGoods" value="@player.PremiumGoods" required/>
+						</div>
+						<div class="form-group col-6 col-md-3">
+							<label class="small font-weight-bold" for="level">@Localizer["Level"]</label>
+							<input type="number" min="1" class="form-control" id="level" name="input.Level" value="@player.Level" required/>
+						</div>
+						<div class="form-group col-6 col-md-3">
+							<label class="small font-weight-bold" for="xp">@Localizer["XP"]</label>
+							<input type="number" min="0" class="form-control" id="xp" name="input.Xp" value="@player.Xp" required/>
+						</div>
+						<div class="form-group col-6 col-md-3">
+							<label class="small font-weight-bold" for="socialLevel">@Localizer["SocialLevel"]</label>
+							<input type="number" min="1" class="form-control" id="socialLevel" name="input.SocialLevel" value="@player.SocialLevel" required/>
+						</div>
+						<div class="form-group col-6 col-md-3">
+							<label class="small font-weight-bold" for="socialXp">@Localizer["SocialXp"]</label>
+							<input type="number" min="0" class="form-control" id="socialXp" name="input.SocialXp" value="@player.SocialXp" required/>
+						</div>
+						<div class="form-group col-6 col-md-3">
+							<label class="small font-weight-bold" for="energy">@Localizer["Energy"] (max @player.EnergyMax)</label>
+							<input type="number" min="0" class="form-control" id="energy" name="input.Energy" value="@player.Energy" required/>
+						</div>
+					</div>
+					<button type="submit" class="btn btn-primary font-weight-bold">
+						<i class="bi bi-save mr-1"></i>@Localizer["Save"]
+					</button>
+				</form>
+			</div>
+		</div>
+
+		<div class="card border-0 shadow-sm mb-4">
+			<div class="card-body d-flex align-items-center justify-content-between flex-wrap">
+				<div>
+					<h6 class="font-weight-bold text-dark mb-1"><i class="bi bi-shield-lock mr-2 text-danger"></i>@Localizer["Admin"]</h6>
+					<div class="text-muted small">@(player.AppUser?.IsAdmin == true ? Localizer["AdminIsAdmin"] : Localizer["AdminIsNotAdmin"])</div>
+				</div>
+				<form method="post" asp-page-handler="ToggleAdmin" asp-route-id="@player.Id" data-confirm="@Localizer["AdminConfirm"]">
+					<button type="submit" class="btn btn-sm font-weight-bold @(player.AppUser?.IsAdmin == true ? "btn-outline-danger" : "btn-outline-primary")">
+						@(player.AppUser?.IsAdmin == true ? Localizer["AdminRevoke"] : Localizer["AdminGrant"])
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="tab-pane fade" id="inventory" role="tabpanel">
+		<div class="card border-0 shadow-sm mb-4">
+			<div class="card-body">
+				<h6 class="font-weight-bold text-dark mb-3"><i class="bi bi-plus-circle mr-2 text-primary"></i>@Localizer["AddItem"]</h6>
+				<form method="post" asp-page-handler="AddItem" asp-route-id="@player.Id">
+					<div class="form-row">
+						<div class="col-12 col-md-7 mb-2">
+							<input type="text" class="form-control" name="itemName" maxlength="64" placeholder="@Localizer["ItemName"]" required/>
+						</div>
+						<div class="col-6 col-md-2 mb-2">
+							<input type="number" class="form-control" name="amount" min="1" value="1" required/>
+						</div>
+						<div class="col-6 col-md-3 mb-2">
+							<button type="submit" class="btn btn-primary btn-block font-weight-bold"><i class="bi bi-plus-lg mr-1"></i>@Localizer["AddItem"]</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="card border-0 shadow-sm mb-4">
+			<div class="card-body">
+				@if (player.InventoryItems.Any())
+				{
+					<div class="table-responsive">
+						<table class="table table-hover table-sm mb-0">
+							<thead>
+							<tr>
+								<th>@Localizer["ItemName"]</th>
+								<th>@Localizer["Storage"]</th>
+								<th style="width:260px">@Localizer["Amount"]</th>
+								<th></th>
+							</tr>
+							</thead>
+							<tbody>
+							@foreach (var item in player.InventoryItems.OrderBy(x => x.StorageType).ThenBy(x => x.Name))
+							{
+								<tr>
+									<td class="align-middle text-monospace small">@item.Name</td>
+									<td class="align-middle small text-muted">@(item.StorageType ?? "-")</td>
+									<td>
+										<form method="post" asp-page-handler="UpdateItem" asp-route-id="@player.Id" class="d-flex">
+											<input type="hidden" name="itemId" value="@item.Id"/>
+											<input type="number" class="form-control form-control-sm mr-2" name="amount" min="1" value="@item.Amount" required/>
+											<button type="submit" class="btn btn-sm btn-outline-primary" title="@Localizer["Save"]"><i class="bi bi-save"></i></button>
+										</form>
+									</td>
+									<td class="text-right">
+										<form method="post" asp-page-handler="DeleteItem" asp-route-id="@player.Id" data-confirm="@Localizer["AdminDeleteConfirm"]">
+											<input type="hidden" name="itemId" value="@item.Id"/>
+											<button type="submit" class="btn btn-sm btn-outline-danger" title="@Localizer["Delete"]"><i class="bi bi-trash"></i></button>
+										</form>
+									</td>
+								</tr>
+							}
+							</tbody>
+						</table>
+					</div>
+				}
+				else
+				{
+					<p class="text-muted mb-0">@Localizer["NoResults"]</p>
+				}
+			</div>
+		</div>
+	</div>
+
+	<div class="tab-pane fade" id="quests" role="tabpanel">
+		<div class="card border-0 shadow-sm mb-4">
+			<div class="card-body">
+				@if (player.Quests.Any())
+				{
+					<div class="table-responsive">
+						<table class="table table-hover table-sm mb-0">
+							<thead>
+							<tr>
+								<th>@Localizer["Name"]</th>
+								<th>@Localizer["Progress"]</th>
+								<th>@Localizer["CreatedAt"]</th>
+								<th style="width:260px">@Localizer["State"]</th>
+								<th></th>
+							</tr>
+							</thead>
+							<tbody>
+							@foreach (var quest in player.Quests.OrderBy(x => x.QuestType).ThenByDescending(x => x.CreatedAt))
+							{
+								<tr>
+									<td class="align-middle text-monospace small">@quest.Name</td>
+									<td class="align-middle small">[@string.Join(", ", quest.Progress)]</td>
+									<td class="align-middle small text-muted">@quest.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+									<td>
+										<form method="post" asp-page-handler="UpdateQuest" asp-route-id="@player.Id" class="d-flex">
+											<input type="hidden" name="questId" value="@quest.Id"/>
+											<select class="custom-select custom-select-sm mr-2" name="questType">
+												@foreach (var type in Enum.GetValues<QuestType>())
+												{
+													<option value="@type" selected="@(type == quest.QuestType)">@type</option>
+												}
+											</select>
+											<button type="submit" class="btn btn-sm btn-outline-primary" title="@Localizer["Save"]"><i class="bi bi-save"></i></button>
+										</form>
+									</td>
+									<td class="text-right">
+										<form method="post" asp-page-handler="DeleteQuest" asp-route-id="@player.Id" data-confirm="@Localizer["AdminDeleteConfirm"]">
+											<input type="hidden" name="questId" value="@quest.Id"/>
+											<button type="submit" class="btn btn-sm btn-outline-danger" title="@Localizer["Delete"]"><i class="bi bi-trash"></i></button>
+										</form>
+									</td>
+								</tr>
+							}
+							</tbody>
+						</table>
+					</div>
+				}
+				else
+				{
+					<p class="text-muted mb-0">@Localizer["NoResults"]</p>
+				}
+			</div>
+		</div>
+	</div>
+
+	<div class="tab-pane fade" id="worlds" role="tabpanel">
+		<div class="row row-cols-1 row-cols-md-3">
+			@foreach (var world in Model.Worlds)
+			{
+				<div class="col mb-3">
+					<div class="card border-0 shadow-sm h-100">
+						<div class="card-body">
+							<h6 class="font-weight-bold text-dark mb-1">@world.WorldName</h6>
+							<div class="text-muted small mb-2">@world.Type</div>
+							<div class="small"><i class="bi bi-people mr-1"></i>@Localizer["Population"] : @world.Population.ToString("N0") / @world.PopulationCap.ToString("N0")</div>
+							<div class="small"><i class="bi bi-arrows-fullscreen mr-1"></i>@Localizer["MapSize"] : @world.SizeX × @world.SizeY</div>
+							<div class="small mb-3"><i class="bi bi-house mr-1"></i>@Localizer["Objects"] : @world.ObjectsCount.ToString("N0")</div>
+							<a asp-page="/Admin/Players/Objects" asp-route-id="@player.Id" asp-route-SelectedWorld="@world.Type" class="btn btn-sm btn-outline-primary font-weight-bold">
+								<i class="bi bi-pencil-square mr-1"></i>@Localizer["ManageObjects"]
+							</a>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script>
+		document.addEventListener("DOMContentLoaded", () => {
+			if (location.hash) {
+				$('.nav-tabs a[href="' + location.hash + '"]').tab('show');
+			}
+
+			$('.nav-tabs a[data-toggle="tab"]').on('shown.bs.tab', e => history.replaceState(null, '', e.target.hash));
+		});
+	</script>
+}

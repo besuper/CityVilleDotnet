@@ -197,4 +197,160 @@
     <data name="PictureUpdated" xml:space="preserve">
         <value>Photo de profil mise à jour avec succès.</value>
     </data>
+    <data name="AccessDenied" xml:space="preserve">
+        <value>Accès refusé</value>
+    </data>
+    <data name="AccessDeniedMessage" xml:space="preserve">
+        <value>Vous n'avez pas la permission d'accéder à cette page.</value>
+    </data>
+    <data name="Admin" xml:space="preserve">
+        <value>Admin</value>
+    </data>
+    <data name="AdminPanel" xml:space="preserve">
+        <value>Panneau d'administration</value>
+    </data>
+    <data name="AdminCannotRemoveOwnAdmin" xml:space="preserve">
+        <value>Vous ne pouvez pas retirer vos propres droits d'administrateur.</value>
+    </data>
+    <data name="AdminConfirm" xml:space="preserve">
+        <value>Voulez-vous vraiment modifier les droits d'administrateur de ce joueur ?</value>
+    </data>
+    <data name="AdminDeleteConfirm" xml:space="preserve">
+        <value>Voulez-vous vraiment supprimer cet élément ? Cette action est irréversible.</value>
+    </data>
+    <data name="AdminGrant" xml:space="preserve">
+        <value>Donner les droits admin</value>
+    </data>
+    <data name="AdminRevoke" xml:space="preserve">
+        <value>Retirer les droits admin</value>
+    </data>
+    <data name="AdminIsAdmin" xml:space="preserve">
+        <value>Ce joueur est administrateur.</value>
+    </data>
+    <data name="AdminIsNotAdmin" xml:space="preserve">
+        <value>Ce joueur n'est pas administrateur.</value>
+    </data>
+    <data name="AdminInvalidValues" xml:space="preserve">
+        <value>Valeurs invalides.</value>
+    </data>
+    <data name="AdminUnknownItem" xml:space="preserve">
+        <value>Nom d'objet inconnu.</value>
+    </data>
+    <data name="AdminPlayerUpdated" xml:space="preserve">
+        <value>Joueur mis à jour avec succès.</value>
+    </data>
+    <data name="AdminInventoryUpdated" xml:space="preserve">
+        <value>Inventaire mis à jour avec succès.</value>
+    </data>
+    <data name="AdminQuestUpdated" xml:space="preserve">
+        <value>Quêtes mises à jour avec succès.</value>
+    </data>
+    <data name="AdminObjectUpdated" xml:space="preserve">
+        <value>Objet mis à jour avec succès.</value>
+    </data>
+    <data name="AdminObjectDeleted" xml:space="preserve">
+        <value>Objet supprimé avec succès.</value>
+    </data>
+    <data name="Admins" xml:space="preserve">
+        <value>Administrateurs</value>
+    </data>
+    <data name="AllFiles" xml:space="preserve">
+        <value>Tous les fichiers</value>
+    </data>
+    <data name="AllLevels" xml:space="preserve">
+        <value>Tous les niveaux</value>
+    </data>
+    <data name="AutoRefresh" xml:space="preserve">
+        <value>Actualisation automatique toutes les 30 s</value>
+    </data>
+    <data name="BackToGame" xml:space="preserve">
+        <value>Retour au jeu</value>
+    </data>
+    <data name="Class" xml:space="preserve">
+        <value>Classe</value>
+    </data>
+    <data name="CreatedAt" xml:space="preserve">
+        <value>Créé le</value>
+    </data>
+    <data name="Dashboard" xml:space="preserve">
+        <value>Tableau de bord</value>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Supprimer</value>
+    </data>
+    <data name="Direction" xml:space="preserve">
+        <value>Direction</value>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>Modifier</value>
+    </data>
+    <data name="LastActivity" xml:space="preserve">
+        <value>Dernière activité</value>
+    </data>
+    <data name="Logs" xml:space="preserve">
+        <value>Logs</value>
+    </data>
+    <data name="LogsTruncated" xml:space="preserve">
+        <value>Résultats limités aux {0} entrées les plus récentes</value>
+    </data>
+    <data name="ManageObjects" xml:space="preserve">
+        <value>Gérer les objets</value>
+    </data>
+    <data name="Name" xml:space="preserve">
+        <value>Nom</value>
+    </data>
+    <data name="NewPlayers24h" xml:space="preserve">
+        <value>Nouveaux joueurs (24 h)</value>
+    </data>
+    <data name="NoOnlinePlayers" xml:space="preserve">
+        <value>Aucun joueur en ligne pour le moment.</value>
+    </data>
+    <data name="NoResults" xml:space="preserve">
+        <value>Aucun résultat.</value>
+    </data>
+    <data name="Objects" xml:space="preserve">
+        <value>Objets</value>
+    </data>
+    <data name="Online" xml:space="preserve">
+        <value>En ligne</value>
+    </data>
+    <data name="OnlinePlayers" xml:space="preserve">
+        <value>Joueurs en ligne</value>
+    </data>
+    <data name="Players" xml:space="preserve">
+        <value>Joueurs</value>
+    </data>
+    <data name="Progress" xml:space="preserve">
+        <value>Progression</value>
+    </data>
+    <data name="Quests" xml:space="preserve">
+        <value>Quêtes</value>
+    </data>
+    <data name="Results" xml:space="preserve">
+        <value>résultats</value>
+    </data>
+    <data name="Save" xml:space="preserve">
+        <value>Enregistrer</value>
+    </data>
+    <data name="Search" xml:space="preserve">
+        <value>Rechercher</value>
+    </data>
+    <data name="SearchLogs" xml:space="preserve">
+        <value>Rechercher dans les logs...</value>
+    </data>
+    <data name="SearchPlayer" xml:space="preserve">
+        <value>Nom d'utilisateur ou Snuid...</value>
+    </data>
+    <data name="State" xml:space="preserve">
+        <value>État</value>
+    </data>
+    <data name="Storage" xml:space="preserve">
+        <value>Stockage</value>
+    </data>
+    <data name="World" xml:space="preserve">
+        <value>Monde</value>
+    </data>
+    <data name="Worlds" xml:space="preserve">
+        <value>Mondes</value>
+    </data>
 </root>

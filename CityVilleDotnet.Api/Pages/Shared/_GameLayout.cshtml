@@ -1,5 +1,12 @@
 @using System.Reflection
+@using CityVilleDotnet.Api.Common.Identity
+@using Microsoft.AspNetCore.Authorization
 @inject Microsoft.Extensions.Localization.IStringLocalizer<Resources.SharedResource> Localizer
+@inject IAuthorizationService AuthorizationService
+
+@{
+    var isAdmin = (await AuthorizationService.AuthorizeAsync(User, AdminPolicy.Name)).Succeeded;
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -48,6 +55,16 @@
                         @Localizer["Friends"]
                     </a>
                 </li>
+                @if (isAdmin)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link text-danger font-weight-bold d-flex align-items-center rounded px-3 py-2 my-2 mx-1 cv-hover"
+                           asp-page="/Admin/Index" title="Admin">
+                            <i class="bi bi-shield-lock mr-2"></i>
+                            @Localizer["Admin"]
+                        </a>
+                    </li>
+                }
             </ul>
 
             <div class="dropdown">

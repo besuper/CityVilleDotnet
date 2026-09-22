@@ -1,0 +1,12 @@
+@page
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Resources.SharedResource> Localizer
+
+<div class="d-flex align-items-center justify-content-center min-vh-100 bg-light px-3">
+    <div class="card shadow-sm text-center" style="max-width: 400px; width: 100%;">
+        <div class="card-body">
+            <h2 class="mb-3">@Localizer["AccessDenied"]</h2>
+            <p class="text-muted">@Localizer["AccessDeniedMessage"]</p>
+            <a href="/Game" class="btn btn-primary">@Localizer["BackToGame"]</a>
+        </div>
+    </div>
+</div>

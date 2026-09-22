@@ -207,4 +207,160 @@
     <data name="PictureUpdated" xml:space="preserve">
         <value>Profile picture updated successfully.</value>
     </data>
+    <data name="AccessDenied" xml:space="preserve">
+        <value>Access denied</value>
+    </data>
+    <data name="AccessDeniedMessage" xml:space="preserve">
+        <value>You do not have permission to access this page.</value>
+    </data>
+    <data name="Admin" xml:space="preserve">
+        <value>Admin</value>
+    </data>
+    <data name="AdminPanel" xml:space="preserve">
+        <value>Admin panel</value>
+    </data>
+    <data name="AdminCannotRemoveOwnAdmin" xml:space="preserve">
+        <value>You cannot remove your own admin rights.</value>
+    </data>
+    <data name="AdminConfirm" xml:space="preserve">
+        <value>Are you sure you want to change the admin rights of this player?</value>
+    </data>
+    <data name="AdminDeleteConfirm" xml:space="preserve">
+        <value>Are you sure you want to delete this element? This action cannot be undone.</value>
+    </data>
+    <data name="AdminGrant" xml:space="preserve">
+        <value>Grant admin rights</value>
+    </data>
+    <data name="AdminRevoke" xml:space="preserve">
+        <value>Revoke admin rights</value>
+    </data>
+    <data name="AdminIsAdmin" xml:space="preserve">
+        <value>This player is an administrator.</value>
+    </data>
+    <data name="AdminIsNotAdmin" xml:space="preserve">
+        <value>This player is not an administrator.</value>
+    </data>
+    <data name="AdminInvalidValues" xml:space="preserve">
+        <value>Invalid values.</value>
+    </data>
+    <data name="AdminUnknownItem" xml:space="preserve">
+        <value>Unknown item name.</value>
+    </data>
+    <data name="AdminPlayerUpdated" xml:space="preserve">
+        <value>Player updated successfully.</value>
+    </data>
+    <data name="AdminInventoryUpdated" xml:space="preserve">
+        <value>Inventory updated successfully.</value>
+    </data>
+    <data name="AdminQuestUpdated" xml:space="preserve">
+        <value>Quests updated successfully.</value>
+    </data>
+    <data name="AdminObjectUpdated" xml:space="preserve">
+        <value>Object updated successfully.</value>
+    </data>
+    <data name="AdminObjectDeleted" xml:space="preserve">
+        <value>Object deleted successfully.</value>
+    </data>
+    <data name="Admins" xml:space="preserve">
+        <value>Admins</value>
+    </data>
+    <data name="AllFiles" xml:space="preserve">
+        <value>All files</value>
+    </data>
+    <data name="AllLevels" xml:space="preserve">
+        <value>All levels</value>
+    </data>
+    <data name="AutoRefresh" xml:space="preserve">
+        <value>Auto refresh every 30s</value>
+    </data>
+    <data name="BackToGame" xml:space="preserve">
+        <value>Back to game</value>
+    </data>
+    <data name="Class" xml:space="preserve">
+        <value>Class</value>
+    </data>
+    <data name="CreatedAt" xml:space="preserve">
+        <value>Created at</value>
+    </data>
+    <data name="Dashboard" xml:space="preserve">
+        <value>Dashboard</value>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="Direction" xml:space="preserve">
+        <value>Direction</value>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>Edit</value>
+    </data>
+    <data name="LastActivity" xml:space="preserve">
+        <value>Last activity</value>
+    </data>
+    <data name="Logs" xml:space="preserve">
+        <value>Logs</value>
+    </data>
+    <data name="LogsTruncated" xml:space="preserve">
+        <value>Results limited to the {0} most recent entries</value>
+    </data>
+    <data name="ManageObjects" xml:space="preserve">
+        <value>Manage objects</value>
+    </data>
+    <data name="Name" xml:space="preserve">
+        <value>Name</value>
+    </data>
+    <data name="NewPlayers24h" xml:space="preserve">
+        <value>New players (24h)</value>
+    </data>
+    <data name="NoOnlinePlayers" xml:space="preserve">
+        <value>No player online right now.</value>
+    </data>
+    <data name="NoResults" xml:space="preserve">
+        <value>No results.</value>
+    </data>
+    <data name="Objects" xml:space="preserve">
+        <value>Objects</value>
+    </data>
+    <data name="Online" xml:space="preserve">
+        <value>Online</value>
+    </data>
+    <data name="OnlinePlayers" xml:space="preserve">
+        <value>Online players</value>
+    </data>
+    <data name="Players" xml:space="preserve">
+        <value>Players</value>
+    </data>
+    <data name="Progress" xml:space="preserve">
+        <value>Progress</value>
+    </data>
+    <data name="Quests" xml:space="preserve">
+        <value>Quests</value>
+    </data>
+    <data name="Results" xml:space="preserve">
+        <value>results</value>
+    </data>
+    <data name="Save" xml:space="preserve">
+        <value>Save</value>
+    </data>
+    <data name="Search" xml:space="preserve">
+        <value>Search</value>
+    </data>
+    <data name="SearchLogs" xml:space="preserve">
+        <value>Search in logs...</value>
+    </data>
+    <data name="SearchPlayer" xml:space="preserve">
+        <value>Username or Snuid...</value>
+    </data>
+    <data name="State" xml:space="preserve">
+        <value>State</value>
+    </data>
+    <data name="Storage" xml:space="preserve">
+        <value>Storage</value>
+    </data>
+    <data name="World" xml:space="preserve">
+        <value>World</value>
+    </data>
+    <data name="Worlds" xml:space="preserve">
+        <value>Worlds</value>
+    </data>
 </root>

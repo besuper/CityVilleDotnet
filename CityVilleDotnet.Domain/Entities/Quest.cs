@@ -126,6 +126,11 @@ public class Quest
         Purchased[index] = requiredAmount;
     }
 
+    public void SetQuestType(QuestType questType)
+    {
+        QuestType = questType;
+    }
+
     public void SetOrder(int order, QuestLocation location)
     {
         Order = order;

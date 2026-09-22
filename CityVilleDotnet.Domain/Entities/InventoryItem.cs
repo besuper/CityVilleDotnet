@@ -28,6 +28,11 @@ public class InventoryItem
         Amount += amount;
     }
 
+    public void SetAmount(int amount)
+    {
+        Amount = amount;
+    }
+
     public void RemoveAmount(int amount)
     {
         Amount -= amount;

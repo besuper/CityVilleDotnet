@@ -17,6 +17,8 @@ public class Player
 {
     public Guid Id { get; }
     public int Snuid { get; set; }
+    public static readonly TimeSpan OnlineThreshold = TimeSpan.FromMinutes(1);
+
     public DateTimeOffset LastTrackingTimestamp { get; private set; }
     public bool SfxDisabled { get; private set; }
     public bool MusicDisabled { get; private set; }
@@ -302,6 +304,19 @@ public class Player
     public void SetCash(int amount) => Cash = amount;
     public void SetGoods(int amount) => Goods = amount;
     public void SetPremiumGoods(int amount) => PremiumGoods = amount;
+    public void SetEnergy(int amount) => Energy = amount;
+
+    public void UpdateProgression(int level, int xp)
+    {
+        SetLevel(level);
+        Xp = xp;
+    }
+
+    public void UpdateSocialProgression(int socialLevel, int socialXp)
+    {
+        SocialLevel = socialLevel;
+        SocialXp = socialXp;
+    }
 
     public void SetXp(int xp)
     {

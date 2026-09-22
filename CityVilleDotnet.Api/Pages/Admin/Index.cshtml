@@ -1,0 +1,90 @@
+@page
+@model CityVilleDotnet.Api.Pages.Admin.IndexModel
+
+@section Header {
+	<meta http-equiv="refresh" content="30">
+}
+
+<h4 class="font-outfit font-weight-bold text-dark mb-4">
+	<i class="bi bi-speedometer2 mr-2 text-primary"></i>@Localizer["Dashboard"]
+</h4>
+
+<div class="row row-cols-2 row-cols-md-4 mb-4">
+	<div class="col mb-3">
+		<div class="card border-0 shadow-sm h-100 text-center p-3">
+			<i class="bi bi-broadcast text-success h4 mb-2"></i>
+			<div class="font-weight-bold text-dark h5 mb-0">@Model.OnlinePlayers.Count.ToString("N0")</div>
+			<div class="text-muted small">@Localizer["OnlinePlayers"]</div>
+		</div>
+	</div>
+	<div class="col mb-3">
+		<div class="card border-0 shadow-sm h-100 text-center p-3">
+			<i class="bi bi-people-fill text-primary h4 mb-2"></i>
+			<div class="font-weight-bold text-dark h5 mb-0">@Model.PlayersCount.ToString("N0")</div>
+			<div class="text-muted small">@Localizer["Players"]</div>
+		</div>
+	</div>
+	<div class="col mb-3">
+		<div class="card border-0 shadow-sm h-100 text-center p-3">
+			<i class="bi bi-person-plus-fill text-info h4 mb-2"></i>
+			<div class="font-weight-bold text-dark h5 mb-0">@Model.NewPlayersCount.ToString("N0")</div>
+			<div class="text-muted small">@Localizer["NewPlayers24h"]</div>
+		</div>
+	</div>
+	<div class="col mb-3">
+		<div class="card border-0 shadow-sm h-100 text-center p-3">
+			<i class="bi bi-shield-lock-fill text-danger h4 mb-2"></i>
+			<div class="font-weight-bold text-dark h5 mb-0">@Model.AdminsCount.ToString("N0")</div>
+			<div class="text-muted small">@Localizer["Admins"]</div>
+		</div>
+	</div>
+</div>
+
+<div class="card border-0 shadow-sm">
+	<div class="card-body">
+		<div class="d-flex align-items-center justify-content-between mb-3">
+			<h6 class="font-weight-bold text-dark mb-0">
+				<i class="bi bi-broadcast mr-2 text-success"></i>@Localizer["OnlinePlayers"]
+				<span class="badge badge-success ml-1">@Model.OnlinePlayers.Count</span>
+			</h6>
+			<span class="text-muted small"><i class="bi bi-arrow-repeat mr-1"></i>@Localizer["AutoRefresh"]</span>
+		</div>
+
+		@if (Model.OnlinePlayers.Any())
+		{
+			<div class="table-responsive">
+				<table class="table table-hover table-sm mb-0">
+					<thead>
+					<tr>
+						<th>@Localizer["Username"]</th>
+						<th>Snuid</th>
+						<th>@Localizer["Level"]</th>
+						<th>@Localizer["World"]</th>
+						<th>@Localizer["LastActivity"]</th>
+					</tr>
+					</thead>
+					<tbody>
+					@foreach (var player in Model.OnlinePlayers)
+					{
+						<tr>
+							<td>
+								<a asp-page="/Admin/Players/Edit" asp-route-id="@player.Id" class="font-weight-bold">
+									<img src="@(player.ProfilePictureUrl ?? "/blank.png")" alt="" class="rounded mr-2" style="width:24px;height:24px;"/>@player.Username
+								</a>
+							</td>
+							<td>@player.Snuid</td>
+							<td>@player.Level</td>
+							<td>@player.World</td>
+							<td>@((int)(DateTimeOffset.Now - player.LastTrackingTimestamp).TotalSeconds) s</td>
+						</tr>
+					}
+					</tbody>
+				</table>
+			</div>
+		}
+		else
+		{
+			<p class="text-muted mb-0">@Localizer["NoOnlinePlayers"]</p>
+		}
+	</div>
+</div>

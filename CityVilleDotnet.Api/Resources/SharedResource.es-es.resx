@@ -201,4 +201,160 @@
     <data name="PictureUpdated" xml:space="preserve">
         <value>Foto de perfil actualizada correctamente.</value>
     </data>
+    <data name="AccessDenied" xml:space="preserve">
+        <value>Acceso denegado</value>
+    </data>
+    <data name="AccessDeniedMessage" xml:space="preserve">
+        <value>No tienes permiso para acceder a esta página.</value>
+    </data>
+    <data name="Admin" xml:space="preserve">
+        <value>Admin</value>
+    </data>
+    <data name="AdminPanel" xml:space="preserve">
+        <value>Panel de administración</value>
+    </data>
+    <data name="AdminCannotRemoveOwnAdmin" xml:space="preserve">
+        <value>No puedes quitarte tus propios derechos de administrador.</value>
+    </data>
+    <data name="AdminConfirm" xml:space="preserve">
+        <value>¿Seguro que quieres cambiar los derechos de administrador de este jugador?</value>
+    </data>
+    <data name="AdminDeleteConfirm" xml:space="preserve">
+        <value>¿Seguro que quieres eliminar este elemento? Esta acción no se puede deshacer.</value>
+    </data>
+    <data name="AdminGrant" xml:space="preserve">
+        <value>Dar derechos de administrador</value>
+    </data>
+    <data name="AdminRevoke" xml:space="preserve">
+        <value>Quitar derechos de administrador</value>
+    </data>
+    <data name="AdminIsAdmin" xml:space="preserve">
+        <value>Este jugador es administrador.</value>
+    </data>
+    <data name="AdminIsNotAdmin" xml:space="preserve">
+        <value>Este jugador no es administrador.</value>
+    </data>
+    <data name="AdminInvalidValues" xml:space="preserve">
+        <value>Valores no válidos.</value>
+    </data>
+    <data name="AdminUnknownItem" xml:space="preserve">
+        <value>Nombre de objeto desconocido.</value>
+    </data>
+    <data name="AdminPlayerUpdated" xml:space="preserve">
+        <value>Jugador actualizado correctamente.</value>
+    </data>
+    <data name="AdminInventoryUpdated" xml:space="preserve">
+        <value>Inventario actualizado correctamente.</value>
+    </data>
+    <data name="AdminQuestUpdated" xml:space="preserve">
+        <value>Misiones actualizadas correctamente.</value>
+    </data>
+    <data name="AdminObjectUpdated" xml:space="preserve">
+        <value>Objeto actualizado correctamente.</value>
+    </data>
+    <data name="AdminObjectDeleted" xml:space="preserve">
+        <value>Objeto eliminado correctamente.</value>
+    </data>
+    <data name="Admins" xml:space="preserve">
+        <value>Administradores</value>
+    </data>
+    <data name="AllFiles" xml:space="preserve">
+        <value>Todos los archivos</value>
+    </data>
+    <data name="AllLevels" xml:space="preserve">
+        <value>Todos los niveles</value>
+    </data>
+    <data name="AutoRefresh" xml:space="preserve">
+        <value>Actualización automática cada 30 s</value>
+    </data>
+    <data name="BackToGame" xml:space="preserve">
+        <value>Volver al juego</value>
+    </data>
+    <data name="Class" xml:space="preserve">
+        <value>Clase</value>
+    </data>
+    <data name="CreatedAt" xml:space="preserve">
+        <value>Creado el</value>
+    </data>
+    <data name="Dashboard" xml:space="preserve">
+        <value>Panel</value>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Eliminar</value>
+    </data>
+    <data name="Direction" xml:space="preserve">
+        <value>Dirección</value>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>Editar</value>
+    </data>
+    <data name="LastActivity" xml:space="preserve">
+        <value>Última actividad</value>
+    </data>
+    <data name="Logs" xml:space="preserve">
+        <value>Registros</value>
+    </data>
+    <data name="LogsTruncated" xml:space="preserve">
+        <value>Resultados limitados a las {0} entradas más recientes</value>
+    </data>
+    <data name="ManageObjects" xml:space="preserve">
+        <value>Gestionar objetos</value>
+    </data>
+    <data name="Name" xml:space="preserve">
+        <value>Nombre</value>
+    </data>
+    <data name="NewPlayers24h" xml:space="preserve">
+        <value>Nuevos jugadores (24 h)</value>
+    </data>
+    <data name="NoOnlinePlayers" xml:space="preserve">
+        <value>No hay ningún jugador en línea ahora mismo.</value>
+    </data>
+    <data name="NoResults" xml:space="preserve">
+        <value>Sin resultados.</value>
+    </data>
+    <data name="Objects" xml:space="preserve">
+        <value>Objetos</value>
+    </data>
+    <data name="Online" xml:space="preserve">
+        <value>En línea</value>
+    </data>
+    <data name="OnlinePlayers" xml:space="preserve">
+        <value>Jugadores en línea</value>
+    </data>
+    <data name="Players" xml:space="preserve">
+        <value>Jugadores</value>
+    </data>
+    <data name="Progress" xml:space="preserve">
+        <value>Progreso</value>
+    </data>
+    <data name="Quests" xml:space="preserve">
+        <value>Misiones</value>
+    </data>
+    <data name="Results" xml:space="preserve">
+        <value>resultados</value>
+    </data>
+    <data name="Save" xml:space="preserve">
+        <value>Guardar</value>
+    </data>
+    <data name="Search" xml:space="preserve">
+        <value>Buscar</value>
+    </data>
+    <data name="SearchLogs" xml:space="preserve">
+        <value>Buscar en los registros...</value>
+    </data>
+    <data name="SearchPlayer" xml:space="preserve">
+        <value>Nombre de usuario o Snuid...</value>
+    </data>
+    <data name="State" xml:space="preserve">
+        <value>Estado</value>
+    </data>
+    <data name="Storage" xml:space="preserve">
+        <value>Almacén</value>
+    </data>
+    <data name="World" xml:space="preserve">
+        <value>Mundo</value>
+    </data>
+    <data name="Worlds" xml:space="preserve">
+        <value>Mundos</value>
+    </data>
 </root>
