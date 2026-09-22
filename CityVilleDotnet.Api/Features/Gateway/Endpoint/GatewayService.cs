@@ -11,6 +11,7 @@ using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Common.Settings;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CityVilleDotnet.Api.Features.Gateway.Endpoint;
 
@@ -29,6 +30,7 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, ILogger<G
     public override void Configure()
     {
         Post("/flashservices/gateway.php");
+        Options(x => x.WithMetadata(new RequestSizeLimitAttribute(1 * 1024 * 1024)));
     }
 
     public override async Task HandleAsync(CancellationToken ct)
@@ -56,9 +58,10 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, ILogger<G
 
             var content = requestBody.Content as object[];
 
-            if (content is null)
+            if (content is null || content.Length < 2)
             {
                 logger.LogWarning("Received empty content in request.");
+                await WriteAmfResponseAsync(responseUri, targetUri, new CityVilleResponse().Error(GameErrorType.MissingData).ToObject(), ct);
                 return;
             }
 
@@ -67,12 +70,11 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, ILogger<G
             if (parsedAmfContent is null || parsedAmfContent.Length == 0)
             {
                 logger.LogWarning("Received empty AMF content in request.");
+                await WriteAmfResponseAsync(responseUri, targetUri, new CityVilleResponse().Error(GameErrorType.MissingData).ToObject(), ct);
                 return;
             }
 
             var responses = new List<ASObject>();
-
-            ASObject? errorResponse = null;
 
             foreach (ASObject item in parsedAmfContent)
             {
@@ -83,45 +85,47 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, ILogger<G
                 if (parameters is null || functionName is null || sequence is null)
                 {
                     logger.LogWarning("Received incomplete request item: {Item}", item);
+                    responses.Add(new CityVilleResponse().Error(GameErrorType.MissingData).ToObject());
                     continue;
                 }
 
                 logger.LogInformation("Received request from {player} for {FunctionName} sequence {Sequence} parameters {parameters}", playerId, functionName, sequence, parameters);
 
-                var packageName = functionName.Split('.')[0];
-                var className = functionName.Split('.')[1];
-                var upperClassName = className.Pascalize();
-
-                if (!_handlerTypes.ContainsKey($"CityVilleDotnet.Api.Services.{packageName}.{upperClassName}") && QuestSettingsManager.TaskActions.Contains(className))
-                {
-                    logger.LogDebug("Handling task quest action {ClassName}", className);
-
-                    var taskParams = new object[] { className };
-
-                    parameters = taskParams.Append(parameters).ToArray();
-
-                    packageName = "QuestService";
-                    upperClassName = nameof(HandleQuestProgress);
-                }
-
-                if (packageName == "WorldService" && upperClassName == "PerformAction")
-                {
-                    var actionType = (string)parameters[0];
-
-                    upperClassName = actionType.Pascalize();
-                }
-
-                if (packageName == "GameMechanicService" && upperClassName == "PerformMechanicAction")
-                {
-                    var mechanicType = (string)parameters[1];
-
-                    upperClassName = mechanicType.Pascalize();
-                }
-
-                ASObject? response = null;
+                ASObject? response;
 
                 try
                 {
+                    var nameParts = functionName.Split('.');
+                    var packageName = nameParts[0];
+                    var className = nameParts[1];
+                    var upperClassName = className.Pascalize();
+
+                    if (!_handlerTypes.ContainsKey($"CityVilleDotnet.Api.Services.{packageName}.{upperClassName}") && QuestSettingsManager.TaskActions.Contains(className))
+                    {
+                        logger.LogDebug("Handling task quest action {ClassName}", className);
+
+                        var taskParams = new object[] { className };
+
+                        parameters = taskParams.Append(parameters).ToArray();
+
+                        packageName = "QuestService";
+                        upperClassName = nameof(HandleQuestProgress);
+                    }
+
+                    if (packageName == "WorldService" && upperClassName == "PerformAction")
+                    {
+                        var actionType = (string)parameters[0];
+
+                        upperClassName = actionType.Pascalize();
+                    }
+
+                    if (packageName == "GameMechanicService" && upperClassName == "PerformMechanicAction")
+                    {
+                        var mechanicType = (string)parameters[1];
+
+                        upperClassName = mechanicType.Pascalize();
+                    }
+
                     response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{packageName}.{upperClassName}", parameters, playerId, ct);
 
                     if (response is null)
@@ -137,8 +141,6 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, ILogger<G
                     logger.LogWarning("Domain exception for {FunctionName}: {Errors}", functionName, de.Reason);
 
                     response = new CityVilleResponse().Error(de.Reason).ToObject();
-
-                    errorResponse = response;
                 }
                 catch (ValidationException ve)
                 {
@@ -146,16 +148,12 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, ILogger<G
                     logger.LogWarning("Validation failed for {FunctionName}: {Errors}", functionName, errors);
 
                     response = new CityVilleResponse().Error(GameErrorType.InvalidData).ErrorMessage(errors).ToObject();
-
-                    errorResponse = response;
                 }
                 catch (Exception e)
                 {
                     logger.LogError(e, "Error processing request for function {FunctionName} with params {@Params}", functionName, parameters);
 
-                    response = new CityVilleResponse().Error(GameErrorType.InvalidData).ErrorMessage(e.Message).ToObject();
-
-                    errorResponse = response;
+                    response = new CityVilleResponse().Error(GameErrorType.InvalidData).ToObject();
                 }
 
                 responses.Add(response);
@@ -163,21 +161,21 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, ILogger<G
 
             var emsg = new CityVilleResponse().Data(responses).ToObject();
 
-            if (errorResponse is not null)
-            {
-                emsg = errorResponse;
-            }
-
-            var responseMessage = new AMFMessage(3);
-            responseMessage.AddBody(new AMFBody(responseUri, targetUri, emsg));
-
-            using var outputStream = new MemoryStream();
-            var serializer = new AMFSerializer(outputStream);
-            serializer.WriteMessage(responseMessage);
-
-            HttpContext.Response.ContentType = "application/x-amf";
-            await HttpContext.Response.Body.WriteAsync(outputStream.ToArray(), ct);
+            await WriteAmfResponseAsync(responseUri, targetUri, emsg, ct);
         }
+    }
+
+    private async Task WriteAmfResponseAsync(string responseUri, string targetUri, ASObject emsg, CancellationToken ct)
+    {
+        var responseMessage = new AMFMessage(3);
+        responseMessage.AddBody(new AMFBody(responseUri, targetUri, emsg));
+
+        using var outputStream = new MemoryStream();
+        var serializer = new AMFSerializer(outputStream);
+        serializer.WriteMessage(responseMessage);
+
+        HttpContext.Response.ContentType = "application/x-amf";
+        await HttpContext.Response.Body.WriteAsync(outputStream.ToArray(), ct);
     }
 
     private async Task<ASObject?> InvokeHandlePacketAsync(string className, object parameter, Guid userId, CancellationToken cancellationToken)
