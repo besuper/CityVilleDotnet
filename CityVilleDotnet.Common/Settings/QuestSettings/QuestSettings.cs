@@ -142,4 +142,6 @@ public class QuestRewards
     [XmlAttribute("item")] public string? Item { get; set; }
 
     [XmlAttribute("grantHQ")] public bool GrantHeadquarters { get; set; }
+
+    [XmlAttribute("coupon")] public string? Coupon { get; set; }
 }

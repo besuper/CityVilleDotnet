@@ -267,6 +267,24 @@
     <data name="AdminQuestAlreadyStarted" xml:space="preserve">
         <value>This quest has already been started.</value>
     </data>
+    <data name="Coupons" xml:space="preserve">
+        <value>Coupons</value>
+    </data>
+    <data name="AddCoupon" xml:space="preserve">
+        <value>Add coupon</value>
+    </data>
+    <data name="CouponName" xml:space="preserve">
+        <value>Coupon name</value>
+    </data>
+    <data name="CouponWorldFlatId" xml:space="preserve">
+        <value>Object ID (WorldFlatId)</value>
+    </data>
+    <data name="AdminCouponsUpdated" xml:space="preserve">
+        <value>Coupons updated successfully.</value>
+    </data>
+    <data name="AdminCouponAlreadyOwned" xml:space="preserve">
+        <value>The player already owns this coupon.</value>
+    </data>
     <data name="AdminObjectUpdated" xml:space="preserve">
         <value>Object updated successfully.</value>
     </data>

@@ -89,6 +89,9 @@ public class Quest
 
             if (reward.GrantHeadquarters)
                 player.GrantCitySamHeadquarters();
+
+            if (reward.Coupon is not null)
+                player.GiveCoupon(reward.Coupon);
         }
     }
 

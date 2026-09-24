@@ -31,6 +31,7 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
         builder.HasMany(x => x.Worlds).WithOne(x => x.Player);
         builder.HasMany(x => x.InventoryItems).WithOne();
         builder.HasMany(x => x.SeenFlags);
+        builder.HasMany(x => x.Coupons).WithOne().OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(x => x.Licenses);
         builder.HasMany(x => x.Collections)
             .WithOne()

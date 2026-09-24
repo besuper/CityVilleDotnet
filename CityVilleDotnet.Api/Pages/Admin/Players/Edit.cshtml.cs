@@ -15,6 +15,7 @@ public class EditModel(CityVilleDbContext dbContext, UserManager<ApplicationUser
 {
     private const int MaxItemNameLength = 64;
     private const int MaxQuestNameLength = 64;
+    private const int MaxCouponNameLength = 64;
 
     public Player Player { get; set; } = null!;
     public List<WorldRow> Worlds { get; set; } = [];
@@ -28,6 +29,7 @@ public class EditModel(CityVilleDbContext dbContext, UserManager<ApplicationUser
             .Include(x => x.AppUser)
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests)
+            .Include(x => x.Coupons)
             .FirstOrDefaultAsync(x => x.Id == id, ct);
 
         if (player is null)
@@ -169,6 +171,53 @@ public class EditModel(CityVilleDbContext dbContext, UserManager<ApplicationUser
 
         TempData["Success"] = localizer["AdminInventoryUpdated"].Value;
         return RedirectToTab(id, "inventory");
+    }
+
+    public async Task<IActionResult> OnPostAddCouponAsync(Guid id, string? couponName, int? worldFlatId, CancellationToken ct)
+    {
+        couponName = couponName?.Trim();
+
+        if (string.IsNullOrEmpty(couponName) || couponName.Length > MaxCouponNameLength || worldFlatId <= 0)
+        {
+            TempData["Error"] = localizer["AdminInvalidValues"].Value;
+            return RedirectToTab(id, "coupons");
+        }
+
+        var player = await dbContext.Set<Player>()
+            .Include(x => x.Coupons)
+            .FirstOrDefaultAsync(x => x.Id == id, ct);
+
+        if (player is null)
+            return NotFound();
+
+        if (!player.GiveCoupon(couponName, worldFlatId))
+        {
+            TempData["Error"] = localizer["AdminCouponAlreadyOwned"].Value;
+            return RedirectToTab(id, "coupons");
+        }
+
+        await dbContext.SaveChangesAsync(ct);
+
+        TempData["Success"] = localizer["AdminCouponsUpdated"].Value;
+        return RedirectToTab(id, "coupons");
+    }
+
+    public async Task<IActionResult> OnPostDeleteCouponAsync(Guid id, int couponId, CancellationToken ct)
+    {
+        var coupon = await dbContext.Set<Player>()
+            .Where(x => x.Id == id)
+            .SelectMany(x => x.Coupons)
+            .FirstOrDefaultAsync(x => x.Id == couponId, ct);
+
+        if (coupon is null)
+            return NotFound();
+
+        dbContext.Remove(coupon);
+
+        await dbContext.SaveChangesAsync(ct);
+
+        TempData["Success"] = localizer["AdminCouponsUpdated"].Value;
+        return RedirectToTab(id, "coupons");
     }
 
     public async Task<IActionResult> OnPostStartQuestAsync(Guid id, string? questName, CancellationToken ct)

@@ -93,6 +93,11 @@ public static class UserDtoMapper
                     PlayerNews = [], // TODO: Implement news
                     RollCounter = model.RollCounter,
                     SeenFlags = new ASObject(model.SeenFlags.ToDictionary(x => x.Key, x => (object)true)),
+                    Coupons = model.Coupons.Where(x => x.WorldFlatId is null).Select(x => x.Name).ToList(),
+                    AssociatedCoupons = new ASObject(model.Coupons
+                        .Where(x => x.WorldFlatId is not null)
+                        .GroupBy(x => x.WorldFlatId!.Value)
+                        .ToDictionary(g => g.Key.ToString(), object (g) => g.Select(x => x.Name).ToList())),
                     // FIXME: Handle that better
                     FlagContainer =
                     [

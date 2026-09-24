@@ -48,6 +48,8 @@ public class PlayerDto
     [JsonPropertyName("lastEnergyCheck")] public int LastEnergyCheck { get; set; } = 0;
 
     [JsonPropertyName("seenFlags")] public ASObject SeenFlags { get; set; } = new ASObject();
+    [JsonPropertyName("coupons")] public List<string> Coupons { get; set; } = [];
+    [JsonPropertyName("associatedCoupons")] public ASObject AssociatedCoupons { get; set; } = new();
     [JsonPropertyName("flagContainer")] public required List<ASObject> FlagContainer { get; set; }
 
     [JsonPropertyName("expansionsPurchased")]

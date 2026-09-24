@@ -35,6 +35,7 @@ public class Player
     public int EnergyMax { get; private set; }
     public long TimeBeforeNextEnergy { get; private set; }
     public List<SeenFlag> SeenFlags { get; set; } = new();
+    public List<Coupon> Coupons { get; set; } = [];
     public int ExpansionsPurchased { get; private set; }
     public List<Collection> Collections { get; private set; } = [];
     public List<LicenseItem> Licenses { get; set; } = [];
@@ -459,6 +460,15 @@ public class Player
         {
             SeenFlags.Add(new SeenFlag(flag));
         }
+    }
+
+    public bool GiveCoupon(string name, int? worldFlatId = null)
+    {
+        if (Coupons.Any(x => x.WorldFlatId == worldFlatId && x.Name == name)) return false;
+
+        Coupons.Add(new Coupon(name, worldFlatId));
+
+        return true;
     }
 
     private void IncrementRollCounter()
