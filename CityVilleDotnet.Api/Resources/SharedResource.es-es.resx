@@ -249,6 +249,18 @@
     <data name="AdminQuestUpdated" xml:space="preserve">
         <value>Misiones actualizadas correctamente.</value>
     </data>
+    <data name="StartQuest" xml:space="preserve">
+        <value>Iniciar misión</value>
+    </data>
+    <data name="QuestName" xml:space="preserve">
+        <value>Nombre de la misión</value>
+    </data>
+    <data name="AdminUnknownQuest" xml:space="preserve">
+        <value>Nombre de misión desconocido.</value>
+    </data>
+    <data name="AdminQuestAlreadyStarted" xml:space="preserve">
+        <value>Esta misión ya ha sido iniciada.</value>
+    </data>
     <data name="AdminObjectUpdated" xml:space="preserve">
         <value>Objeto actualizado correctamente.</value>
     </data>

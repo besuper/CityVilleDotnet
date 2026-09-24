@@ -1370,11 +1370,18 @@ public class Player
 
             if (!worlds.Contains(worldId)) continue;
 
-            if (Quests.Any(q => q.Name == item.Name)) continue;
-
-            Quests.Add(Quest.Create(item.Name, item.Tasks.Tasks.Count, QuestType.Active));
-            GrantQuestStartItems(item);
+            StartQuest(item);
         }
+    }
+
+    public bool StartQuest(QuestItem questItem)
+    {
+        if (Quests.Any(q => q.Name == questItem.Name)) return false;
+
+        Quests.Add(Quest.Create(questItem.Name, questItem.Tasks.Tasks.Count, QuestType.Active));
+        GrantQuestStartItems(questItem);
+
+        return true;
     }
 
     public void GrantQuestStartItems(QuestItem questItem)

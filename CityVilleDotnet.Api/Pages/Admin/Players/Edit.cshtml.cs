@@ -14,6 +14,7 @@ namespace CityVilleDotnet.Api.Pages.Admin.Players;
 public class EditModel(CityVilleDbContext dbContext, UserManager<ApplicationUser> userManager, IStringLocalizer<Resources.SharedResource> localizer) : PageModel
 {
     private const int MaxItemNameLength = 64;
+    private const int MaxQuestNameLength = 64;
 
     public Player Player { get; set; } = null!;
     public List<WorldRow> Worlds { get; set; } = [];
@@ -168,6 +169,40 @@ public class EditModel(CityVilleDbContext dbContext, UserManager<ApplicationUser
 
         TempData["Success"] = localizer["AdminInventoryUpdated"].Value;
         return RedirectToTab(id, "inventory");
+    }
+
+    public async Task<IActionResult> OnPostStartQuestAsync(Guid id, string? questName, CancellationToken ct)
+    {
+        questName = questName?.Trim();
+
+        var questItem = string.IsNullOrEmpty(questName) || questName.Length > MaxQuestNameLength
+            ? null
+            : QuestSettingsManager.Instance.GetItem(questName);
+
+        if (questItem is null)
+        {
+            TempData["Error"] = localizer["AdminUnknownQuest"].Value;
+            return RedirectToTab(id, "quests");
+        }
+
+        var player = await dbContext.Set<Player>()
+            .Include(x => x.Quests)
+            .Include(x => x.InventoryItems)
+            .FirstOrDefaultAsync(x => x.Id == id, ct);
+
+        if (player is null)
+            return NotFound();
+
+        if (!player.StartQuest(questItem))
+        {
+            TempData["Error"] = localizer["AdminQuestAlreadyStarted"].Value;
+            return RedirectToTab(id, "quests");
+        }
+
+        await dbContext.SaveChangesAsync(ct);
+
+        TempData["Success"] = localizer["AdminQuestUpdated"].Value;
+        return RedirectToTab(id, "quests");
     }
 
     public async Task<IActionResult> OnPostUpdateQuestAsync(Guid id, int questId, QuestType questType, CancellationToken ct)

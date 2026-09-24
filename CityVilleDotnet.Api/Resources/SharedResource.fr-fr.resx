@@ -245,6 +245,18 @@
     <data name="AdminQuestUpdated" xml:space="preserve">
         <value>Quêtes mises à jour avec succès.</value>
     </data>
+    <data name="StartQuest" xml:space="preserve">
+        <value>Démarrer la quête</value>
+    </data>
+    <data name="QuestName" xml:space="preserve">
+        <value>Nom de la quête</value>
+    </data>
+    <data name="AdminUnknownQuest" xml:space="preserve">
+        <value>Nom de quête inconnu.</value>
+    </data>
+    <data name="AdminQuestAlreadyStarted" xml:space="preserve">
+        <value>Cette quête a déjà été démarrée.</value>
+    </data>
     <data name="AdminObjectUpdated" xml:space="preserve">
         <value>Objet mis à jour avec succès.</value>
     </data>

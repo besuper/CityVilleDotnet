@@ -181,6 +181,22 @@
 	<div class="tab-pane fade" id="quests" role="tabpanel">
 		<div class="card border-0 shadow-sm mb-4">
 			<div class="card-body">
+				<h6 class="font-weight-bold text-dark mb-3"><i class="bi bi-play-circle mr-2 text-primary"></i>@Localizer["StartQuest"]</h6>
+				<form method="post" asp-page-handler="StartQuest" asp-route-id="@player.Id">
+					<div class="form-row">
+						<div class="col-12 col-md-9 mb-2">
+							<input type="text" class="form-control" name="questName" maxlength="64" placeholder="@Localizer["QuestName"]" required/>
+						</div>
+						<div class="col-12 col-md-3 mb-2">
+							<button type="submit" class="btn btn-primary btn-block font-weight-bold"><i class="bi bi-play-fill mr-1"></i>@Localizer["StartQuest"]</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="card border-0 shadow-sm mb-4">
+			<div class="card-body">
 				@if (player.Quests.Any())
 				{
 					<div class="table-responsive">
