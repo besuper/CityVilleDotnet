@@ -321,22 +321,29 @@ public class WorldObject
         var nowMs = (double)ServerUtils.GetCurrentTime();
         var nowSeconds = ServerUtils.GetCurrentTimeSeconds();
 
-        var (state, plantTime) = GetDefaultState(className) switch
+        var (state, plantTime) = className switch
         {
-            WorldObjectState.Planted when rectObj.ReadyIn is not null => (WorldObjectState.Planted, (nowSeconds - 2.75 * 60 + rectObj.ReadyIn.Value) * 1000),
-            WorldObjectState.Planted => (WorldObjectState.Grown, 0d),
-            var defaultState => (defaultState, nowMs)
+            BuildingClassType.Business => (WorldObjectState.Closed, nowMs),
+            BuildingClassType.Factory => (WorldObjectState.Plowed, nowMs),
+            _ when !className.IsHarvestableResource() => (WorldObjectState.Static, nowMs),
+            _ when rectObj.ReadyIn is not null => (WorldObjectState.Planted, (nowSeconds - 2.75 * 60 + rectObj.ReadyIn.Value) * 1000),
+            _ => (WorldObjectState.Grown, 0d)
         };
 
         return new WorldObject(rectObj.ItemName, className, rectObj.Contract, false, tempId, state, rectObj.Direction, nowSeconds, plantTime, x, y, z, worldFlatId);
     }
 
-    private static WorldObjectState GetDefaultState(BuildingClassType className) => className switch
+    private static WorldObjectState GetConstructedState(BuildingClassType className) => className switch
     {
         BuildingClassType.Business => WorldObjectState.Closed,
-        BuildingClassType.Factory => WorldObjectState.Plowed,
-        _ when !className.IsHarvestableResource() => WorldObjectState.Static,
-        _ => WorldObjectState.Planted
+        BuildingClassType.Headquarter => WorldObjectState.Base,
+        BuildingClassType.Plot or BuildingClassType.Factory or BuildingClassType.Ship or BuildingClassType.FerryShip
+            or BuildingClassType.HarvestableShip or BuildingClassType.Airplane or BuildingClassType.Aircraftcarrier
+            or BuildingClassType.Heliport or BuildingClassType.Amphitheater => WorldObjectState.Plowed,
+        BuildingClassType.Residence or BuildingClassType.Municipal or BuildingClassType.Landmark or BuildingClassType.Skyscraper
+            or BuildingClassType.University or BuildingClassType.ZooEnclosure or BuildingClassType.Corporation
+            or BuildingClassType.CustomResidence or BuildingClassType.XPromoBuilding => WorldObjectState.Planted,
+        _ => WorldObjectState.Static
     };
 
     public void SetAsConstructionSite(string itemName, int maxStages)
@@ -379,7 +386,7 @@ public class WorldObject
         ItemName = TargetBuildingName;
         ClassName = TargetBuildingClass.Value;
 
-        State = GetDefaultState(ClassName);
+        State = GetConstructedState(ClassName);
         PlantTime = ServerUtils.GetCurrentTime();
 
         Stage = null;
