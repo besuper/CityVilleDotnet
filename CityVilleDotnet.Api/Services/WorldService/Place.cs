@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.WorldService.Common;
+using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
@@ -37,6 +38,14 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
 
         if (player is null) throw new Exception("Player not found");
+
+        var mapOwner = request.Params.FirstOrDefault()?.MapOwner;
+
+        if (mapOwner is not null && mapOwner != player.Snuid)
+        {
+            logger.LogWarning("Place of {ItemName} rejected, map owner {MapOwner} is not the player {Snuid}", request.Building.ItemName, mapOwner, player.Snuid);
+            return new CityVilleResponse().Error(GameErrorType.ForceReload);
+        }
 
         var world = player.GetWorld();
 
@@ -166,6 +175,12 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
 public class PlaceRequest
 {
     [AmfParam(1)] public BuildingPlaceRequest Building { get; set; } = new();
+    [AmfParam(3)] public PlaceParamsRequest[] Params { get; set; } = [];
+}
+
+public class PlaceParamsRequest
+{
+    [AmfParam("mapOwner")] public int? MapOwner { get; set; }
 }
 
 public class BuildingPlaceRequest
