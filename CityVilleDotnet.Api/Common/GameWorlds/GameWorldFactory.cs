@@ -5,33 +5,40 @@ using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Common.GameWorlds;
 
-public static class DowntownWorldFactory
+public static class GameWorldFactory
 {
     private const string FtueHouseItemName = "res_portal2";
+    private const int WorldSize = 36;
+    private const int MapRectSize = 12;
 
     public static async Task<bool> EnsureCreatedAsync(CityVilleDbContext context, Guid playerId, int ownerSnuid, WorldType type, CancellationToken cancellationToken)
     {
-        if (type != WorldType.Downtown) return false;
+        if (type is not (WorldType.Downtown or WorldType.Lakefront)) return false;
 
         var player = await context.Set<Player>()
             .AsSplitQuery()
-            .Include(x => x.Worlds.Where(w => w.Type == WorldType.Downtown || w.Type == w.Player!.LastPlayedWorldType))
+            .Include(x => x.Worlds.Where(w => w.Type == type || w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(w => w.Objects.Where(o => o.EnergyModifier > 0))
             .FirstOrDefaultAsync(x => x.Id == playerId && x.Snuid == ownerSnuid, cancellationToken);
 
         if (player is null) return false;
 
-        if (player.GetWorldByType(WorldType.Downtown) is not null) return false;
+        if (player.GetWorldByType(type) is not null) return false;
 
-        var world = await CreateAsync(cancellationToken);
+        var world = type == WorldType.Downtown
+            ? await CreateDowntownAsync(cancellationToken)
+            : CreateLakefront();
+
+        world.CalculatePopulation();
         player.AddWorld(world);
 
         // client applies the ftueGrants on firstTimeLoaded
-        var worldConfig = GameSettingsManager.Instance.GetWorldConfig(WorldType.Downtown.ToDescriptionString());
+        var worldConfig = GameSettingsManager.Instance.GetWorldConfig(type.ToDescriptionString());
 
         foreach (var grant in worldConfig?.FtueGrants ?? [])
         {
@@ -54,7 +61,7 @@ public static class DowntownWorldFactory
         return true;
     }
 
-    private static async Task<World> CreateAsync(CancellationToken cancellationToken)
+    private static async Task<World> CreateDowntownAsync(CancellationToken cancellationToken)
     {
         var jsonContent = await File.ReadAllTextAsync("Resources/startWorldDowntown.json", cancellationToken);
         var layout = JsonSerializer.Deserialize<WorldDto>(jsonContent) ?? throw new Exception("Downtown WorldDto can't be null");
@@ -77,6 +84,39 @@ public static class DowntownWorldFactory
         world.SetWorldCreated(WorldType.Downtown.ToDescriptionString());
 
         return world;
+    }
+
+    private static World CreateLakefront()
+    {
+        var worldRect = GameSettingsManager.Instance.GetWorldRect(WorldType.Lakefront.ToDescriptionString())
+                        ?? throw new Exception("Can't find world_lakefront worldRect");
+
+        var mapRects = new List<MapRect>();
+
+        foreach (var rect in worldRect.MapRects)
+        {
+            for (var x = rect.X; x < rect.X + rect.Width; x += MapRectSize)
+            {
+                for (var y = rect.Y; y < rect.Y + rect.Height; y += MapRectSize)
+                {
+                    mapRects.Add(new MapRect { X = x, Y = y, Width = MapRectSize, Height = MapRectSize });
+                }
+            }
+        }
+
+        var objects = new List<WorldObject>();
+
+        foreach (var rectObj in worldRect.Objects.Objects)
+        {
+            var item = GameSettingsManager.Instance.GetItem(rectObj.ItemName)
+                       ?? throw new Exception($"Can't find item {rectObj.ItemName} from world_lakefront worldRect");
+
+            var className = Enum.Parse<BuildingClassType>(item.Type.Pascalize());
+
+            objects.Add(WorldObject.CreateFromWorldRect(rectObj, className, -1, rectObj.X, rectObj.Y, 0, objects.Count + 1));
+        }
+
+        return new World("LakeFront", WorldSize, WorldSize, 0, 0, 0, 0, 0, mapRects, objects, WorldType.Lakefront);
     }
 
     private static void SetupFtueHouse(List<WorldObject> objects)

@@ -762,7 +762,17 @@ public class WorldRectItem
     [XmlAttribute("name")] public required string Name { get; set; }
     [XmlElement("width")] public int Width { get; set; }
     [XmlElement("height")] public int Height { get; set; }
+    [XmlElement("mapRects")] public List<WorldRectMapRect> MapRects { get; set; } = [];
     [XmlElement("objects")] public required WorldRectObjectsContainer Objects { get; set; }
+}
+
+[Serializable]
+public class WorldRectMapRect
+{
+    [XmlElement("x")] public int X { get; set; }
+    [XmlElement("y")] public int Y { get; set; }
+    [XmlElement("width")] public int Width { get; set; }
+    [XmlElement("height")] public int Height { get; set; }
 }
 
 [Serializable]

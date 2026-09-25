@@ -15,7 +15,7 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
     {
         logger.LogDebug("LoadWorld for user {UserId} targeting {TargetUserId} world {WorldType}", playerId, request.TargetUsedId, request.Type);
 
-        var firstTimeLoaded = await DowntownWorldFactory.EnsureCreatedAsync(context, playerId, request.TargetUsedId, request.Type, cancellationToken);
+        var firstTimeLoaded = await GameWorldFactory.EnsureCreatedAsync(context, playerId, request.TargetUsedId, request.Type, cancellationToken);
 
         var playerToLoad = await context.Set<Player>()
             .AsSplitQuery()

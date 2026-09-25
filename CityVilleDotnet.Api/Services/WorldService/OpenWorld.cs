@@ -18,7 +18,7 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
 
         logger.LogDebug("OpenWorld for user {UserId} targeting {OwnerId} world {WorldType}", playerId, request.OwnerId, request.WorldType);
 
-        var firstTimeLoaded = await DowntownWorldFactory.EnsureCreatedAsync(context, playerId, request.OwnerId, request.WorldType, cancellationToken);
+        var firstTimeLoaded = await GameWorldFactory.EnsureCreatedAsync(context, playerId, request.OwnerId, request.WorldType, cancellationToken);
 
         var playerToLoad = await context.Set<Player>()
             .AsNoTracking()

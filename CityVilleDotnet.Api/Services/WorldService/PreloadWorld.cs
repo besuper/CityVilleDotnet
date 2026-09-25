@@ -15,7 +15,7 @@ public class PreloadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger)
     {
         logger.LogInformation("PreloadWorld for user {UserId} visiting {VisitUserId} world {WorldType}", playerId, request.VisitUserId, request.Type);
 
-        await DowntownWorldFactory.EnsureCreatedAsync(context, playerId, request.VisitUserId, request.Type, cancellationToken);
+        await GameWorldFactory.EnsureCreatedAsync(context, playerId, request.VisitUserId, request.Type, cancellationToken);
 
         var user = await context.Set<Player>()
             .AsSplitQuery()
