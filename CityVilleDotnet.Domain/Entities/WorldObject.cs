@@ -321,17 +321,23 @@ public class WorldObject
         var nowMs = (double)ServerUtils.GetCurrentTime();
         var nowSeconds = ServerUtils.GetCurrentTimeSeconds();
 
-        var (state, plantTime) = className switch
+        var (state, plantTime) = GetDefaultState(className) switch
         {
-            BuildingClassType.Business => (WorldObjectState.Closed, nowMs),
-            BuildingClassType.Factory => (WorldObjectState.Plowed, nowMs),
-            _ when !className.IsHarvestableResource() => (WorldObjectState.Static, nowMs),
-            _ when rectObj.ReadyIn is not null => (WorldObjectState.Planted, (nowSeconds - 2.75 * 60 + rectObj.ReadyIn.Value) * 1000),
-            _ => (WorldObjectState.Grown, 0d)
+            WorldObjectState.Planted when rectObj.ReadyIn is not null => (WorldObjectState.Planted, (nowSeconds - 2.75 * 60 + rectObj.ReadyIn.Value) * 1000),
+            WorldObjectState.Planted => (WorldObjectState.Grown, 0d),
+            var defaultState => (defaultState, nowMs)
         };
 
         return new WorldObject(rectObj.ItemName, className, rectObj.Contract, false, tempId, state, rectObj.Direction, nowSeconds, plantTime, x, y, z, worldFlatId);
     }
+
+    private static WorldObjectState GetDefaultState(BuildingClassType className) => className switch
+    {
+        BuildingClassType.Business => WorldObjectState.Closed,
+        BuildingClassType.Factory => WorldObjectState.Plowed,
+        _ when !className.IsHarvestableResource() => WorldObjectState.Static,
+        _ => WorldObjectState.Planted
+    };
 
     public void SetAsConstructionSite(string itemName, int maxStages)
     {
@@ -372,6 +378,9 @@ public class WorldObject
 
         ItemName = TargetBuildingName;
         ClassName = TargetBuildingClass.Value;
+
+        State = GetDefaultState(ClassName);
+        PlantTime = ServerUtils.GetCurrentTime();
 
         Stage = null;
         FinishedBuilds = null;
