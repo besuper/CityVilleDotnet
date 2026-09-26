@@ -149,6 +149,11 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, ILogger<G
 
                     response = new CityVilleResponse().Error(GameErrorType.InvalidData).ErrorMessage(errors).ToObject();
                 }
+                catch (OperationCanceledException) when (ct.IsCancellationRequested)
+                {
+                    logger.LogWarning("Function {FunctionName} with params {@Params} canceled", functionName, parameters);
+                    return;
+                }
                 catch (Exception e)
                 {
                     logger.LogError(e, "Error processing request for function {FunctionName} with params {@Params}", functionName, parameters);
