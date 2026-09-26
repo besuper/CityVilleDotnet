@@ -30,6 +30,8 @@ public class World
     public WorldType Type { get; set; } = WorldType.Main;
     public Player? Player { get; set; }
     public string? WorldCreated { get; private set; }
+    public int MacroObjectIdCounter { get; private set; }
+    public List<MacroObject> MacroObjects { get; set; } = [];
 
     public World()
     {
@@ -267,6 +269,90 @@ public class World
     public void RemoveBuilding(WorldObject obj)
     {
         Objects.Remove(obj);
+    }
+
+    public List<WorldObject> Explode(WorldObject owner, WorldRectItem worldRect, IReadOnlyDictionary<string, int> tempIds)
+    {
+        var children = new List<WorldObject>();
+
+        foreach (var rectObj in worldRect.Objects.Objects)
+        {
+            var childItem = GameSettingsManager.Instance.GetItem(rectObj.ItemName);
+
+            if (childItem is null) continue;
+
+            var childObj = WorldObject.CreateFromWorldRect(
+                rectObj,
+                Enum.Parse<BuildingClassType>(childItem.Type.Pascalize()),
+                tempIds.GetValueOrDefault(rectObj.Id, -1),
+                owner.X + rectObj.X,
+                owner.Y + rectObj.Y,
+                owner.Z ?? 0,
+                GetAvailableBuildingId()
+            );
+
+            if (rectObj.UseConstructionSite == "true" && childItem.Construction is not null)
+            {
+                var csItem = GameSettingsManager.Instance.GetItem(childItem.Construction);
+
+                if (csItem is not null)
+                    childObj.SetAsConstructionSite(childItem.Construction, csItem.NumberOfStages ?? 0);
+            }
+
+            AddBuilding(childObj);
+            children.Add(childObj);
+        }
+
+        RemoveBuilding(owner);
+
+        return children;
+    }
+
+    public void CreateMacroObject(string macroPrefix, string parentItemName, List<WorldObject> children)
+    {
+        var macroObject = new MacroObject($"{macroPrefix}_{MacroObjectIdCounter++}", parentItemName);
+
+        foreach (var child in children)
+        {
+            child.AttachToMacroObject(macroObject.Name);
+        }
+
+        MacroObjects.Add(macroObject);
+    }
+
+    public MacroObject? GetMacroObjectByName(string name)
+    {
+        return MacroObjects.FirstOrDefault(x => x.Name == name);
+    }
+
+    public List<WorldObject> GetMacroObjectChildrenByClientIds(MacroObject macroObject, IEnumerable<int> clientIds)
+    {
+        var children = new List<WorldObject>();
+
+        foreach (var clientId in clientIds)
+        {
+            var child = GetBuildingByClientId(clientId);
+
+            // Already removed by a previous transaction (TSendToInventory sent by the child itself)
+            if (child is null) continue;
+
+            if (child.ParentMacroObjectId != macroObject.Name)
+                throw new DomainException(GameErrorType.InvalidData);
+
+            children.Add(child);
+        }
+
+        return children;
+    }
+
+    public void RemoveMacroObject(MacroObject macroObject, List<WorldObject> children)
+    {
+        foreach (var child in children)
+        {
+            RemoveBuilding(child);
+        }
+
+        MacroObjects.Remove(macroObject);
     }
 
     public WorldObject EmbedDynamicExpansionObject(DynamicExpansionObjectItem definition, int baseX, int baseY, int tempId)

@@ -32,6 +32,11 @@ public class WorldDto
 
     [JsonPropertyName("worldCreated")] public string? WorldCreated { get; set; }
 
+    [JsonPropertyName("macroObjects")] public ASObject MacroObjects { get; set; } = new();
+
+    [JsonPropertyName("macroObjectIdCounter")]
+    public int MacroObjectIdCounter { get; set; }
+
     // The client reads it from the cached world blob when switching worlds (OpenWorld.setupWorld)
     [JsonPropertyName("featureData")] public ASObject? FeatureData { get; set; }
 }
@@ -55,11 +60,34 @@ public static class WorldDtoMapper
             LastExpansionTier = 0,
             WorldId = model.Type.ToDescriptionString(),
             WorldCreated = model.WorldCreated,
+            MacroObjects = model.ToMacroObjectsAsObject(),
+            MacroObjectIdCounter = model.MacroObjectIdCounter,
             FeatureData = new ASObject
             {
                 { "incentivizedExpansions", model.BuildIncentivizedExpansions() }
             }
         };
+    }
+
+    public static ASObject ToMacroObjectsAsObject(this World model)
+    {
+        var macroObjects = new ASObject();
+
+        foreach (var macroObject in model.MacroObjects)
+        {
+            macroObjects[macroObject.Name] = new ASObject
+            {
+                { "parentMacroItemName", macroObject.ParentItemName },
+                {
+                    "children", model.Objects
+                        .Where(x => x.ParentMacroObjectId == macroObject.Name)
+                        .Select(object (x) => x.WorldFlatId.ToString())
+                        .ToList()
+                }
+            };
+        }
+
+        return macroObjects;
     }
 
     public static PopulationSummaryDto ToPopulationSummaryDto(this World model)

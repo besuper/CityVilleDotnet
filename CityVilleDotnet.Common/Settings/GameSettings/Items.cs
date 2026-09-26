@@ -17,6 +17,7 @@ public class GameItem
     [XmlAttribute("type")] public required string Type { get; set; }
     [XmlAttribute("behavior")] public string? Behavior { get; set; }
     [XmlAttribute("sellSendsToInventory")] public string? SellSendsToInventory { get; set; }
+    [XmlIgnore] public bool IsSellSendsToInventory => SellSendsToInventory == "true";
     [XmlAttribute("interactOnLock")] public string? InteractOnLockString { get; set; }
     [XmlIgnore] public bool InteractOnLock => InteractOnLockString == "true";
     [XmlAttribute("allowWither")] public string? AllowWitherString { get; set; }
@@ -207,27 +208,19 @@ public class GameItem
         return Remodels?.Definitions.FirstOrDefault(x => x.Item == itemName);
     }
 
+    public int GetSellPrice()
+    {
+        var settings = GameSettingsManager.Instance.GetSettings();
+
+        if (Goods > 0)
+            return (int)Math.Ceiling(Goods.Value * (1 / settings.GoodsToCoinRatio) * settings.SellBackRatio);
+
+        return (int)Math.Ceiling((Cost ?? 0) * settings.SellBackRatio);
+    }
+
     public bool HasMasteries()
     {
         return MasteryItems.Count > 0;
-    }
-
-    public string? GetExplodeToRect()
-    {
-        if (Mechanics?.GameEventMechanics is null) return null;
-
-        foreach (var gem in Mechanics.GameEventMechanics)
-        {
-            if (gem.Mechanics is null) continue;
-
-            foreach (var m in gem.Mechanics)
-            {
-                if (m.ClassName == "ExplodableMacroObjectMechanic" && m.ExplodeToRect is not null)
-                    return m.ExplodeToRect;
-            }
-        }
-
-        return null;
     }
 
     public MechanicItem? GetGameEventMechanic(string type)

@@ -40,6 +40,8 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
             .Include(x => x.Worlds.Where(w => w.Type == request.WorldType))
             .ThenInclude(w => w.IncentivizedExpansions)
             .Include(x => x.Worlds.Where(w => w.Type == request.WorldType))
+            .ThenInclude(w => w.MacroObjects)
+            .Include(x => x.Worlds.Where(w => w.Type == request.WorldType))
             .ThenInclude(w => w.TrainOrder)
             .ThenInclude(o => o!.Workers)
             .FirstOrDefaultAsync(x => x.Snuid == request.OwnerId, cancellationToken);

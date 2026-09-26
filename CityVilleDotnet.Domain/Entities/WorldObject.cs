@@ -73,6 +73,7 @@ public class WorldObject
     public bool GivenFreeItem { get; private set; }
     public string? RemodelItemName { get; private set; }
     public int? RemodelBuilds { get; private set; }
+    public string? ParentMacroObjectId { get; private set; }
     public List<CrewMember> CrewMembers { get; private set; } = [];
     public List<WorldObjectMechanicCounter> MechanicCounters { get; private set; } = [];
     public List<WorldObjectStorageItem> StorageItems { get; private set; } = [];
@@ -90,6 +91,11 @@ public class WorldObject
         }
 
         counter.Increment();
+    }
+
+    public void AttachToMacroObject(string macroObjectName)
+    {
+        ParentMacroObjectId = macroObjectName;
     }
 
     public int GetBonusPopulation()
@@ -791,6 +797,32 @@ public class WorldObject
         if (!ClassName.IsBusiness()) return;
 
         State = WorldObjectState.Closed;
+    }
+
+    public int GetSellPrice()
+    {
+        if (ClassName == BuildingClassType.ConstructionSite)
+        {
+            var targetItem = TargetBuildingName is null ? null : GameSettingsManager.Instance.GetItem(TargetBuildingName);
+
+            if (targetItem is null) return 0;
+
+            return targetItem.Goods > 0 ? targetItem.GetSellPrice() : targetItem.Cost ?? 0;
+        }
+
+        var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
+
+        if (gameItem is null) return 0;
+
+        return ClassName switch
+        {
+            BuildingClassType.Headquarter or BuildingClassType.LotSite or BuildingClassType.TrainTracks or BuildingClassType.FerryShip => 0,
+            BuildingClassType.Business when FranchiseLocation is not null => 0,
+            BuildingClassType.Mall or BuildingClassType.Party or BuildingClassType.Subway or BuildingClassType.ThemePark when gameItem.IsSellSendsToInventory => 0,
+            BuildingClassType.Garden => (int)((gameItem.Cost ?? 0) * GameSettingsManager.Instance.GetSettings().SellBackRatio),
+            BuildingClassType.GreenHouse => 25000,
+            _ => gameItem.GetSellPrice()
+        };
     }
 
     public string GetItemName()

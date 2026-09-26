@@ -8,7 +8,6 @@ using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluentValidation;
 using FluorineFx;
-using Humanizer;
 using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
@@ -53,63 +52,6 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
 
         if (gameItem is null)
             throw new Exception("Can't build building not registered in XML file");
-
-        // Handle macro buildings (ExplodableMacroObjectMechanic)
-        var explodeToRect = gameItem.GetExplodeToRect();
-
-        if (explodeToRect is not null)
-        {
-            var worldRect = GameSettingsManager.Instance.GetWorldRect(explodeToRect);
-
-            if (worldRect is not null)
-            {
-                foreach (var rectObj in worldRect.Objects.Objects)
-                {
-                    var childItem = GameSettingsManager.Instance.GetItem(rectObj.ItemName);
-
-                    if (childItem is null) continue;
-
-                    var childObj = WorldObject.CreateFromWorldRect(
-                        rectObj,
-                        Enum.Parse<BuildingClassType>(childItem.Type.Pascalize()),
-                        -1,
-                        request.Building.Position.X + rectObj.X,
-                        request.Building.Position.Y + rectObj.Y,
-                        request.Building.Position.Z,
-                        world.GetAvailableBuildingId()
-                    );
-
-                    if (rectObj.UseConstructionSite == "true" && childItem.Construction is not null)
-                    {
-                        var csItem = GameSettingsManager.Instance.GetItem(childItem.Construction);
-                        if (csItem is not null)
-                            childObj.SetAsConstructionSite(childItem.Construction, csItem.NumberOfStages ?? 0);
-                    }
-
-                    world.AddBuilding(childObj);
-                }
-
-                if (player.HasItem(request.Building.ItemName))
-                {
-                    var removedItem = player.RemoveItem(request.Building.ItemName);
-
-                    if (removedItem is not null)
-                        context.Set<InventoryItem>().Remove(removedItem);
-                }
-                else if (gameItem.Cost is not null)
-                {
-                    player.RemoveCoins(gameItem.Cost.Value);
-                }
-
-                player.HandleQuestsProgress("placeByClass", className: request.Building.ClassName.ToString());
-                player.HandleQuestsProgress("placeBuildingByName", itemName: request.Building.ItemName);
-                player.HandleQuestsProgress("placeByKeyword", itemName: request.Building.ItemName);
-
-                await context.SaveChangesAsync(cancellationToken);
-
-                return new CityVilleResponse();
-            }
-        }
 
         var objId = world.GetAvailableBuildingId();
 

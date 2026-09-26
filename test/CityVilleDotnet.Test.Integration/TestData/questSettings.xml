@@ -57,4 +57,12 @@
             <questRewards xp="10"/>
         </resourceModifiers>
     </quest>
+    <quest name="qm_test_move_island" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="moveByName" type="test_island_house,test_island_tower" total="5"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
 </quests>

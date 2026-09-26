@@ -11,7 +11,8 @@
              startingGold="7000" startingCash="5" 
              startingLevel="1" startingLightLevel="1" 
              startingXp="0" startingPopulation="0" 
-             startingCommodities="100" />
+             startingCommodities="100"
+             sellBackRatio="0.05" goodsToCoinRatio="0.20" />
 
     <citysim>
         <populations>
@@ -283,6 +284,67 @@
         <item name="test_gate_material_coin" type="tool" buyable="true">
             <cost>50</cost>
         </item>
+        <item name="test_island_macro" giftable="false" type="keys_island" className="MechanicMapResource" storable="true" buyable="false" placeable="true" sellSendsToInventory="true" persistent="true" placeableOn="land">
+            <requiredLevel>30</requiredLevel>
+            <cost>780600</cost>
+            <sizeX>10</sizeX>
+            <sizeY>10</sizeY>
+            <gates>
+                <gate type="upgrade_inventory" name="pre_upgrade">
+                    <key name="test_gate_material" amount="2"/>
+                </gate>
+            </gates>
+            <mechanics>
+                <gameEventMechanics gameMode="GMPlay">
+                    <mechanic type="macroObject" className="ExplodableMacroObjectMechanic" priority="1" explodeToRect="test_island_rect" macroPrefix="test_island_macro" gateName="pre_upgrade" pick="upgrade" pick2="finish" blockOthers="true"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_lagoon_macro" giftable="false" type="keys_island" className="MechanicMapResource" storable="true" buyable="false" placeable="true" sellSendsToInventory="false" persistent="true" placeableOn="land">
+            <requiredLevel>30</requiredLevel>
+            <cost>780600</cost>
+            <sizeX>10</sizeX>
+            <sizeY>10</sizeY>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="GMPlay">
+                    <mechanic type="macroObject" className="ExplodableMacroObjectMechanic" priority="1" explodeToRect="test_island_rect" macroPrefix="test_lagoon_macro" blockOthers="true"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_island_house" type="residence" buyable="false" placeable="true">
+            <cost>79300</cost>
+            <population min="2000" max="2000"/>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates/>
+        </item>
+        <item name="test_island_tower" type="municipal" buyable="false" placeable="true">
+            <cost>79300</cost>
+            <population cap="5000"/>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates/>
+        </item>
+        <item name="test_island_shop" type="timed_business" buyable="false" placeable="true">
+            <cost>79300</cost>
+            <goods>120</goods>
+            <sizeX>2</sizeX>
+            <sizeY>2</sizeY>
+            <gates/>
+        </item>
+        <item name="test_island_bg" type="basePier" buyable="false" placeable="true" sellSendsToInventory="false">
+            <cost>0</cost>
+            <sizeX>10</sizeX>
+            <sizeY>10</sizeY>
+            <gates/>
+        </item>
+        <item name="test_island_kiosk" type="decoration" buyable="false" placeable="true" sellSendsToInventory="true">
+            <cost>2000</cost>
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+        </item>
     </items>
 
     <levels_cv_level_regrade_var_0>
@@ -348,6 +410,17 @@
             <height>12</height>
             <objects>
                 <object id="roadA" itemName="road" direction="0" x="0" y="0"/>
+            </objects>
+        </worldRect>
+        <worldRect name="test_island_rect">
+            <width>10</width>
+            <height>10</height>
+            <objects>
+                <object id="wr0_residence" itemName="test_island_house" direction="0" x="6" y="3"/>
+                <object id="wr1_item" itemName="test_island_bg" direction="0" x="0" y="0"/>
+                <object id="wr2_municipal" itemName="test_island_tower" direction="0" x="0" y="7"/>
+                <object id="wr3_business" itemName="test_island_shop" direction="0" x="7" y="3"/>
+                <object id="wr4_decoration" itemName="test_island_kiosk" direction="0" x="3" y="6"/>
             </objects>
         </worldRect>
     </worldRects>

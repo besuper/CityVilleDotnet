@@ -134,6 +134,14 @@ public static class WorldObjectDtoMapper
             dto.MechanicData[counter.MechanicType] = counter.Count;
         }
 
+        if (model.ParentMacroObjectId is not null)
+        {
+            dto.MechanicData["macroObject"] = new ASObject
+            {
+                { "parentMacroObjectId", model.ParentMacroObjectId }
+            };
+        }
+
         if (model.RemodelItemName is not null)
         {
             dto.MechanicData["remodel"] = new ASObject

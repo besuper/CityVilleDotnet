@@ -16,10 +16,12 @@ public class WorldConfiguration : IEntityTypeConfiguration<World>
         builder.Property(x => x.WorldName).HasMaxLength(32);
         builder.Property(x => x.NextBuildingId);
         builder.Property(x => x.WorldCreated).HasMaxLength(32);
+        builder.Property(x => x.MacroObjectIdCounter);
 
         builder.HasMany(x => x.MapRects).WithOne().IsRequired();
         builder.HasMany(x => x.Objects);
         builder.HasMany(x => x.IncentivizedExpansions).WithOne().IsRequired();
+        builder.HasMany(x => x.MacroObjects).WithOne().IsRequired();
         builder.HasOne(x => x.TrainOrder).WithOne().HasForeignKey<TrainOrder>("WorldId").IsRequired();
     }
 }

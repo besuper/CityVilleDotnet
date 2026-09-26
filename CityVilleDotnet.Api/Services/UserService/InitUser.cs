@@ -29,6 +29,8 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x.IncentivizedExpansions)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x.MacroObjects)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x.TrainOrder)
             .ThenInclude(x => x!.Workers)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))

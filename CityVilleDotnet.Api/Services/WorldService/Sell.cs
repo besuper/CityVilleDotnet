@@ -56,13 +56,10 @@ internal sealed class Sell(CityVilleDbContext context) : AmfService<SellRequest>
 
         context.Set<WorldObject>().Remove(obj);
 
-        if (gameItem.SellSendsToInventory is not null)
-        {
-            if (bool.TryParse(gameItem.SellSendsToInventory, out var result) && result)
-            {
-                user.AddItem(obj.ItemName);
-            }
-        }
+        if (gameItem.IsSellSendsToInventory)
+            user.AddItem(obj.ItemName);
+        else
+            user.AddCoins(obj.GetSellPrice());
 
         world.CalculatePopulation();
 

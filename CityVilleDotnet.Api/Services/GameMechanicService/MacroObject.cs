@@ -8,10 +8,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.GameMechanicService;
 
-public class Explode(CityVilleDbContext context) : AmfService<ExplodeRequest>
+public class MacroObject(CityVilleDbContext context) : AmfService<MacroObjectRequest>
 {
-    public override async Task<ASObject> HandlePacket(ExplodeRequest request, Guid playerId, CancellationToken cancellationToken)
+    public override async Task<ASObject> HandlePacket(MacroObjectRequest request, Guid playerId, CancellationToken cancellationToken)
     {
+        if (request.Params.Operation != "performExplode")
+            throw new Exception($"Unsupported macroObject operation {request.Params.Operation}");
+
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
@@ -28,11 +31,11 @@ public class Explode(CityVilleDbContext context) : AmfService<ExplodeRequest>
 
         var gameItem = GameSettingsManager.Instance.GetItem(owner.ItemName) ?? throw new Exception($"Can't find game item for {owner.ItemName}");
 
-        var mechanic = gameItem.Mechanics?.GetMechanicByGameMode(request.GameMode)?.GetMechanicItemByType("explode")
-                       ?? throw new Exception($"No explode mechanic found for {owner.ItemName} in game mode {request.GameMode}");
+        var mechanic = gameItem.Mechanics?.GetMechanicByGameMode(request.GameMode)?.GetMechanicItemByType("macroObject")
+                       ?? throw new Exception($"No macroObject mechanic found for {owner.ItemName} in game mode {request.GameMode}");
 
-        if (mechanic.ExplodeToRect is null)
-            throw new Exception($"No explodeToRect defined on explode mechanic for {owner.ItemName}");
+        if (mechanic.ExplodeToRect is null || mechanic.MacroPrefix is null)
+            throw new Exception($"No explodeToRect or macroPrefix defined on macroObject mechanic for {owner.ItemName}");
 
         var worldRect = GameSettingsManager.Instance.GetWorldRect(mechanic.ExplodeToRect)
                         ?? throw new Exception($"Can't find world rect {mechanic.ExplodeToRect}");
@@ -43,7 +46,8 @@ public class Explode(CityVilleDbContext context) : AmfService<ExplodeRequest>
                 context.Set<InventoryItem>().Remove(consumed);
         }
 
-        world.Explode(owner, worldRect, request.Params.TempIds.ToDictionary(x => x.Key, x => Convert.ToInt32(x.Value)));
+        var children = world.Explode(owner, worldRect, request.Params.TempIds.ToDictionary(x => x.Key, x => Convert.ToInt32(x.Value)));
+        world.CreateMacroObject(mechanic.MacroPrefix, owner.ItemName, children);
         context.Remove(owner);
 
         world.CalculatePopulation();
@@ -54,14 +58,15 @@ public class Explode(CityVilleDbContext context) : AmfService<ExplodeRequest>
     }
 }
 
-public class ExplodeRequest
+public class MacroObjectRequest
 {
     [AmfParam(0)] public int ObjectId { get; set; }
     [AmfParam(2)] public string GameMode { get; set; } = string.Empty;
-    [AmfParam(3)] public ExplodeParamsRequest Params { get; set; } = new();
+    [AmfParam(3)] public MacroObjectParamsRequest Params { get; set; } = new();
 }
 
-public class ExplodeParamsRequest
+public class MacroObjectParamsRequest
 {
+    [AmfParam("operation")] public string Operation { get; set; } = string.Empty;
     [AmfParam("tempIds")] public ASObject TempIds { get; set; } = [];
 }
