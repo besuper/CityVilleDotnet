@@ -34,7 +34,7 @@ public static class QuestDtoMapper
             Purchased = model.Purchased,
             Expired = false,
             ActivatedTime = new DateTimeOffset(model.CreatedAt).ToUnixTimeSeconds(),
-            IsNew = (DateTime.Now - model.CreatedAt) > TimeSpan.FromSeconds(10)
+            IsNew = (DateTime.Now - model.CreatedAt) < TimeSpan.FromSeconds(10)
         };
     }
     

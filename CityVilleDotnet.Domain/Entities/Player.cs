@@ -1351,11 +1351,19 @@ public class Player
                 item.QuestType = QuestType.Completed;
                 item.ClaimRewards(this);
 
-                newQuests = item.StartSequels();
+                newQuests.AddRange(item.StartSequels());
             }
         }
 
         Quests.AddRange(newQuests);
+
+        foreach (var quest in newQuests)
+        {
+            var questItem = QuestSettingsManager.Instance.GetItem(quest.Name);
+
+            if (questItem is not null)
+                GrantQuestStartItems(questItem);
+        }
     }
 
     public void SpawnEligibleQuests()
