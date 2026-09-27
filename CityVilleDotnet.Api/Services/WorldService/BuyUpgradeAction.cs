@@ -34,7 +34,7 @@ internal sealed class BuyUpgradeAction(CityVilleDbContext context) : AmfService<
         
         var requiredUpgradeActions = gameItem.Upgrade.GetRequiredUpgradeActions();
 
-        var totalCost = requiredUpgradeActions - obj.UpgradeActionCount ?? 0;
+        var totalCost = Math.Max(requiredUpgradeActions - (obj.UpgradeActionCount ?? 0), 0);
         
         player.RemoveCash(totalCost);
 
