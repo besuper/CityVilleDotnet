@@ -57,7 +57,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
         if (!isFranchiseHarvest && !obj.CanHarvest())
             throw new Exception("Building is not harvestable");
 
-        if (gameItem.EnergyCost?.Harvest is not null)
+        if (!isFranchiseHarvest && gameItem.EnergyCost?.Harvest is not null)
         {
             user.RemoveEnergy(int.Parse(gameItem.EnergyCost.Harvest));
         }
