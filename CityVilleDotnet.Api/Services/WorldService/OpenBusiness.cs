@@ -37,9 +37,6 @@ internal sealed class OpenBusiness(CityVilleDbContext context) : AmfService<Open
 
         player.ProcessGoods(gameItem);
 
-        if (gameItem.EnergyCost?.Open is not null)
-            player.RemoveEnergy(int.Parse(gameItem.EnergyCost.Open));
-
         obj.OpenBusiness();
 
         player.HandleQuestsProgress("openBusinessByClass", className: obj.GetClassName().ToString());
