@@ -1,5 +1,4 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
-using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
@@ -18,7 +17,7 @@ internal sealed class Clear(CityVilleDbContext context) : AmfService<ClearReques
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x.Objects.Where(o => (o.X == request.Building.Position.X && o.Y == request.Building.Position.Y) || globalTableProviders.Contains(o.ItemName)))
+            .ThenInclude(x => x.Objects.Where(o => o.TempId == request.Building.Id || o.WorldFlatId == request.Building.Id || globalTableProviders.Contains(o.ItemName)))
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
@@ -30,7 +29,7 @@ internal sealed class Clear(CityVilleDbContext context) : AmfService<ClearReques
 
         var world = player.GetWorld();
 
-        var obj = world.GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z) ?? throw new Exception($"Can't find building");
+        var obj = world.GetBuildingByClientId(request.Building.Id) ?? throw new Exception($"Can't find building with id {request.Building.Id}");
 
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
 
@@ -75,5 +74,5 @@ public class ClearRequest
 
 public class BuildingClearRequest
 {
-    [AmfParam("position")] public PerformActionPositionRequest Position { get; set; } = new();
+    [AmfParam("id")] public int Id { get; set; }
 }
