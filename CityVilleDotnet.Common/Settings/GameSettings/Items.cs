@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Xml.Serialization;
 
 namespace CityVilleDotnet.Common.Settings.GameSettings;
@@ -127,6 +128,7 @@ public class GameItem
     [XmlElement("gates")] public required GatesContainer? Gates { get; set; }
     [XmlElement("sizeX")] public int? SizeX { get; set; }
     [XmlElement("sizeY")] public int? SizeY { get; set; }
+    [XmlElement("image")] public List<ImageItem> Images { get; set; } = [];
     [XmlElement("bridgeparts")] public BridgePartsContainer? BridgeParts { get; set; }
     [XmlElement("keyword")] public List<string> Keywords { get; set; } = [];
     [XmlElement("mastery")] public required List<MasteryItem> MasteryItems { get; set; }
@@ -590,6 +592,21 @@ public class UpgradeHelper
     [XmlAttribute("type")] public required string Type { get; set; }
     [XmlAttribute("max")] public int Max { get; set; }
     [XmlAttribute("actionValue")] public int ActionValue { get; set; }
+}
+
+[Serializable]
+public class ImageItem
+{
+    [XmlAttribute("name")] public string? Name { get; set; }
+    [XmlAttribute("type")] public string? Type { get; set; }
+    [XmlAttribute("direction")] public string? Direction { get; set; }
+    [XmlAttribute("url")] public string? Url { get; set; }
+    [XmlAttribute("offsetY")] public string? OffsetYString { get; set; }
+    [XmlAttribute("height")] public string? HeightString { get; set; }
+    [XmlElement("image")] public List<ImageItem> Images { get; set; } = [];
+
+    [XmlIgnore] public int OffsetY => double.TryParse(OffsetYString, CultureInfo.InvariantCulture, out var value) ? (int)value : 0;
+    [XmlIgnore] public int Height => double.TryParse(HeightString, CultureInfo.InvariantCulture, out var value) ? (int)value : 0;
 }
 
 [Serializable]

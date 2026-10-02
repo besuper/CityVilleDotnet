@@ -18,6 +18,7 @@ public class GameSettingsManager
     private readonly Dictionary<string, WorldConfigItem> _worldConfigs;
     private readonly Dictionary<string, ValidateItem> _validators;
     private readonly Dictionary<string, TieredValueItem> _tieredValues;
+    private readonly Dictionary<string, AssetPlaceholder> _assetPlaceholders;
     private List<string> _globalTableProviders = [];
     private FarmingSettings _farmSettings;
     private List<LevelItem> _levels = [];
@@ -37,6 +38,7 @@ public class GameSettingsManager
         _worldConfigs = new Dictionary<string, WorldConfigItem>();
         _validators = new Dictionary<string, ValidateItem>();
         _tieredValues = new Dictionary<string, TieredValueItem>();
+        _assetPlaceholders = new Dictionary<string, AssetPlaceholder>(StringComparer.OrdinalIgnoreCase);
         _isInitialized = false;
     }
 
@@ -106,6 +108,19 @@ public class GameSettingsManager
             }
 
             derivedItemsCount = GameItemInheritance.Resolve(_items);
+
+            foreach (var item in _items.Values)
+            {
+                if (item?.SizeX is null || item.SizeY is null) continue;
+
+                foreach (var image in item.Images.Where(x => x.Name == "static"))
+                {
+                    foreach (var (url, placeholder) in AssetPlaceholders.FromStaticImage(image, item.SizeX.Value, item.SizeY.Value))
+                    {
+                        _assetPlaceholders.TryAdd(url, placeholder);
+                    }
+                }
+            }
 
             foreach (var item in gameSettings.Modifiers.Table)
             {
@@ -202,6 +217,7 @@ public class GameSettingsManager
         logger.LogInformation("Loaded {WorldConfigsCount} world configs", _worldConfigs.Count);
         logger.LogInformation("Loaded {ValidatorsCount} validators", _validators.Count);
         logger.LogInformation("Loaded {GlobalTableProvidersCount} global table providers", _globalTableProviders.Count);
+        logger.LogInformation("Loaded {AssetPlaceholdersCount} asset placeholders", _assetPlaceholders.Count);
 
         _isInitialized = true;
     }
@@ -212,6 +228,14 @@ public class GameSettingsManager
             throw new InvalidOperationException("GameSettingsManager not initialized");
 
         return _items.TryGetValue(itemName, out var item) ? item : null;
+    }
+
+    public AssetPlaceholder? GetAssetPlaceholder(string url)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return _assetPlaceholders.GetValueOrDefault(url);
     }
 
     public List<string> GetOrderedUpgradeChainByRoot(string root)
