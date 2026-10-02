@@ -17,19 +17,19 @@ public class SetSeenFlagTest(DatabaseFixture fixture) : IntegrationTest(fixture)
     {
         var user = Faker.Player();
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new SetSeenFlag(Context);
         var request = new SetSeenFlagRequest { FlagName = "tutorial_complete" };
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
         var player = await Context.Set<Player>()
             .Include(x => x.SeenFlags)
-            .FirstAsync(x => x.Id == user.Id);
+            .FirstAsync(x => x.Id == user.Id, TestContext.Current.CancellationToken);
 
         player.SeenFlags.Should().ContainSingle(x => x.Key == "tutorial_complete");
     }
@@ -40,19 +40,19 @@ public class SetSeenFlagTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var user = Faker.Player();
         user.SetSeenFlag("already_seen");
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new SetSeenFlag(Context);
         var request = new SetSeenFlagRequest { FlagName = "already_seen" };
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
         var player = await Context.Set<Player>()
             .Include(x => x.SeenFlags)
-            .FirstAsync(x => x.Id == user.Id);
+            .FirstAsync(x => x.Id == user.Id, TestContext.Current.CancellationToken);
 
         player.SeenFlags.Where(x => x.Key == "already_seen").Should().ContainSingle();
     }
@@ -87,7 +87,7 @@ public class SetSeenFlagTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var handler = new SetSeenFlag(Context);
         var request = new SetSeenFlagRequest { FlagName = "some_flag" };
 
-        var act = () => handler.HandlePacket(request, Guid.NewGuid(), CancellationToken.None);
+        var act = () => handler.HandlePacket(request, Guid.NewGuid(), TestContext.Current.CancellationToken);
 
         await act.Should().ThrowAsync<Exception>();
     }

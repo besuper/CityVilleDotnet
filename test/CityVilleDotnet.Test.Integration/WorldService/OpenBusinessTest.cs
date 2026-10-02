@@ -35,17 +35,17 @@ public class OpenBusinessTest(DatabaseFixture fixture) : IntegrationTest(fixture
         var player = Faker.Player(world: world);
         player.SetGoods(100);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var energyBefore = player.Energy;
         var handler = new OpenBusiness(Context);
 
-        var response = await handler.HandlePacket(CreateOpenBusinessRequest(10, 10), player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(CreateOpenBusinessRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var updatedBusiness = await Context.Set<WorldObject>().FirstAsync(x => x.Id == business.Id);
+        var updatedBusiness = await Context.Set<WorldObject>().FirstAsync(x => x.Id == business.Id, TestContext.Current.CancellationToken);
 
         updatedBusiness.State.Should().Be(WorldObjectState.Open);
         updatedBusiness.Visits.Should().Be(0);
@@ -61,12 +61,12 @@ public class OpenBusinessTest(DatabaseFixture fixture) : IntegrationTest(fixture
         var player = Faker.Player(world: world);
         player.SetGoods(14);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new OpenBusiness(Context);
 
-        var act = () => handler.HandlePacket(CreateOpenBusinessRequest(10, 10), player.Id, CancellationToken.None);
+        var act = () => handler.HandlePacket(CreateOpenBusinessRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
 
         (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.NotEnoughMoney);
     }

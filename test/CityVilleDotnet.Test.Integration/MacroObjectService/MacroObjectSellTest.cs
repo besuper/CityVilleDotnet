@@ -26,14 +26,14 @@ public class MacroObjectSellTest(DatabaseFixture fixture) : IntegrationTest(fixt
         world.CreateMacroObject("test_island_macro", "test_island_macro", [house, background, kiosk]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var goldBefore = player.Gold;
         var handler = new MacroObjectSell(Context);
         var request = new MacroObjectSellRequest { MacroObjectName = "test_island_macro_0", SoldObjects = [1, 2, 3] };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         player.Gold.Should().Be(goldBefore);
@@ -44,8 +44,8 @@ public class MacroObjectSellTest(DatabaseFixture fixture) : IntegrationTest(fixt
 
         world.Objects.Should().ContainSingle().Which.WorldFlatId.Should().Be(10);
         world.Population.Should().Be(20);
-        (await Context.Set<MacroObject>().AnyAsync(x => x.Name == "test_island_macro_0")).Should().BeFalse();
-        (await Context.Set<WorldObject>().AnyAsync(x => x.Id == house.Id || x.Id == background.Id || x.Id == kiosk.Id)).Should().BeFalse();
+        (await Context.Set<MacroObject>().AnyAsync(x => x.Name == "test_island_macro_0", TestContext.Current.CancellationToken)).Should().BeFalse();
+        (await Context.Set<WorldObject>().AnyAsync(x => x.Id == house.Id || x.Id == background.Id || x.Id == kiosk.Id, TestContext.Current.CancellationToken)).Should().BeFalse();
     }
 
     [Fact]
@@ -59,14 +59,14 @@ public class MacroObjectSellTest(DatabaseFixture fixture) : IntegrationTest(fixt
         world.CreateMacroObject("test_lagoon_macro", "test_lagoon_macro", [house, shop, background, tower]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var goldBefore = player.Gold;
         var handler = new MacroObjectSell(Context);
         var request = new MacroObjectSellRequest { MacroObjectName = "test_lagoon_macro_0", SoldObjects = [1, 2, 3, 4] };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
@@ -86,15 +86,15 @@ public class MacroObjectSellTest(DatabaseFixture fixture) : IntegrationTest(fixt
         world.CreateMacroObject("test_lagoon_macro", "test_lagoon_macro", [house]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var goldBefore = player.Gold;
         var handler = new MacroObjectSell(Context);
         // 2 was the kiosk, removed by its own TSendToInventory just before the macro object sell
         var request = new MacroObjectSellRequest { MacroObjectName = "test_lagoon_macro_0", SoldObjects = [1, 2] };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         player.Gold.Should().Be(goldBefore + 3965);
@@ -111,13 +111,13 @@ public class MacroObjectSellTest(DatabaseFixture fixture) : IntegrationTest(fixt
         world.CreateMacroObject("test_island_macro", "test_island_macro", [house]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new MacroObjectSell(Context);
         var request = new MacroObjectSellRequest { MacroObjectName = "test_island_macro_0", SoldObjects = [1, 10] };
 
-        var act = () => handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var act = () => handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.InvalidData);
     }
@@ -130,13 +130,13 @@ public class MacroObjectSellTest(DatabaseFixture fixture) : IntegrationTest(fixt
         world.CreateMacroObject("test_island_macro", "test_island_macro", [house]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new MacroObjectSell(Context);
         var request = new MacroObjectSellRequest { MacroObjectName = "test_island_macro_1", SoldObjects = [1] };
 
-        var act = () => handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var act = () => handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.InvalidData);
     }

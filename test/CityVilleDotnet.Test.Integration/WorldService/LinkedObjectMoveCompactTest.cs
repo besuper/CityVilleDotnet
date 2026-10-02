@@ -24,8 +24,8 @@ public class LinkedObjectMoveCompactTest(DatabaseFixture fixture) : IntegrationT
         world.CreateMacroObject("test_island_macro", "test_island_macro", [house, background, tower]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new LinkedObjectMoveCompact(Context);
         var request = CreateRequest(
@@ -33,7 +33,7 @@ public class LinkedObjectMoveCompactTest(DatabaseFixture fixture) : IntegrationT
             new LinkedObjectRequest { Id = 2, X = 20, Y = 0, Direction = 0 },
             new LinkedObjectRequest { Id = 3, X = 20, Y = 7, Direction = 0 });
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         house.X.Should().Be(26);
@@ -53,13 +53,13 @@ public class LinkedObjectMoveCompactTest(DatabaseFixture fixture) : IntegrationT
         var world = Faker.World(objects: [house]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new LinkedObjectMoveCompact(Context);
         var request = CreateRequest(new LinkedObjectRequest { Id = 5000, X = 4, Y = 8, Direction = 2 });
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         house.X.Should().Be(4);
@@ -77,15 +77,15 @@ public class LinkedObjectMoveCompactTest(DatabaseFixture fixture) : IntegrationT
         var quest = Faker.Quest(name: "qm_test_move_island", length: 1);
         player.Quests.Add(quest);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new LinkedObjectMoveCompact(Context);
         var request = CreateRequest(
             new LinkedObjectRequest { Id = 1, X = 26, Y = 3, Direction = 0 },
             new LinkedObjectRequest { Id = 2, X = 20, Y = 7, Direction = 0 });
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         quest.Progress[0].Should().Be(1);
@@ -98,15 +98,15 @@ public class LinkedObjectMoveCompactTest(DatabaseFixture fixture) : IntegrationT
         var world = Faker.World(objects: [house]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new LinkedObjectMoveCompact(Context);
         var request = CreateRequest(
             new LinkedObjectRequest { Id = 1, X = 26, Y = 3, Direction = 0 },
             new LinkedObjectRequest { Id = 99, X = 20, Y = 7, Direction = 0 });
 
-        var act = () => handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var act = () => handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.ForceReload);
     }

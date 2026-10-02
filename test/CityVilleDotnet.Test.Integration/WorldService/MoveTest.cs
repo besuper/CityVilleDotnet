@@ -20,8 +20,8 @@ public class MoveTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var world = Faker.World(objects: [building]);
         var user = Faker.Player(world: world);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new Move(Context);
         var request = new MoveRequest
@@ -34,11 +34,11 @@ public class MoveTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             }
         };
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var updatedObj = await Context.Set<WorldObject>().FirstAsync(x => x.Id == building.Id);
+        var updatedObj = await Context.Set<WorldObject>().FirstAsync(x => x.Id == building.Id, TestContext.Current.CancellationToken);
         updatedObj.X.Should().Be(30);
         updatedObj.Y.Should().Be(40);
         updatedObj.Direction.Should().Be(2);
@@ -51,8 +51,8 @@ public class MoveTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var world = Faker.World(objects: [building]);
         var user = Faker.Player(world: world);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new Move(Context);
         var request = new MoveRequest
@@ -65,7 +65,7 @@ public class MoveTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             }
         };
 
-        var act = () => handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var act = () => handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         await act.Should().ThrowAsync<Exception>();
     }

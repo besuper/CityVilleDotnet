@@ -21,18 +21,18 @@ public class SellTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var world = Faker.World(objects: [keptTree, soldTree]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var goldBefore = player.Gold;
         var handler = new Sell(Context);
         var request = new SellRequest { Building = new SellBuildingRequest { Id = 6 } };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var remaining = await Context.Set<WorldObject>().Where(x => x.Id == keptTree.Id || x.Id == soldTree.Id).ToListAsync();
+        var remaining = await Context.Set<WorldObject>().Where(x => x.Id == keptTree.Id || x.Id == soldTree.Id).ToListAsync(TestContext.Current.CancellationToken);
 
         remaining.Should().ContainSingle().Which.WorldFlatId.Should().Be(5);
         player.Gold.Should().Be(goldBefore + 3);
@@ -45,14 +45,14 @@ public class SellTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var world = Faker.World(objects: [shop]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var goldBefore = player.Gold;
         var handler = new Sell(Context);
         var request = new SellRequest { Building = new SellBuildingRequest { Id = 5 } };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         player.Gold.Should().Be(goldBefore + 30);
@@ -65,14 +65,14 @@ public class SellTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var world = Faker.World(objects: [tree]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var goldBefore = player.Gold;
         var handler = new Sell(Context);
         var request = new SellRequest { Building = new SellBuildingRequest { Id = 99 } };
 
-        var act = () => handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var act = () => handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         await act.Should().ThrowAsync<Exception>().WithMessage("*99*");
         player.Gold.Should().Be(goldBefore);

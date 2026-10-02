@@ -21,15 +21,15 @@ public class HarvestStateTest(DatabaseFixture fixture) : IntegrationTest(fixture
         var world = Faker.World(objects: [bridge, residence]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var startingEnergy = player.Energy;
 
         var handler = new HarvestState(Context);
         var request = new HarvestStateRequest { ObjectId = 5 };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
@@ -37,12 +37,12 @@ public class HarvestStateTest(DatabaseFixture fixture) : IntegrationTest(fixture
 
         var updatedResidence = await Context.Set<WorldObject>()
             .Include(x => x.MechanicCounters)
-            .FirstAsync(x => x.Id == residence.Id);
+            .FirstAsync(x => x.Id == residence.Id, TestContext.Current.CancellationToken);
 
         updatedResidence.GetBonusPopulation().Should().Be(10);
         player.GetWorld().GetCurrentPopulation().Should().Be(10);
 
-        var inventoryItem = await Context.Set<InventoryItem>().FirstOrDefaultAsync(x => x.Name == "test_population_add");
+        var inventoryItem = await Context.Set<InventoryItem>().FirstOrDefaultAsync(x => x.Name == "test_population_add", TestContext.Current.CancellationToken);
         inventoryItem.Should().BeNull();
     }
 
@@ -53,19 +53,19 @@ public class HarvestStateTest(DatabaseFixture fixture) : IntegrationTest(fixture
         var world = Faker.World(objects: [bridge]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new HarvestState(Context);
         var request = new HarvestStateRequest { ObjectId = 5 };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
         player.GetWorld().GetCurrentPopulation().Should().Be(0);
 
-        var inventoryItem = await Context.Set<InventoryItem>().FirstOrDefaultAsync(x => x.Name == "test_population_add");
+        var inventoryItem = await Context.Set<InventoryItem>().FirstOrDefaultAsync(x => x.Name == "test_population_add", TestContext.Current.CancellationToken);
         inventoryItem.Should().BeNull();
     }
 }

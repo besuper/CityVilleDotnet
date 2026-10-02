@@ -21,8 +21,8 @@ public class GivenFreeItemTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var world = Faker.World(objects: [marina]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new GivenFreeItem(Context, NullLogger<GivenFreeItem>.Instance);
         var request = new GivenFreeItemRequest
@@ -36,17 +36,17 @@ public class GivenFreeItemTest(DatabaseFixture fixture) : IntegrationTest(fixtur
             }
         };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var ferry = await Context.Set<WorldObject>().FirstOrDefaultAsync(x => x.ItemName == "test_ferry");
+        var ferry = await Context.Set<WorldObject>().FirstOrDefaultAsync(x => x.ItemName == "test_ferry", TestContext.Current.CancellationToken);
         ferry.Should().NotBeNull();
         ferry.TempId.Should().Be(16777220);
         ferry.X.Should().Be(7);
         ferry.Y.Should().Be(16);
 
-        var owner = await Context.Set<WorldObject>().FirstAsync(x => x.Id == marina.Id);
+        var owner = await Context.Set<WorldObject>().FirstAsync(x => x.Id == marina.Id, TestContext.Current.CancellationToken);
         owner.GivenFreeItem.Should().BeTrue();
     }
 
@@ -57,8 +57,8 @@ public class GivenFreeItemTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var world = Faker.World(objects: [marina]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new GivenFreeItem(Context, NullLogger<GivenFreeItem>.Instance);
         var request = new GivenFreeItemRequest
@@ -72,18 +72,18 @@ public class GivenFreeItemTest(DatabaseFixture fixture) : IntegrationTest(fixtur
             }
         };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var ferry = await Context.Set<WorldObject>().FirstOrDefaultAsync(x => x.ItemName == "test_ferry");
+        var ferry = await Context.Set<WorldObject>().FirstOrDefaultAsync(x => x.ItemName == "test_ferry", TestContext.Current.CancellationToken);
         ferry.Should().BeNull();
 
-        var inventoryItem = await Context.Set<InventoryItem>().FirstOrDefaultAsync(x => x.Name == "test_ferry");
+        var inventoryItem = await Context.Set<InventoryItem>().FirstOrDefaultAsync(x => x.Name == "test_ferry", TestContext.Current.CancellationToken);
         inventoryItem.Should().NotBeNull();
         inventoryItem.Amount.Should().Be(1);
 
-        var owner = await Context.Set<WorldObject>().FirstAsync(x => x.Id == marina.Id);
+        var owner = await Context.Set<WorldObject>().FirstAsync(x => x.Id == marina.Id, TestContext.Current.CancellationToken);
         owner.GivenFreeItem.Should().BeTrue();
     }
 
@@ -95,8 +95,8 @@ public class GivenFreeItemTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var world = Faker.World(objects: [marina]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new GivenFreeItem(Context, NullLogger<GivenFreeItem>.Instance);
         var request = new GivenFreeItemRequest
@@ -110,11 +110,11 @@ public class GivenFreeItemTest(DatabaseFixture fixture) : IntegrationTest(fixtur
             }
         };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var ferry = await Context.Set<WorldObject>().FirstOrDefaultAsync(x => x.ItemName == "test_ferry");
+        var ferry = await Context.Set<WorldObject>().FirstOrDefaultAsync(x => x.ItemName == "test_ferry", TestContext.Current.CancellationToken);
         ferry.Should().BeNull();
     }
 
@@ -125,8 +125,8 @@ public class GivenFreeItemTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var world = Faker.World(objects: [marina]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new GivenFreeItem(Context, NullLogger<GivenFreeItem>.Instance);
         var request = new GivenFreeItemRequest
@@ -140,11 +140,11 @@ public class GivenFreeItemTest(DatabaseFixture fixture) : IntegrationTest(fixtur
             }
         };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var owner = await Context.Set<WorldObject>().FirstAsync(x => x.Id == marina.Id);
+        var owner = await Context.Set<WorldObject>().FirstAsync(x => x.Id == marina.Id, TestContext.Current.CancellationToken);
         owner.GivenFreeItem.Should().BeTrue();
     }
 }

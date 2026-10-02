@@ -29,8 +29,8 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         user.SetGold(20000);
         user.InventoryItems.Add(permit);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
         var request = new ExpandCityRequest
@@ -44,7 +44,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             ]
         };
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
@@ -55,7 +55,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         remappedTrees.Should().NotBeNull();
         remappedTrees.Should().HaveCount(2);
 
-        var mapRect = await Context.Set<MapRect>().FirstOrDefaultAsync(m => m.X == 40 && m.Y == 40);
+        var mapRect = await Context.Set<MapRect>().FirstOrDefaultAsync(m => m.X == 40 && m.Y == 40, TestContext.Current.CancellationToken);
 
         mapRect.Should().NotBeNull();
         mapRect.Width.Should().Be(18);
@@ -63,16 +63,16 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 
         var trees = await Context.Set<WorldObject>()
             .Where(o => o.ItemName == TreeItemName)
-            .ToListAsync();
+            .ToListAsync(TestContext.Current.CancellationToken);
 
         trees.Should().HaveCount(2);
 
-        var updatedPlayer = await Context.Set<Player>().FirstOrDefaultAsync(u => u.Id == user.Id);
+        var updatedPlayer = await Context.Set<Player>().FirstOrDefaultAsync(u => u.Id == user.Id, TestContext.Current.CancellationToken);
 
         updatedPlayer!.ExpansionsPurchased.Should().Be(1);
         updatedPlayer.Gold.Should().Be(0);
 
-        var updatedPermit = await Context.Set<InventoryItem>().FirstOrDefaultAsync(i => i.Name == "permits");
+        var updatedPermit = await Context.Set<InventoryItem>().FirstOrDefaultAsync(i => i.Name == "permits", TestContext.Current.CancellationToken);
 
         // First expansion requires 1 permit, so 5 - 1 = 4
         updatedPermit.Should().NotBeNull();
@@ -88,8 +88,8 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         user.SetGold(20000);
         user.InventoryItems.Add(permit);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
         var request = new ExpandCityRequest
@@ -99,17 +99,17 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             Trees = []
         };
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var mapRect = await Context.Set<MapRect>().FirstOrDefaultAsync(m => m.X == 40 && m.Y == 40);
+        var mapRect = await Context.Set<MapRect>().FirstOrDefaultAsync(m => m.X == 40 && m.Y == 40, TestContext.Current.CancellationToken);
 
         mapRect.Should().NotBeNull();
 
         var trees = await Context.Set<WorldObject>()
             .Where(o => o.ItemName == TreeItemName)
-            .ToListAsync();
+            .ToListAsync(TestContext.Current.CancellationToken);
 
         trees.Should().BeEmpty();
     }
@@ -121,8 +121,8 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var user = Faker.Player(world: world);
         user.SetGold(20000);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
         var request = new ExpandCityRequest
@@ -132,7 +132,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             Trees = []
         };
 
-        var act = () => handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var act = () => handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         await act.Should().ThrowAsync<Exception>().WithMessage("*permits*");
     }
@@ -146,8 +146,8 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         user.SetGold(20000);
         user.InventoryItems.Add(permit);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
         var request = new ExpandCityRequest
@@ -157,7 +157,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             Trees = []
         };
 
-        var act = () => handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var act = () => handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         await act.Should().ThrowAsync<Exception>().WithMessage("*Can't find item*");
     }
@@ -171,8 +171,8 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         user.SetGold(150);
         user.InventoryItems.Add(permit);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
         var request = new ExpandCityRequest
@@ -186,11 +186,11 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             ]
         };
 
-        var act = () => handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var act = () => handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.NotEnoughMoney);
 
-        var updatedPlayer = await Context.Set<Player>().FirstOrDefaultAsync(u => u.Id == user.Id);
+        var updatedPlayer = await Context.Set<Player>().FirstOrDefaultAsync(u => u.Id == user.Id, TestContext.Current.CancellationToken);
 
         updatedPlayer.Should().NotBeNull();
         updatedPlayer.Gold.Should().Be(150);

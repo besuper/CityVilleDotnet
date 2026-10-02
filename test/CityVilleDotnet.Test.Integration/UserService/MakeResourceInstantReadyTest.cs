@@ -25,17 +25,17 @@ public class MakeResourceInstantReadyTest(DatabaseFixture fixture) : Integration
         var player = Faker.Player(world: world);
         player.SetCash(50);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new MakeResourceInstantReady(Context, NullLogger<MakeResourceInstantReady>.Instance);
 
-        var response = await handler.HandlePacket(new MakeResourceInstantReadyRequest { BuildingId = 5 }, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(new MakeResourceInstantReadyRequest { BuildingId = 5 }, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         player.Cash.Should().Be(45);
 
-        var updatedResidence = await Context.Set<WorldObject>().FirstAsync(x => x.Id == residence.Id);
+        var updatedResidence = await Context.Set<WorldObject>().FirstAsync(x => x.Id == residence.Id, TestContext.Current.CancellationToken);
 
         updatedResidence.State.Should().Be(WorldObjectState.Grown);
     }
@@ -49,17 +49,17 @@ public class MakeResourceInstantReadyTest(DatabaseFixture fixture) : Integration
         var player = Faker.Player(world: world);
         player.SetCash(50);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new MakeResourceInstantReady(Context, NullLogger<MakeResourceInstantReady>.Instance);
 
-        var response = await handler.HandlePacket(new MakeResourceInstantReadyRequest { BuildingId = 5 }, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(new MakeResourceInstantReadyRequest { BuildingId = 5 }, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         player.Cash.Should().Be(48);
 
-        var updatedPlot = await Context.Set<WorldObject>().FirstAsync(x => x.Id == plot.Id);
+        var updatedPlot = await Context.Set<WorldObject>().FirstAsync(x => x.Id == plot.Id, TestContext.Current.CancellationToken);
 
         updatedPlot.State.Should().Be(WorldObjectState.Grown);
     }
@@ -72,12 +72,12 @@ public class MakeResourceInstantReadyTest(DatabaseFixture fixture) : Integration
         var player = Faker.Player(world: world);
         player.SetCash(50);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new MakeResourceInstantReady(Context, NullLogger<MakeResourceInstantReady>.Instance);
 
-        var response = await handler.HandlePacket(new MakeResourceInstantReadyRequest { BuildingId = 5 }, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(new MakeResourceInstantReadyRequest { BuildingId = 5 }, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         player.Cash.Should().Be(49);
@@ -91,12 +91,12 @@ public class MakeResourceInstantReadyTest(DatabaseFixture fixture) : Integration
         var player = Faker.Player(world: world);
         player.SetCash(50);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new MakeResourceInstantReady(Context, NullLogger<MakeResourceInstantReady>.Instance);
 
-        var response = await handler.HandlePacket(new MakeResourceInstantReadyRequest { BuildingId = 5 }, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(new MakeResourceInstantReadyRequest { BuildingId = 5 }, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be((int)GameErrorType.InvalidState);
         player.Cash.Should().Be(50);

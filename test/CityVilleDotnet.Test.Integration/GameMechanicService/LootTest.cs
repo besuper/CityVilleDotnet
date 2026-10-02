@@ -22,13 +22,13 @@ public class LootTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var player = Faker.Player(world: world);
         player.SetCash(100);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new Loot(Context);
         var request = new LootRequest { ObjectId = 5 };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
@@ -43,7 +43,7 @@ public class LootTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 
         var storedEnclosure = await Context.Set<WorldObject>()
             .Include(x => x.StorageItems)
-            .FirstAsync(x => x.WorldFlatId == 5);
+            .FirstAsync(x => x.WorldFlatId == 5, TestContext.Current.CancellationToken);
 
         storedEnclosure.StorageItems.Should().ContainSingle(x => x.Name == loot);
     }
@@ -55,13 +55,13 @@ public class LootTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var world = Faker.World(objects: [building]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new Loot(Context);
         var request = new LootRequest { ObjectId = 7 };
 
-        var act = () => handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var act = () => handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         await act.Should().ThrowAsync<Exception>();
     }

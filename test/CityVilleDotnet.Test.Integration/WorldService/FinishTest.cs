@@ -43,23 +43,23 @@ public class FinishTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var world = Faker.World(objects: [building]);
         var user = Faker.Player(world: world);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new Finish(Context);
         var request = CreateFinishRequest(10, 20);
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var mapRect = await Context.Set<MapRect>().FirstOrDefaultAsync(m => m.X == -12 && m.Y == -48);
+        var mapRect = await Context.Set<MapRect>().FirstOrDefaultAsync(m => m.X == -12 && m.Y == -48, TestContext.Current.CancellationToken);
 
         mapRect.Should().NotBeNull();
         mapRect.Width.Should().Be(12);
         mapRect.Height.Should().Be(12);
 
-        var updatedObj = await Context.Set<WorldObject>().FirstAsync(o => o.Id == building.Id);
+        var updatedObj = await Context.Set<WorldObject>().FirstAsync(o => o.Id == building.Id, TestContext.Current.CancellationToken);
 
         updatedObj.ItemName.Should().Be("test_bridge_expansion");
     }
@@ -72,17 +72,17 @@ public class FinishTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var world = Faker.World(mapRects: [existingRect], objects: [building]);
         var user = Faker.Player(world: world);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new Finish(Context);
         var request = CreateFinishRequest(10, 20);
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var mapRects = await Context.Set<MapRect>().ToListAsync();
+        var mapRects = await Context.Set<MapRect>().ToListAsync(TestContext.Current.CancellationToken);
 
         mapRects.Should().HaveCount(1);
         mapRects[0].X.Should().Be(-6);
@@ -100,17 +100,17 @@ public class FinishTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var user = Faker.Player(world: world);
         user.AddItem("test_gate_material", 2);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new Finish(Context);
         var request = CreateFinishRequest(10, 20);
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var player = await Context.Set<Player>().Include(x => x.InventoryItems).FirstAsync(x => x.Id == user.Id);
+        var player = await Context.Set<Player>().Include(x => x.InventoryItems).FirstAsync(x => x.Id == user.Id, TestContext.Current.CancellationToken);
         player.HasItem("test_gate_material").Should().BeFalse();
     }
 
@@ -126,17 +126,17 @@ public class FinishTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var world = Faker.World(objects: [building]);
         var user = Faker.Player(world: world);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new Finish(Context);
         var request = CreateFinishRequest(10, 20);
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var mapRects = await Context.Set<MapRect>().ToListAsync();
+        var mapRects = await Context.Set<MapRect>().ToListAsync(TestContext.Current.CancellationToken);
 
         mapRects.Should().BeEmpty();
     }

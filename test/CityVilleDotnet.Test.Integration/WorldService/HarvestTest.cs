@@ -37,12 +37,12 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var world = Faker.World(objects: [residence]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
 
-        var act = () => handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, CancellationToken.None);
+        var act = () => handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
 
         await act.Should().ThrowAsync<Exception>().WithMessage("*not harvestable*");
     }
@@ -54,13 +54,13 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var world = Faker.World(objects: [residence]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var timeBefore = ServerUtils.GetCurrentTime();
         var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
 
-        var response = await handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
@@ -69,7 +69,7 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         data.Should().NotBeNull();
         data!["retCoinYield"].Should().Be(20);
 
-        var updatedResidence = await Context.Set<WorldObject>().FirstAsync(x => x.Id == residence.Id);
+        var updatedResidence = await Context.Set<WorldObject>().FirstAsync(x => x.Id == residence.Id, TestContext.Current.CancellationToken);
 
         updatedResidence.State.Should().Be(WorldObjectState.Planted);
         updatedResidence.PlantTime.Should().BeGreaterThanOrEqualTo(timeBefore);
@@ -82,12 +82,12 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var world = Faker.World(objects: [plot]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
 
-        var response = await handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
@@ -95,7 +95,7 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 
         data!["retCoinYield"].Should().Be(50);
 
-        var updatedPlot = await Context.Set<WorldObject>().FirstAsync(x => x.Id == plot.Id);
+        var updatedPlot = await Context.Set<WorldObject>().FirstAsync(x => x.Id == plot.Id, TestContext.Current.CancellationToken);
 
         updatedPlot.State.Should().Be(WorldObjectState.Plowed);
         updatedPlot.ContractName.Should().BeNull();
@@ -110,17 +110,17 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var world = Faker.World(objects: [business]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var energyBefore = player.Energy;
         var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
 
-        var response = await handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var updatedBusiness = await Context.Set<WorldObject>().FirstAsync(x => x.Id == business.Id);
+        var updatedBusiness = await Context.Set<WorldObject>().FirstAsync(x => x.Id == business.Id, TestContext.Current.CancellationToken);
 
         updatedBusiness.State.Should().Be(WorldObjectState.Closed);
         updatedBusiness.Visits.Should().Be(0);
@@ -134,12 +134,12 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var world = Faker.World(objects: [business]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
 
-        var act = () => handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, CancellationToken.None);
+        var act = () => handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
 
         await act.Should().ThrowAsync<Exception>().WithMessage("*not harvestable*");
     }

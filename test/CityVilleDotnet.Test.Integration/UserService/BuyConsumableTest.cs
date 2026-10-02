@@ -18,17 +18,17 @@ public class BuyConsumableTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var user = Faker.Player();
         user.SetCash(100);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new BuyConsumable(Context, NullLogger<BuyConsumable>.Instance);
         var request = new BuyConsumableRequest { ItemName = "test_gate_material", Amount = 2 };
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var player = await Context.Set<Player>().Include(x => x.InventoryItems).FirstAsync(x => x.Id == user.Id);
+        var player = await Context.Set<Player>().Include(x => x.InventoryItems).FirstAsync(x => x.Id == user.Id, TestContext.Current.CancellationToken);
         player.Cash.Should().Be(94);
         player.CountInventoryItem("test_gate_material").Should().Be(2);
     }
@@ -39,17 +39,17 @@ public class BuyConsumableTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var user = Faker.Player();
         user.SetGold(1000);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new BuyConsumable(Context, NullLogger<BuyConsumable>.Instance);
         var request = new BuyConsumableRequest { ItemName = "test_gate_material_coin", Amount = 1 };
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var player = await Context.Set<Player>().Include(x => x.InventoryItems).FirstAsync(x => x.Id == user.Id);
+        var player = await Context.Set<Player>().Include(x => x.InventoryItems).FirstAsync(x => x.Id == user.Id, TestContext.Current.CancellationToken);
         player.Gold.Should().Be(950);
         player.CountInventoryItem("test_gate_material_coin").Should().Be(1);
     }

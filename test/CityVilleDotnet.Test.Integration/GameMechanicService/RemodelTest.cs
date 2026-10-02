@@ -20,8 +20,8 @@ public class RemodelTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var player = Faker.Player(world: world);
         player.SetLevel(2);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var goldBefore = player.Gold;
         var handler = new Remodel(Context);
@@ -32,7 +32,7 @@ public class RemodelTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             ExtraData = new Dictionary<string, object> { ["itemName"] = "test_res_skin" }
         };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         player.Gold.Should().Be(goldBefore - 500);
@@ -49,8 +49,8 @@ public class RemodelTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var player = Faker.Player(world: world);
         player.SetLevel(2);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var cashBefore = player.Cash;
         var handler = new Remodel(Context);
@@ -61,7 +61,7 @@ public class RemodelTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             ExtraData = new Dictionary<string, object> { ["itemName"] = "test_res_skin_premium" }
         };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         player.Cash.Should().Be(cashBefore - 5);
@@ -76,8 +76,8 @@ public class RemodelTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var player = Faker.Player(world: world);
         player.SetLevel(2);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var goldBefore = player.Gold;
         var handler = new Remodel(Context);
@@ -88,7 +88,7 @@ public class RemodelTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             ExtraData = new Dictionary<string, object> { ["itemName"] = "deco_tree" }
         };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be((int)GameErrorType.InvalidData);
         player.Gold.Should().Be(goldBefore);
@@ -104,14 +104,14 @@ public class RemodelTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var player = Faker.Player(world: world);
         player.SetLevel(2);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var energyBefore = player.Energy;
         var handler = new Remodel(Context);
         var request = new RemodelRequest { ObjectId = 5, GameMode = "GMRemodel" };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         player.Energy.Should().Be(energyBefore - 1);
@@ -130,14 +130,14 @@ public class RemodelTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var player = Faker.Player(world: world);
         player.SetLevel(2);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var xpBefore = player.Xp;
         var handler = new Remodel(Context);
         var request = new RemodelRequest { ObjectId = 5, GameMode = "GMRemodel" };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         residence.ItemName.Should().Be("test_res_skin");
@@ -155,14 +155,14 @@ public class RemodelTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var player = Faker.Player(world: world);
         player.SetLevel(2);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var energyBefore = player.Energy;
         var handler = new Remodel(Context);
         var request = new RemodelRequest { ObjectId = 5, GameMode = "GMRemodel" };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be((int)GameErrorType.InvalidState);
         player.Energy.Should().Be(energyBefore);
@@ -175,8 +175,8 @@ public class RemodelTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var world = Faker.World(objects: [residence]);
         var player = Faker.Player(world: world);
 
-        await Context.AddAsync(player);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new Remodel(Context);
         var request = new RemodelRequest
@@ -186,7 +186,7 @@ public class RemodelTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             ExtraData = new Dictionary<string, object> { ["itemName"] = "test_res_skin" }
         };
 
-        var response = await handler.HandlePacket(request, player.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be((int)GameErrorType.InvalidState);
         residence.RemodelItemName.Should().BeNull();

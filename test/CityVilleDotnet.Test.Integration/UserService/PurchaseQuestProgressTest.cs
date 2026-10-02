@@ -24,20 +24,20 @@ public class PurchaseQuestProgressTest(DatabaseFixture fixture) : IntegrationTes
         user.Quests.Add(Faker.Quest(name: QuestName, length: 3));
         user.SetCash(100);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new PurchaseQuestProgress(Context, NullLogger<PurchaseQuestProgress>.Instance);
         var request = new PurchaseQuestProgressRequest { QuestName = QuestName, TaskIndex = 2 };
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var player = await Context.Set<Player>().FirstAsync(x => x.Id == user.Id);
+        var player = await Context.Set<Player>().FirstAsync(x => x.Id == user.Id, TestContext.Current.CancellationToken);
         player.Cash.Should().Be(50);
 
-        var updatedQuest = await Context.Set<Quest>().FirstAsync(x => x.Name == QuestName);
+        var updatedQuest = await Context.Set<Quest>().FirstAsync(x => x.Name == QuestName, TestContext.Current.CancellationToken);
         updatedQuest.Purchased[2].Should().Be(500);
     }
 
@@ -48,17 +48,17 @@ public class PurchaseQuestProgressTest(DatabaseFixture fixture) : IntegrationTes
         user.Quests.Add(Faker.Quest(name: QuestName, length: 3));
         user.SetCash(10);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new PurchaseQuestProgress(Context, NullLogger<PurchaseQuestProgress>.Instance);
         var request = new PurchaseQuestProgressRequest { QuestName = QuestName, TaskIndex = 2 };
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be((int)GameErrorType.NotEnoughMoney);
 
-        var player = await Context.Set<Player>().FirstAsync(x => x.Id == user.Id);
+        var player = await Context.Set<Player>().FirstAsync(x => x.Id == user.Id, TestContext.Current.CancellationToken);
         player.Cash.Should().Be(10);
     }
 
@@ -67,13 +67,13 @@ public class PurchaseQuestProgressTest(DatabaseFixture fixture) : IntegrationTes
     {
         var user = Faker.Player();
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new PurchaseQuestProgress(Context, NullLogger<PurchaseQuestProgress>.Instance);
         var request = new PurchaseQuestProgressRequest { QuestName = "nonexistent_quest", TaskIndex = 2 };
 
-        var act = () => handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var act = () => handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         await act.Should().ThrowAsync<Exception>();
     }
@@ -84,7 +84,7 @@ public class PurchaseQuestProgressTest(DatabaseFixture fixture) : IntegrationTes
         var handler = new PurchaseQuestProgress(Context, NullLogger<PurchaseQuestProgress>.Instance);
         var request = new PurchaseQuestProgressRequest { QuestName = QuestName, TaskIndex = 2 };
 
-        var act = () => handler.HandlePacket(request, Guid.NewGuid(), CancellationToken.None);
+        var act = () => handler.HandlePacket(request, Guid.NewGuid(), TestContext.Current.CancellationToken);
 
         await act.Should().ThrowAsync<Exception>();
     }

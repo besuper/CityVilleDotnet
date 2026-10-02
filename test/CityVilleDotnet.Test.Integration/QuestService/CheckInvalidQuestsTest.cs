@@ -19,17 +19,17 @@ public class CheckInvalidQuestsTest(DatabaseFixture fixture) : IntegrationTest(f
         var quest = Faker.Quest();
         user.Quests.Add(quest);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new CheckInvalidQuests(Context, NullLogger<CheckInvalidQuests>.Instance);
         var request = new CheckInvalidQuestsRequest { QuestNames = [quest.Name] };
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var savedQuest = await Context.Set<Domain.Entities.Quest>().FirstAsync(x => x.Name == quest.Name);
+        var savedQuest = await Context.Set<Domain.Entities.Quest>().FirstAsync(x => x.Name == quest.Name, TestContext.Current.CancellationToken);
         savedQuest.QuestType.Should().Be(QuestType.Expired);
     }
 
@@ -40,17 +40,17 @@ public class CheckInvalidQuestsTest(DatabaseFixture fixture) : IntegrationTest(f
         var quest = Faker.Quest(questType: QuestType.Completed);
         user.Quests.Add(quest);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new CheckInvalidQuests(Context, NullLogger<CheckInvalidQuests>.Instance);
         var request = new CheckInvalidQuestsRequest { QuestNames = [quest.Name] };
 
-        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
-        var savedQuest = await Context.Set<Domain.Entities.Quest>().FirstAsync(x => x.Name == quest.Name);
+        var savedQuest = await Context.Set<Domain.Entities.Quest>().FirstAsync(x => x.Name == quest.Name, TestContext.Current.CancellationToken);
         savedQuest.QuestType.Should().Be(QuestType.Completed);
     }
 
@@ -63,16 +63,16 @@ public class CheckInvalidQuestsTest(DatabaseFixture fixture) : IntegrationTest(f
         user.Quests.Add(invalidQuest);
         user.Quests.Add(validQuest);
 
-        await Context.AddAsync(user);
-        await Context.SaveChangesAsync();
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var handler = new CheckInvalidQuests(Context, NullLogger<CheckInvalidQuests>.Instance);
         var request = new CheckInvalidQuestsRequest { QuestNames = [invalidQuest.Name] };
 
-        await handler.HandlePacket(request, user.Id, CancellationToken.None);
+        await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
-        var savedInvalidQuest = await Context.Set<Domain.Entities.Quest>().FirstAsync(x => x.Name == invalidQuest.Name);
-        var savedValidQuest = await Context.Set<Domain.Entities.Quest>().FirstAsync(x => x.Name == validQuest.Name);
+        var savedInvalidQuest = await Context.Set<Domain.Entities.Quest>().FirstAsync(x => x.Name == invalidQuest.Name, TestContext.Current.CancellationToken);
+        var savedValidQuest = await Context.Set<Domain.Entities.Quest>().FirstAsync(x => x.Name == validQuest.Name, TestContext.Current.CancellationToken);
 
         savedInvalidQuest.QuestType.Should().Be(QuestType.Expired);
         savedValidQuest.QuestType.Should().Be(QuestType.Active);
@@ -84,7 +84,7 @@ public class CheckInvalidQuestsTest(DatabaseFixture fixture) : IntegrationTest(f
         var handler = new CheckInvalidQuests(Context, NullLogger<CheckInvalidQuests>.Instance);
         var request = new CheckInvalidQuestsRequest { QuestNames = [] };
 
-        var response = await handler.HandlePacket(request, Guid.NewGuid(), CancellationToken.None);
+        var response = await handler.HandlePacket(request, Guid.NewGuid(), TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
     }
