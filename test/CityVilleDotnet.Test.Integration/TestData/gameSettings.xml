@@ -14,7 +14,8 @@
              startingCommodities="100"
              sellBackRatio="0.05" goodsToCoinRatio="0.20"
              growMultiplier="1" cashGainedPerLevel="1"
-             instantReadyCropCostConstant3="0.25" instantReadyResidenceCostConstant5="2.0" />
+             instantReadyCropCostConstant3="0.25" instantReadyResidenceCostConstant5="2.0"
+             witherMultiplier="3.0" />
 
     <citysim>
         <populations>

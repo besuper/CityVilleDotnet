@@ -1,4 +1,5 @@
-﻿using CityVilleDotnet.Common.Settings;
+﻿using CityVilleDotnet.Common.Utils;
+using CityVilleDotnet.Common.Settings;
 using System.Text.Json.Serialization;
 using CityVilleDotnet.Domain.Enums;
 
@@ -12,7 +13,7 @@ public class Quest
         Progress = progress;
         Purchased = purchased;
         QuestType = questType;
-        CreatedAt = DateTime.Now;
+        CreatedAt = ServerUtils.GetCurrentDateTime();
         Order = 999;
     }
 

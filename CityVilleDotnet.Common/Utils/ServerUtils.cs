@@ -20,14 +20,27 @@ public static class ServerUtils
         "wwwroot/Game.2012.swf"
     ];
 
+    private static readonly AsyncLocal<TimeProvider?> CurrentTimeProvider = new();
+
+    public static TimeProvider TimeProvider
+    {
+        get => CurrentTimeProvider.Value ?? TimeProvider.System;
+        set => CurrentTimeProvider.Value = value;
+    }
+
     public static long GetCurrentTime()
     {
-        return DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        return TimeProvider.GetUtcNow().ToUnixTimeMilliseconds();
     }
 
     public static long GetCurrentTimeSeconds()
     {
-        return DateTimeOffset.Now.ToUnixTimeSeconds();
+        return TimeProvider.GetUtcNow().ToUnixTimeSeconds();
+    }
+
+    public static DateTime GetCurrentDateTime()
+    {
+        return TimeProvider.GetUtcNow().LocalDateTime;
     }
     
     public static long GetActionTime(long? clientEnqueueTimeSeconds)

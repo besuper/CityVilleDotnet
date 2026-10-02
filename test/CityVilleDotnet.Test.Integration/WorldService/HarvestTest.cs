@@ -11,6 +11,7 @@ using CityVilleDotnet.Test.Integration.Fixtures;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Time.Testing;
 
 namespace CityVilleDotnet.Test.Integration.WorldService;
 
@@ -73,6 +74,34 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 
         updatedResidence.State.Should().Be(WorldObjectState.Planted);
         updatedResidence.PlantTime.Should().BeGreaterThanOrEqualTo(timeBefore);
+    }
+
+    [Fact]
+    public async Task Harvest_WithClientEnqueueTime_ReplantsAtClientTime()
+    {
+        var startTime = new DateTimeOffset(2026, 1, 15, 12, 0, 0, TimeSpan.Zero);
+        ServerUtils.TimeProvider = new FakeTimeProvider(startTime);
+        var residence = Faker.WorldObject(itemName: "res_cottage3", className: BuildingClassType.Residence, state: WorldObjectState.Planted, plantTime: ServerUtils.GetCurrentTime() - OneHourMs, x: 10, y: 10);
+        var world = Faker.World(objects: [residence]);
+        var player = Faker.Player(world: world);
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var clientEnqueueTime = startTime.AddSeconds(-20).ToUnixTimeSeconds();
+        var request = CreateHarvestRequest(10, 10);
+        request.ClientEnqueueTime = clientEnqueueTime;
+
+        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
+
+        var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+
+        var updatedResidence = await Context.Set<WorldObject>().FirstAsync(x => x.Id == residence.Id, TestContext.Current.CancellationToken);
+
+        updatedResidence.State.Should().Be(WorldObjectState.Planted);
+        updatedResidence.PlantTime.Should().Be(clientEnqueueTime * 1000);
     }
 
     [Fact]
