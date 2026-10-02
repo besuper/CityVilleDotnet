@@ -1,6 +1,7 @@
 using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.WorldService;
 using CityVilleDotnet.Api.Services.WorldService.Common;
+using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Factory.MapRect;
@@ -100,5 +101,28 @@ public class PlaceTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var mapRects = await Context.Set<MapRect>().ToListAsync();
 
         mapRects.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Place_OtherMapOwner_ReturnsForceReloadAndDoesNotPlace()
+    {
+        var world = Faker.World();
+        var user = Faker.Player(world: world);
+        user.SetGold(1000);
+
+        await Context.AddAsync(user);
+        await Context.SaveChangesAsync();
+
+        var handler = new Place(Context, NullLogger<Place>.Instance);
+        var request = CreatePlaceRequest("bus_bakery", BuildingClassType.Business, 10, 20);
+        request.Params = [new PlaceParamsRequest { MapOwner = user.Snuid + 1 }];
+
+        var response = await handler.HandlePacket(request, user.Id, CancellationToken.None);
+
+        response["errorType"].Should().Be((int)GameErrorType.ForceReload);
+
+        var building = await Context.Set<WorldObject>().FirstOrDefaultAsync(o => o.X == 10 && o.Y == 20);
+
+        building.Should().BeNull();
     }
 }

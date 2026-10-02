@@ -1,5 +1,6 @@
 using AwesomeAssertions;
 using Bogus;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Factory.WorldObject;
 using CityVilleDotnet.Test.Domain.Fixtures;
 
@@ -153,5 +154,28 @@ public class WorldObjectTest(DomainFixture fixture)
         var act = () => enclosure.RollRandomZooAnimal();
 
         act.Should().Throw<Exception>();
+    }
+
+    [Theory]
+    [InlineData(BuildingClassType.Residence, WorldObjectState.Planted)]
+    [InlineData(BuildingClassType.Municipal, WorldObjectState.Planted)]
+    [InlineData(BuildingClassType.Business, WorldObjectState.Closed)]
+    [InlineData(BuildingClassType.Factory, WorldObjectState.Plowed)]
+    [InlineData(BuildingClassType.Ship, WorldObjectState.Plowed)]
+    [InlineData(BuildingClassType.Headquarter, WorldObjectState.Base)]
+    [InlineData(BuildingClassType.Decoration, WorldObjectState.Static)]
+    public void WorldObject_FinishConstruction_SetsClientConstructedState(BuildingClassType className, WorldObjectState expectedState)
+    {
+        var faker = new Faker();
+        var building = faker.WorldObject(className: className, state: WorldObjectState.Planted);
+
+        building.SetAsConstructionSite("construction_3x3_2stage", 2);
+        building.State.Should().Be(WorldObjectState.Static);
+
+        building.FinishConstruction();
+
+        building.ClassName.Should().Be(className);
+        building.State.Should().Be(expectedState);
+        building.PlantTime.Should().NotBeNull();
     }
 }
