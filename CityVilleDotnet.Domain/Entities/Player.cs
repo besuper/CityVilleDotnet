@@ -354,29 +354,23 @@ public class Player
 
     private void ComputeLevel()
     {
-        foreach (var item in GameSettingsManager.Instance.GetLevels())
-        {
-            if (Xp < item.RequiredXp) continue;
+        var reachedLevel = GameSettingsManager.Instance.GetLevels()
+            .Where(x => Xp >= x.RequiredXp)
+            .MaxBy(x => x.Num);
 
-            var level = item.Num;
+        if (reachedLevel is null || reachedLevel.Num <= Level) return;
 
-            if (level <= Level) continue;
+        var levelsGained = reachedLevel.Num - Level;
+        var energyMax = reachedLevel.EnergyMax;
 
-            var energyMax = item.EnergyMax;
+        // TODO: Add heldEnergy
+        Energy = energyMax + Math.Max(Energy - energyMax, 0);
+        Level = reachedLevel.Num;
+        EnergyMax = energyMax;
+        TimeBeforeNextEnergy = ServerUtils.GetCurrentTime();
+        AddCash(GameSettingsManager.Instance.GetSettings().CashGainedPerLevel * levelsGained);
 
-            // TODO: Add heldEnergy and cash
-            var energy = energyMax + Math.Max(Energy - energyMax, 0);
-
-            Level = level;
-            Energy = energy;
-            EnergyMax = energyMax;
-            TimeBeforeNextEnergy = ServerUtils.GetCurrentTime();
-            AddCash(GameSettingsManager.Instance.GetSettings().CashGainedPerLevel);
-
-            UpdateEnergy();
-
-            break;
-        }
+        UpdateEnergy();
     }
 
     public void CompleteTutorial()
