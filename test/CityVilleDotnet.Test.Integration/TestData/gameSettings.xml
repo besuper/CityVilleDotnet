@@ -15,7 +15,7 @@
              sellBackRatio="0.05" goodsToCoinRatio="0.20"
              growMultiplier="1" cashGainedPerLevel="1"
              instantReadyCropCostConstant3="0.25" instantReadyResidenceCostConstant5="2.0"
-             witherMultiplier="3.0" />
+             witherMultiplier="3.0" businessUpgradesRequiredLevel="15" />
 
     <citysim>
         <populations>
@@ -111,6 +111,62 @@
             <sizeX>2</sizeX>
             <sizeY>2</sizeY>
             <gates/>
+        </item>
+        <item name="test_bus_energy" type="business" buyable="true">
+            <keyword>Business</keyword>
+            <requiredLevel>1</requiredLevel>
+            <cost>200</cost>
+            <commodityReq>10</commodityReq>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <growTime>0.010425</growTime>
+            <energyCost harvest="1"/>
+            <commodity name="goods" default="1"/>
+            <gates/>
+        </item>
+        <item name="test_bus_upgradable" type="business" buyable="true">
+            <keyword>Business</keyword>
+            <requiredLevel>1</requiredLevel>
+            <cost>200</cost>
+            <commodityReq>10</commodityReq>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <growTime>0.010425</growTime>
+            <commodity name="goods" default="1"/>
+            <gates/>
+            <upgrade item="test_bus_upgradable_2">
+                <requirements>
+                    <requirement type="level" value="2"/>
+                    <requirement type="upgrade_actions" value="5"/>
+                </requirements>
+                <rewards>
+                    <reward type="coin" value="100"/>
+                </rewards>
+            </upgrade>
+        </item>
+        <item name="test_bus_upgradable_2" type="business" buyable="false">
+            <keyword>Business</keyword>
+            <requiredLevel>1</requiredLevel>
+            <cost>400</cost>
+            <commodityReq>20</commodityReq>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <growTime>0.010425</growTime>
+            <commodity name="goods" default="1"/>
+            <gates/>
+        </item>
+        <item name="test_mun_upgradable" type="municipal" buyable="true">
+            <requiredLevel>1</requiredLevel>
+            <cost>500</cost>
+            <growTime>0.001</growTime>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates/>
+            <upgrade item="test_mun_upgradable_2">
+                <requirements>
+                    <requirement type="upgrade_actions" value="3"/>
+                </requirements>
+            </upgrade>
         </item>
         <item name="mun_visitorcenter" type="municipal" buyable="true">
             <requiredLevel>15</requiredLevel>

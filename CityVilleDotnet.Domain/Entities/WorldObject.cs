@@ -528,7 +528,7 @@ public class WorldObject
                 coinYield = gameItem.CoinYield ?? 0;
                 cashYield = gameItem.CashYield ?? 0;
 
-                if (gameItem.Upgrade?.GetRequiredUpgradeActions() > 0)
+                if (!ClassName.IsBusiness() && gameItem.Upgrade?.CanCountUpgradeActions() == true)
                     UpgradeActionCount = (UpgradeActionCount ?? 0) + 1;
             }
         }
@@ -549,7 +549,7 @@ public class WorldObject
         return (coinYield, cashYield);
     }
 
-    public (int CoinYield, int CashYield) HarvestFranchise()
+    public (int CoinYield, int CashYield) HarvestFranchise(int playerLevel)
     {
         var coinYield = 0;
         var cashYield = 0;
@@ -571,6 +571,7 @@ public class WorldObject
             FranchiseLocation.TryLevelUpStar();
         }
 
+        CountBusinessUpgradeAction(gameItem, playerLevel);
         Close();
 
         return (coinYield, cashYield);
@@ -582,10 +583,10 @@ public class WorldObject
         State = WorldObjectState.Plowed;
     }
 
-    public void OpenBusiness()
+    public void OpenBusiness(int playerLevel)
     {
         var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
-        
+
         if (!ClassName.IsBusiness() && !(gameItem?.IsCustomerSupplyState() ?? false)) throw new Exception("Can't open other than business building, class name is: " + ClassName + "");
         if (State == WorldObjectState.Open || State == WorldObjectState.ClosedHarvestable) throw new Exception("Building is already open");
 
@@ -593,12 +594,20 @@ public class WorldObject
         PlantTime = ServerUtils.GetCurrentTime();
         State = WorldObjectState.Open;
         NeverOpened = false;
-        UpgradeActionCount = (UpgradeActionCount ?? 0) + 1;
+        CountBusinessUpgradeAction(gameItem, playerLevel);
 
         if (FranchiseLocation is not null)
         {
             FranchiseLocation.TimeLastOperated = ServerUtils.GetCurrentTimeSeconds();
         }
+    }
+
+    private void CountBusinessUpgradeAction(GameItem? gameItem, int playerLevel)
+    {
+        if (gameItem?.Upgrade?.CanCountUpgradeActions() != true) return;
+        if (playerLevel < GameSettingsManager.Instance.GetSettings().BusinessUpgradesRequiredLevel) return;
+
+        UpgradeActionCount = (UpgradeActionCount ?? 0) + 1;
     }
 
     public bool IsFranchiseSupplied()

@@ -4,6 +4,8 @@ using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
+using CityVilleDotnet.Factory.Franchise;
+using CityVilleDotnet.Factory.FranchiseLocation;
 using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
@@ -171,5 +173,61 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var act = () => handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
 
         await act.Should().ThrowAsync<Exception>().WithMessage("*not harvestable*");
+    }
+
+    [Fact]
+    public async Task Harvest_ClosedHarvestableBusinessWithEnergyCost_RemovesEnergy()
+    {
+        var business = Faker.WorldObject(itemName: "test_bus_energy", className: BuildingClassType.Business, state: WorldObjectState.ClosedHarvestable, x: 10, y: 10);
+        var world = Faker.World(objects: [business]);
+        var player = Faker.Player(world: world);
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var energyBefore = player.Energy;
+        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
+
+        var response = await handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+        player.Energy.Should().Be(energyBefore - 1);
+    }
+
+    // Business.as only charges harvestEnergyCost when the business is not franchise supplied, and a supplied franchise is harvestable in any state
+    [Fact]
+    public async Task Harvest_FranchiseSuppliedBusiness_NoEnergyCostAndConsumesCommodity()
+    {
+        var location = Faker.FranchiseLocation(commodityLeft: 10);
+        var owner = Faker.Player();
+        owner.Franchises.Add(Faker.Franchise(franchiseType: "test_bus_energy", locations: [location]));
+
+        await Context.AddAsync(owner, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var business = Faker.WorldObject(itemName: "test_bus_energy", className: BuildingClassType.Business, state: WorldObjectState.Closed, x: 10, y: 10);
+        business.SetFranchiseLocation(location, owner.Snuid.ToString());
+        var world = Faker.World(objects: [business]);
+        var player = Faker.Player(world: world);
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var energyBefore = player.Energy;
+        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
+
+        var response = await handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+        player.Energy.Should().Be(energyBefore);
+
+        var updatedLocation = await Context.Set<FranchiseLocation>().FirstAsync(x => x.Id == location.Id, TestContext.Current.CancellationToken);
+
+        updatedLocation.CommodityLeft.Should().Be(0);
+        updatedLocation.CustomersServed.Should().Be(1);
+
+        var updatedBusiness = await Context.Set<WorldObject>().FirstAsync(x => x.Id == business.Id, TestContext.Current.CancellationToken);
+
+        updatedBusiness.State.Should().Be(WorldObjectState.Closed);
     }
 }

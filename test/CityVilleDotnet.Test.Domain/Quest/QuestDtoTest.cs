@@ -1,6 +1,7 @@
 using AwesomeAssertions;
 using Bogus;
 using CityVilleDotnet.Common.Utils;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Factory.Quest;
 using CityVilleDotnet.Test.Domain.Fixtures;
@@ -47,5 +48,17 @@ public class QuestDtoTest(DomainFixture fixture)
         time.Advance(TimeSpan.FromSeconds(11));
 
         quest.ToDto().IsNew.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Quest_ToQuestComponent_OnlySendsActiveQuests()
+    {
+        var faker = new Faker();
+        var active = faker.Quest(questType: QuestType.Active);
+        var quests = new[] { active, faker.Quest(questType: QuestType.Completed), faker.Quest(questType: QuestType.Pending) }.ToList();
+
+        var component = quests.ToQuestComponent();
+
+        component.Should().ContainSingle().Which.Name.Should().Be(active.Name);
     }
 }

@@ -31,7 +31,7 @@ internal sealed class Supply(CityVilleDbContext context) : AmfService<SupplyRequ
 
         player.ProcessGoods(gameItem);
 
-        obj.OpenBusiness();
+        obj.OpenBusiness(player.Level);
 
         player.HandleQuestsProgress("openBusinessByName", itemName: obj.ItemName);
 

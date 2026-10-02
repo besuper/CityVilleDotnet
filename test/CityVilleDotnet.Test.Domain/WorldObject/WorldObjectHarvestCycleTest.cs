@@ -1,5 +1,6 @@
 using AwesomeAssertions;
 using Bogus;
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Factory.WorldObject;
@@ -8,7 +9,7 @@ using CityVilleDotnet.Test.Domain.Fixtures;
 namespace CityVilleDotnet.Test.Domain.WorldObject;
 
 [Collection("Domain")]
-public class WorldObjectHarvestCycleTest(DomainFixture fixture)
+public class WorldObjectHarvestCycleTest
 {
     private const long OneHourMs = 3_600_000;
 
@@ -65,7 +66,7 @@ public class WorldObjectHarvestCycleTest(DomainFixture fixture)
         var faker = new Faker();
         var business = faker.WorldObject(itemName: "test_bus_goods", className: BuildingClassType.Business, state: WorldObjectState.Closed);
 
-        business.OpenBusiness();
+        business.OpenBusiness(playerLevel: 1);
 
         business.State.Should().Be(WorldObjectState.Open);
         business.Visits.Should().Be(0);
@@ -79,7 +80,7 @@ public class WorldObjectHarvestCycleTest(DomainFixture fixture)
         var faker = new Faker();
         var business = faker.WorldObject(itemName: "test_bus_goods", className: BuildingClassType.Business, state: WorldObjectState.Open);
 
-        var act = () => business.OpenBusiness();
+        var act = () => business.OpenBusiness(playerLevel: 1);
 
         act.Should().Throw<Exception>();
     }
@@ -89,7 +90,7 @@ public class WorldObjectHarvestCycleTest(DomainFixture fixture)
     {
         var faker = new Faker();
         var business = faker.WorldObject(itemName: "test_bus_goods", className: BuildingClassType.Business, state: WorldObjectState.Closed);
-        business.OpenBusiness();
+        business.OpenBusiness(playerLevel: 1);
 
         business.UpdateVisits(14);
 
@@ -102,7 +103,7 @@ public class WorldObjectHarvestCycleTest(DomainFixture fixture)
     {
         var faker = new Faker();
         var business = faker.WorldObject(itemName: "test_bus_goods", className: BuildingClassType.Business, state: WorldObjectState.Closed);
-        business.OpenBusiness();
+        business.OpenBusiness(playerLevel: 1);
 
         business.UpdateVisits(15);
 
@@ -115,7 +116,7 @@ public class WorldObjectHarvestCycleTest(DomainFixture fixture)
     {
         var faker = new Faker();
         var business = faker.WorldObject(itemName: "test_bus_goods", className: BuildingClassType.Business, state: WorldObjectState.Closed);
-        business.OpenBusiness();
+        business.OpenBusiness(playerLevel: 1);
         business.UpdateVisits(15);
 
         business.UpdateVisits(5);
@@ -129,7 +130,7 @@ public class WorldObjectHarvestCycleTest(DomainFixture fixture)
     {
         var faker = new Faker();
         var business = faker.WorldObject(itemName: "test_bus_goods", className: BuildingClassType.Business, state: WorldObjectState.Closed);
-        business.OpenBusiness();
+        business.OpenBusiness(playerLevel: 1);
         business.UpdateVisits(15);
 
         business.Harvest();
@@ -150,5 +151,26 @@ public class WorldObjectHarvestCycleTest(DomainFixture fixture)
         plot.State.Should().Be(WorldObjectState.Plowed);
         plot.ContractName.Should().BeNull();
         plot.PlantTime.Should().BeNull();
+    }
+
+    [Fact]
+    public void WorldObject_UpgradeBuilding_Business_CanBeHarvestedThenReopened()
+    {
+        var faker = new Faker();
+        var business = faker.WorldObject(itemName: "test_bus_upgradable", className: BuildingClassType.Business, state: WorldObjectState.Closed);
+        var gameItem = GameSettingsManager.Instance.GetItem("test_bus_upgradable")!;
+
+        business.UpgradeBuilding(gameItem, "test_bus_upgradable_2");
+
+        business.CanHarvest().Should().BeTrue();
+
+        business.Harvest();
+
+        business.State.Should().Be(WorldObjectState.Closed);
+        business.Visits.Should().Be(0);
+
+        business.OpenBusiness(playerLevel: 1);
+
+        business.State.Should().Be(WorldObjectState.Open);
     }
 }

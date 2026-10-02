@@ -1,6 +1,8 @@
 using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.WorldService;
 using CityVilleDotnet.Api.Services.WorldService.Common;
+using CityVilleDotnet.Common.Enums;
+using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Factory.World;
@@ -45,7 +47,7 @@ public class MoveTest(DatabaseFixture fixture) : IntegrationTest(fixture)
     }
 
     [Fact]
-    public async Task Move_BuildingNotFound_ThrowsException()
+    public async Task Move_BuildingNotFound_ThrowsForceReload()
     {
         var building = Faker.WorldObject(x: 10, y: 20, direction: 0);
         var world = Faker.World(objects: [building]);
@@ -67,6 +69,6 @@ public class MoveTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 
         var act = () => handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
-        await act.Should().ThrowAsync<Exception>();
+        (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.ForceReload);
     }
 }

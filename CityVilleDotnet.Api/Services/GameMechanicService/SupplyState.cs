@@ -32,7 +32,7 @@ internal sealed class SupplyState(CityVilleDbContext context) : AmfService<Suppl
             throw new Exception($"No supplyState mechanic on {obj.ItemName}");
 
         player.ProcessGoods(gameItem);
-        obj.OpenBusiness();
+        obj.OpenBusiness(player.Level);
 
         await context.SaveChangesAsync(cancellationToken);
 

@@ -71,7 +71,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
 
         if (isFranchiseHarvest)
         {
-            (coinYield, cashYield) = obj.HarvestFranchise();
+            (coinYield, cashYield) = obj.HarvestFranchise(user.Level);
             secureRands = user.CollectDoobersRewards(itemName, modifierGroupName: "franchise");
         }
         else

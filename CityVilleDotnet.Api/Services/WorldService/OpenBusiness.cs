@@ -37,7 +37,7 @@ internal sealed class OpenBusiness(CityVilleDbContext context) : AmfService<Open
 
         player.ProcessGoods(gameItem);
 
-        obj.OpenBusiness();
+        obj.OpenBusiness(player.Level);
 
         player.HandleQuestsProgress("openBusinessByClass", className: obj.GetClassName().ToString());
         player.HandleQuestsProgress("openBusinessByName", itemName: obj.GetItemName());
