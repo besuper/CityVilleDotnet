@@ -1,15 +1,24 @@
 name: Build & test
 
 on:
+  push:
+    branches:
+      - main
+      - '2012'
   pull_request:
     branches:
       - main
       - '2012'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build & test
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout code

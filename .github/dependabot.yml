@@ -7,5 +7,12 @@ updates:
       - "/CityVilleDotnet.Domain"
       - "/CityVilleDotnet.Persistence"
       - "/FluorineFX"
+      - "/test/CityVilleDotnet.Factory"
+      - "/test/CityVilleDotnet.Test.Domain"
+      - "/test/CityVilleDotnet.Test.Integration"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
       interval: "weekly"

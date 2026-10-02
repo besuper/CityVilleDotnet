@@ -38,9 +38,36 @@ jobs:
             fi
           fi
 
+  test:
+    name: Test
+    needs: check-changes
+    if: needs.check-changes.outputs.has_changes == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: '2012'
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build -c Release --no-restore
+
+      - name: Test
+        run: dotnet test -c Release --no-build
+
   build:
     name: Build
-    needs: check-changes
+    needs: [ check-changes, test ]
     if: needs.check-changes.outputs.has_changes == 'true'
     runs-on: ${{ matrix.os }}
     strategy:
