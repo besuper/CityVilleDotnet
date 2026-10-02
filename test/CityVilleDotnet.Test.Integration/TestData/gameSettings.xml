@@ -12,7 +12,9 @@
              startingLevel="1" startingLightLevel="1" 
              startingXp="0" startingPopulation="0" 
              startingCommodities="100"
-             sellBackRatio="0.05" goodsToCoinRatio="0.20" />
+             sellBackRatio="0.05" goodsToCoinRatio="0.20"
+             growMultiplier="1" cashGainedPerLevel="1"
+             instantReadyCropCostConstant3="0.25" instantReadyResidenceCostConstant5="2.0" />
 
     <citysim>
         <populations>
@@ -89,6 +91,25 @@
             <mastery level="0" bonusMultiplier="0"/>
             <mastery level="1" req="60" bonusMultiplier="10"/>
             <mastery level="2" req="180" bonusMultiplier="20"/>
+        </item>
+        <item name="test_res_slow" type="residence" buyable="true">
+            <requiredLevel>1</requiredLevel>
+            <cost>100</cost>
+            <coinYield>30</coinYield>
+            <growTime>1</growTime>
+            <population min="20" max="80" cap="60"/>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates/>
+        </item>
+        <item name="test_crop_slow" type="plot" buyable="true">
+            <requiredLevel>1</requiredLevel>
+            <cost>15</cost>
+            <coinYield>50</coinYield>
+            <growTime>4</growTime>
+            <sizeX>2</sizeX>
+            <sizeY>2</sizeY>
+            <gates/>
         </item>
         <item name="mun_visitorcenter" type="municipal" buyable="true">
             <requiredLevel>15</requiredLevel>

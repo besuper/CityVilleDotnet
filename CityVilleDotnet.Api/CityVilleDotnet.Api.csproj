@@ -28,6 +28,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="CityVilleDotnet.Test.Integration" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <ProjectReference Include="..\CityVilleDotnet.Common\CityVilleDotnet.Common.csproj" />
 	  <ProjectReference Include="..\CityVilleDotnet.Domain\CityVilleDotnet.Domain.csproj" />
 	  <ProjectReference Include="..\CityVilleDotnet.Persistence\CityVilleDotnet.Persistence.csproj" />
