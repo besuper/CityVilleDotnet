@@ -183,7 +183,7 @@ jobs:
           } >> $GITHUB_OUTPUT
 
       - name: Create pre-release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ needs.check-changes.outputs.version }}
           target_commitish: '2012'
