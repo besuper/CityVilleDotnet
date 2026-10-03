@@ -37,7 +37,7 @@ public class WorldObject
     }
 
     public int Id { get; set; }
-    public string ItemName { get; set; }
+    public string ItemName { get; set; } = string.Empty;
     public BuildingClassType ClassName { get; set; }
     public string? ContractName { get; set; }
 

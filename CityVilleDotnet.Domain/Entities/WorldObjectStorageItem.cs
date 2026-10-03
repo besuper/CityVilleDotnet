@@ -3,7 +3,7 @@ namespace CityVilleDotnet.Domain.Entities;
 public class WorldObjectStorageItem
 {
     public int Id { get; set; }
-    public string Name { get; private set; }
+    public string Name { get; private set; } = string.Empty;
     public int Amount { get; private set; }
 
     private WorldObjectStorageItem()

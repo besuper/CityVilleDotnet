@@ -26,14 +26,16 @@ public static class SocialNetworkUserDtoMapper
 {
     public static SocialNetworkUserDto ToSocialNetworkUserDto(this Friend model, string baseUrl)
     {
+        var friend = model.GetFriend();
+
         return new SocialNetworkUserDto
         {
-            Zid = model.FriendPlayer.Snuid,
-            Snuid = model.FriendPlayer.Snuid,
-            Snid = model.FriendPlayer.Snuid,
-            FirstName = model.FriendPlayer.Username,
-            Name = model.FriendPlayer.Username,
-            Picture = model.FriendPlayer.ProfilePictureUrl is not null ? $"{baseUrl}{model.FriendPlayer.ProfilePictureUrl}" : $"{baseUrl}/blank.png",
+            Zid = friend.Snuid,
+            Snuid = friend.Snuid,
+            Snid = friend.Snuid,
+            FirstName = friend.Username,
+            Name = friend.Username,
+            Picture = friend.ProfilePictureUrl is not null ? $"{baseUrl}{friend.ProfilePictureUrl}" : $"{baseUrl}/blank.png",
             Gender = "M",
             Locale = "EN"
         };

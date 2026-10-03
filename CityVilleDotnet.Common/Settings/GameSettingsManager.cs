@@ -20,7 +20,7 @@ public class GameSettingsManager
     private readonly Dictionary<string, TieredValueItem> _tieredValues;
     private readonly Dictionary<string, AssetPlaceholder> _assetPlaceholders;
     private List<string> _globalTableProviders = [];
-    private FarmingSettings _farmSettings;
+    private FarmingSettings? _farmSettings;
     private List<LevelItem> _levels = [];
     private List<ReputationItem> _reputationLevels = [];
     private List<CollectionSetting> _collections = [];
@@ -70,7 +70,7 @@ public class GameSettingsManager
         }
 
         var serializer = new XmlSerializer(typeof(GameSettings.GameSettings));
-        var derivedItemsCount = 0;
+        int derivedItemsCount;
 
         using (var fileStream = new FileStream(path, FileMode.Open))
         {
@@ -260,7 +260,7 @@ public class GameSettingsManager
         if (!_isInitialized)
             throw new InvalidOperationException("GameSettingsManager not initialized");
 
-        return _items.Select(x => x.Value).Where(x => x.HasKeyword(keyword)).ToList();
+        return _items.Select(x => x.Value).OfType<GameItem>().Where(x => x.HasKeyword(keyword)).ToList();
     }
 
     public RandomModifierTable? GetRandomModifier(string name)
@@ -388,6 +388,6 @@ public class GameSettingsManager
 
     public FarmingSettings GetSettings()
     {
-        return _farmSettings;
+        return _farmSettings ?? throw new InvalidOperationException("Farming settings not initialized");
     }
 }

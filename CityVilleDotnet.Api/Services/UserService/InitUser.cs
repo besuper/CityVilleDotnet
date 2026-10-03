@@ -1,4 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Common.Enums;
+using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
@@ -114,6 +116,8 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
 
         if (!user.IsNew)
             quests["QuestComponent"] = AmfConverter.Convert(user.Quests.ToQuestComponent());
+
+        if (userObj is null) throw new DomainException(GameErrorType.ForceReload, "Error while initializing user");
 
         return new CityVilleResponse().Data(userObj).MetaData(quests);
     }

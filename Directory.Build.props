@@ -1,6 +1,6 @@
 <Project>
 
-    <PropertyGroup>
+    <PropertyGroup Condition="'$(MSBuildProjectName)' != 'FluorineFX'">
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 

@@ -30,7 +30,7 @@ public class InitialVisit(CityVilleDbContext context) : AmfService<InitialVisitR
         if (currentUser is null) throw new Exception("Can't find user with UserId");
 
         var recipientId = Convert.ToInt32(request.Content.RecipientId);
-        var targetFriend = currentUser.Friends.FirstOrDefault(x => x.FriendPlayer.Snuid == recipientId);
+        var targetFriend = currentUser.Friends.FirstOrDefault(x => x.GetFriend().Snuid == recipientId);
 
         if (targetFriend?.FriendPlayer is null) throw new Exception("Can't find friend with recipientId");
 

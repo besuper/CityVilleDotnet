@@ -17,14 +17,14 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
             .AsSplitQuery()
             .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
             .ThenInclude(x => x.FriendPlayer)
-            .ThenInclude(x => x.Worlds.Where(w => w.Type == WorldType.Main))
+            .ThenInclude(x => x!.Worlds.Where(w => w.Type == WorldType.Main))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null)
             throw new Exception("Player not found");
 
         var neighborList = player.Friends
-            .Where(f => !f.FriendPlayer.IsSamantha())
+            .Where(f => !f.GetFriend().IsSamantha())
             .Select(friend => friend.ToNeighborDto()).ToList();
 
         neighborList.Add(new NeighborDto() // Samantha
@@ -32,7 +32,8 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
             Uid = "-1",
             Fake = 1,
             Level = player.Level + 1, // FriendBarSlot::updateSlot
-            Xp = player.Xp + 10
+            Xp = player.Xp + 10,
+            CityName = string.Empty
         });
 
         return new CityVilleResponse().Data(new ASObject

@@ -26,8 +26,8 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.Friends)
             .ThenInclude(x => x.FriendPlayer)
-            .ThenInclude(x => x.Worlds.Where(w => w.Type == WorldType.Main))
-            .ThenInclude(x => x!.Objects.Where(o => request.HelpParams.HelpTargets.Contains(o.WorldFlatId)))
+            .ThenInclude(x => x!.Worlds.Where(w => w.Type == WorldType.Main))
+            .ThenInclude(x => x.Objects.Where(o => request.HelpParams.HelpTargets.Contains(o.WorldFlatId)))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (currentUser is null)
@@ -62,7 +62,7 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
                 throw new Exception($"Not implemented help type {request.Type}");
         }
 
-        var targetFriend = currentUser.Friends.FirstOrDefault(x => x.FriendPlayer.Snuid == Convert.ToInt32(request.HelpParams.RecipientId));
+        var targetFriend = currentUser.Friends.FirstOrDefault(x => x.GetFriend().Snuid == Convert.ToInt32(request.HelpParams.RecipientId));
 
         if (targetFriend?.FriendPlayer is null) throw new Exception($"Can't find friend with recipientId {request.HelpParams.RecipientId}");
         if (targetFriend.EnergyLeft <= 0) return GatewayService.CreateEmptyResponse();

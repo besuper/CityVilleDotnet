@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CityVilleDotnet.Api.Pages.Account;
 
-public class LoginModel(SignInManager<ApplicationUser> signInManager, IConfiguration configuration) : PageModel
+public class LoginModel(SignInManager<ApplicationUser> signInManager) : PageModel
 {
     [BindProperty] public required LoginInputModel Input { get; set; }
     [TempData] public string? ErrorMessage { get; set; }

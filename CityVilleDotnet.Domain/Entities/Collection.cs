@@ -3,7 +3,7 @@
 public class Collection
 {
     public int Id { get; private set; }
-    public string Name { get; private set; }
+    public string Name { get; private set; } = string.Empty;
     public int Completed { get; private set; } = 0;
 
     public List<CollectionItem> Items { get; private set; } = [];

@@ -21,7 +21,7 @@ public class BuyConsumableTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         await Context.AddAsync(user, TestContext.Current.CancellationToken);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var handler = new BuyConsumable(Context, NullLogger<BuyConsumable>.Instance);
+        var handler = new BuyConsumable(Context);
         var request = new BuyConsumableRequest { ItemName = "test_gate_material", Amount = 2 };
 
         var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
@@ -42,7 +42,7 @@ public class BuyConsumableTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         await Context.AddAsync(user, TestContext.Current.CancellationToken);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var handler = new BuyConsumable(Context, NullLogger<BuyConsumable>.Instance);
+        var handler = new BuyConsumable(Context);
         var request = new BuyConsumableRequest { ItemName = "test_gate_material_coin", Amount = 1 };
 
         var response = await handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);

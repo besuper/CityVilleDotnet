@@ -67,25 +67,24 @@ public class QuestSettingsManager
         ["qt_russianresidence"] = ["res_russian"],
         ["qt_venetianresidence"] = ["lm_venetianpalace"],
     };
-    
-    private static QuestSettingsManager? _instance;
-    private static readonly object Lock = new();
+
+    private static readonly Lock Lock = new();
     private readonly Dictionary<string, QuestItem> _items = new();
-    private bool _isInitialized = false;
+    private bool _isInitialized;
 
     public static QuestSettingsManager Instance
     {
         get
         {
-            if (_instance is null)
+            if (field is null)
             {
                 lock (Lock)
                 {
-                    _instance ??= new QuestSettingsManager();
+                    field ??= new QuestSettingsManager();
                 }
             }
 
-            return _instance;
+            return field;
         }
     }
 

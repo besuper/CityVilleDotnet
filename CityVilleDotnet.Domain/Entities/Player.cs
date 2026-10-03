@@ -44,7 +44,7 @@ public class Player
     public bool IsNew { get; private set; } = true;
     public bool FirstDay { get; private set; } = true;
     public DateTimeOffset CreationTimestamp { get; private set; }
-    public string Username { get; private set; }
+    public string Username { get; private set; } = string.Empty;
     public List<LotOrder> LotOrders { get; set; } = [];
     public List<VisitorHelpOrder> VisitorHelpOrders { get; set; } = [];
     public List<Mastery> Masteries { get; set; } = [];
@@ -1445,7 +1445,7 @@ public class Player
 
     public List<SocialNetworkUserDto> GetSocialNetworkUserFriendsList(string baseUrl)
     {
-        return Friends.Where(f => !f.FriendPlayer.IsSamantha()).Select(friend => friend.ToSocialNetworkUserDto(baseUrl)).ToList();
+        return Friends.Where(f => f.FriendPlayer is not null && !f.FriendPlayer.IsSamantha()).Select(friend => friend.ToSocialNetworkUserDto(baseUrl)).ToList();
     }
 
     public bool HasFriend(Player friend)

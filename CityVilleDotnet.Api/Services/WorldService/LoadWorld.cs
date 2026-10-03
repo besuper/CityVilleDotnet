@@ -59,7 +59,7 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
 
         var dtoUser = playerToLoad.ToDto(allWorlds);
 
-        var response = (ASObject)AmfConverter.Convert(dtoUser.UserInfo);
+        var response = AmfConverter.Convert(dtoUser.UserInfo) as ASObject;
         response!["franchises"] = new List<object>();
         response["firstTimeLoaded"] = firstTimeLoaded;
 

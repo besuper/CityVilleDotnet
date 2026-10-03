@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-public class BuyConsumable(CityVilleDbContext context, ILogger<BuyConsumable> logger) : AmfService<BuyConsumableRequest>
+public class BuyConsumable(CityVilleDbContext context) : AmfService<BuyConsumableRequest>
 {
     public override async Task<ASObject> HandlePacket(BuyConsumableRequest request, Guid playerId, CancellationToken cancellationToken)
     {

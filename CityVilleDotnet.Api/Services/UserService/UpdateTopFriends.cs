@@ -5,7 +5,7 @@ using FluorineFx;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-public class UpdateTopFriends(CityVilleDbContext context) : AmfService
+public class UpdateTopFriends : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {

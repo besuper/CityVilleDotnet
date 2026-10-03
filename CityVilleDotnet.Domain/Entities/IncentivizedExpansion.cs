@@ -3,7 +3,7 @@ namespace CityVilleDotnet.Domain.Entities;
 public class IncentivizedExpansion
 {
     public int Id { get; set; }
-    public string ExpansionId { get; private set; }
+    public string ExpansionId { get; private set; } = string.Empty;
     public int? X { get; private set; }
     public int? Y { get; private set; }
     public long? StartTimestamp { get; private set; }

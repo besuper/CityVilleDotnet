@@ -13,7 +13,7 @@ namespace CityVilleDotnet.Domain.Entities;
 public class World
 {
     public int Id { get; set; }
-    public string WorldName { get; private set; }
+    public string WorldName { get; private set; } = string.Empty;
     public int SizeX { get; private set; }
     public int SizeY { get; private set; }
     public int Population { get; private set; }

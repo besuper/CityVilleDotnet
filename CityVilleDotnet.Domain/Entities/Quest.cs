@@ -23,11 +23,11 @@ public class Quest
 
     public int Id { get; private set; }
 
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
-    public int[] Progress { get; set; }
+    public int[] Progress { get; set; } = [];
 
-    public int[] Purchased { get; set; }
+    public int[] Purchased { get; set; } = [];
 
     public QuestType QuestType { get; set; }
 

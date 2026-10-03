@@ -83,7 +83,7 @@ public static class UserDtoMapper
                     Level = model.Level,
                     Licenses = new ASObject(model.Licenses.ToDictionary(x => x.Name, x => (object)x.Amount)),
                     Neighbors = model.Friends
-                        .Where(f => !f.FriendPlayer.IsSamantha() && f.Status == FriendshipStatus.Accepted)
+                        .Where(f => !f.GetFriend().IsSamantha() &&f.Status == FriendshipStatus.Accepted)
                         .Select(friend => friend.ToNeighborDto()).ToList(), // TODO: Change this after moving friends to player
                     Options = new OptionsDto
                     {
@@ -231,7 +231,7 @@ public static class UserDtoMapper
             {
                 "construction_items", world.Objects
                     .Where(x => x.ClassName == BuildingClassType.ConstructionSite && x.TargetBuildingName != null)
-                    .GroupBy(x => x.TargetBuildingName)
+                    .GroupBy(x => x.TargetBuildingName!)
                     .ToDictionary(g => g.Key, g => g.Count())
             },
             { "malls_items", new ASObject() }, // TODO: Implement containers

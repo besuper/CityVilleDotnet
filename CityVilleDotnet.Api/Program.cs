@@ -77,7 +77,7 @@ builder.Services.AddLocalization();
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-    var supportedCultures = LocaleUtils.SUPPORTED_LOCALES.Select(x => new CultureInfo(x)).ToList();
+    var supportedCultures = LocaleUtils.SupportedLocales.Select(x => new CultureInfo(x)).ToList();
 
     options.DefaultRequestCulture = new RequestCulture("en-US");
     options.SupportedCultures = supportedCultures;

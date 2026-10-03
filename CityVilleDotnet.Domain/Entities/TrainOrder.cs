@@ -7,9 +7,9 @@ namespace CityVilleDotnet.Domain.Entities;
 public class TrainOrder
 {
     public int Id { get; set; }
-    public string ItemName { get; private set; }
+    public string ItemName { get; private set; } = string.Empty;
     public TrainOperationType Operation { get; private set; }
-    public string CommodityName { get; private set; }
+    public string CommodityName { get; private set; } = string.Empty;
     public long TimeSent { get; private set; }
     public List<TrainOrderWorker> Workers { get; private set; } = [];
 

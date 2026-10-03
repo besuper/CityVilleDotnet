@@ -237,7 +237,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         var friendship = await dbContext.Set<Friend>()
             .Include(x => x.FriendPlayer)
-            .FirstOrDefaultAsync(x => x.Player.Id == user.Id && x.FriendPlayer.Username == userName, ct);
+            .FirstOrDefaultAsync(x => x.GetPlayer().Id == user.Id && x.GetFriend().Username == userName, ct);
 
         if (friendship is null)
         {
@@ -279,7 +279,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         var friendship = await dbContext.Set<Friend>()
             .Include(x => x.FriendPlayer)
-            .FirstOrDefaultAsync(x => x.Player.Id == user.Id && x.FriendPlayer.Username == userName, ct);
+            .FirstOrDefaultAsync(x => x.GetPlayer().Id == user.Id && x.GetFriend().Username == userName, ct);
 
         if (friendship is null)
         {
@@ -288,7 +288,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         }
 
         var targetFriendship = await dbContext.Set<Friend>()
-            .FirstOrDefaultAsync(x => x.Player.Id == friendship.FriendPlayer!.Id && x.FriendPlayer!.Id == user.Id, ct);
+            .FirstOrDefaultAsync(x => x.GetPlayer().Id == friendship.GetFriend().Id && x.GetFriend().Id == user.Id, ct);
 
         dbContext.Set<Friend>().Remove(friendship);
 

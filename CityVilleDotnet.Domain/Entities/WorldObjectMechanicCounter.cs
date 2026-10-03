@@ -3,7 +3,7 @@ namespace CityVilleDotnet.Domain.Entities;
 public class WorldObjectMechanicCounter
 {
     public int Id { get; set; }
-    public string MechanicType { get; private set; }
+    public string MechanicType { get; private set; } = string.Empty;
     public int Count { get; private set; }
 
     private WorldObjectMechanicCounter()

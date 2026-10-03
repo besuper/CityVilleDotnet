@@ -4,7 +4,7 @@ public class WorldObjectSlot
 {
     public int Id { get; set; }
     public int SlotIndex { get; private set; }
-    public string ItemName { get; private set; }
+    public string ItemName { get; private set; } = string.Empty;
 
     private WorldObjectSlot()
     {

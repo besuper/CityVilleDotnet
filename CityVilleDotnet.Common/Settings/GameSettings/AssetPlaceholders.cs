@@ -80,6 +80,6 @@ public static class AssetPlaceholders
         return Constructions
             .Where(x => x.Key.X == x.Key.Y && x.Key.X <= Math.Min(footprint.X, footprint.Y))
             .MaxBy(x => x.Key.X)
-            .Value ?? Constructions[(1, 1)];
+            .Value;
     }
 }

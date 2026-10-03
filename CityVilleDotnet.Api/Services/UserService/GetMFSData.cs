@@ -21,7 +21,7 @@ public class GetMFSData(CityVilleDbContext context, IHttpContextAccessor httpCon
 
         var baseUrl = $"{httpContextAccessor.HttpContext!.Request.Scheme}://{httpContextAccessor.HttpContext.Request.Host}{httpContextAccessor.HttpContext.Request.PathBase}";
 
-        var friends = player.Friends.Where(p => !p.FriendPlayer.IsSamantha()).Select(f => f.ToSocialNetworkUserDto(baseUrl)).ToList();
+        var friends = player.Friends.Where(p => p.FriendPlayer is not null && p.FriendPlayer.IsSamantha()).Select(f => f.ToSocialNetworkUserDto(baseUrl)).ToList();
 
         return new CityVilleResponse().Data(new ASObject
         {

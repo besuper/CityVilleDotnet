@@ -43,7 +43,7 @@ public class PreloadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger)
             .Include(x => x.SeenFlags)
             .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
             .ThenInclude(x => x.FriendPlayer)
-            .ThenInclude(x => x.Worlds.Where(w => w.Type == WorldType.Main))
+            .ThenInclude(x => x!.Worlds.Where(w => w.Type == WorldType.Main))
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.Licenses)
@@ -70,7 +70,7 @@ public class PreloadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger)
 
         var dtoUser = user.ToDto(allWorlds);
 
-        var response = (ASObject)AmfConverter.Convert(dtoUser.UserInfo);
+        var response = AmfConverter.Convert(dtoUser.UserInfo) as ASObject;
         response!["franchises"] = new List<object>();
 
         return new CityVilleResponse().Data(response);

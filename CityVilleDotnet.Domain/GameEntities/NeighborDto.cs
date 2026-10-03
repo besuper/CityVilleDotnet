@@ -6,14 +6,14 @@ namespace CityVilleDotnet.Domain.GameEntities;
 
 public class NeighborDto
 {
-    [JsonPropertyName("uid")] public string Uid { get; set; }
+    [JsonPropertyName("uid")] public required string Uid { get; set; }
     [JsonPropertyName("fake")] public int? Fake { get; set; }
     [JsonPropertyName("empty")] public bool Empty { get; set; } = false;
 
     [JsonPropertyName("level")] public int Level { get; set; }
     [JsonPropertyName("gold")] public int Gold { get; set; }
     [JsonPropertyName("xp")] public int Xp { get; set; }
-    [JsonPropertyName("cityname")] public string CityName { get; set; }
+    [JsonPropertyName("cityname")] public required string CityName { get; set; }
     [JsonPropertyName("socialLevel")] public int SocialLevel { get; set; }
 
     [JsonPropertyName("firstTimeVisit")] public bool FirstTimeVisit { get; set; }
@@ -40,18 +40,20 @@ public static class NeighborDtoMapper
 {
     public static NeighborDto ToNeighborDto(this Friend model)
     {
-        return new NeighborDto()
+        var friend = model.GetFriend();
+        
+        return new NeighborDto
         {
-            Uid = model.FriendPlayer.Snuid.ToString(),
-            Zid = model.FriendPlayer.Snuid,
-            Snuid = model.FriendPlayer.Snuid,
-            Snid = model.FriendPlayer.Snuid,
-            Level = model.FriendPlayer.Level,
+            Uid = friend.Snuid.ToString(),
+            Zid = friend.Snuid,
+            Snuid = friend.Snuid,
+            Snid = friend.Snuid,
+            Level = friend.Level,
 
-            Gold = model.FriendPlayer.Gold,
-            Xp = model.FriendPlayer.Xp,
-            SocialLevel = model.FriendPlayer.SocialLevel,
-            CityName = model.FriendPlayer.GetWorldByType(WorldType.Main)?.WorldName ?? "Unknown city",
+            Gold = friend.Gold,
+            Xp = friend.Xp,
+            SocialLevel = friend.SocialLevel,
+            CityName = friend.GetWorldByType(WorldType.Main)?.WorldName ?? "Unknown city",
 
             FirstTimeVisit = false,
             RollCall = false,

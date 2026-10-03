@@ -62,7 +62,7 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
 
         var dtoUser = playerToLoad.ToDto(allWorlds);
 
-        var response = (ASObject)AmfConverter.Convert(dtoUser.UserInfo);
+        var response = AmfConverter.Convert(dtoUser.UserInfo) as ASObject;
 
         // FIXME: Don't remove world in open world for owned worlds otherwise it will clear the map. This cause weird reload in game, might not be the best way
         if (!request.PreloadRequired && playerToLoad.Id != playerId)

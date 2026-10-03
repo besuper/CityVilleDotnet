@@ -15,13 +15,15 @@ public static class FriendDtoMapper
 {
     public static FriendDto ToDto(this Friend model)
     {
-        return new FriendDto()
+        var friend = model.GetFriend();
+        
+        return new FriendDto
         {
-            UserName = model.FriendPlayer.Username,
-            Level = model.FriendPlayer.Level,
+            UserName = friend.Username,
+            Level = friend.Level,
             Status = model.Status,
             Requested = model.Requested,
-            ProfilePictureUrl = model.FriendPlayer.ProfilePictureUrl
+            ProfilePictureUrl = friend.ProfilePictureUrl
         };
     }
 }

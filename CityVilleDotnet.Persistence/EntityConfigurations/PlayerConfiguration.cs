@@ -38,7 +38,7 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
             .OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(x => x.Masteries)
             .WithOne()
-            .IsRequired(true)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(x => x.Friends);
         builder.HasOne(x => x.AppUser);
