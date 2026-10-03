@@ -1,5 +1,4 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
-using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Common.Settings;
@@ -20,14 +19,14 @@ internal sealed class StartContract(CityVilleDbContext context) : AmfService<Sta
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x.Objects.Where(o => o.X == request.Building.Position.X && o.Y == request.Building.Position.Y))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.Building.Id || o.TempId == request.Building.Id))
             .ThenInclude(x => x.Workers)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
 
-        var obj = player.GetWorld().GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z);
+        var obj = player.GetWorld().GetBuildingByClientId(request.Building.Id);
 
         if (obj is null)
             throw new Exception("Can't find building with coords");
@@ -68,9 +67,9 @@ public class StartContractRequest
 
 public class BuildingStartContractRequest
 {
-    [AmfParam("position")] public PerformActionPositionRequest Position { get; set; } = new();
     [AmfParam("state")] public WorldObjectState State { get; set; }
     [AmfParam("contractName")] public string ContractName { get; set; } = string.Empty;
+    [AmfParam("id")] public int Id { get; set; }
 }
 
 public class StartContractValidator : AbstractValidator<StartContractRequest>

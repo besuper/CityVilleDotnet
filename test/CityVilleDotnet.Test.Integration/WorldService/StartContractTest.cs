@@ -18,13 +18,13 @@ public class StartContractTest(DatabaseFixture fixture) : IntegrationTest(fixtur
 {
     private static readonly DateTimeOffset StartTime = new(2026, 1, 15, 12, 0, 0, TimeSpan.Zero);
 
-    private static StartContractRequest CreateStartContractRequest(int x, int y, string contractName, long? clientEnqueueTime = null)
+    private static StartContractRequest CreateStartContractRequest(int id, string contractName, long? clientEnqueueTime = null)
     {
         return new StartContractRequest
         {
             Building = new BuildingStartContractRequest
             {
-                Position = new PerformActionPositionRequest { X = x, Y = y, Z = 0 },
+                Id = id,
                 State = WorldObjectState.Planted,
                 ContractName = contractName
             },
@@ -47,7 +47,7 @@ public class StartContractTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var clientEnqueueTime = StartTime.AddSeconds(-5).ToUnixTimeSeconds();
         var handler = new StartContract(Context);
 
-        var response = await handler.HandlePacket(CreateStartContractRequest(10, 10, "plot_strawberries", clientEnqueueTime), player.Id, TestContext.Current.CancellationToken);
+        var response = await handler.HandlePacket(CreateStartContractRequest(plot.Id, "plot_strawberries", clientEnqueueTime), player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         player.Gold.Should().Be(goldBefore - 15);
@@ -70,7 +70,7 @@ public class StartContractTest(DatabaseFixture fixture) : IntegrationTest(fixtur
 
         var handler = new StartContract(Context);
 
-        var act = () => handler.HandlePacket(CreateStartContractRequest(10, 10, "plot_strawberries"), player.Id, TestContext.Current.CancellationToken);
+        var act = () => handler.HandlePacket(CreateStartContractRequest(plot.Id, "plot_strawberries"), player.Id, TestContext.Current.CancellationToken);
 
         (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.NotEnoughMoney);
         player.Gold.Should().Be(14);
@@ -91,7 +91,7 @@ public class StartContractTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var goldBefore = player.Gold;
         var handler = new StartContract(Context);
 
-        var act = () => handler.HandlePacket(CreateStartContractRequest(10, 10, "unknown_contract"), player.Id, TestContext.Current.CancellationToken);
+        var act = () => handler.HandlePacket(CreateStartContractRequest(plot.Id, "unknown_contract"), player.Id, TestContext.Current.CancellationToken);
 
         await act.Should().ThrowAsync<Exception>().WithMessage("*unknown_contract*");
         player.Gold.Should().Be(goldBefore);
@@ -112,7 +112,7 @@ public class StartContractTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var goldBefore = player.Gold;
         var handler = new StartContract(Context);
 
-        var response = await handler.HandlePacket(CreateStartContractRequest(10, 10, "test_crop_cash"), player.Id, TestContext.Current.CancellationToken);
+        var response = await handler.HandlePacket(CreateStartContractRequest(plot.Id, "test_crop_cash"), player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         player.Cash.Should().Be(6);
@@ -133,7 +133,7 @@ public class StartContractTest(DatabaseFixture fixture) : IntegrationTest(fixtur
 
         var handler = new StartContract(Context);
 
-        var act = () => handler.HandlePacket(CreateStartContractRequest(10, 10, "test_crop_cash"), player.Id, TestContext.Current.CancellationToken);
+        var act = () => handler.HandlePacket(CreateStartContractRequest(plot.Id, "test_crop_cash"), player.Id, TestContext.Current.CancellationToken);
 
         (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.NotEnoughMoney);
         player.Cash.Should().Be(3);
@@ -154,7 +154,7 @@ public class StartContractTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var goldBefore = player.Gold;
         var handler = new StartContract(Context);
 
-        var response = await handler.HandlePacket(CreateStartContractRequest(10, 10, "test_textile_contract"), player.Id, TestContext.Current.CancellationToken);
+        var response = await handler.HandlePacket(CreateStartContractRequest(factory.Id, "test_textile_contract"), player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         player.Goods.Should().Be(50);
@@ -175,7 +175,7 @@ public class StartContractTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var goldBefore = player.Gold;
         var handler = new StartContract(Context);
 
-        var act = () => handler.HandlePacket(CreateStartContractRequest(10, 10, "plot_corn"), player.Id, TestContext.Current.CancellationToken);
+        var act = () => handler.HandlePacket(CreateStartContractRequest(plot.Id, "plot_corn"), player.Id, TestContext.Current.CancellationToken);
 
         (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.InvalidState);
         player.Gold.Should().Be(goldBefore);
