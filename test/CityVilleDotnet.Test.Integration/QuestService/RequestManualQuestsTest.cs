@@ -85,10 +85,10 @@ public class RequestManualQuestsTest(DatabaseFixture fixture) : IntegrationTest(
         var data = response["data"] as List<ASObject>;
         data.Should().NotBeNull();
         data.Should().HaveCount(1);
-        data![0]["questStarted"].Should().Be(true);
+        data[0]["questStarted"].Should().Be(true);
 
         var quest = await Context.Set<Quest>().FirstOrDefaultAsync(x => x.Name == "qm_test_quest_high_level", TestContext.Current.CancellationToken);
         quest.Should().NotBeNull();
-        quest!.QuestType.Should().Be(Domain.Enums.QuestType.Active);
+        quest.QuestType.Should().Be(Domain.Enums.QuestType.Active);
     }
 }

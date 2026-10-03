@@ -7,7 +7,7 @@ using CityVilleDotnet.Test.Domain.Fixtures;
 namespace CityVilleDotnet.Test.Domain.WorldObject;
 
 [Collection("Domain")]
-public class WorldObjectTest(DomainFixture fixture)
+public class WorldObjectTest
 {
     [Fact]
     public void WorldObject_MarkFreeItemGiven_SetsFlag()

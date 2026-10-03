@@ -10,7 +10,7 @@ using Microsoft.Extensions.Time.Testing;
 namespace CityVilleDotnet.Test.Domain.Quest;
 
 [Collection("Domain")]
-public class QuestDtoTest(DomainFixture fixture)
+public class QuestDtoTest
 {
     private static readonly DateTimeOffset StartTime = new(2026, 1, 15, 12, 0, 0, TimeSpan.Zero);
 

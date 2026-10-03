@@ -6,7 +6,7 @@ using CityVilleDotnet.Test.Domain.Fixtures;
 namespace CityVilleDotnet.Test.Domain.Progression;
 
 [Collection("Domain")]
-public class PlayerProgressionTest(DomainFixture fixture)
+public class PlayerProgressionTest
 {
     [Fact]
     public void Player_AddXp_BelowNextLevel_StaysAtLevel()

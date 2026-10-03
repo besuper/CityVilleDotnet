@@ -38,7 +38,7 @@ public class LootTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var data = response["data"] as ASObject;
         data.Should().NotBeNull();
 
-        var loot = data!["loot"] as string;
+        var loot = data["loot"] as string;
         loot.Should().BeOneOf("test_animal_common", "test_animal_uncommon", "test_animal_rare");
 
         var storedEnclosure = await Context.Set<WorldObject>()

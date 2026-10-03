@@ -2,12 +2,11 @@ using AwesomeAssertions;
 using Bogus;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Factory.Player;
-using CityVilleDotnet.Test.Domain.Fixtures;
 
 namespace CityVilleDotnet.Test.Domain.Inventory;
 
 [Collection("Domain")]
-public class PlayerConsumeInventoryGateTest(DomainFixture fixture)
+public class PlayerConsumeInventoryGateTest
 {
     private const string BuildingName = "test_gated_building";
     private const string MaterialName = "test_gate_material";
@@ -49,7 +48,7 @@ public class PlayerConsumeInventoryGateTest(DomainFixture fixture)
         var player = faker.Player();
         var buildingItem = GameSettingsManager.Instance.GetItem(BuildingName)!;
 
-        player.AddItem(MaterialName, 1);
+        player.AddItem(MaterialName);
 
         var act = () => player.ConsumeInventoryGate(buildingItem, "build");
 

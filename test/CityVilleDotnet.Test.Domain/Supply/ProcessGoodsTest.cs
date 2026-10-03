@@ -9,7 +9,7 @@ using CityVilleDotnet.Test.Domain.Fixtures;
 namespace CityVilleDotnet.Test.Domain.Supply;
 
 [Collection("Domain")]
-public class ProcessGoodsTest(DomainFixture fixture)
+public class ProcessGoodsTest
 {
     [Fact]
     public void Player_ProcessGoods_UseGoods()

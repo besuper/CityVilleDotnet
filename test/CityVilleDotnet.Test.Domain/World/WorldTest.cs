@@ -10,7 +10,7 @@ using CityVilleDotnet.Test.Domain.Fixtures;
 namespace CityVilleDotnet.Test.Domain.World;
 
 [Collection("Domain")]
-public class WorldTest(DomainFixture fixture)
+public class WorldTest
 {
     [Fact]
     public void World_GetBuildingByClientId_MatchesWorldFlatId()

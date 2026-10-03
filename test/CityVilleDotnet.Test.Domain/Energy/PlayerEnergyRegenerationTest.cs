@@ -9,7 +9,7 @@ using Microsoft.Extensions.Time.Testing;
 namespace CityVilleDotnet.Test.Domain.Energy;
 
 [Collection("Domain")]
-public class PlayerEnergyRegenerationTest(DomainFixture fixture)
+public class PlayerEnergyRegenerationTest
 {
     private static readonly DateTimeOffset StartTime = new(2026, 1, 15, 12, 0, 0, TimeSpan.Zero);
     private static TimeSpan RegenCycle => TimeSpan.FromSeconds(GameSettingsManager.Instance.GetSettings().EnergyRegenerationSeconds);

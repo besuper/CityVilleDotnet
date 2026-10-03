@@ -103,7 +103,7 @@ public class CollectionTest
         var result = collection.RemoveItem(itemName, 2);
 
         result.Should().NotBeNull();
-        result!.Name.Should().Be(itemName);
+        result.Name.Should().Be(itemName);
         collection.Items.Count.Should().Be(0);
     }
 
@@ -125,7 +125,7 @@ public class CollectionTest
         var collection = faker.Collection();
         var itemName = faker.Lorem.Word();
 
-        collection.AddItem(itemName, 1);
+        collection.AddItem(itemName);
 
         var act = () => collection.RemoveItem(itemName, 5);
 

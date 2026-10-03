@@ -6,7 +6,7 @@ using CityVilleDotnet.Test.Domain.Fixtures;
 namespace CityVilleDotnet.Test.Domain.Inventory;
 
 [Collection("Domain")]
-public class PlayerInventoryTest(DomainFixture fixture)
+public class PlayerInventoryTest
 {
     [Fact]
     public void Player_AddItem_Success()
@@ -105,7 +105,7 @@ public class PlayerInventoryTest(DomainFixture fixture)
         var result = player.RemoveItem(itemName, 2);
 
         result.Should().NotBeNull();
-        result!.Name.Should().Be(itemName);
+        result.Name.Should().Be(itemName);
         player.InventoryItems.Count.Should().Be(0);
     }
 
@@ -127,7 +127,7 @@ public class PlayerInventoryTest(DomainFixture fixture)
         var player = faker.Player();
         var itemName = faker.Lorem.Word();
 
-        player.AddItem(itemName, 1);
+        player.AddItem(itemName);
 
         var act = () => player.RemoveItem(itemName, 5);
 

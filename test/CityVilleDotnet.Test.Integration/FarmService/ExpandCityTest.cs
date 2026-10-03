@@ -4,7 +4,6 @@ using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Factory.InventoryItem;
-using CityVilleDotnet.Factory.MapRect;
 using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Test.Integration.Fixtures;
@@ -51,7 +50,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var data = response["data"] as ASObject;
         data.Should().NotBeNull();
 
-        var remappedTrees = data!["trees"] as List<object>;
+        var remappedTrees = data["trees"] as List<object>;
         remappedTrees.Should().NotBeNull();
         remappedTrees.Should().HaveCount(2);
 
@@ -76,7 +75,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 
         // First expansion requires 1 permit, so 5 - 1 = 4
         updatedPermit.Should().NotBeNull();
-        updatedPermit!.Amount.Should().Be(4);
+        updatedPermit.Amount.Should().Be(4);
     }
 
     [Fact]

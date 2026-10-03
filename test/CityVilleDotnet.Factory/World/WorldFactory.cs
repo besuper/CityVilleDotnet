@@ -1,5 +1,4 @@
 using Bogus;
-using CityVilleDotnet.Domain.Entities;
 
 namespace CityVilleDotnet.Factory.World;
 

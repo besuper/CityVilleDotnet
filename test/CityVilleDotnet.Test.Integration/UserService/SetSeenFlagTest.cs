@@ -5,7 +5,6 @@ using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Test.Integration.Fixtures;
 using FluentValidation.TestHelper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CityVilleDotnet.Test.Integration.UserService;
 

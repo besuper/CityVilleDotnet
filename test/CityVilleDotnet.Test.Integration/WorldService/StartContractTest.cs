@@ -1,6 +1,5 @@
 using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.WorldService;
-using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Common.Utils;

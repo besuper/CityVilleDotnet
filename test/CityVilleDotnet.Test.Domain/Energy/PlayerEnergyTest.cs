@@ -8,7 +8,7 @@ using CityVilleDotnet.Test.Domain.Fixtures;
 namespace CityVilleDotnet.Test.Domain.Energy;
 
 [Collection("Domain")]
-public class PlayerEnergyTest(DomainFixture fixture)
+public class PlayerEnergyTest
 {
     [Fact]
     public void Player_RemoveEnergy_EnoughEnergy_DecreasesEnergy()

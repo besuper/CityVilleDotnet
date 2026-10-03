@@ -11,7 +11,7 @@ namespace CityVilleDotnet.Test.Domain.WorldObject;
 // grown after growTime * inGameDaySeconds * growMultiplier, withered after growTime * inGameDaySeconds * witherMultiplier
 // plot_strawberries: 0.001 * 82800s = 82.8s to grow, 248.4s to wither. res_cottage3: 0.005 * 82800s = 414s to grow
 [Collection("Domain")]
-public class WorldObjectGrowthTest(DomainFixture fixture)
+public class WorldObjectGrowthTest
 {
     private static readonly DateTimeOffset StartTime = new(2026, 1, 15, 12, 0, 0, TimeSpan.Zero);
 

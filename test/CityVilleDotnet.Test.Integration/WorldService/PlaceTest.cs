@@ -56,7 +56,7 @@ public class PlaceTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var building = await Context.Set<WorldObject>().FirstOrDefaultAsync(o => o.X == 10 && o.Y == 20, TestContext.Current.CancellationToken);
 
         building.Should().NotBeNull();
-        building!.TargetBuildingName.Should().Be("test_bridge_expansion");
+        building.TargetBuildingName.Should().Be("test_bridge_expansion");
     }
 
     [Fact]

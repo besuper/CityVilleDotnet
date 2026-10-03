@@ -70,7 +70,7 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var data = response["data"] as ASObject;
 
         data.Should().NotBeNull();
-        data!["retCoinYield"].Should().Be(20);
+        data["retCoinYield"].Should().Be(20);
 
         var updatedResidence = await Context.Set<WorldObject>().FirstAsync(x => x.Id == residence.Id, TestContext.Current.CancellationToken);
 

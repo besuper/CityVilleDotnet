@@ -8,7 +8,7 @@ using CityVilleDotnet.Test.Domain.Fixtures;
 namespace CityVilleDotnet.Test.Domain.Quest;
 
 [Collection("Domain")]
-public class ExpireQuestTest(DomainFixture fixture)
+public class ExpireQuestTest
 {
     [Fact]
     public void Player_ExpireQuest_ActiveQuest_SetsExpired()

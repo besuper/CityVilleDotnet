@@ -6,7 +6,7 @@ using CityVilleDotnet.Test.Domain.Fixtures;
 namespace CityVilleDotnet.Test.Domain.Mastery;
 
 [Collection("Domain")]
-public class MasteryTest(DomainFixture fixture)
+public class MasteryTest
 {
     [Fact]
     public void Player_IncrementMastery_CreatesNewMastery()

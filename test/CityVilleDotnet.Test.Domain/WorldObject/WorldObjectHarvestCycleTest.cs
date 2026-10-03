@@ -4,7 +4,6 @@ using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Factory.WorldObject;
-using CityVilleDotnet.Test.Domain.Fixtures;
 
 namespace CityVilleDotnet.Test.Domain.WorldObject;
 
