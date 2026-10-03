@@ -65,6 +65,7 @@ public class WorldObject
     public int? Visits { get; private set; }
     public bool NeverOpened { get; private set; }
     public int? UpgradeActionCount { get; private set; }
+    public string? UpgradeItemName { get; private set; }
     public int? BuiltFloorCount { get; private set; }
     public long? ActivationTime { get; private set; }
     public long? InactiveTime { get; private set; }
@@ -654,6 +655,7 @@ public class WorldObject
     public void UpgradeBuilding(GameItem item, string newItemName)
     {
         ItemName = newItemName;
+        UpgradeItemName = null;
         UpgradeActionCount = 0;
 
         if (ClassName == BuildingClassType.Municipal && item.Behavior == "upgradable")
@@ -1001,6 +1003,11 @@ public class WorldObject
             throw new Exception($"No worker spot left on object {WorldFlatId}");
 
         Workers.Add(new WorldObjectWorker(-(CountPurchasedWorkers() + 1)));
+    }
+
+    public void SetUpgradeItemName(string upgradeItemName)
+    {
+        UpgradeItemName = upgradeItemName;
     }
 
     public void SetUpgradeAction(int amount)

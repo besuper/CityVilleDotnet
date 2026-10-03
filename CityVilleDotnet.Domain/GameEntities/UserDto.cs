@@ -69,6 +69,7 @@ public static class UserDtoMapper
                         }
                     },
                     CompletedCollections = new ASObject(model.Collections.Where(x => x.Completed > 0).ToDictionary(x => x.Name, x => (object)x.Completed)),
+                    CollectionTradeIns = new ASObject(model.Collections.Where(x => x.TradeIns > 0).ToDictionary(x => x.Name, x => (object)x.TradeIns)),
                     Energy = model.Energy,
                     EnergyMax = model.EnergyMax,
                     LastEnergyCheck = model.GetLastCheckEnergyTimestamp(),
@@ -92,6 +93,7 @@ public static class UserDtoMapper
                     },
                     PlayerNews = [], // TODO: Implement news
                     RollCounter = model.RollCounter,
+                    RollCounterMap = new ASObject(model.FeatureRollCounters.ToDictionary(x => x.Feature, x => (object)x.Count)),
                     SeenFlags = new ASObject(model.SeenFlags.ToDictionary(x => x.Key, x => (object)true)),
                     Coupons = model.Coupons.Where(x => x.WorldFlatId is null).Select(x => x.Name).ToList(),
                     AssociatedCoupons = new ASObject(model.Coupons

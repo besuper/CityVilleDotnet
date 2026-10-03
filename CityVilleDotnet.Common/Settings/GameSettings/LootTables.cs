@@ -24,6 +24,23 @@ public class LootTable
 
     [XmlElement("lootItem")] public required List<LootItem> Items { get; set; }
 
+    // From LootTablesManager::rollForLoot
+    public string GetItemNameForRoll(int roll)
+    {
+        var weightedRoll = (int)Math.Floor(roll / 1000.0 * (TotalWeight > 0 ? TotalWeight : 100));
+        var cumulative = 0;
+
+        foreach (var item in Items)
+        {
+            if (weightedRoll <= item.Weight + cumulative)
+                return item.ItemName;
+
+            cumulative += item.Weight;
+        }
+
+        return Items[^1].ItemName;
+    }
+
     public string RollItemName()
     {
         var totalWeight = TotalWeight > 0 ? TotalWeight : Items.Sum(x => x.Weight);

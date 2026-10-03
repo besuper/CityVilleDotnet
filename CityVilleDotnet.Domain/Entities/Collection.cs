@@ -5,6 +5,7 @@ public class Collection
     public int Id { get; private set; }
     public string Name { get; private set; } = string.Empty;
     public int Completed { get; private set; } = 0;
+    public int TradeIns { get; private set; } = 0;
 
     public List<CollectionItem> Items { get; private set; } = [];
 
@@ -51,5 +52,10 @@ public class Collection
     public void Complete()
     {
         Completed += 1;
+    }
+
+    public void TradeIn()
+    {
+        TradeIns += 1;
     }
 }

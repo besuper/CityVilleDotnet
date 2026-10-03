@@ -18,10 +18,11 @@ public static class SecureRand
         return Convert.ToHexString(MD5.HashData(Encoding.UTF8.GetBytes(input)));
     }
 
-    // From SecureRand::rand
-    public static int GenerateRand(int min, int max, int rollCounter, string playerId)
+    // From SecureRand::rand / SecureRand::randPerFeature
+    public static int GenerateRand(int min, int max, int rollCounter, string playerId, string? feature = null)
     {
-        var stringToHash = HardCodedSecret + "::" + _handshake + "::" + playerId + "::" + rollCounter;
+        var featurePart = feature is null ? "" : feature + "::";
+        var stringToHash = HardCodedSecret + "::" + _handshake + "::" + playerId + "::" + featurePart + rollCounter;
 
         var range = max - min + 1;
 

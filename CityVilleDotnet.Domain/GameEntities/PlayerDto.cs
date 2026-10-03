@@ -60,11 +60,15 @@ public class PlayerDto
     [JsonPropertyName("completedCollections")]
     public ASObject CompletedCollections { get; set; } = new();
 
+    [JsonPropertyName("collectionTradeIns")]
+    public ASObject CollectionTradeIns { get; set; } = new();
+
     [JsonPropertyName("licenses")] public ASObject Licenses { get; set; } = new();
 
     [JsonPropertyName("Orders")] public ASObject Orders { get; set; } = new();
 
     [JsonPropertyName("rollCounter")] public int RollCounter { get; set; } = 0;
+    [JsonPropertyName("rollCounterMap")] public ASObject RollCounterMap { get; set; } = new();
     [JsonPropertyName("featureData")] public required ASObject FeatureData { get; set; }
 
     [JsonPropertyName("npc_cloud_visible")]

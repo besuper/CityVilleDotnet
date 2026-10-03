@@ -202,6 +202,31 @@ public class World
         return Objects.Count(x => x.ItemName.Equals(name) || name.Equals(x.TargetBuildingName));
     }
 
+    // From IMysteryCollectionManager::getUpgradeGroupName
+    public int GetMysteryCollectionUpgradeGroup(string managerName)
+    {
+        var headquartersPrefix = managerName switch
+        {
+            "NationalParkManager" => "mun_national_park_hq_",
+            "AlpsVillageManager" => "mun_alps_village_center_",
+            "RoseGardenManager" => "mun_rosecastle_",
+            "TropicalMansionManager" => "mun_tropical_masion_",
+            _ => throw new DomainException(GameErrorType.InvalidData)
+        };
+
+        var group = 1;
+
+        for (var level = 1; GameSettingsManager.Instance.GetItem($"{headquartersPrefix}{level}") is not null; level++)
+        {
+            if (CountBuildingByName($"{headquartersPrefix}{level}") > 0)
+            {
+                group = level;
+            }
+        }
+
+        return group;
+    }
+
     public int CountBuildingByNames(IReadOnlyCollection<string> names)
     {
         return Objects.Count(x => names.Contains(x.ItemName));

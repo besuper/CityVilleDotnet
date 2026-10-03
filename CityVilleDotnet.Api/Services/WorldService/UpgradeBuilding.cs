@@ -19,6 +19,8 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.MechanicCounters)
+            .Include(x => x.FeatureRollCounters)
+            .Include(x => x.Collections)
             .Include(x => x.SeenFlags)
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
@@ -50,8 +52,8 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
         if (requiredUpgradeActions > 0 && (obj.UpgradeActionCount ?? 0) < requiredUpgradeActions)
             return new CityVilleResponse().Error(GameErrorType.InvalidState);
 
-        var newItemName = gameItem.Upgrade.Name;
-        
+        var newItemName = gameItem.Upgrade.IsRandom ? player.RollUpgradeItemName(obj) : gameItem.Upgrade.Name;
+
         // By default, upgrade mechanic has a gate linked with a gateName; sometimes not and use pre_upgrade as fallback
         var upgradeGateName = gameItem.GetGameEventMechanic("upgrade")?.GateName ?? (obj.ClassName == BuildingClassType.Municipal ? "pre_upgrade" : null);
         var gateKeyCount = upgradeGateName is null ? 0 : gameItem.GetInventoryGateKeys(upgradeGateName).Count;
@@ -71,6 +73,12 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
 
         obj.UpgradeBuilding(gameItem.GetFirstDeriveItem(gameItem), newItemName);
         world.CalculatePopulation();
+
+        if (gameItem.Upgrade.MysteryCollectionManager is not null)
+        {
+            foreach (var consumed in player.GrantMysteryCollectibleToken(newItemName))
+                context.Set<InventoryItem>().Remove(consumed);
+        }
 
         player.GiveUpgradeRewards(gameItem.Upgrade?.Rewards?.Rewards ?? []);
 

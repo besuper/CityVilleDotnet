@@ -41,6 +41,7 @@ public class Player
     public List<LicenseItem> Licenses { get; set; } = [];
     public List<Franchise> Franchises { get; set; } = [];
     public int RollCounter { get; private set; }
+    public List<FeatureRollCounter> FeatureRollCounters { get; private set; } = [];
     public bool IsNew { get; private set; } = true;
     public bool FirstDay { get; private set; } = true;
     public DateTimeOffset CreationTimestamp { get; private set; }
@@ -83,6 +84,11 @@ public class Player
 
     public void AddItemToCollection(string collectionName, string itemName, int amount = 1)
     {
+        GetOrCreateCollection(collectionName).AddItem(itemName, amount);
+    }
+
+    private Collection GetOrCreateCollection(string collectionName)
+    {
         var collection = Collections.FirstOrDefault(x => x.Name == collectionName);
 
         if (collection is null)
@@ -91,7 +97,35 @@ public class Player
             Collections.Add(collection);
         }
 
-        collection.AddItem(itemName, amount);
+        return collection;
+    }
+
+    // From IMysteryCollectionManager::grantCollectibleToken, the collection is traded in from the inventory once all its tokens are owned
+    public List<InventoryItem> GrantMysteryCollectibleToken(string upgradedItemName)
+    {
+        var tokenName = $"{upgradedItemName}_token";
+        var collectionName = GameSettingsManager.Instance.GetCollectionByItemName(tokenName);
+
+        if (HasItem(tokenName) || Collections.Any(x => x.Name == collectionName && x.TradeIns > 0)) return [];
+
+        var collectionSetting = collectionName is null ? null : GameSettingsManager.Instance.GetCollectionByName(collectionName);
+        var otherTokens = collectionSetting?.Collectables.Collectables.Where(x => x.Name != tokenName).ToList() ?? [];
+
+        if (collectionSetting is null || !otherTokens.All(x => HasItem(x.Name)))
+        {
+            AddItem(tokenName);
+            return [];
+        }
+
+        var removed = otherTokens
+            .Select(x => RemoveItem(x.Name))
+            .OfType<InventoryItem>()
+            .ToList();
+
+        GrantCollectionRewards(collectionSetting);
+        GetOrCreateCollection(collectionSetting.Name).TradeIn();
+
+        return removed;
     }
 
     public void AddItem(string itemName, int amount = 1, string? storageKey = null, WorldObject? storedObject = null)
@@ -488,6 +522,41 @@ public class Player
         RollCounter++;
     }
 
+    private int RollFeature(string feature, int min, int max)
+    {
+        var counter = FeatureRollCounters.FirstOrDefault(x => x.Feature == feature);
+
+        if (counter is null)
+        {
+            counter = new FeatureRollCounter(feature, 0);
+            FeatureRollCounters.Add(counter);
+        }
+
+        counter.Increment();
+
+        return SecureRand.GenerateRand(min, max, counter.Count, Snuid.ToString(), feature);
+    }
+    
+    public string RollUpgradeItemName(WorldObject obj)
+    {
+        if (obj.UpgradeItemName is not null) return obj.UpgradeItemName;
+
+        var upgrade = GameSettingsManager.Instance.GetItem(obj.ItemName)?.Upgrade;
+
+        if (upgrade is not { MysteryCollectionManager: not null, LootTableBaseName: not null })
+            throw new DomainException(GameErrorType.InvalidState);
+
+        var group = GetWorld().GetMysteryCollectionUpgradeGroup(upgrade.MysteryCollectionManager);
+
+        var lootTable = GameSettingsManager.Instance.GetLootTable($"{upgrade.LootTableBaseName}_{group}") ?? throw new DomainException(GameErrorType.InvalidData);
+
+        var upgradeItemName = lootTable.GetItemNameForRoll(RollFeature("lootTables", 0, 1000));
+
+        obj.SetUpgradeItemName(upgradeItemName);
+
+        return upgradeItemName;
+    }
+
     public void IncrementExpansionsPurchased()
     {
         ExpansionsPurchased++;
@@ -835,7 +904,16 @@ public class Player
                 toRemove.Add(removedItem);
         }
 
-        foreach (var (type, reward) in targetCollection.TradeInRewards.Rewards)
+        GrantCollectionRewards(targetCollection);
+
+        collection.Complete();
+        
+        return toRemove;
+    }
+
+    private void GrantCollectionRewards(CollectionSetting collectionSetting)
+    {
+        foreach (var (type, reward) in collectionSetting.TradeInRewards.Rewards)
         {
             switch (type)
             {
@@ -869,12 +947,6 @@ public class Player
                     break;
             }
         }
-
-        collection.Complete();
-
-        StaticLogger.Current.LogDebug("Collection {CollectionName} completed with {ItemsCount} items removed", collection.Name, toRemove.Count);
-
-        return toRemove;
     }
 
     public int CountCollectableByName(string itemName)

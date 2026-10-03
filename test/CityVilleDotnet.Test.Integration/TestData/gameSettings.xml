@@ -445,6 +445,57 @@
             <sizeY>1</sizeY>
             <gates/>
         </item>
+        <item name="test_mystery_crate" type="decoration" buyable="true">
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+            <upgrade item="random" IMCM="NationalParkManager" lootTableBaseName="test_mystery_upgrade">
+                <requirements/>
+            </upgrade>
+        </item>
+        <item name="test_mystery_fixed" type="decoration" buyable="true">
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+            <upgrade item="test_mystery_a" IMCM="NationalParkManager">
+                <requirements/>
+            </upgrade>
+        </item>
+        <item name="test_mystery_a" type="decoration" buyable="false">
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+        </item>
+        <item name="test_mystery_b" type="decoration" buyable="false">
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+        </item>
+        <item name="test_mystery_c" type="decoration" buyable="false">
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+        </item>
+        <item name="test_mystery_reward" type="decoration" buyable="false">
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+        </item>
+        <item name="mun_national_park_hq_1" type="municipal" buyable="false">
+            <sizeX>4</sizeX>
+            <sizeY>4</sizeY>
+            <gates/>
+        </item>
+        <item name="mun_national_park_hq_2" type="municipal" buyable="false">
+            <sizeX>4</sizeX>
+            <sizeY>4</sizeY>
+            <gates/>
+        </item>
+        <item name="mun_national_park_hq_3" type="municipal" buyable="false">
+            <sizeX>4</sizeX>
+            <sizeY>4</sizeY>
+            <gates/>
+        </item>
     </items>
 
     <levels_cv_level_regrade_var_0>
@@ -479,6 +530,22 @@
             <lootItem handler="returnItemName" itemName="test_animal_uncommon" weight="25"/>
             <lootItem handler="returnItemName" itemName="test_animal_rare" weight="5"/>
         </lootTable>
+        <lootTable name="test_weighted_table">
+            <lootItem handler="returnItemName" itemName="test_weighted_a" weight="28"/>
+            <lootItem handler="returnItemName" itemName="test_weighted_b" weight="22"/>
+            <lootItem handler="returnItemName" itemName="test_weighted_c" weight="50"/>
+        </lootTable>
+        <lootTable name="test_weighted_total_table" totalWeight="10">
+            <lootItem handler="returnItemName" itemName="test_weighted_x" weight="5"/>
+            <lootItem handler="returnItemName" itemName="test_weighted_y" weight="5"/>
+        </lootTable>
+        <lootTable name="test_mystery_upgrade_1">
+            <lootItem handler="returnItemName" itemName="test_mystery_a" weight="10"/>
+            <lootItem handler="returnItemName" itemName="test_mystery_b" weight="90"/>
+        </lootTable>
+        <lootTable name="test_mystery_upgrade_2">
+            <lootItem handler="returnItemName" itemName="test_mystery_c" weight="100"/>
+        </lootTable>
     </lootTables>
 
     <collections>
@@ -490,6 +557,16 @@
             <tradeInReward>
                 <xp amount="5"/>
                 <energy amount="3"/>
+            </tradeInReward>
+        </collection>
+        <collection name="test_mystery_collection" autoTradeIn="true">
+            <collectables>
+                <collectable name="test_mystery_a_token"/>
+                <collectable name="test_mystery_c_token"/>
+            </collectables>
+            <tradeInReward>
+                <coin amount="500"/>
+                <item name="test_mystery_reward"/>
             </tradeInReward>
         </collection>
     </collections>

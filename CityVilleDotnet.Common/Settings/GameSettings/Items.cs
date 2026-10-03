@@ -541,9 +541,13 @@ public class UpgradeItem
 {
     [XmlAttribute("item")] public required string Name { get; set; }
     [XmlAttribute("cashcost")] public string? CashCost { get; set; }
+    [XmlAttribute("IMCM")] public string? MysteryCollectionManager { get; set; }
+    [XmlAttribute("lootTableBaseName")] public string? LootTableBaseName { get; set; }
     [XmlElement("requirements")] public UpgradeRequirementsContainer? Requirements { get; set; }
     [XmlElement("rewards")] public UpgradeRewardsContainer? Rewards { get; set; }
     [XmlElement("helpers")] public UpgradeHelpersContainer? Helpers { get; set; }
+
+    public bool IsRandom => Name == "random";
 
     public int GetRequiredLevel() => int.Parse(Requirements?.GetValue("level") ?? "0");
     public int GetRequiredUpgradeActions() => int.Parse(Requirements?.GetValue("upgrade_actions") ?? "0");

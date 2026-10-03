@@ -7,6 +7,19 @@ namespace CityVilleDotnet.Test.Domain.Collection;
 public class CollectionTest
 {
     [Fact]
+    public void Collection_TradeIn_IncrementsTradeInsOnly()
+    {
+        var faker = new Faker();
+        var collection = faker.Collection();
+
+        collection.TradeIn();
+        collection.TradeIn();
+
+        collection.TradeIns.Should().Be(2);
+        collection.Completed.Should().Be(0);
+    }
+
+    [Fact]
     public void Collection_AddItem_Success()
     {
         var faker = new Faker();

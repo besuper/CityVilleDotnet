@@ -4,6 +4,7 @@ using CityVilleDotnet.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CityVilleDotnet.Persistence.Migrations
 {
     [DbContext(typeof(CityVilleDbContext))]
-    partial class CityVilleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261003142134_AddFeatureRollCounters")]
+    partial class AddFeatureRollCounters
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,9 +114,6 @@ namespace CityVilleDotnet.Persistence.Migrations
 
                     b.Property<Guid?>("PlayerId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("TradeIns")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1049,10 +1049,6 @@ namespace CityVilleDotnet.Persistence.Migrations
 
                     b.Property<int?>("UpgradeActionCount")
                         .HasColumnType("int");
-
-                    b.Property<string>("UpgradeItemName")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
 
                     b.Property<int?>("Visits")
                         .HasColumnType("int");
