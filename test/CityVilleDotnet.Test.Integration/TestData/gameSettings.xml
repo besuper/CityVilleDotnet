@@ -174,6 +174,22 @@
             <energyCost clear="1"/>
             <gates/>
         </item>
+        <item name="test_crop_cash" type="plot_contract" buyable="true" allowWither="false">
+            <requiredLevel>1</requiredLevel>
+            <cash>4</cash>
+            <coinYield>0</coinYield>
+            <growTime>0.001</growTime>
+            <sizeX>2</sizeX>
+            <sizeY>2</sizeY>
+            <gates/>
+        </item>
+        <item name="test_textile_contract" type="factory_textile_contract" buyable="true" allowWither="false">
+            <requiredLevel>1</requiredLevel>
+            <goods>100</goods>
+            <coinYield>0</coinYield>
+            <growTime>0.021739130</growTime>
+            <gates/>
+        </item>
         <item name="mun_visitorcenter" type="municipal" buyable="true">
             <requiredLevel>15</requiredLevel>
             <cost>500</cost>

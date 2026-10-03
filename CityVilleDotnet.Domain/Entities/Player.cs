@@ -443,6 +443,24 @@ public class Player
         Cash += cash;
     }
 
+    public void PayContract(GameItem contract)
+    {
+        if (contract.Type == "factory_textile_contract")
+        {
+            RemoveGoods(contract.Goods ?? 0);
+            return;
+        }
+
+        if (contract.Cash > 0)
+        {
+            RemoveCash(contract.Cash.Value);
+            return;
+        }
+
+        if (contract.Cost > 0)
+            RemoveCoins(contract.Cost.Value);
+    }
+
     public bool HasSeenFlag(string flag)
     {
         return SeenFlags.Any(x => x.Key == flag);

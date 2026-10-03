@@ -1,5 +1,7 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.WorldService.Common;
+using CityVilleDotnet.Common.Enums;
+using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
@@ -35,8 +37,17 @@ internal sealed class StartContract(CityVilleDbContext context) : AmfService<Sta
         if (contractItem is null)
             throw new Exception($"Can't find item with contractName {request.Building.ContractName}");
 
-        if (contractItem.Cost is not null)
+        if (obj.ClassName is BuildingClassType.Plot or BuildingClassType.Factory)
+        {
+            if (obj.ClassName == BuildingClassType.Plot && obj.State != WorldObjectState.Plowed)
+                throw new DomainException(GameErrorType.InvalidState);
+
+            player.PayContract(contractItem);
+        }
+        else if (contractItem.Cost is not null)
+        {
             player.RemoveCoins(contractItem.Cost.Value);
+        }
 
         obj.StartContract(request.Building.ContractName, request.Building.State, ServerUtils.GetActionTime(request.ClientEnqueueTime));
 
