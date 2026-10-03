@@ -99,6 +99,17 @@ public class WorldObjectHarvestCycleTest
     }
 
     [Fact]
+    public void WorldObject_UpdateVisits_OpenWithoutVisits_StartsFromZero()
+    {
+        var faker = new Faker();
+        var business = faker.WorldObject(itemName: "test_bus_goods", className: BuildingClassType.Business, state: WorldObjectState.Open);
+
+        business.UpdateVisits(4);
+
+        business.Visits.Should().Be(4);
+    }
+
+    [Fact]
     public void WorldObject_UpdateVisits_ReachesCommodityReq_BecomesClosedHarvestable()
     {
         var faker = new Faker();

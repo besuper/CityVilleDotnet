@@ -643,7 +643,7 @@ public class WorldObject
         if (maxVisits is null)
             throw new Exception("Can't find max visits for business building");
 
-        Visits += visits;
+        Visits = (Visits ?? 0) + visits;
 
         if (Visits >= maxVisits)
         {
