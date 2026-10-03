@@ -87,6 +87,6 @@ public class ClearTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 
         var act = () => handler.HandlePacket(new ClearRequest { Building = new BuildingClearRequest { Id = 99 } }, player.Id, TestContext.Current.CancellationToken);
 
-        await act.Should().ThrowAsync<Exception>().WithMessage("*99*");
+        (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.ForceReload);
     }
 }

@@ -27,10 +27,7 @@ internal sealed class StartContract(CityVilleDbContext context) : AmfService<Sta
         if (player is null) throw new Exception("Player not found");
 
         var obj = player.GetWorld().GetBuildingByClientId(request.Building.Id);
-
-        if (obj is null)
-            throw new Exception("Can't find building with coords");
-
+        
         var contractItem = GameSettingsManager.Instance.GetItem(request.Building.ContractName);
 
         if (contractItem is null)

@@ -1,5 +1,7 @@
 using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.WorldService;
+using CityVilleDotnet.Common.Enums;
+using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Factory.Player;
@@ -74,7 +76,7 @@ public class SellTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 
         var act = () => handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
-        await act.Should().ThrowAsync<Exception>().WithMessage("*99*");
+        (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.ForceReload);
         player.Gold.Should().Be(goldBefore);
     }
 }

@@ -47,7 +47,7 @@ public class StartContractTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var clientEnqueueTime = StartTime.AddSeconds(-5).ToUnixTimeSeconds();
         var handler = new StartContract(Context);
 
-        var response = await handler.HandlePacket(CreateStartContractRequest(plot.Id, "plot_strawberries", clientEnqueueTime), player.Id, TestContext.Current.CancellationToken);
+        var response = await handler.HandlePacket(CreateStartContractRequest(plot.WorldFlatId, "plot_strawberries", clientEnqueueTime), player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         player.Gold.Should().Be(goldBefore - 15);
@@ -70,7 +70,7 @@ public class StartContractTest(DatabaseFixture fixture) : IntegrationTest(fixtur
 
         var handler = new StartContract(Context);
 
-        var act = () => handler.HandlePacket(CreateStartContractRequest(plot.Id, "plot_strawberries"), player.Id, TestContext.Current.CancellationToken);
+        var act = () => handler.HandlePacket(CreateStartContractRequest(plot.WorldFlatId, "plot_strawberries"), player.Id, TestContext.Current.CancellationToken);
 
         (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.NotEnoughMoney);
         player.Gold.Should().Be(14);
@@ -91,7 +91,7 @@ public class StartContractTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var goldBefore = player.Gold;
         var handler = new StartContract(Context);
 
-        var act = () => handler.HandlePacket(CreateStartContractRequest(plot.Id, "unknown_contract"), player.Id, TestContext.Current.CancellationToken);
+        var act = () => handler.HandlePacket(CreateStartContractRequest(plot.WorldFlatId, "unknown_contract"), player.Id, TestContext.Current.CancellationToken);
 
         await act.Should().ThrowAsync<Exception>().WithMessage("*unknown_contract*");
         player.Gold.Should().Be(goldBefore);
@@ -112,7 +112,7 @@ public class StartContractTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var goldBefore = player.Gold;
         var handler = new StartContract(Context);
 
-        var response = await handler.HandlePacket(CreateStartContractRequest(plot.Id, "test_crop_cash"), player.Id, TestContext.Current.CancellationToken);
+        var response = await handler.HandlePacket(CreateStartContractRequest(plot.WorldFlatId, "test_crop_cash"), player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         player.Cash.Should().Be(6);
@@ -133,7 +133,7 @@ public class StartContractTest(DatabaseFixture fixture) : IntegrationTest(fixtur
 
         var handler = new StartContract(Context);
 
-        var act = () => handler.HandlePacket(CreateStartContractRequest(plot.Id, "test_crop_cash"), player.Id, TestContext.Current.CancellationToken);
+        var act = () => handler.HandlePacket(CreateStartContractRequest(plot.WorldFlatId, "test_crop_cash"), player.Id, TestContext.Current.CancellationToken);
 
         (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.NotEnoughMoney);
         player.Cash.Should().Be(3);
@@ -154,7 +154,7 @@ public class StartContractTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var goldBefore = player.Gold;
         var handler = new StartContract(Context);
 
-        var response = await handler.HandlePacket(CreateStartContractRequest(factory.Id, "test_textile_contract"), player.Id, TestContext.Current.CancellationToken);
+        var response = await handler.HandlePacket(CreateStartContractRequest(factory.WorldFlatId, "test_textile_contract"), player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
         player.Goods.Should().Be(50);
@@ -175,7 +175,7 @@ public class StartContractTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var goldBefore = player.Gold;
         var handler = new StartContract(Context);
 
-        var act = () => handler.HandlePacket(CreateStartContractRequest(plot.Id, "plot_corn"), player.Id, TestContext.Current.CancellationToken);
+        var act = () => handler.HandlePacket(CreateStartContractRequest(plot.WorldFlatId, "plot_corn"), player.Id, TestContext.Current.CancellationToken);
 
         (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.InvalidState);
         player.Gold.Should().Be(goldBefore);

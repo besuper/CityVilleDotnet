@@ -28,7 +28,7 @@ public class PurchaseWorker(CityVilleDbContext context) : AmfService<PurchaseWor
             .ThenInclude(x => x.Workers)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
-        var building = player.GetWorld().GetBuildingByClientId(objectId) ?? throw new Exception("Target building not found");
+        var building = player.GetWorld().GetBuildingByClientId(objectId);
 
         if (building.ContractName is null)
             throw new Exception("No contract started on this factory");

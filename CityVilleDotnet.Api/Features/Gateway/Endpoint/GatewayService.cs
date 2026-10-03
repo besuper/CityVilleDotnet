@@ -138,9 +138,9 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, ILogger<G
                 }
                 catch (DomainException de)
                 {
-                    logger.LogWarning("Domain exception for {FunctionName}: {Errors}", functionName, de.Reason);
+                    logger.LogWarning("Domain exception for {FunctionName} Reason: {Errors} Message: {Message}", functionName, de.Reason, de.ClientMessage);
 
-                    response = new CityVilleResponse().Error(de.Reason).ToObject();
+                    response = new CityVilleResponse().Error(de.Reason).ErrorMessage(de.ClientMessage).ToObject();
                 }
                 catch (ValidationException ve)
                 {

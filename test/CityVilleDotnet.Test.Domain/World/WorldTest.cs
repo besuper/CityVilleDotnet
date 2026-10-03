@@ -1,5 +1,7 @@
 using AwesomeAssertions;
 using Bogus;
+using CityVilleDotnet.Common.Enums;
+using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
@@ -35,15 +37,15 @@ public class WorldTest(DomainFixture fixture)
     }
 
     [Fact]
-    public void World_GetBuildingByClientId_NotFound_ReturnsNull()
+    public void World_GetBuildingByClientId_NotFound_ThrowsDomainException()
     {
         var faker = new Faker();
         var building = faker.WorldObject(worldFlatId: 42);
         var world = faker.World(objects: [building]);
 
-        var result = world.GetBuildingByClientId(999);
+        var act = () => world.GetBuildingByClientId(999);
 
-        result.Should().BeNull();
+        act.Should().Throw<DomainException>().Which.Reason.Should().Be(GameErrorType.ForceReload);
     }
 
     [Fact]

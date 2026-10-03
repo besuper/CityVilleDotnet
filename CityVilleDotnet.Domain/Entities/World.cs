@@ -158,16 +158,15 @@ public class World
         return Objects.FirstOrDefault(w => w.WorldFlatId == id);
     }
 
-    public WorldObject? GetBuildingByClientId(int id)
+    public WorldObject GetBuildingByClientId(int id)
     {
-        var objectByTempId = Objects.FirstOrDefault(w => w.TempId == id);
+        return FindBuildingByClientId(id)
+               ?? throw new DomainException(GameErrorType.ForceReload, $"Can't find building with id {id}");
+    }
 
-        if (objectByTempId is null)
-        {
-            return Objects.FirstOrDefault(w => w.WorldFlatId == id);
-        }
-        
-        return objectByTempId;
+    private WorldObject? FindBuildingByClientId(int id)
+    {
+        return Objects.FirstOrDefault(w => w.TempId == id) ?? Objects.FirstOrDefault(w => w.WorldFlatId == id);
     }
 
     // From GlobalTableOverrideManager, buildings register their tables when the world is loaded
@@ -331,7 +330,7 @@ public class World
 
         foreach (var clientId in clientIds)
         {
-            var child = GetBuildingByClientId(clientId);
+            var child = FindBuildingByClientId(clientId);
 
             // Already removed by a previous transaction (TSendToInventory sent by the child itself)
             if (child is null) continue;
