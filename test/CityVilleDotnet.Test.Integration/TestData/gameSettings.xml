@@ -15,7 +15,7 @@
              sellBackRatio="0.05" goodsToCoinRatio="0.20"
              growMultiplier="1" cashGainedPerLevel="1"
              instantReadyCropCostConstant3="0.25" instantReadyResidenceCostConstant5="2.0"
-             witherMultiplier="3.0" businessUpgradesRequiredLevel="15" />
+             witherMultiplier="3.0" witherRefundMultiplier="0.5" businessUpgradesRequiredLevel="15" />
 
     <citysim>
         <populations>
@@ -167,6 +167,12 @@
                     <requirement type="upgrade_actions" value="3"/>
                 </requirements>
             </upgrade>
+        </item>
+        <item name="test_tree_energy" type="wilderness">
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <energyCost clear="1"/>
+            <gates/>
         </item>
         <item name="mun_visitorcenter" type="municipal" buyable="true">
             <requiredLevel>15</requiredLevel>
