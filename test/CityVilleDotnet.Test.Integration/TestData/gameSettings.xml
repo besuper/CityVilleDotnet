@@ -496,6 +496,92 @@
             <sizeY>4</sizeY>
             <gates/>
         </item>
+        <item name="test_dock_house" type="dock_house" buyable="true">
+            <sizeX>4</sizeX>
+            <sizeY>4</sizeY>
+            <berthsquares>-1|2;-1|-1</berthsquares>
+            <supportedShipKeywords>cruiseship</supportedShipKeywords>
+            <gates/>
+        </item>
+        <item name="test_cruise_ship" type="harvest_ship" className="HarvestableShip" buyable="true">
+            <sizeX>3</sizeX>
+            <sizeY>2</sizeY>
+            <keyword>cruiseship</keyword>
+            <gates/>
+        </item>
+        <item name="test_cargo_ship" type="harvest_ship" className="HarvestableShip" buyable="true">
+            <sizeX>3</sizeX>
+            <sizeY>2</sizeY>
+            <keyword>cargoship</keyword>
+            <gates/>
+        </item>
+        <item name="cruise_contract_alaskan" type="cruise_contract" buyable="true">
+            <coinYield>100</coinYield>
+            <growTime>0.001</growTime>
+            <gates/>
+        </item>
+        <item name="cruise_contract_caribbean" type="cruise_contract" buyable="true">
+            <coinYield>100</coinYield>
+            <growTime>0.001</growTime>
+            <gates/>
+        </item>
+        <item name="cruise_contract_aroundTheWorld" type="cruise_contract" buyable="true">
+            <coinYield>100</coinYield>
+            <growTime>0.001</growTime>
+            <gates/>
+        </item>
+        <item name="train_platform" type="train_station" buyable="false">
+            <gates/>
+        </item>
+        <item name="train_platform_2" type="train_station" buyable="false">
+            <gates/>
+        </item>
+        <item name="train_platform_3" type="train_station" buyable="false">
+            <gates/>
+        </item>
+        <item name="test_schedule_buy" className="NPC" type="train" buyable="true">
+            <requiredLevel>1</requiredLevel>
+            <cost>100</cost>
+            <trainPayout table="test_schedule_buy_values"/>
+            <gates/>
+        </item>
+        <item name="test_schedule_sell" className="NPC" type="train" buyable="true">
+            <requiredLevel>1</requiredLevel>
+            <goods>50</goods>
+            <trainPayout table="test_schedule_sell_values"/>
+            <gates/>
+        </item>
+        <item name="test_schedule_sell_tourist" className="NPC" type="train" buyable="true">
+            <requiredLevel>1</requiredLevel>
+            <goods>50</goods>
+            <trainPayout table="test_schedule_sell_tourist_values"/>
+            <trainTouristPayout table="test_schedule_sell_tourist_tourist_values"/>
+            <gates/>
+        </item>
+        <item name="test_status_gate" type="business" buyable="true">
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates>
+                <gate type="status" name="upgrade_status" cashCost="50">
+                    <key name="upgradeActionCount" amount="10"/>
+                </gate>
+                <gate type="status" name="upgrade_status2" cashCost="50">
+                    <key name="upgradeActionCount2" amount="10"/>
+                </gate>
+                <gate type="status" name="harvest_status" cashCost="25">
+                    <key name="harvestCounter" amount="4"/>
+                </gate>
+                <gate type="status" name="free_status">
+                    <key name="upgradeActionCount" amount="3"/>
+                </gate>
+                <gate type="status" name="corp_status" cashCost="20">
+                    <key name="corpBusinessCount" amount="2"/>
+                </gate>
+                <gate type="inventory" name="inventory_gate" cashCost="20">
+                    <key name="test_gate_material" amount="2"/>
+                </gate>
+            </gates>
+        </item>
     </items>
 
     <levels_cv_level_regrade_var_0>

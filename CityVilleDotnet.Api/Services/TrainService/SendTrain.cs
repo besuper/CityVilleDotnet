@@ -19,6 +19,8 @@ public class SendTrain(CityVilleDbContext context) : AmfService<SendTrainRequest
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x.TrainOrder)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x.Objects.Where(o => o.ClassName == BuildingClassType.TrainStation))
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
@@ -46,7 +48,10 @@ public class SendTrain(CityVilleDbContext context) : AmfService<SendTrainRequest
             player.RemoveCoins(item.Cost ?? 0);
         }
 
-        player.GetWorld().StartTrainOrder(item.Name, attributes.Operation, attributes.CommodityName, ServerUtils.GetCurrentTimeSeconds());
+        var world = player.GetWorld();
+
+        world.StartTrainOrder(item.Name, attributes.Operation, attributes.CommodityName, ServerUtils.GetCurrentTimeSeconds());
+        world.GetTrainStation()?.CountTrainUpgradeAction(item, attributes.Operation);
         player.HandleQuestsProgress("sendTrain");
 
         await context.SaveChangesAsync(cancellationToken);

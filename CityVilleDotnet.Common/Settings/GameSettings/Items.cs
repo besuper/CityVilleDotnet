@@ -107,7 +107,7 @@ public class GameItem
 
     [XmlElement("trainPayout")] public TieredValueReference? TrainPayout { get; set; }
 
-    [XmlElement("trainTourist")] public TieredValueReference? TrainTourist { get; set; }
+    [XmlElement("trainTouristPayout")] public TieredValueReference? TrainTourist { get; set; }
 
     [XmlElement("construction")] public string? Construction { get; set; }
 
@@ -128,6 +128,8 @@ public class GameItem
     [XmlElement("gates")] public required GatesContainer? Gates { get; set; }
     [XmlElement("sizeX")] public int? SizeX { get; set; }
     [XmlElement("sizeY")] public int? SizeY { get; set; }
+    [XmlElement("berthsquares")] public string? BerthSquares { get; set; }
+    [XmlElement("supportedShipKeywords")] public string? SupportedShipKeywords { get; set; }
     [XmlElement("image")] public List<ImageItem> Images { get; set; } = [];
     [XmlElement("bridgeparts")] public BridgePartsContainer? BridgeParts { get; set; }
     [XmlElement("keyword")] public List<string> Keywords { get; set; } = [];
@@ -160,6 +162,24 @@ public class GameItem
         return Keywords.Contains(keyword);
     }
 
+    // Item::parsePointVector: "x|y;x|y"
+    public List<(int X, int Y)> GetBerthSquares()
+    {
+        if (string.IsNullOrEmpty(BerthSquares)) return [];
+
+        return BerthSquares.Split(';')
+            .Select(x => x.Split('|'))
+            .Select(x => (int.Parse(x[0]), int.Parse(x[1])))
+            .ToList();
+    }
+
+    public bool SupportsShip(GameItem ship)
+    {
+        if (string.IsNullOrEmpty(SupportedShipKeywords)) return true;
+
+        return SupportedShipKeywords.Split(',').Any(ship.HasKeyword);
+    }
+
     public int[] GetPositiveStreakRewards()
     {
         return ParseStreakRewards(PositiveStreak);
@@ -185,6 +205,11 @@ public class GameItem
     public List<GatesItem> GetGates()
     {
         return Gates?.Gates ?? [];
+    }
+
+    public GatesItem? GetStatusGate(string gateName)
+    {
+        return GetGates().FirstOrDefault(x => x.Name == gateName && x.Type == "status");
     }
 
     // Composite gates only reference their sub gates by name (CompositeGate::takeKeys)
@@ -433,6 +458,7 @@ public class GatesItem
     [XmlAttribute("name")] public string? Name { get; set; }
     [XmlAttribute("type")] public string? Type { get; set; }
     [XmlAttribute("instructions")] public string? Instructions { get; set; }
+    [XmlAttribute("cashCost")] public int CashCost { get; set; }
     [XmlElement("key")] public required List<GateKey?> Keys { get; set; }
 }
 

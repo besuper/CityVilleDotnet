@@ -54,6 +54,9 @@ public class WorldObjectDto
     [JsonPropertyName("upgradeActionCount")]
     public int UpgradeActionCount { get; set; }
 
+    [JsonPropertyName("upgradeActionCount2")]
+    public int UpgradeActionCount2 { get; set; }
+
     [JsonPropertyName("upgradeItemName")] public string? UpgradeItemName { get; set; }
 
     [JsonPropertyName("neverOpened")] public bool NeverOpened { get; set; }
@@ -116,6 +119,7 @@ public static class WorldObjectDtoMapper
             NeverOpened = model.NeverOpened,
             HarvestCounter = model.UpgradeActionCount ?? 0, // This is for Plot
             UpgradeActionCount = model.UpgradeActionCount ?? 0, // This is for Business
+            UpgradeActionCount2 = model.UpgradeActionCount2 ?? 0, // This is for DockHouse and TrainStation
             UpgradeItemName = model.UpgradeItemName,
             ItemOwner = model.ItemOwner,
             FranchiseInfo = model.FranchiseLocation is not null

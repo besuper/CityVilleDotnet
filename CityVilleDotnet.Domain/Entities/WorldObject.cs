@@ -65,6 +65,7 @@ public class WorldObject
     public int? Visits { get; private set; }
     public bool NeverOpened { get; private set; }
     public int? UpgradeActionCount { get; private set; }
+    public int? UpgradeActionCount2 { get; private set; }
     public string? UpgradeItemName { get; private set; }
     public int? BuiltFloorCount { get; private set; }
     public long? ActivationTime { get; private set; }
@@ -657,6 +658,7 @@ public class WorldObject
         ItemName = newItemName;
         UpgradeItemName = null;
         UpgradeActionCount = 0;
+        UpgradeActionCount2 = 0;
 
         if (ClassName == BuildingClassType.Municipal && item.Behavior == "upgradable")
         {
@@ -1013,5 +1015,79 @@ public class WorldObject
     public void SetUpgradeAction(int amount)
     {
         UpgradeActionCount = amount;
+    }
+
+    // BaseShip::connectedToPierNonExclusive, BasePier::isValidShipBerth
+    public bool IsBerthedAt(WorldObject pier)
+    {
+        var shipItem = GameSettingsManager.Instance.GetItem(ItemName);
+        var pierItem = GameSettingsManager.Instance.GetItem(pier.ItemName);
+
+        if (shipItem is null || pierItem is null || !pierItem.SupportsShip(shipItem)) return false;
+
+        var isRotated = Direction % 2 == 1;
+        var width = (isRotated ? shipItem.SizeY : shipItem.SizeX) ?? 0;
+        var height = (isRotated ? shipItem.SizeX : shipItem.SizeY) ?? 0;
+
+        return pierItem.GetBerthSquares().Any(square =>
+            pier.X + square.X >= X && pier.X + square.X <= X + width &&
+            pier.Y + square.Y >= Y && pier.Y + square.Y <= Y + height);
+    }
+
+    // CruiseShipLogicComponent::harvest
+    public void CountCruiseUpgradeAction(string contractName)
+    {
+        switch (contractName)
+        {
+            case "cruise_contract_alaskan" or "cruise_contract_scandinavian":
+                UpgradeActionCount = (UpgradeActionCount ?? 0) + 1;
+                break;
+            case "cruise_contract_mediterranean" or "cruise_contract_caribbean":
+                UpgradeActionCount2 = (UpgradeActionCount2 ?? 0) + 1;
+                break;
+        }
+    }
+
+    // TrainManager::performSchedulePurchase
+    //platform 1 = sell trains in upgradeActionCount2, platform 2 = tourist trains
+    public void CountTrainUpgradeAction(GameItem schedule, TrainOperationType operation)
+    {
+        bool? countSecondAction = ItemName switch
+        {
+            "train_platform" => schedule.Goods > 0,
+            "train_platform_2" => operation == TrainOperationType.Sell && !string.IsNullOrEmpty(schedule.TrainTourist?.Table),
+            _ => null
+        };
+
+        if (countSecondAction is null) return;
+
+        if (countSecondAction.Value)
+            UpgradeActionCount2 = (UpgradeActionCount2 ?? 0) + 1;
+        else
+            UpgradeActionCount = (UpgradeActionCount ?? 0) + 1;
+    }
+
+    public int GetStatusGateKeyValue(string key)
+    {
+        return key switch
+        {
+            "upgradeActionCount" or "harvestCounter" => UpgradeActionCount ?? 0,
+            "upgradeActionCount2" => UpgradeActionCount2 ?? 0,
+            _ => throw new Exception($"Status gate key {key} is not supported")
+        };
+    }
+
+    public void CompleteStatusGateKey(string key, int amount)
+    {
+        if (GetStatusGateKeyValue(key) >= amount) return;
+
+        if (key == "upgradeActionCount2")
+        {
+            UpgradeActionCount2 = amount;
+        }
+        else
+        {
+            SetUpgradeAction(amount);
+        }
     }
 }

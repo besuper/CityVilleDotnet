@@ -191,6 +191,19 @@ public class World
         TrainOrder = new TrainOrder(itemName, operation, commodityName, timeSent);
     }
 
+    public void CountCruiseUpgradeActions(WorldObject ship, string contractName)
+    {
+        foreach (var dockHouse in Objects.Where(x => x.ClassName == BuildingClassType.DockHouse && ship.IsBerthedAt(x)))
+        {
+            dockHouse.CountCruiseUpgradeAction(contractName);
+        }
+    }
+
+    public WorldObject? GetTrainStation()
+    {
+        return Objects.FirstOrDefault(x => x.ClassName == BuildingClassType.TrainStation);
+    }
+
     public void ClearTrainOrder()
     {
         TrainOrder = null;

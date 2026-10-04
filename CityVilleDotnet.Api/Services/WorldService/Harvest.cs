@@ -21,10 +21,10 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
         var user = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x.Objects.Where(o => (o.X == request.Building.Position.X && o.Y == request.Building.Position.Y) || globalTableProviders.Contains(o.ItemName)))
+            .ThenInclude(x => x.Objects.Where(o => (o.X == request.Building.Position.X && o.Y == request.Building.Position.Y) || globalTableProviders.Contains(o.ItemName) || o.ClassName == BuildingClassType.DockHouse))
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x.Objects.Where(o => (o.X == request.Building.Position.X && o.Y == request.Building.Position.Y) || globalTableProviders.Contains(o.ItemName)))
+            .ThenInclude(x => x.Objects.Where(o => (o.X == request.Building.Position.X && o.Y == request.Building.Position.Y) || globalTableProviders.Contains(o.ItemName) || o.ClassName == BuildingClassType.DockHouse))
             .ThenInclude(x => x.Workers)
             .Include(x => x.InventoryItems)
             .Include(x => x.SeenFlags)
@@ -86,6 +86,9 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
 
             (coinYield, cashYield) = obj.Harvest(ServerUtils.GetActionTime(request.ClientEnqueueTime));
             secureRands = user.CollectDoobersRewards(itemName, coinMultiplier: coinMultiplier, premiumGoodsMultiplier: premiumGoodsMultiplier);
+
+            if (obj.ClassName == BuildingClassType.HarvestableShip && contractName is not null)
+                world.CountCruiseUpgradeActions(obj, contractName);
         }
 
         logger.LogDebug("Secure rands {Join}", string.Join(",", secureRands.ToArray()));

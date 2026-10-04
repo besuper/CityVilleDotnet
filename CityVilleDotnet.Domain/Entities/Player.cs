@@ -177,6 +177,25 @@ public class Player
         return null;
     }
 
+    public void BuyStatusGate(WorldObject obj, GatesItem gate)
+    {
+        var keys = gate.Keys.Where(x => x is not null).Select(x => x!).ToList();
+        var totalAmount = keys.Sum(x => x.Amount);
+        var currentAmount = keys.Sum(x => obj.GetStatusGateKeyValue(x.Name));
+
+        // WorldObjectStatusGate::computeTotalCost
+        if (gate.CashCost > 0 && totalAmount > 0 && currentAmount < totalAmount)
+        {
+            var progress = 1 - (double)(totalAmount - currentAmount) / totalAmount;
+            RemoveCash(Math.Max((int)Math.Floor((1 - progress) * gate.CashCost), 1));
+        }
+
+        foreach (var key in keys)
+        {
+            obj.CompleteStatusGateKey(key.Name, key.Amount);
+        }
+    }
+
     public List<InventoryItem> ConsumeInventoryGate(GameItem buildingItem, string gateName)
     {
         var removed = new List<InventoryItem>();
