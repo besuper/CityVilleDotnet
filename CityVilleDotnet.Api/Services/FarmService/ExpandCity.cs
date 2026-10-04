@@ -1,5 +1,6 @@
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Common.Enums;
+using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
 using FluentValidation;
@@ -41,7 +42,7 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
         var requiredPermit = permitData[1];
 
         if (player.CountInventoryItem(PermitName) < requiredPermit)
-            throw new Exception($"You need {requiredPermit} {PermitName} to expand this city");
+            throw new DomainException(GameErrorType.ForceReload, $"You need {requiredPermit} {PermitName} to expand this city");
 
         if (item.Cost is not null)
             player.RemoveCoins(item.Cost.Value);

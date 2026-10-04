@@ -133,7 +133,7 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 
         var act = () => handler.HandlePacket(request, user.Id, TestContext.Current.CancellationToken);
 
-        await act.Should().ThrowAsync<Exception>().WithMessage("*permits*");
+        (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.ForceReload);
     }
 
     [Fact]
