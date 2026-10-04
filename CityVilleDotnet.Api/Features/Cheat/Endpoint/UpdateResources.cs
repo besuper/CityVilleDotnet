@@ -32,7 +32,9 @@ internal sealed class UpdateResources(UserManager<ApplicationUser> userManager, 
         }
 
         var player = await dbContext.Set<Player>()
+            .AsSplitQuery()
             .Include(x => x.AppUser)
+            .Include(x => x.Worlds)
             .FirstOrDefaultAsync(x => x.AppUser!.Id == currentUser.Id, ct);
 
         if (player is null)
