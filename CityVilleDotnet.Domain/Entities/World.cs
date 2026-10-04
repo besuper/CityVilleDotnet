@@ -160,8 +160,7 @@ public class World
 
     public WorldObject GetBuildingByClientId(int id)
     {
-        return FindBuildingByClientId(id)
-               ?? throw new DomainException(GameErrorType.ForceReload, $"Can't find building with id {id}");
+        return FindBuildingByClientId(id) ?? throw new DomainException(GameErrorType.ForceReload, $"Can't find building with id {id}");
     }
 
     private WorldObject? FindBuildingByClientId(int id)

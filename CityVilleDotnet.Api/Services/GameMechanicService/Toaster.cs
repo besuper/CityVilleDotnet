@@ -21,7 +21,7 @@ public class Toaster(CityVilleDbContext context) : AmfService<ToasterRequest>
 
         if (player is null) throw new Exception("Player not found");
 
-        var owner = player.GetWorld().GetBuildingByClientId(request.ObjectId) ?? throw new Exception($"Can't find building with id {request.ObjectId}");
+        var owner = player.GetWorld().GetBuildingByClientId(request.ObjectId);
 
         var gameItem = GameSettingsManager.Instance.GetItem(owner.ItemName) ?? throw new Exception($"Can't find game item for {owner.ItemName}");
 
