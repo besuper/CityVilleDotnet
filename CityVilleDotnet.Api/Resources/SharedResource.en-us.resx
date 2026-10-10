@@ -53,6 +53,9 @@
     <data name="UsernameInvalidChars" xml:space="preserve">
         <value>Username can only contain letters and numbers</value>
     </data>
+    <data name="UsernameTaken" xml:space="preserve">
+        <value>This username is already taken</value>
+    </data>
     <data name="ConfirmPassword" xml:space="preserve">
         <value>Confirm password</value>
     </data>

@@ -33,6 +33,11 @@
                     @Localizer["Register"]
                 </button>
             </form>
+            <script>
+                document.getElementById('registerForm').addEventListener('submit', function () {
+                    document.getElementById('registerSubmit').disabled = true;
+                });
+            </script>
 
             <div class="mt-3 text-center">
                 <p>

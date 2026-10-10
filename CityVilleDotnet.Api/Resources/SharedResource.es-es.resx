@@ -96,6 +96,9 @@
     <data name="UsernameInvalidChars" xml:space="preserve">
         <value>El nombre de usuario solo puede contener letras y números</value>
     </data>
+    <data name="UsernameTaken" xml:space="preserve">
+        <value>Este nombre de usuario ya está en uso</value>
+    </data>
     <data name="UsernameMinLength" xml:space="preserve">
         <value>El nombre de usuario debe tener al menos 4 caracteres</value>
     </data>

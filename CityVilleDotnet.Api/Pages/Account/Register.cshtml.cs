@@ -5,14 +5,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace CityVilleDotnet.Api.Pages.Account;
 
 public class RegisterModel(
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
-    CityVilleDbContext context) : PageModel
+    CityVilleDbContext context,
+    IStringLocalizer<Resources.SharedResource> localizer) : PageModel
 {
     [BindProperty] public required RegisterInputModel Input { get; set; }
 
@@ -34,7 +37,17 @@ public class RegisterModel(
             UserName = Input.Username,
         };
 
-        var result = await userManager.CreateAsync(user, Input.Password);
+        IdentityResult result;
+
+        try
+        {
+            result = await userManager.CreateAsync(user, Input.Password);
+        }
+        catch (Exception)
+        {
+            ModelState.AddModelError(string.Empty, localizer["UsernameTaken"]);
+            return Page();
+        }
 
         if (result.Succeeded)
         {
