@@ -5,6 +5,9 @@ on:
     - cron: '0 12 * * 2'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   check-changes:
     name: Check for changes
