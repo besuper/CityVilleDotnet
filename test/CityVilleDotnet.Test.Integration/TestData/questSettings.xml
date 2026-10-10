@@ -57,6 +57,21 @@
             <questRewards xp="10"/>
         </resourceModifiers>
     </quest>
+    <quest name="qm_test_global_table" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="seenQuest" type="qm_test_global_table" total="1"/>
+            <task action="countWorldObjectByName" type="bus_bakery" total="1">
+                <overrideTable table="test_global_z_table" keyword="Business"/>
+                <overrideTable table="test_global_a_table" keyword="Business"/>
+            </task>
+            <task action="countWorldObjectByName" type="res_cottage3" total="1">
+                <overrideTable table="test_global_z_table" keyword="Community"/>
+            </task>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
     <quest name="qm_test_move_island" delay="1" visible="true" spawns_from="_manual">
         <tasks>
             <task action="moveByName" type="test_island_house,test_island_tower" total="5"/>

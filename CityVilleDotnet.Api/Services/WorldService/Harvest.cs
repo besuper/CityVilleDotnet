@@ -32,6 +32,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.Masteries)
+            .Include(x => x.GlobalTableOverrides)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (user is null) throw new Exception("Player not found");

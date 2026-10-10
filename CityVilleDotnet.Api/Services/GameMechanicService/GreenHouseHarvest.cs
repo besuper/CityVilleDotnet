@@ -23,6 +23,7 @@ public class GreenHouseHarvest(CityVilleDbContext context) : AmfService<GreenHou
             .ThenInclude(x => x.Items)
             .Include(x => x.InventoryItems)
             .Include(x => x.Masteries)
+            .Include(x => x.GlobalTableOverrides)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");

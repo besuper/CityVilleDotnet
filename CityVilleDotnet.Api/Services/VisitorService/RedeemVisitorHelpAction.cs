@@ -23,6 +23,7 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.Masteries)
+            .Include(x => x.GlobalTableOverrides)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");

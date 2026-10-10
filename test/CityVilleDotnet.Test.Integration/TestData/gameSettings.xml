@@ -603,6 +603,22 @@
                 </gate>
             </gates>
         </item>
+        <item name="test_global_table_bus" type="business" buyable="false">
+            <keyword>Community</keyword>
+            <keyword>Business</keyword>
+            <randomModifiers>
+                <modifier type="item" tableName="test_droptable"/>
+            </randomModifiers>
+            <gates/>
+        </item>
+        <item name="test_global_table_provider" type="decoration" buyable="false">
+            <mechanics>
+                <gameEventMechanics gameMode="load">
+                    <mechanic type="globalTableModifiers" className="GlobalTableModifierMechanic" priority="10" action="add" targetKeyword="Business" table="test_global_a_table" source="none" oncePerKeyword="true" nonRemovable="true"/>
+                </gameEventMechanics>
+            </mechanics>
+            <gates/>
+        </item>
     </items>
 
     <levels_cv_level_regrade_var_0>
@@ -621,6 +637,14 @@
 
     <randomModifierTables>
         <randomModifierTable type="item" name="test_droptable">
+            <roll percent="100">
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="item" name="test_global_a_table" rollRange="1000000">
+            <roll percent="100">
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="item" name="test_global_z_table" rollRange="0">
             <roll percent="100">
             </roll>
         </randomModifierTable>

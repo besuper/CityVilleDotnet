@@ -90,6 +90,16 @@ public class QuestTask
         get => CashCost?.ToString();
         set => CashCost = string.IsNullOrEmpty(value) ? null : int.Parse(value);
     }
+
+    [XmlElement("overrideTable")] public List<QuestOverrideTable> OverrideTables { get; set; } = [];
+}
+
+[Serializable]
+public class QuestOverrideTable
+{
+    [XmlAttribute("table")] public required string Table { get; set; }
+
+    [XmlAttribute("keyword")] public required string Keyword { get; set; }
 }
 
 [Serializable]

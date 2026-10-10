@@ -42,6 +42,7 @@ public class Player
     public List<Franchise> Franchises { get; set; } = [];
     public int RollCounter { get; private set; }
     public List<FeatureRollCounter> FeatureRollCounters { get; private set; } = [];
+    public List<GlobalTableOverride> GlobalTableOverrides { get; private set; } = [];
     public bool IsNew { get; private set; } = true;
     public bool FirstDay { get; private set; } = true;
     public DateTimeOffset CreationTimestamp { get; private set; }
@@ -681,35 +682,62 @@ public class Player
         return defaultModifiers?.Modifiers;
     }
 
-    // From Player::processRandomModifiersWithTable, tables registered in the world by GlobalTableModifierMechanic
+    // From Player::processRandomModifiersWithTable, tables registered by GlobalTableModifierMechanic and by the active quests
     private List<RandomModifier> SelectGlobalTableModifiers(GameItem gameItem)
     {
         if (gameItem.Keywords.Count == 0) return [];
 
-        var world = GetWorld();
+        var globalTables = GetWorld().GetGlobalTableModifiers()
+            .Where(x => GameSettingsManager.Instance.IsValidatorSatisfied(x.Validate, Level))
+            .Select(x => (Keyword: x.TargetKeyword!, Table: x.Table!))
+            .Concat(GlobalTableOverrides.Select(x => (x.Keyword, x.Table)))
+            .ToList();
 
         var modifiers = new List<RandomModifier>();
-        var registeredKeywords = new HashSet<string>();
-
-        foreach (var mechanic in world.GetGlobalTableModifiers())
+        
+        foreach (var keyword in gameItem.Keywords)
         {
-            if (!gameItem.HasKeyword(mechanic.TargetKeyword!)) continue;
+            var tableNames = globalTables
+                .Where(x => x.Keyword == keyword)
+                .Select(x => x.Table)
+                .Distinct()
+                .Order(StringComparer.Ordinal);
 
-            // a keyword only registers the same table once
-            if (!registeredKeywords.Add($"{mechanic.TargetKeyword}:{mechanic.Table}")) continue;
+            foreach (var tableName in tableNames)
+            {
+                var table = GameSettingsManager.Instance.GetRandomModifier(tableName);
 
-            if (!GameSettingsManager.Instance.IsValidatorSatisfied(mechanic.Validate, Level)) continue;
+                if (table is null) continue;
 
-            var table = GameSettingsManager.Instance.GetRandomModifier(mechanic.Table!);
+                modifiers.Add(new RandomModifier { Type = table.Type, TableName = table.Name });
 
-            if (table is null) continue;
-
-            modifiers.Add(new RandomModifier { Type = table.Type, TableName = table.Name });
-
-            StaticLogger.Current.LogDebug("Added global table {TableName} for {ItemName} with keyword {Keyword}", table.Name, gameItem.Name, mechanic.TargetKeyword);
+                StaticLogger.Current.LogDebug("Added global table {TableName} for {ItemName} with keyword {Keyword}", table.Name, gameItem.Name, keyword);
+            }
         }
 
         return modifiers;
+    }
+
+    public bool AddQuestTableOverride(string questName, int taskId, string keyword, string table)
+    {
+        if (!Quests.Any(x => x.Name == questName && x.QuestType == QuestType.Active)) return false;
+
+        var task = QuestSettingsManager.Instance.GetItem(questName)?.Tasks.Tasks.ElementAtOrDefault(taskId);
+
+        if (task is null || !task.OverrideTables.Any(x => x.Keyword == keyword && x.Table == table)) return false;
+
+        GlobalTableOverrides.Add(new GlobalTableOverride(keyword, table, questName));
+
+        return true;
+    }
+
+    public void RemoveQuestTableOverride(string questName, string keyword, string table)
+    {
+        var tableOverride = GlobalTableOverrides.FirstOrDefault(x => x.Keyword == keyword && x.Table == table && x.Source == questName);
+
+        if (tableOverride is null) return;
+
+        GlobalTableOverrides.Remove(tableOverride);
     }
 
     // From Player::processRandomModifiersFromConfig

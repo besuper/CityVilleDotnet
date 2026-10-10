@@ -34,6 +34,7 @@ public sealed class Finish(CityVilleDbContext context) : AmfService<FinishReques
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
+            .Include(x => x.GlobalTableOverrides)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");

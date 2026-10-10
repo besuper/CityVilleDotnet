@@ -213,7 +213,8 @@ public static class UserDtoMapper
                 { "trains", new ASObject { { "workers", model.GetWorld().ToTrainWorkersAsObject() } } },
                 { "factories", new ASObject { { "workers", model.GetWorld().ToFactoryWorkersAsObject() } } },
                 { "detectiveGameWorkerManager", new ASObject { { "workers", new ASObject() } } },
-                { "socialInventory", new ASObject { { "samObjectIds", new ASObject() } } }
+                { "socialInventory", new ASObject { { "samObjectIds", new ASObject() } } },
+                { "globalTable", BuildGlobalTableAsObject(model) }
             }), // Enable or disable some features for the user
         };
     }
@@ -265,6 +266,15 @@ public static class UserDtoMapper
                     .ToList()
             },
         });
+    }
+
+    // GlobalTableOverrideManager::loadObject
+    private static ASObject BuildGlobalTableAsObject(Player model)
+    {
+        return new ASObject(model.GlobalTableOverrides
+            .OrderBy(x => x.Id)
+            .GroupBy(x => x.Keyword)
+            .ToDictionary(keyword => keyword.Key, object (keyword) => new ASObject(keyword.GroupBy(x => x.Table).ToDictionary(table => table.Key, object (table) => string.Join(",", table.Select(x => x.Source))))));
     }
 
     private static ASObject BuildOrdersAsObject(Player model)
