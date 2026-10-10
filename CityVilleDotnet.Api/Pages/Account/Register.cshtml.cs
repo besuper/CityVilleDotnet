@@ -23,12 +23,12 @@ public class RegisterModel(
 
     public void OnGet(string? returnUrl = null)
     {
-        ReturnUrl = returnUrl ?? Url.Content("~/");
+        ReturnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : "/Game";
     }
 
     public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
     {
-        returnUrl = returnUrl ?? "/Game";
+        returnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : "/Game";
 
         if (!ModelState.IsValid) return Page();
 
@@ -86,7 +86,7 @@ public class RegisterModel(
             await context.SaveChangesAsync();
 
             await signInManager.SignInAsync(user, isPersistent: false);
-            return Redirect(returnUrl);
+            return LocalRedirect(returnUrl);
         }
 
         foreach (var error in result.Errors)
