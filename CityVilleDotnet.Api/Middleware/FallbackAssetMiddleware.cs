@@ -33,22 +33,24 @@ public class FallbackAssetMiddleware(
 
             if (contentType != null)
             {
-                var fallbackFile = GetConfiguredFallback(context.Request.Path);
+                var requestPath = context.Request.Path.Value!;
+                var logPath = requestPath.Replace("\r", "").Replace("\n", "");
+                var fallbackFile = GetConfiguredFallback(requestPath, logPath);
 
                 if (fallbackFile is not null)
                 {
-                    logger.LogWarning("Asset not found: {RequestPath}, serving configured fallback: {FallbackFile}", context.Request.Path, fallbackFile);
+                    logger.LogWarning("Asset not found: {RequestPath}, serving configured fallback: {FallbackFile}", logPath, fallbackFile);
 
                     await SendFallbackAsync(context, fallbackFile, contentType);
                     return;
                 }
 
-                var placeholder = GameSettingsManager.Instance.GetAssetPlaceholder(context.Request.Path.Value!);
-                var placeholderFile = placeholder is not null ? ResolveFallbackFile(context.Request.Path, placeholder.Path) : null;
+                var placeholder = GameSettingsManager.Instance.GetAssetPlaceholder(requestPath);
+                var placeholderFile = placeholder is not null ? ResolveFallbackFile(logPath, placeholder.Path) : null;
 
                 if (placeholder is not null && placeholderFile is not null)
                 {
-                    logger.LogWarning("Asset not found: {RequestPath}, serving construction placeholder: {PlaceholderFile}", context.Request.Path, placeholderFile);
+                    logger.LogWarning("Asset not found: {RequestPath}, serving construction placeholder: {PlaceholderFile}", logPath, placeholderFile);
 
                     if (placeholder.Height is null)
                     {
@@ -69,30 +71,30 @@ public class FallbackAssetMiddleware(
 
                 if (File.Exists(defaultFile))
                 {
-                    logger.LogWarning("Asset not found: {RequestPath}, serving default fallback: {DefaultFile}", context.Request.Path, defaultFile);
+                    logger.LogWarning("Asset not found: {RequestPath}, serving default fallback: {DefaultFile}", logPath, defaultFile);
 
                     await SendFallbackAsync(context, defaultFile, contentType);
                 }
                 else
                 {
-                    logger.LogWarning("Asset not found: {RequestPath}, but no default fallback exists at: {DefaultFile}", context.Request.Path, defaultFile);
+                    logger.LogWarning("Asset not found: {RequestPath}, but no default fallback exists at: {DefaultFile}", logPath, defaultFile);
                 }
             }
         }
     }
 
-    private string? GetConfiguredFallback(PathString requestPath)
+    private string? GetConfiguredFallback(string requestPath, string logPath)
     {
-        return _fallbacks.TryGetValue(requestPath.Value!, out var fallbackPath) ? ResolveFallbackFile(requestPath, fallbackPath) : null;
+        return _fallbacks.TryGetValue(requestPath, out var fallbackPath) ? ResolveFallbackFile(logPath, fallbackPath) : null;
     }
 
-    private string? ResolveFallbackFile(PathString requestPath, string fallbackPath)
+    private string? ResolveFallbackFile(string logPath, string fallbackPath)
     {
         var fallbackFile = Path.GetFullPath(Path.Combine(env.WebRootPath, fallbackPath.TrimStart('/')));
 
         if (File.Exists(fallbackFile)) return fallbackFile;
 
-        logger.LogError("Configured fallback for {RequestPath} doesn't exist: {FallbackFile}", requestPath, fallbackFile);
+        logger.LogError("Configured fallback for {RequestPath} doesn't exist: {FallbackFile}", logPath, fallbackFile);
 
         return null;
     }
