@@ -168,6 +168,27 @@
                 </requirements>
             </upgrade>
         </item>
+        <item name="test_mun_cash_upgradable" type="municipal" buyable="true">
+            <requiredLevel>1</requiredLevel>
+            <cost>500</cost>
+            <population cap="100"/>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates/>
+            <upgrade item="test_mun_cash_upgradable_2" cashcost="80">
+                <requirements>
+                </requirements>
+                <rewards>
+                    <reward type="coin" value="100"/>
+                </rewards>
+            </upgrade>
+        </item>
+        <item name="test_mun_cash_upgradable_2" type="municipal" buyable="false">
+            <population cap="300"/>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates/>
+        </item>
         <item name="test_tree_energy" type="wilderness">
             <sizeX>1</sizeX>
             <sizeY>1</sizeY>
