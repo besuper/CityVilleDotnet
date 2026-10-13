@@ -577,6 +577,7 @@ public class UpgradeItem
 
     public int GetRequiredLevel() => int.Parse(Requirements?.GetValue("level") ?? "0");
     public int GetRequiredUpgradeActions() => int.Parse(Requirements?.GetValue("upgrade_actions") ?? "0");
+    public int GetRequiredSpecialPrey() => int.Parse(Requirements?.GetValue("special_prey") ?? "0");
     public bool CanCountUpgradeActions() => Requirements?.GetValue("upgrade_actions") is not null;
 }
 

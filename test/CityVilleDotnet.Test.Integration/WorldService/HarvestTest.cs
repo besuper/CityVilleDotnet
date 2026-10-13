@@ -12,6 +12,7 @@ using CityVilleDotnet.Factory.WorldObject;
 using CityVilleDotnet.Test.Integration.Fixtures;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Time.Testing;
 
@@ -43,7 +44,7 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         await Context.AddAsync(player, TestContext.Current.CancellationToken);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
+        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
 
         var act = () => handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
 
@@ -61,7 +62,7 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var timeBefore = ServerUtils.GetCurrentTime();
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
+        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
 
         var response = await handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
 
@@ -94,7 +95,7 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var request = CreateHarvestRequest(10, 10);
         request.ClientEnqueueTime = clientEnqueueTime;
 
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
+        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
 
         var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
 
@@ -116,7 +117,7 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         await Context.AddAsync(player, TestContext.Current.CancellationToken);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
+        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
 
         var response = await handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
 
@@ -145,7 +146,7 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var energyBefore = player.Energy;
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
+        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
 
         var response = await handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
 
@@ -168,7 +169,7 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         await Context.AddAsync(player, TestContext.Current.CancellationToken);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
+        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
 
         var act = () => handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
 
@@ -186,7 +187,7 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var energyBefore = player.Energy;
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
+        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
 
         var response = await handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
 
@@ -214,7 +215,7 @@ public class HarvestTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var energyBefore = player.Energy;
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
+        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
 
         var response = await handler.HandlePacket(CreateHarvestRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
 

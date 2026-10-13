@@ -10,12 +10,13 @@ using CityVilleDotnet.Api.Services.QuestService;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Persistence;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CityVilleDotnet.Api.Features.Gateway.Endpoint;
 
-internal sealed class GatewayService(IServiceProvider serviceProvider, ILogger<GatewayService> logger) : EndpointWithoutRequest
+internal sealed class GatewayService(IServiceProvider serviceProvider, CityVilleDbContext context, ILogger<GatewayService> logger) : EndpointWithoutRequest
 {
     private static FrozenDictionary<string, Type> _handlerTypes = FrozenDictionary<string, Type>.Empty;
 
@@ -140,6 +141,8 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, ILogger<G
                 {
                     logger.LogWarning("Domain exception for {FunctionName} Reason: {Errors} Message: {Message}", functionName, de.Reason, de.ClientMessage);
 
+                    context.ChangeTracker.Clear();
+
                     response = new CityVilleResponse().Error(de.Reason).ErrorMessage(de.ClientMessage).ToObject();
                 }
                 catch (ValidationException ve)
@@ -157,6 +160,8 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, ILogger<G
                 catch (Exception e)
                 {
                     logger.LogError(e, "Error processing request for function {FunctionName} with params {@Params}", functionName, parameters);
+
+                    context.ChangeTracker.Clear();
 
                     response = new CityVilleResponse().Error(GameErrorType.InvalidData).ToObject();
                 }

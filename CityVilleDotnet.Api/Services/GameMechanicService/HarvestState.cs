@@ -1,5 +1,6 @@
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
+using CityVilleDotnet.Api.Pages;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
@@ -9,21 +10,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.GameMechanicService;
 
-public sealed class HarvestState(CityVilleDbContext context) : AmfService<HarvestStateRequest>
+public sealed class HarvestState(CityVilleDbContext context, IConfiguration configuration) : AmfService<HarvestStateRequest>
 {
     public override async Task<ASObject> HandlePacket(HarvestStateRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var globalTableProviders = GameSettingsManager.Instance.GetGlobalTableProviders();
+        var hubNames = GameSettingsManager.Instance.GetPreyGroups().SelectMany(x => x.GetHubNames()).ToList();
+        var experiments = (configuration.GetSection("experiments").Get<List<Experiment>>() ?? []).ToDictionary(x => x.Name, x => x.Variant);
 
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || globalTableProviders.Contains(o.ItemName)))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || globalTableProviders.Contains(o.ItemName) || hubNames.Contains(o.ItemName)))
+            .ThenInclude(x => x.Slots)
             .Include(x => x.InventoryItems)
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.GlobalTableOverrides)
+            .Include(x => x.FeatureRollCounters)
+            .Include(x => x.PreyGroups)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
@@ -53,6 +59,7 @@ public sealed class HarvestState(CityVilleDbContext context) : AmfService<Harves
 
         obj.Harvest();
         player.CollectDoobersRewards(obj.GetItemName(), coinMultiplier: coinMultiplier);
+        player.RollHarvestStatePreySpawns(world, obj, gameItem, experiments);
 
         player.HandleQuestsProgress("harvestByClass", className: obj.GetClassName().ToString());
         player.HandleQuestsProgress("harvestBusinessByName", itemName: obj.GetItemName());

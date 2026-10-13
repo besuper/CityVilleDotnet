@@ -64,6 +64,13 @@
             <sizeY>1</sizeY>
             <gates/>
         </item>
+        <item name="plot_crop" type="plot" buyable="true">
+            <requiredLevel>1</requiredLevel>
+            <cost>100</cost>
+            <sizeX>2</sizeX>
+            <sizeY>2</sizeY>
+            <gates/>
+        </item>
         <item name="plot_strawberries" type="plot" buyable="true">
             <requiredLevel>1</requiredLevel>
             <cost>15</cost>
@@ -619,6 +626,24 @@
             </mechanics>
             <gates/>
         </item>
+        <item name="test_prey_shop" type="business" buyable="false">
+            <keyword>test_prey_keyword</keyword>
+            <sizeX>2</sizeX>
+            <sizeY>2</sizeY>
+            <gates/>
+        </item>
+        <item name="test_prey_gated_deco" type="decoration" buyable="false">
+            <keyword>test_prey_gated_spawner</keyword>
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+        </item>
+        <item name="test_prey_exp_deco" type="decoration" buyable="false">
+            <keyword>test_prey_exp_spawner</keyword>
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+        </item>
     </items>
 
     <levels_cv_level_regrade_var_0>
@@ -732,4 +757,75 @@
             </objects>
         </worldRect>
     </worldRects>
+
+    <preyGroups>
+        <preyGroup id="test_prey">
+            <queueInfo perBlock="2" hunterSleepTime="259200" resourceCashCost="5" catchPreyNowCashCost="35"/>
+            <spawnsFrom name="test_prey_keyword" spawnChance="0" world=""/>
+            <spawnsFrom name="business" spawnChance="100" world="world_main"/>
+            <modes>
+                <mode id="default" blockLength="14400" levelRequired="2" huntersRetired="0"/>
+                <mode id="superhero" blockLength="43200" levelRequired="3" huntersRetired="1"/>
+            </modes>
+            <preys>
+                <prey id="1" levelRequired="2">
+                    <modes>
+                        <mode id="default" huntersRequired="2" chance="4000">
+                            <rewards>
+                                <reward type="coin" value="300"/>
+                                <reward type="item" value="test_prey_reward"/>
+                                <reward type="collectable" value="testitem1"/>
+                            </rewards>
+                        </mode>
+                        <mode id="superhero" huntersRequired="0" chance="4000">
+                            <rewards>
+                                <reward type="coin" value="800"/>
+                            </rewards>
+                        </mode>
+                    </modes>
+                </prey>
+                <prey id="2" levelRequired="2">
+                    <modes>
+                        <mode id="default" huntersRequired="1" chance="4000" capturesToMaster="2">
+                            <rewards>
+                                <reward type="coin" value="100"/>
+                            </rewards>
+                            <masteryrewards>
+                                <masteryreward type="coin" value="1000"/>
+                            </masteryrewards>
+                        </mode>
+                    </modes>
+                </prey>
+                <prey id="3" levelRequired="3">
+                    <modes>
+                        <mode id="superhero" huntersRequired="0" chance="300">
+                            <rewards>
+                                <reward type="coin" value="500"/>
+                            </rewards>
+                        </mode>
+                    </modes>
+                </prey>
+            </preys>
+            <hubs>
+                <hub id="1" level="1" name="test_prey_hub" maxHunters="0"/>
+                <hub id="2" level="2" name="test_prey_hub_2" maxHunters="2"/>
+                <hub id="3" level="3" name="test_prey_hub_3" maxHunters="3"/>
+            </hubs>
+        </preyGroup>
+        <preyGroup id="test_prey_gated">
+            <queueInfo perBlock="2" hunterSleepTime="259200" resourceCashCost="5" catchPreyNowCashCost="35"/>
+            <spawnsFrom name="test_prey_gated_spawner" spawnChance="0" world=""/>
+            <spawnsFrom name="test_prey_exp_spawner" spawnChance="0" world="" expName="test_prey_source_exp" expVariant="1"/>
+            <modes>
+                <mode id="default" blockLength="14400" levelRequired="0" spawnPreyPlayerLevelRequired="10" spawnPreyExperimentName="test_prey_mode_exp" spawnPreyExperimentVariant="2,3" spawnPreyWorldId="world_main"/>
+            </modes>
+        </preyGroup>
+        <preyGroup id="test_prey_z">
+            <queueInfo perBlock="2" hunterSleepTime="259200" resourceCashCost="5" catchPreyNowCashCost="35"/>
+            <spawnsFrom name="test_prey_keyword" spawnChance="100" world=""/>
+            <modes>
+                <mode id="default" blockLength="14400" levelRequired="0"/>
+            </modes>
+        </preyGroup>
+    </preyGroups>
 </settings>

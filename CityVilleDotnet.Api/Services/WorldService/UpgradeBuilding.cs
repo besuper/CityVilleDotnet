@@ -24,6 +24,7 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
             .Include(x => x.SeenFlags)
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
+            .Include(x => x.PreyGroups)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
@@ -52,6 +53,12 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
         if (requiredUpgradeActions > 0 && (obj.UpgradeActionCount ?? 0) < requiredUpgradeActions)
             return new CityVilleResponse().Error(GameErrorType.InvalidState);
 
+        // The cash upgrade of a hub goes through buyUpgradeBuildings
+        var preyGroup = GameSettingsManager.Instance.GetPreyGroupByHubName(obj.ItemName);
+
+        if (preyGroup is not null && player.GetNumPreysCaptured(preyGroup.Id) < gameItem.Upgrade.GetRequiredSpecialPrey())
+            return new CityVilleResponse().Error(GameErrorType.InvalidState);
+
         var newItemName = gameItem.Upgrade.IsRandom ? player.RollUpgradeItemName(obj) : gameItem.Upgrade.Name;
 
         // By default, upgrade mechanic has a gate linked with a gateName; sometimes not and use pre_upgrade as fallback
@@ -59,7 +66,7 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
         var gateKeyCount = upgradeGateName is null ? 0 : gameItem.GetInventoryGateKeys(upgradeGateName).Count;
 
         // No inventory gate, just remove the cash
-        if (gateKeyCount == 0 && gameItem.Upgrade.CashCost is not null)
+        if (gateKeyCount == 0 && gameItem.Upgrade.CashCost is not null && preyGroup is null)
             player.RemoveCash(Convert.ToInt32(gameItem.Upgrade.CashCost));
 
         // If the item has an inventory gate, we remove the items
@@ -73,6 +80,10 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
 
         obj.UpgradeBuilding(gameItem.GetFirstDeriveItem(gameItem), newItemName);
         world.CalculatePopulation();
+
+        // The client unlocks the hub level locally without always sending unlockHubGate
+        if (preyGroup is not null)
+            player.GetOrCreatePreyGroup(preyGroup.Id).UnlockGate(world.GetHubLevel(preyGroup));
 
         if (gameItem.Upgrade.MysteryCollectionManager is not null)
         {

@@ -7,6 +7,7 @@ using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
 using CityVilleDotnet.Test.Integration.Fixtures;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace CityVilleDotnet.Test.Integration.GameMechanicService;
 
@@ -26,7 +27,7 @@ public class HarvestStateTest(DatabaseFixture fixture) : IntegrationTest(fixture
 
         var startingEnergy = player.Energy;
 
-        var handler = new HarvestState(Context);
+        var handler = new HarvestState(Context, new ConfigurationBuilder().Build());
         var request = new HarvestStateRequest { ObjectId = 5 };
 
         var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
@@ -56,7 +57,7 @@ public class HarvestStateTest(DatabaseFixture fixture) : IntegrationTest(fixture
         await Context.AddAsync(player, TestContext.Current.CancellationToken);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var handler = new HarvestState(Context);
+        var handler = new HarvestState(Context, new ConfigurationBuilder().Build());
         var request = new HarvestStateRequest { ObjectId = 5 };
 
         var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);

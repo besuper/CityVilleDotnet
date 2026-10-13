@@ -1,5 +1,6 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
+using CityVilleDotnet.Api.Pages;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
@@ -9,21 +10,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.GameMechanicService;
 
-public class GreenHouseHarvest(CityVilleDbContext context) : AmfService<GreenHouseHarvestRequest>
+public class GreenHouseHarvest(CityVilleDbContext context, IConfiguration configuration) : AmfService<GreenHouseHarvestRequest>
 {
     public override async Task<ASObject> HandlePacket(GreenHouseHarvestRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var globalTableProviders = GameSettingsManager.Instance.GetGlobalTableProviders();
+        var hubNames = GameSettingsManager.Instance.GetPreyGroups().SelectMany(x => x.GetHubNames()).ToList();
+        var experiments = (configuration.GetSection("experiments").Get<List<Experiment>>() ?? []).ToDictionary(x => x.Name, x => x.Variant);
 
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || globalTableProviders.Contains(o.ItemName)))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || globalTableProviders.Contains(o.ItemName) || hubNames.Contains(o.ItemName)))
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.InventoryItems)
             .Include(x => x.Masteries)
             .Include(x => x.GlobalTableOverrides)
+            .Include(x => x.FeatureRollCounters)
+            .Include(x => x.PreyGroups)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
@@ -52,6 +57,8 @@ public class GreenHouseHarvest(CityVilleDbContext context) : AmfService<GreenHou
             player.CollectDoobersRewards(plotObj.ContractName, coinMultiplier: 1);
         }
         
+        player.RollPreySpawns(world, gameItem, experiments);
+
         if (plotItem.HasMasteries())
             player.IncrementMastery(plotItem.Name, gameItem.NumCrop.Value);
 

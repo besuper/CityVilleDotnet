@@ -725,6 +725,96 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.ToTable("Player");
                 });
 
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.PreyCapture", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PreyGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PreyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PreyGroupId", "PreyId")
+                        .IsUnique();
+
+                    b.ToTable("PreyCapture");
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.PreyGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GateUnlockLevel")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GroupId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<long>("LastQueueRefill")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("NumPreysCaptured")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("PlayerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.PrimitiveCollection<string>("Preys")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerId", "GroupId")
+                        .IsUnique();
+
+                    b.ToTable("PreyGroup");
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.PreyHunter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PreyGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("State")
+                        .HasColumnType("int");
+
+                    b.Property<long>("Timestamp")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PreyGroupId", "Position")
+                        .IsUnique();
+
+                    b.ToTable("PreyHunter");
+                });
+
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Quest", b =>
                 {
                     b.Property<int>("Id")
@@ -1522,6 +1612,33 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Navigation("AppUser");
                 });
 
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.PreyCapture", b =>
+                {
+                    b.HasOne("CityVilleDotnet.Domain.Entities.PreyGroup", null)
+                        .WithMany("Captures")
+                        .HasForeignKey("PreyGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.PreyGroup", b =>
+                {
+                    b.HasOne("CityVilleDotnet.Domain.Entities.Player", null)
+                        .WithMany("PreyGroups")
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.PreyHunter", b =>
+                {
+                    b.HasOne("CityVilleDotnet.Domain.Entities.PreyGroup", null)
+                        .WithMany("Hunters")
+                        .HasForeignKey("PreyGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Quest", b =>
                 {
                     b.HasOne("CityVilleDotnet.Domain.Entities.Player", null)
@@ -1702,6 +1819,8 @@ namespace CityVilleDotnet.Persistence.Migrations
 
                     b.Navigation("Masteries");
 
+                    b.Navigation("PreyGroups");
+
                     b.Navigation("Quests");
 
                     b.Navigation("SeenFlags");
@@ -1709,6 +1828,13 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Navigation("VisitorHelpOrders");
 
                     b.Navigation("Worlds");
+                });
+
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.PreyGroup", b =>
+                {
+                    b.Navigation("Captures");
+
+                    b.Navigation("Hunters");
                 });
 
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.TrainOrder", b =>

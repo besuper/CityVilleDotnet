@@ -1,4 +1,5 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Pages;
 using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
@@ -12,19 +13,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
-internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest> logger) : AmfService<HarvestRequest>
+internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest> logger, IConfiguration configuration) : AmfService<HarvestRequest>
 {
     public override async Task<ASObject> HandlePacket(HarvestRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var globalTableProviders = GameSettingsManager.Instance.GetGlobalTableProviders();
+        var hubNames = GameSettingsManager.Instance.GetPreyGroups().SelectMany(x => x.GetHubNames()).ToList();
+        var experiments = (configuration.GetSection("experiments").Get<List<Experiment>>() ?? []).ToDictionary(x => x.Name, x => x.Variant);
 
         var user = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x.Objects.Where(o => (o.X == request.Building.Position.X && o.Y == request.Building.Position.Y) || globalTableProviders.Contains(o.ItemName) || o.ClassName == BuildingClassType.DockHouse))
+            .ThenInclude(x => x.Objects.Where(o => (o.X == request.Building.Position.X && o.Y == request.Building.Position.Y) || globalTableProviders.Contains(o.ItemName) || hubNames.Contains(o.ItemName) || o.ClassName == BuildingClassType.DockHouse))
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x.Objects.Where(o => (o.X == request.Building.Position.X && o.Y == request.Building.Position.Y) || globalTableProviders.Contains(o.ItemName) || o.ClassName == BuildingClassType.DockHouse))
+            .ThenInclude(x => x.Objects.Where(o => (o.X == request.Building.Position.X && o.Y == request.Building.Position.Y) || globalTableProviders.Contains(o.ItemName) || hubNames.Contains(o.ItemName) || o.ClassName == BuildingClassType.DockHouse))
             .ThenInclude(x => x.Workers)
             .Include(x => x.InventoryItems)
             .Include(x => x.SeenFlags)
@@ -33,6 +36,8 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
             .ThenInclude(x => x.Items)
             .Include(x => x.Masteries)
             .Include(x => x.GlobalTableOverrides)
+            .Include(x => x.FeatureRollCounters)
+            .Include(x => x.PreyGroups)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (user is null) throw new Exception("Player not found");
@@ -91,6 +96,8 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest
             if (obj.ClassName == BuildingClassType.HarvestableShip && contractName is not null)
                 world.CountCruiseUpgradeActions(obj, contractName);
         }
+
+        user.RollPreySpawns(world, GameSettingsManager.Instance.GetItem(obj.ItemName) ?? throw new Exception($"Can't find game item for {obj.ItemName}"), experiments);
 
         logger.LogDebug("Secure rands {Join}", string.Join(",", secureRands.ToArray()));
         logger.LogDebug("Secure rands {SecureRandsCount}", secureRands.Count);

@@ -1,4 +1,5 @@
 using Bogus;
+using CityVilleDotnet.Domain.Enums;
 
 namespace CityVilleDotnet.Factory.World;
 
@@ -15,7 +16,8 @@ public static class WorldFactory
         int? populationCap = null,
         int? potentialPopulation = null,
         List<Domain.Entities.MapRect>? mapRects = null,
-        List<Domain.Entities.WorldObject>? objects = null)
+        List<Domain.Entities.WorldObject>? objects = null,
+        WorldType type = WorldType.Main)
     {
         return new Domain.Entities.World(
             worldName ?? faker.Random.String2(32),
@@ -27,6 +29,7 @@ public static class WorldFactory
             populationCap: populationCap ?? 0,
             potentialPopulation: potentialPopulation ?? 0,
             mapRects: mapRects ?? [],
-            objects: objects ?? []);
+            objects: objects ?? [],
+            type: type);
     }
 }

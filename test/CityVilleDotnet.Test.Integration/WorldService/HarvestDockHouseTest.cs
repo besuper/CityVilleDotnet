@@ -8,6 +8,7 @@ using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
 using CityVilleDotnet.Test.Integration.Fixtures;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CityVilleDotnet.Test.Integration.WorldService;
@@ -37,7 +38,7 @@ public class HarvestDockHouseTest(DatabaseFixture fixture) : IntegrationTest(fix
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
         Context.ChangeTracker.Clear();
 
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
+        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
 
         var response = await handler.HandlePacket(CreateHarvestRequest(6, 10), player.Id, TestContext.Current.CancellationToken);
 
@@ -59,7 +60,7 @@ public class HarvestDockHouseTest(DatabaseFixture fixture) : IntegrationTest(fix
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
         Context.ChangeTracker.Clear();
 
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
+        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
 
         var response = await handler.HandlePacket(CreateHarvestRequest(6, 10), player.Id, TestContext.Current.CancellationToken);
 
@@ -81,7 +82,7 @@ public class HarvestDockHouseTest(DatabaseFixture fixture) : IntegrationTest(fix
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
         Context.ChangeTracker.Clear();
 
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
+        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
 
         var response = await handler.HandlePacket(CreateHarvestRequest(20, 20), player.Id, TestContext.Current.CancellationToken);
 
@@ -103,7 +104,7 @@ public class HarvestDockHouseTest(DatabaseFixture fixture) : IntegrationTest(fix
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
         Context.ChangeTracker.Clear();
 
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance);
+        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
 
         var response = await handler.HandlePacket(CreateHarvestRequest(6, 10), player.Id, TestContext.Current.CancellationToken);
 

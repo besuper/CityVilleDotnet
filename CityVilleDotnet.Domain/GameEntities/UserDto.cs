@@ -1,3 +1,4 @@
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using System.Text.Json.Serialization;
 using CityVilleDotnet.Domain.EnumExtensions;
@@ -11,6 +12,7 @@ public class UserDto
     [JsonPropertyName("userInfo")] public required UserInfoDto UserInfo { get; set; }
     [JsonPropertyName("franchises")] public List<FranchiseDto> Franchises { get; set; } = new();
     [JsonPropertyName("featureData")] public required ASObject FeatureData { get; set; }
+    [JsonPropertyName("preyGroups")] public List<ASObject> PreyGroups { get; set; } = [];
     [JsonPropertyName("crews")] public Dictionary<string, List<string>> Crews { get; set; } = [];
 }
 
@@ -36,7 +38,7 @@ public static class UserDtoMapper
             energyModifiers[$"{obj.WorldFlatId}"] = obj.EnergyModifier;
         }
 
-        return new UserDto()
+        var dto = new UserDto()
         {
             Crews = model.GetWorld().Objects.Where(o => o.CrewMembers.Count > 0).ToDictionary(
                 o => o.WorldFlatId.ToString(),
@@ -202,14 +204,6 @@ public static class UserDtoMapper
                         { "summaries", new ASObject() }
                     }
                 },
-
-                // Prey groups
-                // FIXME: load them from gameSettings
-                { "copsNBandits", new ASObject { { "workers", new ASObject() } } },
-                { "animalRescue", new ASObject { { "workers", new ASObject() } } },
-                { "downtownpolice", new ASObject { { "workers", new ASObject() } } },
-                { "fishing", new ASObject { { "workers", new ASObject() } } },
-                { "area51", new ASObject { { "workers", new ASObject() } } },
                 { "trains", new ASObject { { "workers", model.GetWorld().ToTrainWorkersAsObject() } } },
                 { "factories", new ASObject { { "workers", model.GetWorld().ToFactoryWorkersAsObject() } } },
                 { "detectiveGameWorkerManager", new ASObject { { "workers", new ASObject() } } },
@@ -217,6 +211,17 @@ public static class UserDtoMapper
                 { "globalTable", BuildGlobalTableAsObject(model) }
             }), // Enable or disable some features for the user
         };
+
+        // The client reads featureData[groupId] for every prey group of the settings
+        foreach (var setting in GameSettingsManager.Instance.GetPreyGroups())
+        {
+            var group = model.PreyGroups.FirstOrDefault(x => x.GroupId == setting.Id);
+
+            dto.FeatureData[setting.Id] = new ASObject { { "workers", group.ToHunterWorkersAsObject() } };
+            dto.PreyGroups.Add(group.ToPreyGroupAsObject(setting.Id));
+        }
+
+        return dto;
     }
     
     private static ASObject BuildWorldSummary(World world, Player model, List<Quest> activeQuests)

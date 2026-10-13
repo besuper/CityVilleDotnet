@@ -1,6 +1,8 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Exceptions;
+using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
@@ -19,6 +21,20 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
         await context.Set<Player>()
             .Where(x => x.Id == playerId)
             .ExecuteUpdateAsync(s => s.SetProperty(x => x.LastPlayedWorldType, WorldType.Main), cancellationToken);
+
+        var hubNames = GameSettingsManager.Instance.GetPreyGroups().SelectMany(x => x.GetHubNames()).ToList();
+
+        var preyPlayer = await context.Set<Player>()
+            .AsSplitQuery()
+            .Include(x => x.PreyGroups)
+            .ThenInclude(x => x.Hunters)
+            .Include(x => x.Worlds.Where(w => w.Type == WorldType.Main))
+            .ThenInclude(x => x.Objects.Where(o => hubNames.Contains(o.ItemName)))
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
+
+        preyPlayer.RefreshPreyGroups(preyPlayer.GetWorld(), ServerUtils.GetCurrentTimeSeconds());
+
+        await context.SaveChangesAsync(cancellationToken);
 
         var user = await context.Set<Player>()
             .AsSplitQuery()
@@ -66,6 +82,10 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .Include(x => x.VisitorHelpOrders) // FIXME: Limit orders
             .Include(x => x.Masteries)
             .Include(x => x.GlobalTableOverrides)
+            .Include(x => x.PreyGroups)
+            .ThenInclude(x => x.Captures)
+            .Include(x => x.PreyGroups)
+            .ThenInclude(x => x.Hunters)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (user is null)

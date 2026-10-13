@@ -80,4 +80,15 @@
             <questRewards xp="5"/>
         </resourceModifiers>
     </quest>
+    <quest name="qm_test_capture_prey" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="capturePreyByID" type="" groupId="test_prey" total="5"/>
+            <task action="capturePreyByID" type="2,3" groupId="test_prey" total="5"/>
+            <task action="capturePreyByID" type="" groupId="test_other_prey" total="5"/>
+            <task action="capturePreyByID" type="" total="5"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
 </quests>

@@ -239,6 +239,11 @@ public class World
         return group;
     }
 
+    public int GetHubLevel(PreyGroupSetting setting)
+    {
+        return Objects.Select(x => setting.GetHubByName(x.ItemName)?.Level ?? 0).DefaultIfEmpty(0).Max();
+    }
+
     public int CountBuildingByNames(IReadOnlyCollection<string> names)
     {
         return Objects.Count(x => names.Contains(x.ItemName));

@@ -1,4 +1,5 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Pages;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
@@ -8,22 +9,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.VisitorService;
 
-public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<RedeemVisitorHelpAction> logger) : AmfService<RedeemVisitorHelpActionRequest>
+public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<RedeemVisitorHelpAction> logger, IConfiguration configuration) : AmfService<RedeemVisitorHelpActionRequest>
 {
     public override async Task<ASObject> HandlePacket(RedeemVisitorHelpActionRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var globalTableProviders = GameSettingsManager.Instance.GetGlobalTableProviders();
+        var hubNames = GameSettingsManager.Instance.GetPreyGroups().SelectMany(x => x.GetHubNames()).ToList();
+        var experiments = (configuration.GetSection("experiments").Get<List<Experiment>>() ?? []).ToDictionary(x => x.Name, x => x.Variant);
 
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.VisitorHelpOrders.Where(o => o.SenderId == request.SenderId))
             .Include(x => x.Worlds.Where(w => w.Type == WorldType.Main)) // TODO: Friends can only help main world?
-            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.WorldObjectId || globalTableProviders.Contains(o.ItemName)))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.WorldObjectId || globalTableProviders.Contains(o.ItemName) || hubNames.Contains(o.ItemName)))
             .Include(x => x.InventoryItems)
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.Masteries)
             .Include(x => x.GlobalTableOverrides)
+            .Include(x => x.FeatureRollCounters)
+            .Include(x => x.PreyGroups)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
@@ -50,6 +55,7 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
 
                 obj.Harvest();
                 player.CollectDoobersRewards(itemName);
+                player.RollPreySpawns(world, GameSettingsManager.Instance.GetItem(obj.ItemName) ?? throw new Exception($"Can't find game item for {obj.ItemName}"), experiments);
 
                 player.HandleQuestsProgress("harvestByClass", className: className.ToString());
                 player.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);
@@ -81,6 +87,10 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
             {
                 // Plot can be watered
                 obj.BoostPlot();
+            }
+            else if (obj.GetClassName() == BuildingClassType.Business)
+            {
+                player.RollPreySpawns(world, GameSettingsManager.Instance.GetItem(obj.ItemName) ?? throw new Exception($"Can't find game item for {obj.ItemName}"), experiments);
             }
             else
             {

@@ -25,6 +25,7 @@ public class GameSettingsManager
     private List<ReputationItem> _reputationLevels = [];
     private List<CollectionSetting> _collections = [];
     private List<ExpansionSetting> _expansions = [];
+    private List<PreyGroupSetting> _preyGroups = [];
     private bool _isInitialized;
 
     private GameSettingsManager()
@@ -198,6 +199,8 @@ public class GameSettingsManager
                 }
             }
 
+            _preyGroups = gameSettings.PreyGroups?.Groups ?? [];
+
             _globalTableProviders = _items.Values
                 .Where(x => x is not null && x.GetGlobalTableModifiers().Count > 0)
                 .Select(x => x!.Name)
@@ -218,6 +221,7 @@ public class GameSettingsManager
         logger.LogInformation("Loaded {ValidatorsCount} validators", _validators.Count);
         logger.LogInformation("Loaded {GlobalTableProvidersCount} global table providers", _globalTableProviders.Count);
         logger.LogInformation("Loaded {AssetPlaceholdersCount} asset placeholders", _assetPlaceholders.Count);
+        logger.LogInformation("Loaded {PreyGroupsCount} prey groups", _preyGroups.Count);
 
         _isInitialized = true;
     }
@@ -228,6 +232,30 @@ public class GameSettingsManager
             throw new InvalidOperationException("GameSettingsManager not initialized");
 
         return _items.TryGetValue(itemName, out var item) ? item : null;
+    }
+
+    public IReadOnlyList<PreyGroupSetting> GetPreyGroups()
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return _preyGroups;
+    }
+
+    public PreyGroupSetting? GetPreyGroup(string groupId)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return _preyGroups.FirstOrDefault(x => x.Id == groupId);
+    }
+
+    public PreyGroupSetting? GetPreyGroupByHubName(string itemName)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return _preyGroups.FirstOrDefault(x => x.GetHubByName(itemName) is not null);
     }
 
     public AssetPlaceholder? GetAssetPlaceholder(string url)

@@ -51,5 +51,9 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
         builder.HasMany(x => x.Friends);
         builder.HasOne(x => x.AppUser);
         builder.HasMany(x => x.Franchises).WithOne().IsRequired();
+        builder.HasMany(x => x.PreyGroups)
+            .WithOne()
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
