@@ -313,6 +313,27 @@
             <sizeY>2</sizeY>
             <gates/>
         </item>
+        <item name="test_greenhouse" type="greenHouse" buyable="false">
+            <sizeX>4</sizeX>
+            <sizeY>4</sizeY>
+            <numCrop>8</numCrop>
+            <gates/>
+        </item>
+        <item name="test_greenhouse_contract" type="plot_contract" buyable="false" allowWither="true">
+            <cost>41</cost>
+            <growTime>0.02173913</growTime>
+            <gates/>
+        </item>
+        <item name="test_named_hotel" type="business" buyable="false">
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="OnBuildComplete">
+                    <mechanic type="name" className="ObjectNamingMechanic" priority="1" defaultNameLoc="DefaultHotelName"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
         <item name="test_bridge" type="bridge" buyable="false">
             <sizeX>3</sizeX>
             <sizeY>3</sizeY>

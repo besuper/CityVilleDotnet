@@ -76,6 +76,7 @@ public class WorldObject
     public string? RemodelItemName { get; private set; }
     public int? RemodelBuilds { get; private set; }
     public string? ParentMacroObjectId { get; private set; }
+    public string? CustomName { get; private set; }
     public List<CrewMember> CrewMembers { get; private set; } = [];
     public List<WorldObjectMechanicCounter> MechanicCounters { get; private set; } = [];
     public List<WorldObjectStorageItem> StorageItems { get; private set; } = [];
@@ -93,6 +94,11 @@ public class WorldObject
         }
 
         counter.Increment();
+    }
+
+    public void Rename(string name)
+    {
+        CustomName = name;
     }
 
     public void AttachToMacroObject(string macroObjectName)

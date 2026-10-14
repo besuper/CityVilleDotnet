@@ -1100,6 +1100,10 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<int?>("CurrentState")
                         .HasColumnType("int");
 
+                    b.Property<string>("CustomName")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 

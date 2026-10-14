@@ -12,7 +12,7 @@ using Microsoft.Extensions.Time.Testing;
 
 namespace CityVilleDotnet.Test.Integration.GameMechanicService;
 
-// greenhouse_grassroots numCrop 8, plot_shrimp cost 41 withered after 5400s: int(41 * 0.5) * 8 = 160 coins
+// See test_greenhouse (numCrop 8) and test_greenhouse_contract (cost 41, withered after 5400s) in TestData/gameSettings.xml: int(41 * 0.5) * 8 = 160 coins
 [Collection("Database")]
 public class GreenHouseClearTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 {
@@ -23,7 +23,7 @@ public class GreenHouseClearTest(DatabaseFixture fixture) : IntegrationTest(fixt
     {
         var time = new FakeTimeProvider(StartTime);
         ServerUtils.TimeProvider = time;
-        var greenHouse = Faker.WorldObject(itemName: "greenhouse_grassroots", className: BuildingClassType.GreenHouse, contractName: "plot_shrimp", state: WorldObjectState.Planted, plantTime: ServerUtils.GetCurrentTime(), worldFlatId: 42);
+        var greenHouse = Faker.WorldObject(itemName: "test_greenhouse", className: BuildingClassType.GreenHouse, contractName: "test_greenhouse_contract", state: WorldObjectState.Planted, plantTime: ServerUtils.GetCurrentTime(), worldFlatId: 42);
         var world = Faker.World(objects: [greenHouse]);
         var player = Faker.Player(world: world);
 
@@ -49,7 +49,7 @@ public class GreenHouseClearTest(DatabaseFixture fixture) : IntegrationTest(fixt
     {
         var time = new FakeTimeProvider(StartTime);
         ServerUtils.TimeProvider = time;
-        var greenHouse = Faker.WorldObject(itemName: "greenhouse_grassroots", className: BuildingClassType.GreenHouse, contractName: "plot_shrimp", state: WorldObjectState.Planted, plantTime: ServerUtils.GetCurrentTime(), worldFlatId: 42);
+        var greenHouse = Faker.WorldObject(itemName: "test_greenhouse", className: BuildingClassType.GreenHouse, contractName: "test_greenhouse_contract", state: WorldObjectState.Planted, plantTime: ServerUtils.GetCurrentTime(), worldFlatId: 42);
         var world = Faker.World(objects: [greenHouse]);
         var player = Faker.Player(world: world);
 
@@ -65,7 +65,7 @@ public class GreenHouseClearTest(DatabaseFixture fixture) : IntegrationTest(fixt
 
         (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.ForceReload);
         player.Gold.Should().Be(goldBefore);
-        greenHouse.ContractName.Should().Be("plot_shrimp");
+        greenHouse.ContractName.Should().Be("test_greenhouse_contract");
         greenHouse.State.Should().Be(WorldObjectState.Planted);
     }
 
@@ -74,7 +74,7 @@ public class GreenHouseClearTest(DatabaseFixture fixture) : IntegrationTest(fixt
     {
         var time = new FakeTimeProvider(StartTime);
         ServerUtils.TimeProvider = time;
-        var plot = Faker.WorldObject(itemName: "plot_crop", className: BuildingClassType.Plot, contractName: "plot_shrimp", state: WorldObjectState.Planted, plantTime: ServerUtils.GetCurrentTime(), worldFlatId: 42);
+        var plot = Faker.WorldObject(itemName: "plot_crop", className: BuildingClassType.Plot, contractName: "test_greenhouse_contract", state: WorldObjectState.Planted, plantTime: ServerUtils.GetCurrentTime(), worldFlatId: 42);
         var world = Faker.World(objects: [plot]);
         var player = Faker.Player(world: world);
 
@@ -90,6 +90,6 @@ public class GreenHouseClearTest(DatabaseFixture fixture) : IntegrationTest(fixt
 
         await act.Should().ThrowAsync<Exception>();
         player.Gold.Should().Be(goldBefore);
-        plot.ContractName.Should().Be("plot_shrimp");
+        plot.ContractName.Should().Be("test_greenhouse_contract");
     }
 }

@@ -148,6 +148,11 @@ public static class WorldObjectDtoMapper
             };
         }
 
+        if (model.CustomName is not null)
+        {
+            dto.MechanicData["name"] = model.CustomName;
+        }
+
         if (model.RemodelItemName is not null)
         {
             dto.MechanicData["remodel"] = new ASObject

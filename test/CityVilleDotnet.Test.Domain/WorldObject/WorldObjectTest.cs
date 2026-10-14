@@ -22,6 +22,20 @@ public class WorldObjectTest
     }
 
     [Fact]
+    public void WorldObject_Rename_SetsCustomName()
+    {
+        var faker = new Faker();
+        var building = faker.WorldObject();
+        var name = faker.Random.String2(30);
+
+        building.CustomName.Should().BeNull();
+
+        building.Rename(name);
+
+        building.CustomName.Should().Be(name);
+    }
+
+    [Fact]
     public void WorldObject_AddBonusPopulation_ClampsToMaxIncrease()
     {
         var faker = new Faker();

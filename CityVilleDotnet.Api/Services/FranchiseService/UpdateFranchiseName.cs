@@ -1,6 +1,7 @@
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
+using FluentValidation;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,4 +32,13 @@ public class UpdateFranchiseNameRequest
 {
     [AmfParam(0)] public string FranchiseType { get; set; } = string.Empty;
     [AmfParam(1)] public string FranchiseName { get; set; } = string.Empty;
+}
+
+public class UpdateFranchiseNameValidator : AbstractValidator<UpdateFranchiseNameRequest>
+{
+    public UpdateFranchiseNameValidator()
+    {
+        RuleFor(x => x.FranchiseType).NotEmpty().MaximumLength(64);
+        RuleFor(x => x.FranchiseName).NotEmpty().MaximumLength(30);
+    }
 }
