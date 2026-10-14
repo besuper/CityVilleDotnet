@@ -19,6 +19,7 @@ internal sealed class BuyResource(CityVilleDbContext context) : AmfService<BuyRe
         var setting = GameSettingsManager.Instance.GetPreyGroup(request.GroupId) ?? throw new DomainException(GameErrorType.InvalidData, $"Unknown prey group {request.GroupId}");
 
         var player = await context.Set<Player>()
+            .AsSplitQuery()
             .Include(x => x.PreyGroups.Where(g => g.GroupId == request.GroupId))
             .ThenInclude(x => x.Hunters)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");

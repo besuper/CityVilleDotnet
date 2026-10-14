@@ -2,7 +2,6 @@ using AwesomeAssertions;
 using Bogus;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Factory.WorldObject;
-using CityVilleDotnet.Test.Domain.Fixtures;
 
 namespace CityVilleDotnet.Test.Domain.WorldObject;
 
@@ -177,5 +176,17 @@ public class WorldObjectTest
         building.ClassName.Should().Be(className);
         building.State.Should().Be(expectedState);
         building.PlantTime.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void WorldObject_OpenBusiness_TimedSupplyFerryShip_Opens()
+    {
+        var faker = new Faker();
+        var ferry = faker.WorldObject(itemName: "test_ferry_ship", className: BuildingClassType.FerryShip, state: WorldObjectState.Closed);
+
+        ferry.OpenBusiness(1);
+
+        ferry.State.Should().Be(WorldObjectState.Open);
+        ferry.PlantTime.Should().NotBeNull();
     }
 }

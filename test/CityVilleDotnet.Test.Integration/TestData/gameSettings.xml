@@ -543,6 +543,16 @@
             <keyword>cargoship</keyword>
             <gates/>
         </item>
+        <item name="test_ferry_ship" type="ferryShip" buyable="true">
+            <sizeX>3</sizeX>
+            <sizeY>2</sizeY>
+            <mechanics>
+                <gameEventMechanics gameMode="GMPlay">
+                    <mechanic type="supplyState" className="SupplyMechanic" priority="3" blockOthers="true" pick="supply"/>
+                </gameEventMechanics>
+            </mechanics>
+            <gates/>
+        </item>
         <item name="cruise_contract_alaskan" type="cruise_contract" buyable="true">
             <coinYield>100</coinYield>
             <growTime>0.001</growTime>

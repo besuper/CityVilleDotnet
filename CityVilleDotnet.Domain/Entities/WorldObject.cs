@@ -589,7 +589,7 @@ public class WorldObject
     {
         var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
 
-        if (!ClassName.IsBusiness() && !(gameItem?.IsCustomerSupplyState() ?? false)) throw new Exception("Can't open other than business building, class name is: " + ClassName + "");
+        if (!ClassName.IsBusiness() && gameItem?.GetSupplyStateMechanicClass() is null) throw new Exception("Can't open other than business building, class name is: " + ClassName + "");
         if (State == WorldObjectState.Open || State == WorldObjectState.ClosedHarvestable) throw new Exception("Building is already open");
 
         Visits = 0;
