@@ -12,7 +12,30 @@ updates:
       - "/test/CityVilleDotnet.Test.Integration"
     schedule:
       interval: "weekly"
+    groups:
+      tests:
+        patterns:
+          - "xunit*"
+          - "Microsoft.NET.Test.Sdk"
+          - "coverlet.*"
+          - "Testcontainers.*"
+          - "AwesomeAssertions"
+          - "Bogus"
+      dotnet:
+        patterns:
+          - "Microsoft.*"
+          - "System.*"
+      others:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
