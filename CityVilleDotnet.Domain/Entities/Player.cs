@@ -1095,6 +1095,35 @@ public class Player
         return Masteries.FirstOrDefault(x => x.ItemName == itemName)?.Level ?? 0;
     }
 
+    public void BuyMasteryGate(string itemName, GatesItem gate)
+    {
+        var flag = $"buyout_{itemName}_{gate.Name}";
+
+        if (HasSeenFlag(flag)) return;
+
+        RemoveCash(GetMasteryGateCost(gate));
+        SetSeenFlag(flag);
+    }
+
+    private int GetMasteryGateCost(GatesItem gate)
+    {
+        if (gate.Name != "mastery_crop") return gate.CashCost;
+
+        var cost = gate.CashCost;
+
+        foreach (var key in gate.Keys.OfType<GateKey>())
+        {
+            var total = GameSettingsManager.Instance.GetItem(key.Name)?.MasteryItems.ElementAtOrDefault(gate.MasteryLevel)?.RequiredCount ?? 0;
+            var remaining = total - (Masteries.FirstOrDefault(x => x.ItemName == key.Name)?.Count ?? 0);
+
+            if (remaining <= 0) return 0;
+
+            cost = Math.Min(cost, (int)Math.Floor((double)remaining / total * gate.CashCost));
+        }
+
+        return Math.Max(cost, 1);
+    }
+
     public void IncrementMastery(string itemName, int amount = 1)
     {
         // TODO: Implement bonusMultiplier with doobers collect

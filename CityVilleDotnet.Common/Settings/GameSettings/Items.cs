@@ -459,6 +459,7 @@ public class GatesItem
     [XmlAttribute("type")] public string? Type { get; set; }
     [XmlAttribute("instructions")] public string? Instructions { get; set; }
     [XmlAttribute("cashCost")] public int CashCost { get; set; }
+    [XmlAttribute("masteryLevel")] public int MasteryLevel { get; set; }
     [XmlElement("key")] public required List<GateKey?> Keys { get; set; }
 }
 

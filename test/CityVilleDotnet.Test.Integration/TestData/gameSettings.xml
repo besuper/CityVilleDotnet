@@ -675,6 +675,32 @@
             <sizeY>1</sizeY>
             <gates/>
         </item>
+        <item name="test_mastery_crop_a" type="plot" buyable="true">
+            <gates/>
+            <mastery level="0" bonusMultiplier="0"/>
+            <mastery level="1" req="10" bonusMultiplier="10"/>
+            <mastery level="2" req="40" bonusMultiplier="20"/>
+        </item>
+        <item name="test_mastery_crop_b" type="plot" buyable="true">
+            <gates/>
+            <mastery level="0" bonusMultiplier="0"/>
+            <mastery level="1" req="100" bonusMultiplier="10"/>
+            <mastery level="2" req="300" bonusMultiplier="20"/>
+        </item>
+        <item name="test_mastery_gate" type="business" buyable="true">
+            <gates>
+                <gate type="mastery" loadType="dynamic" name="mastery_crop" masteryLevel="2" cashCost="100">
+                    <key name="test_mastery_crop_a"/>
+                    <key name="test_mastery_crop_b"/>
+                </gate>
+                <gate type="mastery" loadType="dynamic" name="mastery_business" masteryLevel="2" cashCost="80">
+                    <key name="test_mastery_gate"/>
+                </gate>
+                <gate type="inventory" name="inventory_gate" cashCost="20">
+                    <key name="test_gate_material" amount="2"/>
+                </gate>
+            </gates>
+        </item>
     </items>
 
     <levels_cv_level_regrade_var_0>
