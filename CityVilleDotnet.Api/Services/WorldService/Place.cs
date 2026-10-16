@@ -80,6 +80,10 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
 
             obj.SetAsConstructionSite(gameItem.Construction, constructionItem.NumberOfStages.Value);
         }
+        else
+        {
+            obj.InitHarvestEndTime();
+        }
 
         world.AddBuilding(obj);
 

@@ -1,4 +1,5 @@
 ﻿using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using System.Text.Json.Serialization;
 using CityVilleDotnet.Domain.EnumExtensions;
@@ -151,6 +152,11 @@ public static class WorldObjectDtoMapper
         if (model.CustomName is not null)
         {
             dto.MechanicData["name"] = model.CustomName;
+        }
+
+        if (model.HarvestEndTime is not null)
+        {
+            dto.MechanicData["harvestEndTS"] = ServerUtils.ToUnixTimeSeconds(model.HarvestEndTime.Value);
         }
 
         if (model.RemodelItemName is not null)

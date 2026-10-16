@@ -726,6 +726,8 @@ public class MechanicItem
     [XmlAttribute("targetKeyword")] public string? TargetKeyword { get; set; }
     [XmlAttribute("table")] public string? Table { get; set; }
     [XmlAttribute("validate")] public string? Validate { get; set; }
+    [XmlAttribute("duration")] public double Duration { get; set; }
+    [XmlAttribute("upgradeActionMechanic")] public bool UpgradeActionMechanic { get; set; }
 
     public bool AllowsItem(GameItem? item)
     {

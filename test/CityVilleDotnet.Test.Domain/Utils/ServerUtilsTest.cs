@@ -36,6 +36,14 @@ public class ServerUtilsTest
     }
 
     [Fact]
+    public void ServerUtils_ToUnixTimeSeconds_UnspecifiedKind_ReadAsUtc()
+    {
+        var dateTime = DateTime.SpecifyKind(StartTime.UtcDateTime, DateTimeKind.Unspecified);
+
+        ServerUtils.ToUnixTimeSeconds(dateTime).Should().Be(StartTime.ToUnixTimeSeconds());
+    }
+
+    [Fact]
     public void ServerUtils_GetActionTime_ClientTimeInFuture_ClampsToNow()
     {
         ServerUtils.TimeProvider = new FakeTimeProvider(StartTime);

@@ -1,6 +1,7 @@
 using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.WorldService;
 using CityVilleDotnet.Api.Services.WorldService.Common;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Factory.MapRect;
@@ -9,6 +10,7 @@ using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
 using CityVilleDotnet.Test.Integration.Fixtures;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Time.Testing;
 
 namespace CityVilleDotnet.Test.Integration.WorldService;
 
@@ -139,5 +141,29 @@ public class FinishTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var mapRects = await Context.Set<MapRect>().ToListAsync(TestContext.Current.CancellationToken);
 
         mapRects.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Finish_Corporation_StartsHarvestEndTimer()
+    {
+        var startTime = new DateTimeOffset(2026, 1, 15, 12, 0, 0, TimeSpan.Zero);
+        ServerUtils.TimeProvider = new FakeTimeProvider(startTime);
+        var building = Faker.WorldObject(itemName: "test_corporation", className: BuildingClassType.Corporation, x: 10, y: 20);
+        building.SetAsConstructionSite("construction_3x3_2stage", 2);
+        building.AddConstructionStage();
+        building.AddConstructionStage();
+        var world = Faker.World(objects: [building]);
+        var user = Faker.Player(world: world);
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new Finish(Context);
+
+        var response = await handler.HandlePacket(CreateFinishRequest(10, 20), user.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+        building.ItemName.Should().Be("test_corporation");
+        building.HarvestEndTime.Should().Be(startTime.UtcDateTime.AddSeconds(600));
     }
 }

@@ -17,7 +17,7 @@ namespace CityVilleDotnet.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.12")
+                .HasAnnotation("ProductVersion", "10.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -1121,6 +1121,9 @@ namespace CityVilleDotnet.Persistence.Migrations
 
                     b.Property<bool>("GivenFreeItem")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime?>("HarvestEndTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<long?>("InactiveTime")
                         .HasColumnType("bigint");

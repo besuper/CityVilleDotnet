@@ -42,7 +42,17 @@ public static class ServerUtils
     {
         return TimeProvider.GetUtcNow().LocalDateTime;
     }
-    
+
+    public static DateTime GetCurrentUtcDateTime()
+    {
+        return TimeProvider.GetUtcNow().UtcDateTime;
+    }
+
+    public static long ToUnixTimeSeconds(DateTime dateTime)
+    {
+        return new DateTimeOffset(DateTime.SpecifyKind(dateTime, DateTimeKind.Utc)).ToUnixTimeSeconds();
+    }
+
     public static long GetActionTime(long? clientEnqueueTimeSeconds)
     {
         var now = GetCurrentTime();

@@ -77,6 +77,7 @@ public class WorldObject
     public int? RemodelBuilds { get; private set; }
     public string? ParentMacroObjectId { get; private set; }
     public string? CustomName { get; private set; }
+    public DateTime? HarvestEndTime { get; private set; }
     public List<CrewMember> CrewMembers { get; private set; } = [];
     public List<WorldObjectMechanicCounter> MechanicCounters { get; private set; } = [];
     public List<WorldObjectStorageItem> StorageItems { get; private set; } = [];
@@ -99,6 +100,22 @@ public class WorldObject
     public void Rename(string name)
     {
         CustomName = name;
+    }
+
+    // HarvestMechanic::isHarvestReady + updateHarvestData
+    public void HarvestEndTimer(int duration, bool countUpgradeAction)
+    {
+        var now = ServerUtils.GetCurrentUtcDateTime();
+
+        // the client sets its timer when the action is queued, the transaction reaches the server later
+        if (HarvestEndTime > now.AddMinutes(1))
+            throw new Exception($"Harvest timer of {ItemName} is not finished");
+
+        if (duration > 0)
+            HarvestEndTime = now.AddSeconds(duration);
+
+        if (countUpgradeAction)
+            UpgradeActionCount = (UpgradeActionCount ?? 0) + 1;
     }
 
     public void AttachToMacroObject(string macroObjectName)
@@ -443,7 +460,22 @@ public class WorldObject
             BuiltFloorCount = 1;
         }
 
+        InitHarvestEndTime();
+
         return newObjects;
+    }
+
+    public void InitHarvestEndTime()
+    {
+        var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
+        var now = ServerUtils.GetCurrentUtcDateTime();
+
+        HarvestEndTime = ClassName switch
+        {
+            BuildingClassType.Skyscraper => now.AddHours((gameItem?.GrowTime ?? 0) * 23),
+            BuildingClassType.Corporation => now.AddSeconds(gameItem?.HarvestLoopConfig?.TimerDuration ?? 0),
+            _ => HarvestEndTime
+        };
     }
 
     public bool CanHarvest()

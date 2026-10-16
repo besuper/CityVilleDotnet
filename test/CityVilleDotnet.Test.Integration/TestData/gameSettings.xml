@@ -343,6 +343,44 @@
             </randomModifiers>
             <gates/>
         </item>
+        <item name="test_skyscraper" type="skyscraper" buyable="false">
+            <growTime>1</growTime>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <energyCost harvest="2"/>
+            <randomModifiers>
+                <modifier type="item" tableName="test_harvest_end_ts_table"/>
+            </randomModifiers>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="GMPlay">
+                    <mechanic type="harvestEndTS" className="HarvestMechanic" priority="10" upgradeActionMechanic="true" duration="3600"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_corporation" type="corporation" buyable="false">
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <harvestLoopConfig>
+                <timerDuration>600</timerDuration>
+            </harvestLoopConfig>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="GMPlay">
+                    <mechanic type="harvestEndTS" className="HarvestMechanic" priority="10"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_fishinghole" type="mechanicMapResource" buyable="false">
+            <sizeX>2</sizeX>
+            <sizeY>2</sizeY>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="GMPlay">
+                    <mechanic type="harvestEndTS" className="HarvestMechanic" priority="6" duration="0.000695"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
         <item name="test_expand_12_12" type="expansion" height="12" width="12">
             <gates/>
         </item>
@@ -728,6 +766,11 @@
         </randomModifierTable>
         <randomModifierTable type="item" name="test_global_z_table" rollRange="0">
             <roll percent="100">
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="item" name="test_harvest_end_ts_table">
+            <roll percent="100">
+                <coin amount="50"/>
             </roll>
         </randomModifierTable>
         <randomModifierTable type="item" name="test_populationtable">
