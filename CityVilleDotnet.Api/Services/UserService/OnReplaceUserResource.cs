@@ -8,7 +8,6 @@ using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluentValidation;
 using FluorineFx;
-using Humanizer;
 using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.UserService;
@@ -61,7 +60,7 @@ public class OnReplaceUserResource(CityVilleDbContext context) : AmfService<OnRe
         {
             var obj = player.GetWorld().GetBuildingByClientId(request.OldResourceId) ?? throw new Exception($"Building {request.OldResourceId} not found");
 
-            var className = Enum.Parse<BuildingClassType>(gameItem.Type.Pascalize());
+            var className = gameItem.GetBuildingClassType();
 
             obj.ReplaceWith(request.NewResourceName, className, obj.Direction, obj.X, obj.Y, obj.Z, obj.State);
 

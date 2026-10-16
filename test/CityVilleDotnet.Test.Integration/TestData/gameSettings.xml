@@ -232,14 +232,14 @@
             <sizeY>4</sizeY>
             <gates/>
         </item>
-        <item name="construction_3x3_2stage" type="constructionSite">
+        <item name="construction_3x3_2stage" type="constructionSite" className="ConstructionSite">
             <numberOfStages>2</numberOfStages>
             <energyCostPerBuild>1</energyCostPerBuild>
             <sizeX>3</sizeX>
             <sizeY>3</sizeY>
             <gates/>
         </item>
-        <item name="construction_3x3_4stage" type="constructionSite">
+        <item name="construction_3x3_4stage" type="constructionSite" className="ConstructionSite">
             <numberOfStages>4</numberOfStages>
             <energyCostPerBuild>1</energyCostPerBuild>
             <sizeX>3</sizeX>

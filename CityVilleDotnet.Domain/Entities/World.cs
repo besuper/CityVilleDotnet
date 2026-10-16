@@ -6,7 +6,6 @@ using CityVilleDotnet.Common.Settings.GameSettings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
-using Humanizer;
 
 namespace CityVilleDotnet.Domain.Entities;
 
@@ -324,7 +323,7 @@ public class World
 
             var childObj = WorldObject.CreateFromWorldRect(
                 rectObj,
-                Enum.Parse<BuildingClassType>(childItem.Type.Pascalize()),
+                childItem.GetBuildingClassType(),
                 tempIds.GetValueOrDefault(rectObj.Id, -1),
                 owner.X + rectObj.X,
                 owner.Y + rectObj.Y,
@@ -404,7 +403,7 @@ public class World
 
         var obj = new WorldObject(
             definition.ItemName,
-            Enum.Parse<BuildingClassType>(item.Type.Pascalize()),
+            item.GetBuildingClassType(),
             null,
             false,
             tempId,
@@ -505,7 +504,7 @@ public class World
         if (gameItem is null) throw new Exception("Item not found");
 
         building.ItemName = lotOrder.ResourceType;
-        building.ClassName = Enum.Parse<BuildingClassType>(gameItem.Type.Pascalize());
+        building.ClassName = gameItem.GetBuildingClassType();
         building.Close();
     }
 

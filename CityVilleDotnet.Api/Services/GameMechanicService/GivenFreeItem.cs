@@ -4,10 +4,10 @@ using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
-using Humanizer;
 using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.GameMechanicService;
@@ -59,7 +59,7 @@ public class GivenFreeItem(CityVilleDbContext context, ILogger<GivenFreeItem> lo
         {
             var obj = new WorldObject(
                 mechanic.FreeItem,
-                Enum.Parse<BuildingClassType>(freeGameItem.Type.Pascalize()),
+                freeGameItem.GetBuildingClassType(),
                 null,
                 false,
                 tempId,

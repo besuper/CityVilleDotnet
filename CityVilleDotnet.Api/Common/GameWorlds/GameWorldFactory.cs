@@ -5,7 +5,6 @@ using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
-using Humanizer;
 using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Common.GameWorlds;
@@ -111,7 +110,7 @@ public static class GameWorldFactory
             var item = GameSettingsManager.Instance.GetItem(rectObj.ItemName)
                        ?? throw new Exception($"Can't find item {rectObj.ItemName} from world_lakefront worldRect");
 
-            var className = Enum.Parse<BuildingClassType>(item.Type.Pascalize());
+            var className = item.GetBuildingClassType();
 
             objects.Add(WorldObject.CreateFromWorldRect(rectObj, className, -1, rectObj.X, rectObj.Y, 0, objects.Count + 1));
         }

@@ -2,10 +2,10 @@ using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
-using Humanizer;
 using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
@@ -29,7 +29,7 @@ public class Replace(CityVilleDbContext context) : AmfService<ReplaceRequest>
         var gameItem = GameSettingsManager.Instance.GetItem(request.Building.ItemName)
             ?? throw new Exception($"Item {request.Building.ItemName} not found");
 
-        var className = Enum.Parse<BuildingClassType>(gameItem.Type.Pascalize());
+        var className = gameItem.GetBuildingClassType();
 
         obj.ReplaceWith(
             request.Building.ItemName,
