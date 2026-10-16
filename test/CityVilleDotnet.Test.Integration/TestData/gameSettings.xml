@@ -334,6 +334,16 @@
                 </gameEventMechanics>
             </mechanics>
         </item>
+        <item name="test_tutorial_social_business" type="business" buyable="false">
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="supply">
+                    <mechanic type="tutorial" className="TutorialMechanic" priority="5" blockOthers="false" guide="TestSupplyGuide" show="1" isNull="false" dataToCheck="harvestState"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
         <item name="test_bridge" type="bridge" buyable="false">
             <sizeX>3</sizeX>
             <sizeY>3</sizeY>
