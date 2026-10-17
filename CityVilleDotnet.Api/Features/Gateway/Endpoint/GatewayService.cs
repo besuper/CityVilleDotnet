@@ -5,6 +5,7 @@ using System.Collections.Frozen;
 using System.Reflection;
 using Humanizer;
 using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Api.Common.GameWorlds;
 using CityVilleDotnet.Api.Common.Identity;
 using CityVilleDotnet.Api.Services.QuestService;
 using CityVilleDotnet.Common.Enums;
@@ -127,6 +128,8 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, CityVille
                         upperClassName = mechanicType.Pascalize();
                     }
 
+                    using var worldUpdateTracker = new WorldUpdateTracker(context);
+
                     response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{packageName}.{upperClassName}", parameters, playerId, ct);
 
                     if (response is null)
@@ -136,6 +139,8 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, CityVille
 
                         response = CreateEmptyResponse();
                     }
+
+                    await worldUpdateTracker.AppendToAsync(response, ct);
                 }
                 catch (DomainException de)
                 {
