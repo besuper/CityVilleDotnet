@@ -1209,6 +1209,23 @@ public class Player
                ?? throw new Exception($"GetWorld called but world {LastPlayedWorldType} is not loaded");
     }
 
+    public void ToggleWorldTheme(string themeName, bool enable)
+    {
+        var item = GameSettingsManager.Instance.GetItem(themeName);
+
+        if (item?.Type != "theme_collection") throw new DomainException(GameErrorType.InvalidData);
+
+        if (!item.IsExpired(ServerUtils.GetCurrentUtcDateTime()))
+        {
+            if (item.Cost > 0)
+                RemoveCoins(item.Cost.Value);
+            else if (item.Cash > 0)
+                RemoveCash(item.Cash.Value);
+        }
+
+        GetWorld().UpdateTheme(themeName, enable);
+    }
+
     public World? GetWorldByType(WorldType type)
     {
         return Worlds.FirstOrDefault(x => x.Type == type);

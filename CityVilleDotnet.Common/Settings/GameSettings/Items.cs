@@ -67,6 +67,7 @@ public class GameItem
     [XmlElement("upgrade")] public UpgradeItem? Upgrade { get; set; }
 
     [XmlElement("cost")] public int? Cost { get; set; }
+    [XmlElement("endDate")] public string? EndDate { get; set; }
     [XmlElement("unlock")] public string? Unlock { get; set; }
 
     // Support empty tag <unlockCost/>
@@ -235,6 +236,17 @@ public class GameItem
     public RemodelDefinitionItem? GetRemodelDefinitionByName(string itemName)
     {
         return Remodels?.Definitions.FirstOrDefault(x => x.Item == itemName);
+    }
+
+    public bool IsExpired(DateTime utcNow)
+    {
+        if (string.IsNullOrWhiteSpace(EndDate)) return false;
+
+        var parts = EndDate.Trim().Split(' ');
+        var localDate = DateTime.ParseExact($"{parts[0]} {parts[1]}", "M/d/yyyy H:mm:ss", CultureInfo.InvariantCulture);
+        var utcOffset = parts.Length > 2 && parts[2] == "PST" ? -8 : -7;
+
+        return localDate.AddHours(-utcOffset) <= utcNow;
     }
 
     public int GetSellPrice()

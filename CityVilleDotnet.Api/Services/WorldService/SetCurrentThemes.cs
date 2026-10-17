@@ -1,7 +1,7 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
-using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
+using FluentValidation;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,9 +17,7 @@ public sealed class SetCurrentThemes(CityVilleDbContext context) : AmfService<Se
 
         if (player is null) throw new Exception("Player not found");
 
-        var world = player.GetWorld();
-
-        world.UpdateTheme(request.ThemeName, request.Enabled);
+        player.ToggleWorldTheme(request.ThemeName, request.Enabled);
 
         await context.SaveChangesAsync(cancellationToken);
 
@@ -31,4 +29,12 @@ public class SetCurrentThemesRequest
 {
     [AmfParam(0)] public string ThemeName { get; set; } = string.Empty;
     [AmfParam(1)] public bool Enabled { get; set; }
+}
+
+public class SetCurrentThemesRequestValidator : AbstractValidator<SetCurrentThemesRequest>
+{
+    public SetCurrentThemesRequestValidator()
+    {
+        RuleFor(x => x.ThemeName).NotEmpty().MaximumLength(64);
+    }
 }
