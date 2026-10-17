@@ -223,6 +223,35 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.ToTable("FeatureRollCounter");
                 });
 
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Flag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<Guid>("PlayerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("Flag");
+                });
+
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Franchise", b =>
                 {
                     b.Property<int>("Id")
@@ -1501,6 +1530,15 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Flag", b =>
+                {
+                    b.HasOne("CityVilleDotnet.Domain.Entities.Player", null)
+                        .WithMany("Flags")
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.Franchise", b =>
                 {
                     b.HasOne("CityVilleDotnet.Domain.Entities.Player", null)
@@ -1811,6 +1849,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Navigation("Coupons");
 
                     b.Navigation("FeatureRollCounters");
+
+                    b.Navigation("Flags");
 
                     b.Navigation("Franchises");
 

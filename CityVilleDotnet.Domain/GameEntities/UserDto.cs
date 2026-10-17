@@ -102,22 +102,12 @@ public static class UserDtoMapper
                         .Where(x => x.WorldFlatId is not null)
                         .GroupBy(x => x.WorldFlatId!.Value)
                         .ToDictionary(g => g.Key.ToString(), object (g) => g.Select(x => x.Name).ToList())),
-                    // FIXME: Handle that better
-                    FlagContainer =
-                    [
-                        new ASObject
-                        {
-                            ["name"] = "completed_bridge",
-                            ["m_value"] = model.GetWorld().Objects.Count(x => x.ClassName == BuildingClassType.Bridge),
-                            ["lastModifiedGlobalEngineTime"] = 0
-                        },
-                        new ASObject
-                        {
-                            ["name"] = "completed_tutorial",
-                            ["m_value"] = model.IsNew ? 0 : 1,
-                            ["lastModifiedGlobalEngineTime"] = 0
-                        }
-                    ],
+                    FlagContainer = model.Flags.Select(x => new ASObject
+                    {
+                        ["name"] = x.Name,
+                        ["m_value"] = x.Value,
+                        ["lastModifiedGlobalEngineTime"] = x.LastModified.ToUnixTimeMilliseconds()
+                    }).ToList(),
                     Wishlist = [], // TODO: Implement wishlist
                     Xp = model.Xp,
                     SocialLevel = model.SocialLevel,

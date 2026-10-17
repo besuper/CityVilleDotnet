@@ -43,6 +43,7 @@ public class Player
     public List<PreyGroup> PreyGroups { get; private set; } = [];
     public int RollCounter { get; private set; }
     public List<FeatureRollCounter> FeatureRollCounters { get; private set; } = [];
+    public List<Flag> Flags { get; private set; } = [];
     public List<GlobalTableOverride> GlobalTableOverrides { get; private set; } = [];
     public bool IsNew { get; private set; } = true;
     public bool FirstDay { get; private set; } = true;
@@ -432,6 +433,12 @@ public class Player
     {
         IsNew = false;
         FirstDay = false;
+        SetFlag("completed_tutorial", 1);
+    }
+
+    public void CompleteBridge()
+    {
+        SetFlag("completed_bridge", 1);
     }
 
     private void ComputeSocialLevel()
@@ -536,6 +543,16 @@ public class Player
         Coupons.Add(new Coupon(name, worldFlatId));
 
         return true;
+    }
+
+    public void SetFlag(string name, int value)
+    {
+        var flag = Flags.FirstOrDefault(x => x.Name == name);
+
+        if (flag is null)
+            Flags.Add(new Flag(name, value));
+        else
+            flag.SetValue(value);
     }
 
     private void IncrementRollCounter()

@@ -69,6 +69,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .ThenInclude(x => x.Workers)
             .Include(x => x.SeenFlags)
             .Include(x => x.FeatureRollCounters)
+            .Include(x => x.Flags)
             .Include(x => x.Coupons)
             .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
             .ThenInclude(x => x.FriendPlayer)

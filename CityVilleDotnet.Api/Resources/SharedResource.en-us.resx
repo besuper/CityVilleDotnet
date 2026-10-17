@@ -275,6 +275,24 @@
     <data name="AdminCouponsUpdated" xml:space="preserve">
         <value>Coupons updated successfully.</value>
     </data>
+    <data name="Flags" xml:space="preserve">
+        <value>Flags</value>
+    </data>
+    <data name="AddFlag" xml:space="preserve">
+        <value>Add flag</value>
+    </data>
+    <data name="FlagName" xml:space="preserve">
+        <value>Flag name</value>
+    </data>
+    <data name="Value" xml:space="preserve">
+        <value>Value</value>
+    </data>
+    <data name="LastModified" xml:space="preserve">
+        <value>Last modified</value>
+    </data>
+    <data name="AdminFlagsUpdated" xml:space="preserve">
+        <value>Flags updated successfully.</value>
+    </data>
     <data name="AdminCouponAlreadyOwned" xml:space="preserve">
         <value>The player already owns this coupon.</value>
     </data>

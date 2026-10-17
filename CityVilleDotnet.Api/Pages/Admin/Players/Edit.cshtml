@@ -43,6 +43,7 @@
 	<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#inventory" role="tab"><i class="bi bi-box-seam mr-1"></i>@Localizer["Inventory"] <span class="badge badge-secondary">@player.InventoryItems.Count</span></a></li>
 	<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#quests" role="tab"><i class="bi bi-flag mr-1"></i>@Localizer["Quests"] <span class="badge badge-secondary">@player.Quests.Count</span></a></li>
 	<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#coupons" role="tab"><i class="bi bi-ticket-perforated mr-1"></i>@Localizer["Coupons"] <span class="badge badge-secondary">@player.Coupons.Count</span></a></li>
+	<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#flags" role="tab"><i class="bi bi-toggles mr-1"></i>@Localizer["Flags"] <span class="badge badge-secondary">@player.Flags.Count</span></a></li>
 	<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#worlds" role="tab"><i class="bi bi-buildings mr-1"></i>@Localizer["Worlds"] <span class="badge badge-secondary">@Model.Worlds.Count</span></a></li>
 </ul>
 
@@ -292,6 +293,73 @@
 									<td class="text-right">
 										<form method="post" asp-page-handler="DeleteCoupon" asp-route-id="@player.Id" data-confirm="@Localizer["AdminDeleteConfirm"]">
 											<input type="hidden" name="couponId" value="@coupon.Id"/>
+											<button type="submit" class="btn btn-sm btn-outline-danger" title="@Localizer["Delete"]"><i class="bi bi-trash"></i></button>
+										</form>
+									</td>
+								</tr>
+							}
+							</tbody>
+						</table>
+					</div>
+				}
+				else
+				{
+					<p class="text-muted mb-0">@Localizer["NoResults"]</p>
+				}
+			</div>
+		</div>
+	</div>
+
+	<div class="tab-pane fade" id="flags" role="tabpanel">
+		<div class="card border-0 shadow-sm mb-4">
+			<div class="card-body">
+				<h6 class="font-weight-bold text-dark mb-3"><i class="bi bi-plus-circle mr-2 text-primary"></i>@Localizer["AddFlag"]</h6>
+				<form method="post" asp-page-handler="AddFlag" asp-route-id="@player.Id">
+					<div class="form-row">
+						<div class="col-12 col-md-6 mb-2">
+							<input type="text" class="form-control" name="flagName" maxlength="64" placeholder="@Localizer["FlagName"]" required/>
+						</div>
+						<div class="col-12 col-md-3 mb-2">
+							<input type="number" class="form-control" name="value" value="1" placeholder="@Localizer["Value"]" required/>
+						</div>
+						<div class="col-12 col-md-3 mb-2">
+							<button type="submit" class="btn btn-primary btn-block font-weight-bold"><i class="bi bi-plus-lg mr-1"></i>@Localizer["AddFlag"]</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="card border-0 shadow-sm mb-4">
+			<div class="card-body">
+				@if (player.Flags.Any())
+				{
+					<div class="table-responsive">
+						<table class="table table-hover table-sm mb-0">
+							<thead>
+							<tr>
+								<th>@Localizer["Name"]</th>
+								<th style="width:220px">@Localizer["Value"]</th>
+								<th>@Localizer["LastModified"]</th>
+								<th></th>
+							</tr>
+							</thead>
+							<tbody>
+							@foreach (var flag in player.Flags.OrderBy(x => x.Name))
+							{
+								<tr>
+									<td class="align-middle text-monospace small">@flag.Name</td>
+									<td>
+										<form method="post" asp-page-handler="UpdateFlag" asp-route-id="@player.Id" class="d-flex">
+											<input type="hidden" name="flagId" value="@flag.Id"/>
+											<input type="number" class="form-control form-control-sm mr-2" name="value" value="@flag.Value" required/>
+											<button type="submit" class="btn btn-sm btn-outline-primary" title="@Localizer["Save"]"><i class="bi bi-save"></i></button>
+										</form>
+									</td>
+									<td class="align-middle small text-muted">@flag.LastModified.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")</td>
+									<td class="text-right">
+										<form method="post" asp-page-handler="DeleteFlag" asp-route-id="@player.Id" data-confirm="@Localizer["AdminDeleteConfirm"]">
+											<input type="hidden" name="flagId" value="@flag.Id"/>
 											<button type="submit" class="btn btn-sm btn-outline-danger" title="@Localizer["Delete"]"><i class="bi bi-trash"></i></button>
 										</form>
 									</td>

@@ -16,6 +16,7 @@ public class EditModel(CityVilleDbContext dbContext, UserManager<ApplicationUser
     private const int MaxItemNameLength = 64;
     private const int MaxQuestNameLength = 64;
     private const int MaxCouponNameLength = 64;
+    private const int MaxFlagNameLength = 64;
 
     public Player Player { get; set; } = null!;
     public List<WorldRow> Worlds { get; set; } = [];
@@ -30,6 +31,7 @@ public class EditModel(CityVilleDbContext dbContext, UserManager<ApplicationUser
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests)
             .Include(x => x.Coupons)
+            .Include(x => x.Flags)
             .FirstOrDefaultAsync(x => x.Id == id, ct);
 
         if (player is null)
@@ -220,6 +222,61 @@ public class EditModel(CityVilleDbContext dbContext, UserManager<ApplicationUser
         return RedirectToTab(id, "coupons");
     }
 
+    public async Task<IActionResult> OnPostAddFlagAsync(Guid id, string? flagName, int value, CancellationToken ct)
+    {
+        flagName = flagName?.Trim();
+
+        if (string.IsNullOrEmpty(flagName) || flagName.Length > MaxFlagNameLength)
+        {
+            TempData["Error"] = localizer["AdminInvalidValues"].Value;
+            return RedirectToTab(id, "flags");
+        }
+
+        var player = await dbContext.Set<Player>()
+            .Include(x => x.Flags.Where(f => f.Name == flagName))
+            .FirstOrDefaultAsync(x => x.Id == id, ct);
+
+        if (player is null)
+            return NotFound();
+
+        player.SetFlag(flagName, value);
+
+        await dbContext.SaveChangesAsync(ct);
+
+        TempData["Success"] = localizer["AdminFlagsUpdated"].Value;
+        return RedirectToTab(id, "flags");
+    }
+
+    public async Task<IActionResult> OnPostUpdateFlagAsync(Guid id, int flagId, int value, CancellationToken ct)
+    {
+        var flag = await FindFlagAsync(id, flagId, ct);
+
+        if (flag is null)
+            return NotFound();
+
+        flag.SetValue(value);
+
+        await dbContext.SaveChangesAsync(ct);
+
+        TempData["Success"] = localizer["AdminFlagsUpdated"].Value;
+        return RedirectToTab(id, "flags");
+    }
+
+    public async Task<IActionResult> OnPostDeleteFlagAsync(Guid id, int flagId, CancellationToken ct)
+    {
+        var flag = await FindFlagAsync(id, flagId, ct);
+
+        if (flag is null)
+            return NotFound();
+
+        dbContext.Remove(flag);
+
+        await dbContext.SaveChangesAsync(ct);
+
+        TempData["Success"] = localizer["AdminFlagsUpdated"].Value;
+        return RedirectToTab(id, "flags");
+    }
+
     public async Task<IActionResult> OnPostStartQuestAsync(Guid id, string? questName, CancellationToken ct)
     {
         questName = questName?.Trim();
@@ -296,6 +353,14 @@ public class EditModel(CityVilleDbContext dbContext, UserManager<ApplicationUser
             .Where(x => x.Id == id)
             .SelectMany(x => x.Quests)
             .FirstOrDefaultAsync(x => x.Id == questId, ct);
+    }
+
+    private Task<Flag?> FindFlagAsync(Guid id, int flagId, CancellationToken ct)
+    {
+        return dbContext.Set<Player>()
+            .Where(x => x.Id == id)
+            .SelectMany(x => x.Flags)
+            .FirstOrDefaultAsync(x => x.Id == flagId, ct);
     }
 
     private RedirectToPageResult RedirectToTab(Guid id, string tab)

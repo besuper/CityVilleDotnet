@@ -44,6 +44,10 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
             .WithOne()
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(x => x.Flags)
+            .WithOne()
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(x => x.GlobalTableOverrides)
             .WithOne()
             .IsRequired()

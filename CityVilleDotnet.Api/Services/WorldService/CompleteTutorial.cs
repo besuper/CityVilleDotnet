@@ -14,6 +14,7 @@ public class CompleteTutorial(CityVilleDbContext context) : AmfService
     {
         var player = await context.Set<Player>()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .Include(x => x.Flags)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Can't find player with UserId");

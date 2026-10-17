@@ -13,6 +13,7 @@ public class CompleteTutorial(CityVilleDbContext context) : AmfService
     {
         var player = await context.Set<Player>()
             .Include(x => x.Quests)
+            .Include(x => x.Flags)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");

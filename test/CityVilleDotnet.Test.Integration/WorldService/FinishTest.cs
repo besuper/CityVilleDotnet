@@ -166,4 +166,47 @@ public class FinishTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         building.ItemName.Should().Be("test_corporation");
         building.HarvestEndTime.Should().Be(startTime.UtcDateTime.AddSeconds(600));
     }
+
+    [Fact]
+    public async Task Finish_Bridge_SetsCompletedBridgeFlag()
+    {
+        var building = CreateBridgeConstructionSite(10, 20);
+        var world = Faker.World(objects: [building]);
+        var user = Faker.Player(world: world);
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new Finish(Context);
+
+        var response = await handler.HandlePacket(CreateFinishRequest(10, 20), user.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+
+        var player = await Context.Set<Player>().Include(x => x.Flags).FirstAsync(x => x.Id == user.Id, TestContext.Current.CancellationToken);
+        player.Flags.Should().ContainSingle(x => x.Name == "completed_bridge" && x.Value == 1);
+    }
+
+    [Fact]
+    public async Task Finish_NotABridge_DoesNotSetCompletedBridgeFlag()
+    {
+        var building = Faker.WorldObject(itemName: "test_corporation", className: BuildingClassType.Corporation, x: 10, y: 20);
+        building.SetAsConstructionSite("construction_3x3_2stage", 2);
+        building.AddConstructionStage();
+        building.AddConstructionStage();
+        var world = Faker.World(objects: [building]);
+        var user = Faker.Player(world: world);
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new Finish(Context);
+
+        var response = await handler.HandlePacket(CreateFinishRequest(10, 20), user.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+
+        var player = await Context.Set<Player>().Include(x => x.Flags).FirstAsync(x => x.Id == user.Id, TestContext.Current.CancellationToken);
+        player.Flags.Should().BeEmpty();
+    }
 }
