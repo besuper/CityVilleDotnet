@@ -133,6 +133,7 @@ public class GameItem
     [XmlElement("supportedShipKeywords")] public string? SupportedShipKeywords { get; set; }
     [XmlElement("image")] public List<ImageItem> Images { get; set; } = [];
     [XmlElement("bridgeparts")] public BridgePartsContainer? BridgeParts { get; set; }
+    [XmlElement("themeParkStorage")] public ThemeParkStorageContainer? ThemeParkStorage { get; set; }
     [XmlElement("keyword")] public List<string> Keywords { get; set; } = [];
     [XmlElement("mastery")] public required List<MasteryItem> MasteryItems { get; set; }
     [XmlElement("storageUnit")] public StorageUnitItem? StorageUnit { get; set; }
@@ -388,6 +389,29 @@ public class InventoryCheckParams
 
     [XmlAttribute("isPopulationItem")] public string? IsPopulationItemString { get; set; }
     [XmlIgnore] public bool IsPopulationItem => IsPopulationItemString == "true";
+}
+
+[Serializable]
+public class ThemeParkStorageContainer
+{
+    [XmlElement("slot")] public List<ThemeParkSlotItem> Slots { get; set; } = [];
+
+    public string GetSlotItemName(int slotIndex, string slotType)
+    {
+        var slot = Slots.ElementAtOrDefault(slotIndex);
+
+        if (slot?.Item is null || slot.Type != slotType)
+            throw new Exception($"Slot {slotIndex} is not a {slotType} slot");
+
+        return slot.Item;
+    }
+}
+
+[Serializable]
+public class ThemeParkSlotItem
+{
+    [XmlAttribute("type")] public string? Type { get; set; }
+    [XmlAttribute("item")] public string? Item { get; set; }
 }
 
 [Serializable]

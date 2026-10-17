@@ -749,6 +749,24 @@
                 </gate>
             </gates>
         </item>
+        <item name="test_theme_park" type="themePark" className="ThemePark" buyable="true">
+            <themeParkStorage>
+                <slot type="storage" item="test_attraction" commodityReq="600"/>
+                <slot type="inplace" item="test_inplace_attraction" commodityReq="1600"/>
+            </themeParkStorage>
+            <gates/>
+        </item>
+        <item name="test_theme_park_level2" derivesFrom="test_theme_park" buyable="false"/>
+        <item name="test_attraction" type="attraction" className="Attraction" buyable="true">
+            <gates/>
+        </item>
+        <item name="test_inplace_attraction" type="attraction" buyable="false" placeable="false">
+            <gates>
+                <gate name="build" type="inventory">
+                    <key name="test_gate_material" amount="2"/>
+                </gate>
+            </gates>
+        </item>
     </items>
 
     <levels_cv_level_regrade_var_0>

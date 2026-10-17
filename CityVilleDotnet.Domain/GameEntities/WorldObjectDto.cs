@@ -273,6 +273,13 @@ public static class WorldObjectDtoMapper
             dto.MechanicData["slots"] = new List<object>();
         }
 
+        if (model.ClassName == BuildingClassType.ThemePark && gameItem?.ThemeParkStorage is not null)
+        {
+            dto.MechanicData["slots"] = Enumerable.Range(0, gameItem.ThemeParkStorage.Slots.Count)
+                .Select(i => (object)(model.Slots.Any(x => x.SlotIndex == i) ? "filled" : "empty"))
+                .ToList();
+        }
+
         if (model.ClassName == BuildingClassType.ZooEnclosure)
         {
             var storage = new ASObject();
