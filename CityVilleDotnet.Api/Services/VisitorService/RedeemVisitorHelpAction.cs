@@ -78,6 +78,17 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
             }
         }
 
+        if (request.Action == "build")
+        {
+            var world = player.GetWorldByType(WorldType.Main) ?? throw new Exception("Main world not loaded");
+            var obj = world.GetBuildingById(request.WorldObjectId) ?? throw new Exception($"Can't find building with id {request.WorldObjectId}");
+
+            if (obj.ClassName == BuildingClassType.ConstructionSite && !obj.IsConstructionComplete())
+            {
+                obj.AddConstructionStage();
+            }
+        }
+
         if (request.Action == "")
         {
             var world = player.GetWorldByType(WorldType.Main) ?? throw new Exception("Main world not loaded");

@@ -53,6 +53,10 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
                 reputation = settings.FriendVisitBusinessRepGain;
                 coins = settings.FriendHelpDefaultCoinReward;
                 break;
+            case "constructionSiteConstruct":
+                reputation = settings.FriendVisitConstructionRepGain;
+                coins = settings.FriendHelpDefaultCoinReward;
+                break;
             case "plotHarvest":
             case "plotWater":
                 reputation = settings.FriendVisitPlotRepGain;
