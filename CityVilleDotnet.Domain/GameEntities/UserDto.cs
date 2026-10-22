@@ -80,7 +80,7 @@ public static class UserDtoMapper
                     Inventory = new InventoryDto
                     {
                         Count = model.CountInventoryItems(),
-                        Items = new ASObject(model.InventoryItems.ToDictionary(x => x.Name, x => (object)x.Amount))
+                        Items = new ASObject(model.InventoryItems.Where(x => x.StorageType is null).ToDictionary(x => x.Name, x => (object)x.Amount))
                     },
                     LastTrackingTimestamp = model.LastTrackingTimestamp.ToUnixTimeMilliseconds(),
                     Level = model.Level,
