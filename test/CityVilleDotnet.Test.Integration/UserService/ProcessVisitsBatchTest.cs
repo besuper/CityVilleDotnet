@@ -6,6 +6,7 @@ using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
 using CityVilleDotnet.Test.Integration.Fixtures;
 using FluorineFx;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CityVilleDotnet.Test.Integration.UserService;
 
@@ -30,7 +31,7 @@ public class ProcessVisitsBatchTest(DatabaseFixture fixture) : IntegrationTest(f
         await Context.AddAsync(player, TestContext.Current.CancellationToken);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var handler = new ProcessVisitsBatch(Context);
+        var handler = new ProcessVisitsBatch(Context, NullLogger<ProcessVisitsBatch>.Instance);
         var request = new ProcessVisitsBatchRequest { Content = new ASObject { ["5"] = new ASObject { ["customers"] = CreateVisit(4) } } };
 
         var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
@@ -51,7 +52,7 @@ public class ProcessVisitsBatchTest(DatabaseFixture fixture) : IntegrationTest(f
         await Context.AddAsync(player, TestContext.Current.CancellationToken);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var handler = new ProcessVisitsBatch(Context);
+        var handler = new ProcessVisitsBatch(Context, NullLogger<ProcessVisitsBatch>.Instance);
         var request = new ProcessVisitsBatchRequest
         {
             Content = new ASObject { ["5"] = new ASObject { ["customers"] = CreateVisit(10), ["tourists"] = CreateVisit(5) } }
@@ -75,7 +76,7 @@ public class ProcessVisitsBatchTest(DatabaseFixture fixture) : IntegrationTest(f
         await Context.AddAsync(player, TestContext.Current.CancellationToken);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var handler = new ProcessVisitsBatch(Context);
+        var handler = new ProcessVisitsBatch(Context, NullLogger<ProcessVisitsBatch>.Instance);
         var request = new ProcessVisitsBatchRequest { Content = new ASObject { ["63000"] = new ASObject { ["customers"] = CreateVisit(3) } } };
 
         var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);
@@ -95,7 +96,7 @@ public class ProcessVisitsBatchTest(DatabaseFixture fixture) : IntegrationTest(f
         await Context.AddAsync(player, TestContext.Current.CancellationToken);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var handler = new ProcessVisitsBatch(Context);
+        var handler = new ProcessVisitsBatch(Context, NullLogger<ProcessVisitsBatch>.Instance);
         var request = new ProcessVisitsBatchRequest { Content = new ASObject { ["99"] = new ASObject { ["customers"] = CreateVisit(3) } } };
 
         var response = await handler.HandlePacket(request, player.Id, TestContext.Current.CancellationToken);

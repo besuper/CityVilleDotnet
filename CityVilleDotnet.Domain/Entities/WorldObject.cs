@@ -661,18 +661,18 @@ public class WorldObject
         ItemOwner = itemOwner;
     }
 
-    public void UpdateVisits(int visits)
+    public bool UpdateVisits(int visits)
     {
         var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
 
         if (!ClassName.IsBusiness() && !(gameItem?.IsCustomerSupplyState() ?? false))
-            throw new Exception($"Can't update visits on non business building {Id} {ClassName} {State}");
+        {
+            return false;
+        }
 
         if (State != WorldObjectState.Open)
         {
-            if (State == WorldObjectState.ClosedHarvestable) return; // If client get out of sync and try to send processVisit while visits are completed, just ignore
-
-            throw new Exception($"Can't update visits on non open business building {Id} {ClassName} {State}");
+            return false;
         }
 
         if (gameItem is null)
@@ -689,6 +689,8 @@ public class WorldObject
         {
             State = WorldObjectState.ClosedHarvestable;
         }
+
+        return true;
     }
 
     public void UpgradeBuilding(GameItem item, string newItemName)

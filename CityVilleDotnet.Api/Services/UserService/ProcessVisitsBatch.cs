@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-internal sealed class ProcessVisitsBatch(CityVilleDbContext context) : AmfService<ProcessVisitsBatchRequest>
+internal sealed class ProcessVisitsBatch(CityVilleDbContext context, ILogger<ProcessVisitsBatch> logger) : AmfService<ProcessVisitsBatchRequest>
 {
     public override async Task<ASObject> HandlePacket(ProcessVisitsBatchRequest request, Guid playerId, CancellationToken cancellationToken)
     {
@@ -48,7 +48,10 @@ internal sealed class ProcessVisitsBatch(CityVilleDbContext context) : AmfServic
 
             if (id == -1) continue;
 
-            obj.UpdateVisits(visits[id]);
+            if (!obj.UpdateVisits(visits[id]))
+            {
+                logger.LogWarning("Visits refused for player {PlayerId} on building {ObjectId} (flat id {FlatId}) {ItemName} {ClassName} {State}", playerId, obj.Id, id, obj.ItemName, obj.ClassName, obj.State);
+            }
         }
 
         await context.SaveChangesAsync(cancellationToken);
