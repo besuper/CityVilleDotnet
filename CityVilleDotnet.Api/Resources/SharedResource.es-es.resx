@@ -408,4 +408,31 @@
     <data name="Worlds" xml:space="preserve">
         <value>Mundos</value>
     </data>
+    <data name="ContinueWithDiscord" xml:space="preserve">
+        <value>Continuar con Discord</value>
+    </data>
+    <data name="OrUsePassword" xml:space="preserve">
+        <value>o con un nombre de usuario y una contraseña</value>
+    </data>
+    <data name="DiscordLoginFailed" xml:space="preserve">
+        <value>El inicio de sesión con Discord ha fallado, inténtalo de nuevo</value>
+    </data>
+    <data name="ChooseUsername" xml:space="preserve">
+        <value>Elige tu nombre de usuario</value>
+    </data>
+    <data name="ChooseUsernameHint" xml:space="preserve">
+        <value>Tu cuenta de Discord aún no está vinculada a ningún jugador. Elige un nombre de usuario para crear tu ciudad.</value>
+    </data>
+    <data name="LinkDiscord" xml:space="preserve">
+        <value>Vincular mi cuenta de Discord</value>
+    </data>
+    <data name="DiscordLinked" xml:space="preserve">
+        <value>Cuenta de Discord vinculada</value>
+    </data>
+    <data name="DiscordAlreadyLinked" xml:space="preserve">
+        <value>Esta cuenta de Discord ya está vinculada a otro jugador</value>
+    </data>
+    <data name="DiscordLinkFailed" xml:space="preserve">
+        <value>No se pudo vincular tu cuenta de Discord, inténtalo de nuevo</value>
+    </data>
 </root>

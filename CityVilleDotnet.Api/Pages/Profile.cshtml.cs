@@ -1,10 +1,9 @@
-using System.Text.RegularExpressions;
-using SkiaSharp;
+using CityVilleDotnet.Api.Common.Identity;
 using CityVilleDotnet.Common.Settings;
-using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +14,7 @@ using Microsoft.Extensions.Localization;
 namespace CityVilleDotnet.Api.Pages;
 
 [Authorize]
-public class ProfileModel(UserManager<ApplicationUser> userManager, CityVilleDbContext dbContext, IWebHostEnvironment webHost, IStringLocalizer<Resources.SharedResource> localizer) : PageModel
+public class ProfileModel(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, CityVilleDbContext dbContext, ProfilePictureStorage profilePictures, IStringLocalizer<Resources.SharedResource> localizer) : PageModel
 {
     public string UserName { get; set; } = string.Empty;
     public int Level { get; set; }
@@ -44,6 +43,9 @@ public class ProfileModel(UserManager<ApplicationUser> userManager, CityVilleDbC
     public int XpProgressPercent { get; set; }
     public bool IsMaxLevel { get; set; }
 
+    public bool DiscordEnabled { get; set; }
+    public bool DiscordLinked { get; set; }
+
     [BindProperty]
     public IFormFile? PictureUpload { get; set; }
 
@@ -52,7 +54,6 @@ public class ProfileModel(UserManager<ApplicationUser> userManager, CityVilleDbC
 
     private static readonly HashSet<string> AllowedExtensions = [".png", ".jpg", ".jpeg"];
     private const int MaxFileSizeMb = 2;
-    private const int MaxDimension = 50;
 
     public async Task<IActionResult> OnGetAsync(CancellationToken ct)
     {
@@ -85,34 +86,14 @@ public class ProfileModel(UserManager<ApplicationUser> userManager, CityVilleDbC
             return result;
         }
 
-        var picturesDir = Path.Combine(webHost.WebRootPath, "pictures");
-        Directory.CreateDirectory(picturesDir);
-
-        var baseName = Regex.Replace(UserName, @"[^a-zA-Z0-9_-]", "_");
-        foreach (var oldFile in Directory.EnumerateFiles(picturesDir, $"{baseName}.*"))
-        {
-            System.IO.File.Delete(oldFile);
-        }
-
         await using var uploadStream = PictureUpload.OpenReadStream();
 
-        using var original = SKBitmap.Decode(uploadStream);
+        var pictureUrl = await profilePictures.SaveAsync(uploadStream, UserName, ext);
 
-        var savePath = Path.Combine(picturesDir, $"{baseName}{ext}");
-
-        if (original.Width != MaxDimension || original.Height != MaxDimension)
+        if (pictureUrl is null)
         {
-            using var resized = new SKBitmap(MaxDimension, MaxDimension);
-            using var canvas = new SKCanvas(resized);
-            
-            canvas.DrawBitmap(original, new SKRect(0, 0, MaxDimension, MaxDimension), new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear));
-            
-            using var image = SKImage.FromBitmap(resized);
-            using var data = ext is ".png" ? image.Encode(SKEncodedImageFormat.Png, 100) : image.Encode(SKEncodedImageFormat.Jpeg, 90);
-            
-            await using var fs = new FileStream(savePath, FileMode.Create);
-            
-            data.SaveTo(fs);
+            ErrorMessage = localizer["OnlyPngJpg"];
+            return result;
         }
 
         var currentUser = await userManager.GetUserAsync(User);
@@ -122,9 +103,7 @@ public class ProfileModel(UserManager<ApplicationUser> userManager, CityVilleDbC
         if (player is null)
             return RedirectToPage("/Account/Login");
 
-        var now = ServerUtils.GetCurrentTime();
-        
-        player.ProfilePictureUrl = $"/pictures/{baseName}{ext}?version={now}";
+        player.ProfilePictureUrl = pictureUrl;
 
         await dbContext.SaveChangesAsync(ct);
 
@@ -134,6 +113,38 @@ public class ProfileModel(UserManager<ApplicationUser> userManager, CityVilleDbC
         ViewData["ProfilePictureUrl"] = ProfilePictureUrl;
 
         return result;
+    }
+
+    public IActionResult OnPostLinkDiscord()
+    {
+        var redirectUrl = Url.Page("/Profile", "LinkDiscordCallback");
+        var properties = signInManager.ConfigureExternalAuthenticationProperties(DiscordLogin.Scheme, redirectUrl, userManager.GetUserId(User));
+
+        return Challenge(properties, DiscordLogin.Scheme);
+    }
+
+    public async Task<IActionResult> OnGetLinkDiscordCallbackAsync(CancellationToken ct)
+    {
+        var info = await signInManager.GetExternalLoginInfoAsync(userManager.GetUserId(User));
+
+        if (info is null)
+        {
+            ErrorMessage = localizer["DiscordLinkFailed"];
+        }
+        else
+        {
+            var user = await userManager.GetUserAsync(User);
+            var result = await userManager.AddLoginAsync(user!, info);
+
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+            if (result.Succeeded)
+                SuccessMessage = localizer["DiscordLinked"];
+            else
+                ErrorMessage = localizer["DiscordAlreadyLinked"];
+        }
+
+        return await LoadProfileAsync(ct);
     }
 
     private async Task<IActionResult> LoadProfileAsync(CancellationToken ct)
@@ -170,6 +181,8 @@ public class ProfileModel(UserManager<ApplicationUser> userManager, CityVilleDbC
         ExpansionsPurchased = player.ExpansionsPurchased;
         CreationTimestamp = player.CreationTimestamp;
         ProfilePictureUrl = player.ProfilePictureUrl;
+        DiscordEnabled = await signInManager.IsDiscordEnabledAsync();
+        DiscordLinked = (await userManager.GetLoginsAsync(currentUser)).Any(x => x.LoginProvider == DiscordLogin.Scheme);
 
         var mainWorld = player.GetWorldByType(WorldType.Main);
 

@@ -22,6 +22,7 @@ using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Utils;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Options;
@@ -53,6 +54,22 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromDays(14);
 });
 
+var discordClientId = builder.Configuration["Discord:ClientId"];
+
+if (!string.IsNullOrEmpty(discordClientId))
+{
+    builder.Services.AddAuthentication().AddDiscord(options =>
+    {
+        options.ClientId = discordClientId;
+        options.ClientSecret = builder.Configuration["Discord:ClientSecret"]!;
+        options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+        options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    });
+}
+
+builder.Services.AddScoped<PlayerRegistrationService>();
+builder.Services.AddSingleton<ProfilePictureStorage>();
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<IAuthorizationHandler, AdminAuthorizationHandler>();
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(AdminPolicy.Name, policy => policy.RequireAuthenticatedUser().AddRequirements(new AdminRequirement()));
@@ -146,6 +163,11 @@ builder.Services.AddRateLimiter(options =>
 builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
 var app = builder.Build();
+
+var forwardedHeaders = new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedProto };
+forwardedHeaders.KnownIPNetworks.Clear();
+forwardedHeaders.KnownProxies.Clear();
+app.UseForwardedHeaders(forwardedHeaders);
 
 app.UseExceptionHandler("/Error");
 

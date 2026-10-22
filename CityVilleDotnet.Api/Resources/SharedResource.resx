@@ -414,4 +414,31 @@
     <data name="Worlds" xml:space="preserve">
         <value>Worlds</value>
     </data>
+    <data name="ContinueWithDiscord" xml:space="preserve">
+        <value>Continue with Discord</value>
+    </data>
+    <data name="OrUsePassword" xml:space="preserve">
+        <value>or with a username and password</value>
+    </data>
+    <data name="DiscordLoginFailed" xml:space="preserve">
+        <value>Discord login failed, please try again</value>
+    </data>
+    <data name="ChooseUsername" xml:space="preserve">
+        <value>Choose your username</value>
+    </data>
+    <data name="ChooseUsernameHint" xml:space="preserve">
+        <value>Your Discord account is not linked to any player yet. Choose a username to create your city.</value>
+    </data>
+    <data name="LinkDiscord" xml:space="preserve">
+        <value>Link my Discord account</value>
+    </data>
+    <data name="DiscordLinked" xml:space="preserve">
+        <value>Discord account linked</value>
+    </data>
+    <data name="DiscordAlreadyLinked" xml:space="preserve">
+        <value>This Discord account is already linked to another player</value>
+    </data>
+    <data name="DiscordLinkFailed" xml:space="preserve">
+        <value>Could not link your Discord account, please try again</value>
+    </data>
 </root>

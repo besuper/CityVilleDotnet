@@ -1,0 +1,33 @@
+@page
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Resources.SharedResource> Localizer
+@model CityVilleDotnet.Api.Pages.Account.ExternalLoginModel
+
+<div class="d-flex align-items-center justify-content-center min-vh-100 bg-light px-3">
+    <div class="card shadow-sm" style="max-width: 400px; width: 100%;">
+        <div class="card-header text-center">
+            <h2 class="mb-0"><i class="bi bi-discord me-2"></i>@Localizer["ChooseUsername"]</h2>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">@Localizer["ChooseUsernameHint"]</p>
+
+            <form id="externalForm" asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post" novalidate>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Username" type="text" class="form-control" id="floatingUsername" placeholder="Username" autocomplete="username" aria-required="true" />
+                    <label for="floatingUsername">@Html.DisplayNameFor(m => m.Input.Username)</label>
+                    <span asp-validation-for="Input.Username" class="text-danger small"></span>
+                </div>
+
+                <button id="externalSubmit" type="submit" class="w-100 btn btn-primary btn-lg">
+                    @Localizer["Register"]
+                </button>
+            </form>
+            <script>
+                document.getElementById('externalForm').addEventListener('submit', function () {
+                    document.getElementById('externalSubmit').disabled = true;
+                });
+            </script>
+        </div>
+    </div>
+</div>

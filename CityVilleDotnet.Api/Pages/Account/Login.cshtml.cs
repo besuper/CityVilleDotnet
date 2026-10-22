@@ -1,3 +1,4 @@
+using CityVilleDotnet.Api.Common.Identity;
 using CityVilleDotnet.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +13,13 @@ public class LoginModel(SignInManager<ApplicationUser> signInManager) : PageMode
 
     public string ReturnUrl { get; set; } = "/Game";
 
-    public void OnGet(string? returnUrl = null)
+    public bool DiscordEnabled { get; set; }
+
+    public async Task OnGetAsync(string? returnUrl = null)
     {
+        DiscordEnabled = await signInManager.IsDiscordEnabledAsync();
+
+
         if (!string.IsNullOrEmpty(ErrorMessage))
         {
             ModelState.AddModelError(string.Empty, ErrorMessage);
@@ -25,6 +31,7 @@ public class LoginModel(SignInManager<ApplicationUser> signInManager) : PageMode
     public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
     {
         returnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : "/Game";
+        DiscordEnabled = await signInManager.IsDiscordEnabledAsync();
 
         if (!ModelState.IsValid)
         {

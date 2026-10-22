@@ -48,6 +48,24 @@
 					<i class="bi bi-upload mr-1"></i>@Localizer["UploadPicture"]
 				</button>
 			</form>
+
+			@if (Model.DiscordEnabled)
+			{
+				<div class="mt-2">
+					@if (Model.DiscordLinked)
+					{
+						<span class="badge badge-success p-2"><i class="bi bi-discord mr-1"></i>@Localizer["DiscordLinked"]</span>
+					}
+					else
+					{
+						<form method="post" asp-page-handler="LinkDiscord">
+							<button type="submit" class="btn btn-sm text-white font-weight-bold" style="background-color: #5865F2;">
+								<i class="bi bi-discord mr-1"></i>@Localizer["LinkDiscord"]
+							</button>
+						</form>
+					}
+				</div>
+			}
 		</div>
 
 		<div class="mt-4">

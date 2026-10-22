@@ -8,6 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="AspNet.Security.OAuth.Discord" Version="10.0.0" />
 		<PackageReference Include="FastEndpoints" Version="8.3.0" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.2.0" />
 		<PackageReference Include="Humanizer.Core" Version="3.0.10" />
@@ -41,6 +42,9 @@
 	<ItemGroup>
 	  <Compile Update="Pages\Account\Login.cshtml.model.cs">
 	    <DependentUpon>Login.cshtml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\Account\ExternalLogin.cshtml.model.cs">
+	    <DependentUpon>ExternalLogin.cshtml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Pages\Account\Register.cshtml.model.cs">
 	    <DependentUpon>Register.cshtml</DependentUpon>
