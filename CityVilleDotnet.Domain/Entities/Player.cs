@@ -1544,9 +1544,10 @@ public class Player
         }
     }
 
-    public void CheckCompletedQuests()
+    public List<InventoryItem> CheckCompletedQuests()
     {
         var newQuests = new List<Quest>();
+        var consumedItems = new List<InventoryItem>();
 
         foreach (var item in Quests.Where(x => x.QuestType == QuestType.Active))
         {
@@ -1554,6 +1555,7 @@ public class Player
             {
                 item.QuestType = QuestType.Completed;
                 item.ClaimRewards(this);
+                consumedItems.AddRange(ConsumeQuestItems(item.Name));
 
                 newQuests.AddRange(item.StartSequels());
             }
@@ -1568,6 +1570,69 @@ public class Player
             if (questItem is not null)
                 GrantQuestStartItems(questItem);
         }
+
+        return consumedItems;
+    }
+
+    // GameQuest::doQuestCompleteConsumptions
+    private List<InventoryItem> ConsumeQuestItems(string questName)
+    {
+        var consumptions = QuestSettingsManager.Instance.GetItem(questName)?.Consumption?.Items ?? [];
+        var removed = new List<InventoryItem>();
+
+        foreach (var consumption in consumptions.Where(x => x.Type == "inventory"))
+        {
+            var owned = CountInventoryItem(consumption.Name);
+            var amount = consumption.Number == "all" ? owned : Math.Min(int.Parse(consumption.Number ?? "0"), owned);
+
+            if (amount <= 0) continue;
+
+            var removedItem = RemoveItem(consumption.Name, amount);
+
+            if (removedItem is not null)
+            {
+                removed.Add(removedItem);
+            }
+        }
+
+        return removed;
+    }
+
+    // GameQuestUtility::consumeItemsAtInit
+    public List<InventoryItem> ConsumeQuestInitItems()
+    {
+        var removed = new List<InventoryItem>();
+
+        foreach (var quest in Quests.Where(x => x.QuestType == QuestType.Active))
+        {
+            var tasks = QuestSettingsManager.Instance.GetItem(quest.Name)?.Tasks.Tasks ?? [];
+
+            for (var index = 0; index < tasks.Count; index++)
+            {
+                var task = tasks[index];
+
+                if (task.Action != "consumeItemsAtInit" || task.Type is null) continue;
+                if (quest.Progress[index] + quest.Purchased[index] >= int.Parse(task.Total)) continue;
+
+                foreach (var name in task.Type.Split(','))
+                {
+                    var owned = CountInventoryItem(name);
+
+                    if (owned <= 0) continue;
+
+                    quest.Progress[index] += owned;
+
+                    var removedItem = RemoveItem(name, owned);
+
+                    if (removedItem is not null)
+                    {
+                        removed.Add(removedItem);
+                    }
+                }
+            }
+        }
+
+        return removed;
     }
 
     public void SpawnEligibleQuests()

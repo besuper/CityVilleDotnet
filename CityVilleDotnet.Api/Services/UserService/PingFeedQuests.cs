@@ -20,6 +20,8 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.CrewMembers)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x.MapRects)
             .Include(x => x.Masteries)
             .Include(x => x.InventoryItems)
             .Include(x => x.Franchises)
@@ -28,8 +30,9 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
             .Include(x => x.Coupons)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
+        context.Set<InventoryItem>().RemoveRange(user.ConsumeQuestInitItems());
         user.HandleQuestsProgress("");
-        user.CheckCompletedQuests();
+        context.Set<InventoryItem>().RemoveRange(user.CheckCompletedQuests());
 
         await context.SaveChangesAsync(cancellationToken);
 
