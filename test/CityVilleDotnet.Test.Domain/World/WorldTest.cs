@@ -3,9 +3,9 @@ using Bogus;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Domain.Enums;
+using CityVilleDotnet.Factory.MapRect;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
-using CityVilleDotnet.Test.Domain.Fixtures;
 
 namespace CityVilleDotnet.Test.Domain.World;
 
@@ -124,5 +124,39 @@ public class WorldTest
 
         world.CountConstructionOrBuildingByName("mun_visitorcenter").Should().Be(2);
         world.CountBuildingByName("mun_visitorcenter").Should().Be(1);
+    }
+
+    [Theory]
+    [InlineData(48, -84, true)]
+    [InlineData(59, -73, true)]
+    [InlineData(60, -84, false)]
+    [InlineData(48, -72, false)]
+    [InlineData(47, -84, false)]
+    public void World_IsPointInTerritory_MatchesMapRectBounds(int x, int y, bool expected)
+    {
+        var faker = new Faker();
+        var world = faker.World(mapRects: [faker.MapRect(x: 48, y: -84, width: 12, height: 12)]);
+
+        world.IsPointInTerritory(x, y).Should().Be(expected);
+    }
+
+    // mun_drawbridge builds from test_drawbridge_construction in TestData/gameSettings.xml
+    [Fact]
+    public void World_AddDrawbridgeSite_AddsFinishableConstructionSite()
+    {
+        var faker = new Faker();
+        var world = faker.World(objects: [faker.WorldObject(worldFlatId: 5)]);
+
+        world.AddDrawbridgeSite();
+
+        var site = world.Objects.Should().ContainSingle(x => x.TargetBuildingName == "mun_drawbridge").Subject;
+        site.ItemName.Should().Be("test_drawbridge_construction");
+        site.ClassName.Should().Be(BuildingClassType.ConstructionSite);
+        site.TargetBuildingClass.Should().Be(BuildingClassType.PeepCapacityResource);
+        site.X.Should().Be(56);
+        site.Y.Should().Be(-93);
+        site.WorldFlatId.Should().Be(6);
+        site.IsConstructionComplete().Should().BeTrue();
+        world.NextBuildingId.Should().Be(7);
     }
 }

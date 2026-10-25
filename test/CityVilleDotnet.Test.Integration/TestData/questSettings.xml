@@ -100,4 +100,44 @@
             <questRewards xp="5"/>
         </resourceModifiers>
     </quest>
+    <quest name="qm_test_lakefront_canal" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="itemGateComplete" type="test_tuned_gate_building" gate="build" total="1" sticky="true"/>
+        </tasks>
+        <consumption>
+            <item type="inventory" name="test_gate_material" number="all"/>
+            <item type="inventory" name="test_flyer" number="2"/>
+            <item type="resource" name="coin" number="10"/>
+        </consumption>
+        <resourceModifiers>
+            <questRewards coupon="test_canal_coupon"/>
+        </resourceModifiers>
+    </quest>
+    <quest name="qm_test_lakefront_default_gate" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="itemGateComplete" type="test_gated_building" total="1" sticky="true"/>
+        </tasks>
+    </quest>
+    <quest name="qm_test_lakefront_bridge" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="couponObtained" type="test_bridge_coupon" total="1" sticky="true"/>
+        </tasks>
+    </quest>
+    <quest name="qm_test_lakefront_expansion" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="getExpansionByCoord" type="48,-84" total="1" sticky="true"/>
+            <task action="getExpansionByCoord" type="48,-84,world_lakefront" total="1" sticky="true"/>
+        </tasks>
+    </quest>
+    <!-- Hidden tracker whitelisted by QuestSettingsManager.HiddenSpawnableQuests -->
+    <quest name="qh_lakefront_tracker" delay="1" visible="false" spawns_from="noparent">
+        <tasks>
+            <task action="seenQuest" type="qh_lakefront_tracker" total="1"/>
+        </tasks>
+    </quest>
+    <quest name="qh_test_hidden" delay="1" visible="false" spawns_from="noparent">
+        <tasks>
+            <task action="seenQuest" type="qh_test_hidden" total="1"/>
+        </tasks>
+    </quest>
 </quests>

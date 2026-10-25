@@ -28,4 +28,5 @@ public class GameSettings
     [XmlElement("dynamicExpansions")] public DynamicExpansionsContainer? DynamicExpansions { get; set; }
     [XmlElement("citysim")] public required CitySim CitySim { get; set; }
     [XmlElement("preyGroups")] public PreyGroupsContainer? PreyGroups { get; set; }
+    [XmlElement("dynamicTunings")] public DynamicTuningsContainer? DynamicTunings { get; set; }
 }

@@ -32,6 +32,8 @@ public class QuestItem
 
     [XmlElement("resourceModifiers")] public ResourceModifiers? ResourceModifiers { get; set; }
 
+    [XmlElement("consumption")] public ConsumptionContainer? Consumption { get; set; }
+
     [XmlIgnore] public int? RequiredLevel { get; set; }
 
     [XmlAttribute("level_block")]
@@ -72,6 +74,7 @@ public class QuestTask
 
     [XmlAttribute("type")] public string? Type { get; set; }
     [XmlAttribute("groupId")] public string? GroupId { get; set; }
+    [XmlAttribute("gate")] public string? Gate { get; set; }
     [XmlIgnore] public int? Streak { get; set; }
 
     [XmlAttribute("streak")]
@@ -129,6 +132,22 @@ public class SequelsContainer
 public class Sequel
 {
     [XmlAttribute("name")] public required string Name { get; set; }
+}
+
+[Serializable]
+public class ConsumptionContainer
+{
+    [XmlElement("item")] public List<QuestConsumption> Items { get; set; } = [];
+}
+
+[Serializable]
+public class QuestConsumption
+{
+    [XmlAttribute("type")] public required string Type { get; set; }
+
+    [XmlAttribute("name")] public required string Name { get; set; }
+
+    [XmlAttribute("number")] public string? Number { get; set; }
 }
 
 [Serializable]

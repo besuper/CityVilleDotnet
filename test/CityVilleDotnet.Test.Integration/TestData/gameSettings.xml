@@ -767,6 +767,27 @@
                 </gate>
             </gates>
         </item>
+        <item name="test_tuned_gate_building" type="municipal" buyable="false">
+            <gates>
+                <gate name="build" dynamicTuning="test_tuning">
+                    <key name="test_gate_material" amount="10"/>
+                </gate>
+                <gate name="test_two_keys">
+                    <key name="test_gate_material" amount="2"/>
+                    <key name="test_flyer" amount="1"/>
+                </gate>
+            </gates>
+        </item>
+        <item name="mun_drawbridge" type="peepCapacityResource" buyable="false">
+            <construction>test_drawbridge_construction</construction>
+            <gates/>
+        </item>
+        <item name="test_drawbridge_construction" type="constructionSite" className="ConstructionSite">
+            <randomModifiers>
+                <modifier type="item" tableName="test_bridge_coupon_table"/>
+            </randomModifiers>
+            <gates/>
+        </item>
     </items>
 
     <levels_cv_level_regrade_var_0>
@@ -806,7 +827,28 @@
                 <item name="test_population_add"/>
             </roll>
         </randomModifierTable>
+        <randomModifierTable type="mixed" name="test_bridge_coupon_table">
+            <roll percent="100">
+                <not_spawnable type="coupon" name="test_bridge_coupon"/>
+            </roll>
+        </randomModifierTable>
     </randomModifierTables>
+
+    <dynamicTunings>
+        <gateTunings name="test_tuning" hook="inventory" _zexp="test_experiment">
+            <tier id="1" action="set" amount="0" min="0"/>
+        </gateTunings>
+        <gateTunings name="test_tuning" hook="other">
+            <tier id="1" action="set" amount="0" min="0"/>
+        </gateTunings>
+        <gateTunings name="test_tuning" hook="inventory">
+            <tier id="1" action="mul" amount="0.6" round="up" min="0"/>
+            <tier id="2" action="add" amount="5" min="0"/>
+            <tier id="3" action="set" amount="7" min="0"/>
+            <tier id="4" action="mul" amount="0.1" round="down" min="3"/>
+            <tier id="5" action="mul" amount="1.15" round="down" min="0"/>
+        </gateTunings>
+    </dynamicTunings>
 
     <lootTables>
         <lootTable name="zoo_animals_test_enclosure" totalWeight="100">

@@ -26,6 +26,7 @@ public class GameSettingsManager
     private List<CollectionSetting> _collections = [];
     private List<ExpansionSetting> _expansions = [];
     private List<PreyGroupSetting> _preyGroups = [];
+    private List<GateTuningItem> _gateTunings = [];
     private bool _isInitialized;
 
     private GameSettingsManager()
@@ -200,6 +201,7 @@ public class GameSettingsManager
             }
 
             _preyGroups = gameSettings.PreyGroups?.Groups ?? [];
+            _gateTunings = gameSettings.DynamicTunings?.GateTunings ?? [];
 
             _globalTableProviders = _items.Values
                 .Where(x => x is not null && x.GetGlobalTableModifiers().Count > 0)
@@ -399,6 +401,23 @@ public class GameSettingsManager
         if (!_tieredValues.TryGetValue(tableName, out var tieredValue)) return 0;
 
         return int.TryParse(tieredValue.GetAmount(tier), out var amount) ? amount : 0;
+    }
+
+    // DynamicTuningManager::getGateModifiedAmount, experiment tunings are skipped (variant 0)
+    public int GetGateTunedAmount(string? tuningName, string hook, int playerLevel, int amount)
+    {
+        if (string.IsNullOrEmpty(tuningName)) return amount;
+
+        // DynamicTuningManager.TIERS: highest level of each tier
+        int[] tierMaxLevels = [25, 45, 70, 90];
+        var tier = tierMaxLevels.Count(max => playerLevel > max) + 1;
+
+        var tuning = _gateTunings
+            .Where(x => x.Name == tuningName && x.Hook == hook && x.Experiment is null)
+            .SelectMany(x => x.Tiers)
+            .FirstOrDefault(x => x.Id == tier);
+
+        return tuning?.Apply(amount) ?? amount;
     }
 
     public List<string> GetGlobalTableProviders()

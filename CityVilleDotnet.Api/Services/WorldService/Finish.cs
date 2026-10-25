@@ -35,6 +35,7 @@ public sealed class Finish(CityVilleDbContext context) : AmfService<FinishReques
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.GlobalTableOverrides)
+            .Include(x => x.Coupons)
             .Include(x => x.Flags.Where(f => f.Name == "completed_bridge"))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 

@@ -306,6 +306,18 @@ public class World
         return NextBuildingId++;
     }
 
+    // The mun_drawbridge need to be added from the server side since the client never spawn it
+    public void AddDrawbridgeSite()
+    {
+        var construction = GameSettingsManager.Instance.GetItem("mun_drawbridge")?.Construction ?? throw new Exception("Can't find construction of mun_drawbridge");
+
+        var now = ServerUtils.GetCurrentTime();
+        var site = new WorldObject("mun_drawbridge", BuildingClassType.PeepCapacityResource, null, false, -1, WorldObjectState.Static, 0, now, now, 56, -93, 0, GetAvailableBuildingId());
+
+        site.SetAsConstructionSite(construction, 0);
+        AddBuilding(site);
+    }
+
     public void RemoveBuilding(WorldObject obj)
     {
         Objects.Remove(obj);
@@ -449,6 +461,11 @@ public class World
     {
         // FIXME: Check if this map already exist
         MapRects.Add(mapRect);
+    }
+
+    public bool IsPointInTerritory(int x, int y)
+    {
+        return MapRects.Any(r => x >= r.X && x < r.X + r.Width && y >= r.Y && y < r.Y + r.Height);
     }
 
     public void GrantFreeExpansions(string? expansionCoords, string? expansionType)

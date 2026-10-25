@@ -7,6 +7,7 @@ namespace CityVilleDotnet.Common.Settings;
 public class QuestSettingsManager
 {
     public static readonly HashSet<string> TaskActions = ["seenQuest"];
+    public static readonly HashSet<string> HiddenSpawnableQuests = ["qh_lakefront_tracker", "qh_lakefront_tracker_2"];
     public static readonly Dictionary<string, List<string>> QuestStartInventoryItem = new()
     {
         ["qm_storage_warehouse"] = ["warehouse"],

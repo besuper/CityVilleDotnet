@@ -42,6 +42,7 @@ public class PlayerRegistrationService(
         var objects = defaultWorld.Objects.Select(x => new WorldObject().LoadObject(x)).ToList();
 
         var world = new World("", 36, 36, 30, 0, 50, 0, 0, mapRects, objects);
+        world.AddDrawbridgeSite();
 
         var newPlayer = new Player(user, world);
 

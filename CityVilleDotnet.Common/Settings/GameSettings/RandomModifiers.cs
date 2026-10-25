@@ -125,7 +125,7 @@ public class Roll
                     Rewards[rewardType] = [];
                 }
 
-                Rewards[rewardType].Add(new AmountElement { Amount = amount, Name = name });
+                Rewards[rewardType].Add(new AmountElement { Amount = amount, Name = name, Type = element.GetAttribute("type") });
             }
         }
     }
@@ -137,6 +137,8 @@ public class AmountElement
     [XmlAttribute("amount")] public double Amount { get; set; }
 
     [XmlAttribute("name")] public required string Name { get; set; }
+
+    [XmlAttribute("type")] public string? Type { get; set; }
 }
 
 [Serializable]

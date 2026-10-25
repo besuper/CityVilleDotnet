@@ -545,6 +545,23 @@ public class Player
         return true;
     }
 
+    public bool HasCoupon(string name)
+    {
+        return Coupons.Any(x => x.WorldFlatId is null && x.Name == name);
+    }
+
+    // InventoryGate::checkForKeys
+    public bool HasInventoryGateKeys(string itemName, string gateName)
+    {
+        var gate = GameSettingsManager.Instance.GetItem(itemName)?.GetGates().FirstOrDefault(x => x.Name == gateName);
+
+        if (gate is null) return false;
+
+        return gate.Keys
+            .Where(x => x is not null)
+            .All(key => CountInventoryItem(key!.Name) >= GameSettingsManager.Instance.GetGateTunedAmount(gate.DynamicTuning, "inventory", Level, key.Amount));
+    }
+
     public void SetFlag(string name, int value)
     {
         var flag = Flags.FirstOrDefault(x => x.Name == name);
@@ -910,6 +927,11 @@ public class Player
 
                         AddItem(element.Name);
                         StaticLogger.Current.LogDebug("Found item drop {ItemName}", element.Name);
+                        break;
+                    // Player::awardNotSpawnableDoober
+                    case "not_spawnable" when element.Type == "coupon":
+                        GiveCoupon(element.Name);
+                        StaticLogger.Current.LogDebug("Found coupon {CouponName}", element.Name);
                         break;
                     default:
                         StaticLogger.Current.LogWarning("Unhandled reward type {RewardType}", rewardType);
@@ -1539,6 +1561,35 @@ public class Player
                             quest.Progress[index] = value;
                         
                         continue;
+                    // TODO: Check how to correctly implement sticky quests
+                    case "itemGateComplete":
+                        if (HasInventoryGateKeys(taskType, task.Gate ?? "build"))
+                        {
+                            quest.Progress[index] = 1;
+                        }
+
+                        continue;
+                    case "couponObtained":
+                        if (HasCoupon(taskType))
+                        {
+                            quest.Progress[index] = 1;
+                        }
+
+                        continue;
+                    case "getExpansionByCoord":
+                    {
+                        // x,y[,worldId]
+                        var coords = taskType.Split(',');
+
+                        if (coords.Length > 2 && coords[2] != GetWorld().Type.ToDescriptionString()) continue;
+
+                        if (GetWorld().IsPointInTerritory(int.Parse(coords[0]), int.Parse(coords[1])))
+                        {
+                            quest.Progress[index] = 1;
+                        }
+
+                        continue;
+                    }
                 }
             }
         }
@@ -1645,7 +1696,7 @@ public class Player
         foreach (var item in QuestSettingsManager.Instance.GetAllQuests())
         {
             if (item.SpawnsFrom != "noparent") continue;
-            if (item.Visible != "true") continue;
+            if (item.Visible != "true" && !QuestSettingsManager.HiddenSpawnableQuests.Contains(item.Name)) continue;
             if (!string.IsNullOrEmpty(item.Validate)) continue;
             if (item.Experiments is { Count: > 0 }) continue;
             if (item.RequiredLevel is not null && Level < item.RequiredLevel) continue;

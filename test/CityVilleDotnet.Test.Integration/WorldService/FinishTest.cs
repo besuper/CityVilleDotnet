@@ -209,4 +209,30 @@ public class FinishTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var player = await Context.Set<Player>().Include(x => x.Flags).FirstAsync(x => x.Id == user.Id, TestContext.Current.CancellationToken);
         player.Flags.Should().BeEmpty();
     }
+
+    // test_drawbridge_construction rolls test_bridge_coupon_table: a not_spawnable coupon at 100%
+    [Fact]
+    public async Task Finish_DrawbridgeSite_BuildsDrawbridgeAndGivesCoupon()
+    {
+        var world = Faker.World();
+        world.AddDrawbridgeSite();
+        var user = Faker.Player(world: world);
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new Finish(Context);
+
+        var response = await handler.HandlePacket(CreateFinishRequest(56, -93), user.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+
+        Context.ChangeTracker.Clear();
+
+        var player = await Context.Set<Player>().Include(x => x.Coupons).FirstAsync(x => x.Id == user.Id, TestContext.Current.CancellationToken);
+        player.HasCoupon("test_bridge_coupon").Should().BeTrue();
+
+        var drawbridge = await Context.Set<WorldObject>().FirstAsync(o => o.X == 56 && o.Y == -93 && EF.Property<int?>(o, "WorldId") == world.Id, TestContext.Current.CancellationToken);
+        drawbridge.ItemName.Should().Be("mun_drawbridge");
+    }
 }
