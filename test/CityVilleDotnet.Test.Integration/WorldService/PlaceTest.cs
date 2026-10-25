@@ -1,4 +1,4 @@
-using AwesomeAssertions;
+﻿using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.WorldService;
 using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Enums;
@@ -27,8 +27,7 @@ public class PlaceTest(DatabaseFixture fixture) : IntegrationTest(fixture)
                 Position = new PerformActionPositionRequest { X = x, Y = y, Z = 0 },
                 ClassName = className,
                 State = WorldObjectState.Open,
-                ItemName = itemName,
-                TempId = -1
+                ItemName = itemName
             }
         };
     }

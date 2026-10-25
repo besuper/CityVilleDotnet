@@ -30,7 +30,7 @@ internal sealed class Clear(CityVilleDbContext context) : AmfService<ClearReques
 
         var world = player.GetWorld();
 
-        var obj = world.GetBuildingByClientId(request.Building.Id) ?? throw new Exception($"Can't find building with id {request.Building.Id}");
+        var obj = world.GetBuildingByClientId(request.Building.Id);
 
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
 

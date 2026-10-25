@@ -24,7 +24,7 @@ public class Explode(CityVilleDbContext context) : AmfService<ExplodeRequest>
 
         var world = player.GetWorld();
 
-        var owner = world.GetBuildingByClientId(request.ObjectId) ?? throw new Exception($"Can't find building with id {request.ObjectId}");
+        var owner = world.GetBuildingByClientId(request.ObjectId);
 
         var gameItem = GameSettingsManager.Instance.GetItem(owner.ItemName) ?? throw new Exception($"Can't find game item for {owner.ItemName}");
 

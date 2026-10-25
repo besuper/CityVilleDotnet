@@ -81,7 +81,7 @@ internal sealed class Slots(CityVilleDbContext context) : AmfService<SlotsReques
             {
                 var storage = gameItem.ThemeParkStorage ?? throw new Exception($"No theme park storage on {obj.ItemName}");
                 var slotIndex = request.Action.SlotIndex ?? throw new Exception("Missing slot index");
-                var stored = world.GetBuildingByClientId(request.Action.ObjectId ?? throw new Exception("Missing object id")) ?? throw new Exception($"Can't find building with id {request.Action.ObjectId}");
+                var stored = world.GetBuildingByClientId(request.Action.ObjectId ?? throw new Exception("Missing object id"));
 
                 if (stored.ItemName != storage.GetSlotItemName(slotIndex, "storage"))
                 {

@@ -54,7 +54,6 @@ public class GameItem
     [XmlElement("requiredPopulation")] public int? RequiredPopulation { get; set; }
     [XmlElement("headquarters")] public string? HeadquartersName { get; set; }
 
-    [XmlElement("leftPart")] public string? BridgeLeftPart { get; set; }
     [XmlElement("centerPart")] public string? BridgeCenterPart { get; set; }
     [XmlElement("rightPart")] public string? BridgeRightPart { get; set; }
 
@@ -96,8 +95,6 @@ public class GameItem
     [XmlElement("cashYield")] public int? CashYield { get; set; }
 
     [XmlElement("xpYield")] public int? XpYield { get; set; }
-
-    [XmlElement("goodsYield")] public int? GoodsYield { get; set; }
 
     [XmlElement("goodsReward")] public int? GoodsReward { get; set; }
 
@@ -467,7 +464,6 @@ public class BridgePartItem
 public class EnergyCost
 {
     [XmlAttribute("build")] public string? Build { get; set; }
-    [XmlAttribute("instantFinish")] public string? InstantFinish { get; set; }
     [XmlAttribute("harvest")] public string? Harvest { get; set; }
     [XmlAttribute("open")] public string? Open { get; set; }
     [XmlAttribute("clean")] public string? Clean { get; set; }
@@ -491,10 +487,8 @@ public class RemodelDefinitionItem
 {
     [XmlAttribute("item")] public required string Item { get; set; }
     [XmlAttribute("gateName")] public string? GateName { get; set; }
-    [XmlAttribute("requirementsName")] public string? RequirementsName { get; set; }
     [XmlAttribute("overrideCost")] public int OverrideCost { get; set; }
     [XmlAttribute("overrideCash")] public int OverrideCash { get; set; }
-    [XmlAttribute("isBaseModel")] public bool IsBaseModel { get; set; }
 }
 
 [Serializable]
@@ -502,7 +496,6 @@ public class GatesItem
 {
     [XmlAttribute("name")] public string? Name { get; set; }
     [XmlAttribute("type")] public string? Type { get; set; }
-    [XmlAttribute("instructions")] public string? Instructions { get; set; }
     [XmlAttribute("cashCost")] public int CashCost { get; set; }
     [XmlAttribute("masteryLevel")] public int MasteryLevel { get; set; }
     [XmlAttribute("dynamicTuning")] public string? DynamicTuning { get; set; }
@@ -513,7 +506,6 @@ public class GatesItem
 public class GateKey
 {
     [XmlAttribute("name")] public required string Name { get; set; }
-    [XmlAttribute("viral")] public string? Viral { get; set; }
     [XmlAttribute("amount")] public int Amount { get; set; }
     [XmlAttribute("keepOnComplete")] public bool KeepOnComplete { get; set; }
     [XmlAttribute("removeAllOnComplete")] public bool RemoveAllOnComplete { get; set; }
@@ -670,7 +662,6 @@ public class UpgradeHelper
 {
     [XmlAttribute("type")] public required string Type { get; set; }
     [XmlAttribute("max")] public int Max { get; set; }
-    [XmlAttribute("actionValue")] public int ActionValue { get; set; }
 }
 
 [Serializable]
@@ -753,14 +744,11 @@ public class MechanicItem
     [XmlAttribute("explodeToRect")] public string? ExplodeToRect { get; set; }
     [XmlAttribute("macroPrefix")] public string? MacroPrefix { get; set; }
     [XmlAttribute("type")] public string? Type { get; set; }
-    [XmlAttribute("priority")] public int Priority { get; set; }
     [XmlAttribute("consumableType")] public string? ConsumableType { get; set; }
     [XmlAttribute("consumableQuantity")] public int ConsumableQuantity { get; set; }
     [XmlAttribute("activeDuration")] public int ActiveDuration { get; set; }
     [XmlAttribute("inactiveDuration")] public int InactiveDuration { get; set; }
     [XmlAttribute("maxStreakLength")] public int MaxStreakLength { get; set; }
-    [XmlAttribute("blockOthers")] public bool BlockOthers { get; set; }
-    [XmlAttribute("pick")] public string? Pick { get; set; }
     [XmlAttribute("freeItem")] public string? FreeItem { get; set; }
     [XmlAttribute("itemNames")] public string? ItemNames { get; set; }
     [XmlAttribute("numSlots")] public int NumSlots { get; set; }

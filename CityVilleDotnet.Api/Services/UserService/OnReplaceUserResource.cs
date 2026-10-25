@@ -58,7 +58,7 @@ public class OnReplaceUserResource(CityVilleDbContext context) : AmfService<OnRe
         }
         else
         {
-            var obj = player.GetWorld().GetBuildingByClientId(request.OldResourceId) ?? throw new Exception($"Building {request.OldResourceId} not found");
+            var obj = player.GetWorld().GetBuildingByClientId(request.OldResourceId);
 
             var className = gameItem.GetBuildingClassType();
 

@@ -6,12 +6,7 @@ namespace CityVilleDotnet.Common.Global;
 public static class SecureRand
 {
     private const string HardCodedSecret = "YOUR_LIKE_AN_8";
-    private static string _handshake = "";
-
-    public static void SetHandshake(string handshake)
-    {
-        _handshake = handshake;
-    }
+    private const string Handshake = "";
 
     public static string GetMd5Hash(string input)
     {
@@ -22,7 +17,7 @@ public static class SecureRand
     public static int GenerateRand(int min, int max, int rollCounter, string playerId, string? feature = null)
     {
         var featurePart = feature is null ? "" : feature + "::";
-        var stringToHash = HardCodedSecret + "::" + _handshake + "::" + playerId + "::" + featurePart + rollCounter;
+        var stringToHash = HardCodedSecret + "::" + Handshake + "::" + playerId + "::" + featurePart + rollCounter;
 
         var range = max - min + 1;
 

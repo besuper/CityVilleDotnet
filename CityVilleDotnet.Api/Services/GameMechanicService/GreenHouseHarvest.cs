@@ -35,7 +35,7 @@ public class GreenHouseHarvest(CityVilleDbContext context, IConfiguration config
 
         var world = player.GetWorld();
 
-        var worldObj = world.GetBuildingByClientId(request.ObjectId) ?? throw new Exception("Building not found");
+        var worldObj = world.GetBuildingByClientId(request.ObjectId);
 
         if (worldObj.GetClassName() != BuildingClassType.GreenHouse) throw new Exception($"Can't update green house for {worldObj.GetClassName()}");
 
@@ -71,5 +71,4 @@ public class GreenHouseHarvest(CityVilleDbContext context, IConfiguration config
 public class GreenHouseHarvestRequest
 {
     [AmfParam(0)] public int ObjectId { get; set; }
-    [AmfParam(3)] public Dictionary<string, object> ExtraData { get; set; } = new();
 }

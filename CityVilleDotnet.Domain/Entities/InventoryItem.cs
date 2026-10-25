@@ -11,8 +11,6 @@ public class InventoryItem
     public string? StorageType { get; set; }
     public WorldObject? StoredObject { get; set; }
 
-    public bool IsMainInventory => StorageType is null;
-
     private InventoryItem() {}
     
     public InventoryItem(string itemName, int amount = 1, string? storageType = null, WorldObject? storedObject = null)

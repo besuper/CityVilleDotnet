@@ -32,7 +32,7 @@ internal sealed class Sell(CityVilleDbContext context) : AmfService<SellRequest>
 
         var world = user.GetWorld();
 
-        var obj = world.GetBuildingByClientId(request.Building.Id) ?? throw new Exception($"Can't find building with id {request.Building.Id}");
+        var obj = world.GetBuildingByClientId(request.Building.Id);
         
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
 

@@ -36,8 +36,6 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
             .Include(x => x.Masteries)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
 
-        if (player is null) throw new Exception("Player not found");
-
         var mapOwner = request.Params.FirstOrDefault()?.MapOwner;
 
         if (mapOwner is not null && mapOwner != player.Snuid)
@@ -137,7 +135,6 @@ public class BuildingPlaceRequest
     [AmfParam("itemName")] public string ItemName { get; set; } = string.Empty;
     [AmfParam("deleted")] public bool Deleted { get; set; }
     [AmfParam("direction")] public int Direction { get; set; }
-    [AmfParam("tempId")] public int TempId { get; set; }
     [AmfParam("id")] public int Id { get; set; }
 }
 

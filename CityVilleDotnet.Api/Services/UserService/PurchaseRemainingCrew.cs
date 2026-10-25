@@ -11,7 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-public class PurchaseRemainingCrew(CityVilleDbContext context, ILogger<PurchaseCrewMember> logger) : AmfService<PurchaseRemainingCrewRequest>
+public class PurchaseRemainingCrew(CityVilleDbContext context, ILogger<PurchaseRemainingCrew> logger) : AmfService<PurchaseRemainingCrewRequest>
 {
     private const double BuyAllDiscountThreshold = 0.25;
     private const double BuyAllDiscountRate = 0.75;
@@ -27,7 +27,7 @@ public class PurchaseRemainingCrew(CityVilleDbContext context, ILogger<PurchaseC
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         var world = player.GetWorld();
-        var building = world.GetBuildingByClientId(request.ObjectId) ?? throw new Exception("Target building not found");
+        var building = world.GetBuildingByClientId(request.ObjectId);
 
         var gameItem = GameSettingsManager.Instance.GetItem(building.GetItemName()) ?? throw new Exception("Game item not found");
 

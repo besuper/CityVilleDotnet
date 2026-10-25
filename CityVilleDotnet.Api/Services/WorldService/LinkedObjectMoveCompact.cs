@@ -1,6 +1,4 @@
 using CityVilleDotnet.Api.Common.Amf;
-using CityVilleDotnet.Common.Enums;
-using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
@@ -33,7 +31,7 @@ public class LinkedObjectMoveCompact(CityVilleDbContext context) : AmfService<Li
 
         foreach (var linkedObject in linkedObjects)
         {
-            var obj = world.GetBuildingByClientId(linkedObject.Id) ?? throw new DomainException(GameErrorType.ForceReload);
+            var obj = world.GetBuildingByClientId(linkedObject.Id);
 
             obj.MoveTo(linkedObject.X, linkedObject.Y, obj.Z ?? 0, linkedObject.Direction);
 

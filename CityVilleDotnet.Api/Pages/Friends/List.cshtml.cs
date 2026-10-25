@@ -6,11 +6,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace CityVilleDotnet.Api.Pages.Friends;
 
 [Authorize]
-public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbContext dbContext) : PageModel
+public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbContext dbContext, IStringLocalizer<Resources.SharedResource> localizer) : PageModel
 {
     private const int PageSize = 12;
 
@@ -89,7 +90,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
     {
         if (string.IsNullOrWhiteSpace(Username))
         {
-            TempData["Error"] = "Username cannot be empty.";
+            TempData["Error"] = localizer["FriendUsernameEmpty"].Value;
             return RedirectToPage("/Friends/List");
         }
 
@@ -104,19 +105,19 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         if (targetPlayer is null)
         {
-            TempData["Error"] = "User not found.";
+            TempData["Error"] = localizer["FriendUserNotFound"].Value;
             return RedirectToPage("/Friends/List");
         }
 
         if (player.HasFriend(targetPlayer))
         {
-            TempData["Error"] = "This user is already in your friend list.";
+            TempData["Error"] = localizer["FriendAlreadyInList"].Value;
             return RedirectToPage("/Friends/List");
         }
 
         player.SendFriendRequest(targetPlayer);
 
-        TempData["Success"] = $"Friend request sent to {Username}.";
+        TempData["Success"] = localizer["FriendRequestSent", Username].Value;
 
         ViewData["PlayerName"] = player.Username;
         ViewData["PlayerLevel"] = player.Level;
@@ -130,7 +131,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
     {
         if (string.IsNullOrWhiteSpace(userName))
         {
-            TempData["Error"] = "Invalid username.";
+            TempData["Error"] = localizer["FriendInvalidUsername"].Value;
             return RedirectToPage("/Friends/List");
         }
 
@@ -147,7 +148,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         if (friendship is null)
         {
-            TempData["Error"] = "Friend request not found.";
+            TempData["Error"] = localizer["FriendRequestNotFound"].Value;
             return RedirectToPage("/Friends/List");
         }
 
@@ -158,14 +159,14 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         if (targetFriendship is null)
         {
-            TempData["Error"] = "Error accepting friend request.";
+            TempData["Error"] = localizer["FriendAcceptError"].Value;
             return RedirectToPage("/Friends/List");
         }
 
         friendship.Status = FriendshipStatus.Accepted;
         targetFriendship.Status = FriendshipStatus.Accepted;
 
-        TempData["Success"] = $"You are now friends with {userName}.";
+        TempData["Success"] = localizer["FriendNowFriends", userName].Value;
 
         ViewData["PlayerName"] = user.Username;
         ViewData["PlayerLevel"] = user.Level;
@@ -179,7 +180,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
     {
         if (string.IsNullOrWhiteSpace(userName))
         {
-            TempData["Error"] = "Invalid username.";
+            TempData["Error"] = localizer["FriendInvalidUsername"].Value;
             return RedirectToPage("/Friends/List");
         }
 
@@ -197,7 +198,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         if (friendship is null)
         {
-            TempData["Error"] = "Friend request not found.";
+            TempData["Error"] = localizer["FriendRequestNotFound"].Value;
             return RedirectToPage("/Friends/List");
         }
 
@@ -211,7 +212,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         if (targetFriendship is not null)
             dbContext.Set<Friend>().Remove(targetFriendship);
 
-        TempData["Success"] = $"Friend request from {userName} rejected.";
+        TempData["Success"] = localizer["FriendRequestRejected", userName].Value;
 
         ViewData["PlayerName"] = user.Username;
         ViewData["PlayerLevel"] = user.Level;
@@ -224,7 +225,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
     {
         if (string.IsNullOrWhiteSpace(userName))
         {
-            TempData["Error"] = "Invalid username.";
+            TempData["Error"] = localizer["FriendInvalidUsername"].Value;
             return RedirectToPage("/Friends/List");
         }
 
@@ -241,7 +242,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         if (friendship is null)
         {
-            TempData["Error"] = "Friend request not found.";
+            TempData["Error"] = localizer["FriendRequestNotFound"].Value;
             return RedirectToPage("/Friends/List");
         }
 
@@ -253,7 +254,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         if (targetFriendship is not null) dbContext.Set<Friend>().Remove(targetFriendship);
 
-        TempData["Success"] = $"Friend request to {userName} cancelled.";
+        TempData["Success"] = localizer["FriendRequestCancelled", userName].Value;
 
         ViewData["PlayerName"] = user.Username;
         ViewData["PlayerLevel"] = user.Level;
@@ -266,7 +267,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
     {
         if (string.IsNullOrWhiteSpace(userName))
         {
-            TempData["Error"] = "Invalid username.";
+            TempData["Error"] = localizer["FriendInvalidUsername"].Value;
             return RedirectToPage("/Friends/List");
         }
 
@@ -283,7 +284,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
         if (friendship is null)
         {
-            TempData["Error"] = "Friend not found.";
+            TempData["Error"] = localizer["FriendNotFound"].Value;
             return RedirectToPage("/Friends/List");
         }
 
@@ -295,7 +296,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         if (targetFriendship is not null)
             dbContext.Set<Friend>().Remove(targetFriendship);
 
-        TempData["Success"] = $"{userName} has been removed from your friends.";
+        TempData["Success"] = localizer["FriendRemoved", userName].Value;
 
         await dbContext.SaveChangesAsync(ct);
         return RedirectToPage("/Friends/List");

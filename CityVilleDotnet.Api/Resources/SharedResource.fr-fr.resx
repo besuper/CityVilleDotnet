@@ -113,9 +113,6 @@
     <data name="EmptyFriends" xml:space="preserve">
         <value>Aucun ami pour l'instant. Ajoutez des amis pour commencer !</value>
     </data>
-    <data name="PendingFriendsRequests" xml:space="preserve">
-        <value>Demandes en attente</value>
-    </data>
     <data name="Cancel" xml:space="preserve">
         <value>Annuler</value>
     </data>
@@ -124,9 +121,6 @@
     </data>
     <data name="Reject" xml:space="preserve">
         <value>Refuser</value>
-    </data>
-    <data name="EmptyPendingFriendsRequests" xml:space="preserve">
-        <value>Aucune demande d'ami en attente.</value>
     </data>
     <data name="Remove" xml:space="preserve">
         <value>Supprimer</value>
@@ -430,5 +424,44 @@
     </data>
     <data name="DiscordLinkFailed" xml:space="preserve">
         <value>Impossible de lier votre compte Discord, veuillez réessayer</value>
+    </data>
+    <data name="FriendUsernameEmpty" xml:space="preserve">
+        <value>Le nom d'utilisateur ne peut pas être vide.</value>
+    </data>
+    <data name="FriendUserNotFound" xml:space="preserve">
+        <value>Utilisateur introuvable.</value>
+    </data>
+    <data name="FriendAlreadyInList" xml:space="preserve">
+        <value>Cet utilisateur est déjà dans votre liste d'amis.</value>
+    </data>
+    <data name="FriendRequestSent" xml:space="preserve">
+        <value>Demande d'ami envoyée à {0}.</value>
+    </data>
+    <data name="FriendInvalidUsername" xml:space="preserve">
+        <value>Nom d'utilisateur invalide.</value>
+    </data>
+    <data name="FriendRequestNotFound" xml:space="preserve">
+        <value>Demande d'ami introuvable.</value>
+    </data>
+    <data name="FriendAcceptError" xml:space="preserve">
+        <value>Erreur lors de l'acceptation de la demande d'ami.</value>
+    </data>
+    <data name="FriendNowFriends" xml:space="preserve">
+        <value>Vous êtes maintenant ami avec {0}.</value>
+    </data>
+    <data name="FriendRequestRejected" xml:space="preserve">
+        <value>Demande d'ami de {0} refusée.</value>
+    </data>
+    <data name="FriendRequestCancelled" xml:space="preserve">
+        <value>Demande d'ami à {0} annulée.</value>
+    </data>
+    <data name="FriendNotFound" xml:space="preserve">
+        <value>Ami introuvable.</value>
+    </data>
+    <data name="FriendRemoved" xml:space="preserve">
+        <value>{0} a été retiré de vos amis.</value>
+    </data>
+    <data name="LoginInvalidCredentials" xml:space="preserve">
+        <value>Nom d'utilisateur ou mot de passe invalide.</value>
     </data>
 </root>

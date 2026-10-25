@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
-public class PreloadWorld(CityVilleDbContext context, ILogger<LoadWorld> logger) : AmfService<PreloadWorldRequest>
+public class PreloadWorld(CityVilleDbContext context, ILogger<PreloadWorld> logger) : AmfService<PreloadWorldRequest>
 {
     public override async Task<ASObject> HandlePacket(PreloadWorldRequest request, Guid playerId, CancellationToken cancellationToken)
     {

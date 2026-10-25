@@ -190,9 +190,6 @@ public static class WorldDtoMapper
 
             foreach (var commodityItem in gameItem.Commodity)
             {
-                /*if (commodityItem.Capacity <= 0)
-                    continue;*/
-
                 var name = commodityItem.Name;
 
                 if (capacities.TryGetValue(name, out var existing))

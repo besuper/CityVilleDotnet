@@ -29,7 +29,7 @@ public sealed class Remodel(CityVilleDbContext context) : AmfService<RemodelRequ
 
         var world = player.GetWorld();
 
-        var obj = world.GetBuildingByClientId(request.ObjectId) ?? throw new Exception($"Can't find building with id {request.ObjectId}");
+        var obj = world.GetBuildingByClientId(request.ObjectId);
 
         if (player.Level < GameSettingsManager.Instance.GetSettings().RemodelingRequiredLevel)
             return new CityVilleResponse().Error(GameErrorType.InvalidState);

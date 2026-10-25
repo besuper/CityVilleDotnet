@@ -62,7 +62,6 @@ public class LootTable
 [Serializable]
 public class LootItem
 {
-    [XmlAttribute("handler")] public string? Handler { get; set; }
 
     [XmlAttribute("itemName")] public required string ItemName { get; set; }
 

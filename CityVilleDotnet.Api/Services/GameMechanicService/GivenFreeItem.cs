@@ -27,7 +27,7 @@ public class GivenFreeItem(CityVilleDbContext context, ILogger<GivenFreeItem> lo
 
         var world = player.GetWorld();
 
-        var owner = world.GetBuildingByClientId(request.ObjectId) ?? throw new Exception($"Can't find building with id {request.ObjectId}");
+        var owner = world.GetBuildingByClientId(request.ObjectId);
 
         if (owner.GivenFreeItem)
             return GatewayService.CreateEmptyResponse();

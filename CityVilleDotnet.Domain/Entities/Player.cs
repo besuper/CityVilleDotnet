@@ -1821,7 +1821,6 @@ public class Player
             if (toRemove > 0)
             {
                 RemoveGoodByType(desiredGoodType, toRemove);
-                //HandleQuestsProgress("openBusinessByCommodityType", itemName: desiredGoodType);
             }
 
             ProcessGoods(item, "premium_goods", leftGoods);

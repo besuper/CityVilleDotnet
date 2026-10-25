@@ -38,7 +38,7 @@ public class HarvestDockHouseTest(DatabaseFixture fixture) : IntegrationTest(fix
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
         Context.ChangeTracker.Clear();
 
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
+        var handler = new Harvest(Context, NullLogger<Harvest>.Instance, new ConfigurationBuilder().Build());
 
         var response = await handler.HandlePacket(CreateHarvestRequest(6, 10), player.Id, TestContext.Current.CancellationToken);
 
@@ -60,7 +60,7 @@ public class HarvestDockHouseTest(DatabaseFixture fixture) : IntegrationTest(fix
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
         Context.ChangeTracker.Clear();
 
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
+        var handler = new Harvest(Context, NullLogger<Harvest>.Instance, new ConfigurationBuilder().Build());
 
         var response = await handler.HandlePacket(CreateHarvestRequest(6, 10), player.Id, TestContext.Current.CancellationToken);
 
@@ -82,7 +82,7 @@ public class HarvestDockHouseTest(DatabaseFixture fixture) : IntegrationTest(fix
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
         Context.ChangeTracker.Clear();
 
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
+        var handler = new Harvest(Context, NullLogger<Harvest>.Instance, new ConfigurationBuilder().Build());
 
         var response = await handler.HandlePacket(CreateHarvestRequest(20, 20), player.Id, TestContext.Current.CancellationToken);
 
@@ -104,7 +104,7 @@ public class HarvestDockHouseTest(DatabaseFixture fixture) : IntegrationTest(fix
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
         Context.ChangeTracker.Clear();
 
-        var handler = new Harvest(Context, NullLogger<HarvestRequest>.Instance, new ConfigurationBuilder().Build());
+        var handler = new Harvest(Context, NullLogger<Harvest>.Instance, new ConfigurationBuilder().Build());
 
         var response = await handler.HandlePacket(CreateHarvestRequest(6, 10), player.Id, TestContext.Current.CancellationToken);
 

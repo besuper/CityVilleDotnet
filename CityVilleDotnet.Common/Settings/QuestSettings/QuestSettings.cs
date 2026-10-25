@@ -119,7 +119,6 @@ public class InitFunction
 
     [XmlAttribute("itemName")] public required string ItemName { get; set; }
 
-    [XmlAttribute("singleton")] public string? Singleton { get; set; }
 }
 
 [Serializable]

@@ -29,7 +29,7 @@ internal sealed class MechanicDataTransfer(CityVilleDbContext context) : AmfServ
 
         var world = player.GetWorld();
 
-        var obj = world.GetBuildingByClientId(request.ObjectId) ?? throw new Exception($"Can't find building with id {request.ObjectId}");
+        var obj = world.GetBuildingByClientId(request.ObjectId);
 
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName) ?? throw new Exception($"Can't find game item for {obj.ItemName}");
 

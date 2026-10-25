@@ -16,9 +16,6 @@ public class WorldObjectDto
 
     [JsonPropertyName("contractName")] public string? ContractName { get; set; }
 
-    /*[JsonPropertyName("components")]
-    public object? Components { get; set; }*/
-
     [JsonPropertyName("deleted")] public bool Deleted { get; set; }
 
     [JsonPropertyName("tempId")] public int TempId { get; set; }

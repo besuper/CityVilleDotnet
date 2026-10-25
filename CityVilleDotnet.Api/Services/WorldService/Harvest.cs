@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityVilleDotnet.Api.Services.WorldService;
 
-internal sealed class Harvest(CityVilleDbContext context, ILogger<HarvestRequest> logger, IConfiguration configuration) : AmfService<HarvestRequest>
+internal sealed class Harvest(CityVilleDbContext context, ILogger<Harvest> logger, IConfiguration configuration) : AmfService<HarvestRequest>
 {
     public override async Task<ASObject> HandlePacket(HarvestRequest request, Guid playerId, CancellationToken cancellationToken)
     {

@@ -141,15 +141,6 @@ namespace CityVilleDotnet.Api.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No pending friend requests..
-        /// </summary>
-        public static string EmptyPendingFriendsRequests {
-            get {
-                return ResourceManager.GetString("EmptyPendingFriendsRequests", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Enter username.
         /// </summary>
         public static string EnterUsername {
@@ -263,15 +254,6 @@ namespace CityVilleDotnet.Api.Resources {
         public static string PasswordsDoNotMatch {
             get {
                 return ResourceManager.GetString("PasswordsDoNotMatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Pending Requests.
-        /// </summary>
-        public static string PendingFriendsRequests {
-            get {
-                return ResourceManager.GetString("PendingFriendsRequests", resourceCulture);
             }
         }
         

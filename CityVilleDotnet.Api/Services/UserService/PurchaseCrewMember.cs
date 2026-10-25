@@ -25,7 +25,7 @@ public class PurchaseCrewMember(CityVilleDbContext context, ILogger<PurchaseCrew
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         var world = player.GetWorld();
-        var building = world.GetBuildingByClientId(request.ObjectId) ?? throw new Exception("Target building not found");
+        var building = world.GetBuildingByClientId(request.ObjectId);
 
         var gameItem = GameSettingsManager.Instance.GetItem(building.GetItemName()) ?? throw new Exception("Game item not found");
 

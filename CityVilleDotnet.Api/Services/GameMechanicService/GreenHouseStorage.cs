@@ -32,7 +32,7 @@ public class GreenHouseStorage(CityVilleDbContext context) : AmfService<GreenHou
 
             var world = player.GetWorld();
 
-            var worldObj = world.GetBuildingByClientId(request.ObjectId) ?? throw new Exception("Building not found");
+            var worldObj = world.GetBuildingByClientId(request.ObjectId);
 
             if (worldObj.GetClassName() != BuildingClassType.GreenHouse) throw new Exception($"Can't update green house storage for {worldObj.GetClassName()}");
 

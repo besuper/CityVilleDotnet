@@ -13,10 +13,6 @@ public class WorldConfigItem
 {
     [XmlAttribute("name")] public required string Name { get; set; }
 
-    [XmlAttribute("startCameraX")] public int StartCameraX { get; set; }
-
-    [XmlAttribute("startCameraY")] public int StartCameraY { get; set; }
-
     [XmlArray("ftueGrants")]
     [XmlArrayItem("ftueGrant")]
     public List<FtueGrantItem> FtueGrants { get; set; } = [];

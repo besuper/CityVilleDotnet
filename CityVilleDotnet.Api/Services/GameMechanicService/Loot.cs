@@ -28,7 +28,7 @@ public sealed class Loot(CityVilleDbContext context) : AmfService<LootRequest>
 
         var world = player.GetWorld();
 
-        var obj = world.GetBuildingByClientId(request.ObjectId) ?? throw new Exception($"Can't find building with id {request.ObjectId}");
+        var obj = world.GetBuildingByClientId(request.ObjectId);
 
         if (obj.GetClassName() != BuildingClassType.ZooEnclosure)
             throw new Exception($"Can't loot a random animal on {obj.ItemName}");

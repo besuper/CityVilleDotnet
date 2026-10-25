@@ -1,7 +1,5 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.WorldService.Common;
-using CityVilleDotnet.Common.Enums;
-using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
@@ -23,7 +21,7 @@ public class Move(CityVilleDbContext context) : AmfService<MoveRequest>
 
         if (user is null) throw new Exception("Player not found");
 
-        var obj = user.GetWorld().GetBuildingByClientId(request.Building.Id) ?? throw new DomainException(GameErrorType.ForceReload);
+        var obj = user.GetWorld().GetBuildingByClientId(request.Building.Id);
 
         obj.MoveTo(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z, request.Building.Direction);
 

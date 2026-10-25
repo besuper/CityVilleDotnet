@@ -17,9 +17,4 @@ public abstract class CommonOrder
     {
         OrderState = OrderState.Accepted;
     }
-
-    public void Deny()
-    {
-        OrderState = OrderState.Denied;
-    }
 }

@@ -3,10 +3,11 @@ using CityVilleDotnet.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 
 namespace CityVilleDotnet.Api.Pages.Account;
 
-public class LoginModel(SignInManager<ApplicationUser> signInManager) : PageModel
+public class LoginModel(SignInManager<ApplicationUser> signInManager, IStringLocalizer<Resources.SharedResource> localizer) : PageModel
 {
     [BindProperty] public required LoginInputModel Input { get; set; }
     [TempData] public string? ErrorMessage { get; set; }
@@ -48,7 +49,7 @@ public class LoginModel(SignInManager<ApplicationUser> signInManager) : PageMode
             return LocalRedirect(returnUrl);
         }
 
-        ModelState.AddModelError(string.Empty, "Invalid username or password.");
+        ModelState.AddModelError(string.Empty, localizer["LoginInvalidCredentials"].Value);
         
         return Page();
     }

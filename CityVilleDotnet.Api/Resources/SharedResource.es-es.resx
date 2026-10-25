@@ -117,9 +117,6 @@
     <data name="EmptyFriends" xml:space="preserve">
         <value>Aún no tienes amigos. ¡Añade amigos para empezar!</value>
     </data>
-    <data name="PendingFriendsRequests" xml:space="preserve">
-        <value>Solicitudes pendientes</value>
-    </data>
     <data name="Cancel" xml:space="preserve">
         <value>Cancelar</value>
     </data>
@@ -128,9 +125,6 @@
     </data>
     <data name="Reject" xml:space="preserve">
         <value>Rechazar</value>
-    </data>
-    <data name="EmptyPendingFriendsRequests" xml:space="preserve">
-        <value>No hay solicitudes de amistad pendientes.</value>
     </data>
     <data name="Remove" xml:space="preserve">
         <value>Eliminar</value>
@@ -434,5 +428,44 @@
     </data>
     <data name="DiscordLinkFailed" xml:space="preserve">
         <value>No se pudo vincular tu cuenta de Discord, inténtalo de nuevo</value>
+    </data>
+    <data name="FriendUsernameEmpty" xml:space="preserve">
+        <value>El nombre de usuario no puede estar vacío.</value>
+    </data>
+    <data name="FriendUserNotFound" xml:space="preserve">
+        <value>Usuario no encontrado.</value>
+    </data>
+    <data name="FriendAlreadyInList" xml:space="preserve">
+        <value>Este usuario ya está en tu lista de amigos.</value>
+    </data>
+    <data name="FriendRequestSent" xml:space="preserve">
+        <value>Solicitud de amistad enviada a {0}.</value>
+    </data>
+    <data name="FriendInvalidUsername" xml:space="preserve">
+        <value>Nombre de usuario no válido.</value>
+    </data>
+    <data name="FriendRequestNotFound" xml:space="preserve">
+        <value>Solicitud de amistad no encontrada.</value>
+    </data>
+    <data name="FriendAcceptError" xml:space="preserve">
+        <value>Error al aceptar la solicitud de amistad.</value>
+    </data>
+    <data name="FriendNowFriends" xml:space="preserve">
+        <value>Ahora eres amigo de {0}.</value>
+    </data>
+    <data name="FriendRequestRejected" xml:space="preserve">
+        <value>Solicitud de amistad de {0} rechazada.</value>
+    </data>
+    <data name="FriendRequestCancelled" xml:space="preserve">
+        <value>Solicitud de amistad a {0} cancelada.</value>
+    </data>
+    <data name="FriendNotFound" xml:space="preserve">
+        <value>Amigo no encontrado.</value>
+    </data>
+    <data name="FriendRemoved" xml:space="preserve">
+        <value>{0} ha sido eliminado de tus amigos.</value>
+    </data>
+    <data name="LoginInvalidCredentials" xml:space="preserve">
+        <value>Nombre de usuario o contraseña no válidos.</value>
     </data>
 </root>

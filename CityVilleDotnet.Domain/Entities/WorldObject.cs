@@ -41,8 +41,6 @@ public class WorldObject
     public BuildingClassType ClassName { get; set; }
     public string? ContractName { get; set; }
 
-    /*[JsonPropertyName("components")]
-    public object? Components { get; set; }*/
     public bool Deleted { get; private set; }
     public int TempId { get; private set; }
     public double? BuildTime { get; private set; }
