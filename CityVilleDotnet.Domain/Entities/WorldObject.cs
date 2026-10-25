@@ -932,6 +932,15 @@ public class WorldObject
         if (HasGrown()) SetReadyToHarvest();
     }
 
+    public void RevivePlot()
+    {
+        var growTime = GameSettingsManager.Instance.GetItem(GetItemName())?.GrowTime ?? throw new Exception("Plot can't be revived without growTime");
+        var settings = GameSettingsManager.Instance.GetSettings();
+
+        PlantTime = ServerUtils.GetCurrentTime() - growTime * (settings.InGameDaySeconds * 1000.0) * settings.GrowMultiplier;
+        State = WorldObjectState.Grown;
+    }
+
     public void SetDirection(int direction)
     {
         Direction = direction;

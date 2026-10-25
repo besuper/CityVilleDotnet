@@ -29,19 +29,14 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
             .Include(x => x.GlobalTableOverrides)
             .Include(x => x.FeatureRollCounters)
             .Include(x => x.PreyGroups)
-            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
-
-        if (player is null) throw new Exception("Player not found");
-
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
+        
         var visitOrder = player.VisitorHelpOrders.FirstOrDefault(x => x.SenderId == request.SenderId && x.HelpTargets.Contains(request.WorldObjectId));
 
         if (visitOrder is null)
             throw new Exception("Can't find help visit order");
 
-        var gameItem = GameSettingsManager.Instance.GetItem(request.ItemName);
-
-        if (gameItem is null)
-            throw new Exception($"Can't find game item for {request.ItemName}");
+        var gameItem = GameSettingsManager.Instance.GetItem(request.ItemName) ?? throw new Exception($"Can't find game item for {request.ItemName}");
 
         if (request.Action == "harvest")
         {
@@ -94,7 +89,11 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
             var world = player.GetWorldByType(WorldType.Main) ?? throw new Exception("Main world not loaded");
             var obj = world.GetBuildingById(request.WorldObjectId) ?? throw new Exception($"Can't find building with id {request.WorldObjectId}");
 
-            if (obj.GetClassName() == BuildingClassType.Plot && obj.State == WorldObjectState.Planted)
+            if (obj.GetClassName() == BuildingClassType.Plot && obj.IsWithered())
+            {
+                obj.RevivePlot();
+            }
+            else if (obj.GetClassName() == BuildingClassType.Plot && obj.State == WorldObjectState.Planted)
             {
                 // Plot can be watered
                 obj.BoostPlot();

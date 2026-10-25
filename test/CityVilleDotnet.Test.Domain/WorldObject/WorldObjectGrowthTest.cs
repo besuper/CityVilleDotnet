@@ -69,6 +69,22 @@ public class WorldObjectGrowthTest
     }
 
     [Fact]
+    public void WorldObject_RevivePlot_WitheredPlot_BecomesHarvestable()
+    {
+        var time = new FakeTimeProvider(StartTime);
+        ServerUtils.TimeProvider = time;
+        var faker = new Faker();
+        var plot = faker.WorldObject(itemName: "plot_crop", className: BuildingClassType.Plot, contractName: "plot_strawberries", state: WorldObjectState.Planted, plantTime: ServerUtils.GetCurrentTime());
+
+        time.Advance(TimeSpan.FromSeconds(300));
+        plot.RevivePlot();
+
+        plot.State.Should().Be(WorldObjectState.Grown);
+        plot.IsWithered().Should().BeFalse();
+        plot.CanHarvest().Should().BeTrue();
+    }
+
+    [Fact]
     public void WorldObject_Harvest_Residence_RegrowsAfterGrowTime()
     {
         var time = new FakeTimeProvider(StartTime);

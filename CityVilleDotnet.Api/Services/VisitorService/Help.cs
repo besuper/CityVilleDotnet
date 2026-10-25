@@ -59,6 +59,7 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
                 break;
             case "plotHarvest":
             case "plotWater":
+            case "plotRevive":
                 reputation = settings.FriendVisitPlotRepGain;
                 goods = settings.FriendHelpDefaultGoodsReward;
                 break;
