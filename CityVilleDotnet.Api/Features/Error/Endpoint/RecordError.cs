@@ -1,4 +1,5 @@
-﻿using FastEndpoints;
+﻿using CityVilleDotnet.Common.Utils;
+using FastEndpoints;
 
 namespace CityVilleDotnet.Api.Features.Error.Endpoint;
 
@@ -14,7 +15,7 @@ internal sealed class RecordError(ILogger<RecordError> logger) : EndpointWithout
         using var reader = new StreamReader(HttpContext.Request.Body);
         
         var body = await reader.ReadToEndAsync(ct);
-        logger.LogError("Error received: {Body}", body);
+        logger.LogError("Error received: {Body}", body.Sanitize());
 
         await Send.OkAsync(cancellation: ct);
     }

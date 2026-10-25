@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Reflection;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using FluentValidation;
@@ -157,6 +158,9 @@ public abstract class AmfService<TRequest> : AmfService where TRequest : new()
         var underlyingType = Nullable.GetUnderlyingType(targetType);
         if (underlyingType is not null)
             targetType = underlyingType;
+
+        if (value is string str && targetType == typeof(string))
+            return str.Sanitize();
 
         if (value is IDictionary dict && IsMappableClass(targetType))
             return MapFromDictionary(dict, targetType);

@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Common.Settings;
 using SkiaSharp;
 
@@ -19,7 +20,9 @@ public class FallbackAssetMiddleware(
 
         if (context.Response.StatusCode == 404 && context.Request.Path.StartsWithSegments("/assets"))
         {
-            var extension = Path.GetExtension(context.Request.Path).ToLowerInvariant();
+            var requestPath = context.Request.Path.Value!;
+            var logPath = requestPath.Sanitize();
+            var extension = Path.GetExtension(logPath).ToLowerInvariant();
             var contentType = extension switch
             {
                 ".png" => "image/png",
@@ -33,8 +36,6 @@ public class FallbackAssetMiddleware(
 
             if (contentType != null)
             {
-                var requestPath = context.Request.Path.Value!;
-                var logPath = requestPath.Replace("\r", "").Replace("\n", "");
                 var fallbackFile = GetConfiguredFallback(requestPath, logPath);
 
                 if (fallbackFile is not null)
