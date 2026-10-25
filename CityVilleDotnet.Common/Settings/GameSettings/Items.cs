@@ -119,6 +119,7 @@ public class GameItem
     [XmlElement("energyCostPerBuild")] public int? EnergyCostPerBuild { get; set; }
     [XmlElement("energyRewards")] public int? EnergyRewards { get; set; }
     [XmlElement("coinRewards")] public int? CoinRewards { get; set; }
+    [XmlArray("itemRewards"), XmlArrayItem("itemName")] public List<ItemRewardItem> ItemRewards { get; set; } = [];
     [XmlElement("harvestMultiplier")] public int? HarvestMultiplier { get; set; }
     [XmlElement("useHarvestMultForCost")] public bool UseHarvestMultForCost { get; set; }
     [XmlElement("commodity")] public required List<CommodityItem> Commodity { get; set; }
@@ -424,6 +425,13 @@ public class ThemeParkSlotItem
 {
     [XmlAttribute("type")] public string? Type { get; set; }
     [XmlAttribute("item")] public string? Item { get; set; }
+}
+
+[Serializable]
+public class ItemRewardItem
+{
+    [XmlAttribute("quantity")] public int Quantity { get; set; } = 1;
+    [XmlText] public required string Name { get; set; }
 }
 
 [Serializable]

@@ -481,6 +481,13 @@
         <item name="test_gate_material_coin" type="tool" buyable="true">
             <cost>50</cost>
         </item>
+        <item name="test_generic_bundle" type="genericBundle" buyable="true" placeable="false" market="cash">
+            <cash>20</cash>
+            <itemRewards>
+                <itemName quantity="3">test_gate_material_coin</itemName>
+                <itemName>test_res_base</itemName>
+            </itemRewards>
+        </item>
         <item name="test_island_macro" giftable="false" type="keys_island" className="MechanicMapResource" storable="true" buyable="false" placeable="true" sellSendsToInventory="true" persistent="true" placeableOn="land">
             <requiredLevel>30</requiredLevel>
             <cost>780600</cost>
