@@ -640,7 +640,7 @@ public class WorldObject
         }
     }
 
-    private void CountBusinessUpgradeAction(GameItem? gameItem, int playerLevel)
+    public void CountBusinessUpgradeAction(GameItem? gameItem, int playerLevel)
     {
         if (gameItem?.Upgrade?.CanCountUpgradeActions() != true) return;
         if (playerLevel < GameSettingsManager.Instance.GetSettings().BusinessUpgradesRequiredLevel) return;
@@ -909,36 +909,43 @@ public class WorldObject
         BuiltFloorCount++;
     }
 
+    // From HarvestableResource::visitBoost
     public void BoostPlot()
     {
         if (GetClassName() != BuildingClassType.Plot)
+        {
             throw new Exception($"Can't water {ClassName}");
-
-        var item = GameSettingsManager.Instance.GetItem(GetItemName());
-        var growTime = item?.GrowTime;
-
-        if (growTime is null) throw new Exception("Building can't be watered without growTime");
+        }
 
         var settings = GameSettingsManager.Instance.GetSettings();
-        var inGameDaySeconds = settings.InGameDaySeconds;
-        var growMultiplier = settings.GrowMultiplier;
-        var boostGrowMultiplier = settings.BoostGrowMultiplier;
-        //var boostGrowInstantHourLimit = settings.BoostGrowInstantHourLimit; // TODO
+        var growTimeMs = GetGrowTimeMs();
+        var visitBoost = growTimeMs * settings.BoostGrowMultiplier;
+        var instantLimit = settings.BoostGrowInstantHourLimit / 23.0 * settings.DailyCollectCycleTimeSeconds * 1000 * settings.GrowMultiplier;
+        var growTimeLeft = growTimeMs - (ServerUtils.GetCurrentTime() - (PlantTime ?? throw new Exception("Can't water a plot without plantTime")));
 
-        var visitBoost = growTime * (inGameDaySeconds * 1000) * growMultiplier * boostGrowMultiplier;
-
-        PlantTime -= visitBoost;
-
-        if (HasGrown()) SetReadyToHarvest();
+        if (growTimeLeft < visitBoost || growTimeMs <= instantLimit)
+        {
+            SetFullGrown();
+        }
+        else
+        {
+            PlantTime -= visitBoost;
+        }
     }
 
-    public void RevivePlot()
+    // From HarvestableResource::setFullGrown
+    public void SetFullGrown()
     {
-        var growTime = GameSettingsManager.Instance.GetItem(GetItemName())?.GrowTime ?? throw new Exception("Plot can't be revived without growTime");
+        PlantTime = ServerUtils.GetCurrentTime() - GetGrowTimeMs();
+        State = WorldObjectState.Grown;
+    }
+
+    private double GetGrowTimeMs()
+    {
+        var growTime = GameSettingsManager.Instance.GetItem(GetItemName())?.GrowTime ?? throw new Exception($"Can't find growTime for {GetItemName()}");
         var settings = GameSettingsManager.Instance.GetSettings();
 
-        PlantTime = ServerUtils.GetCurrentTime() - growTime * (settings.InGameDaySeconds * 1000.0) * settings.GrowMultiplier;
-        State = WorldObjectState.Grown;
+        return growTime * settings.InGameDaySeconds * 1000.0 * settings.GrowMultiplier;
     }
 
     public void SetDirection(int direction)

@@ -47,6 +47,40 @@ public class WorldObjectUpgradeActionTest
     }
 
     [Fact]
+    public void WorldObject_CountBusinessUpgradeAction_UpgradableAtRequiredLevel_CountsUpgradeAction()
+    {
+        var faker = new Faker();
+        var business = faker.WorldObject(itemName: "test_bus_upgradable", className: BuildingClassType.Business, state: WorldObjectState.Open);
+
+        business.CountBusinessUpgradeAction(GameSettingsManager.Instance.GetItem("test_bus_upgradable"), RequiredLevel);
+        business.CountBusinessUpgradeAction(GameSettingsManager.Instance.GetItem("test_bus_upgradable"), RequiredLevel);
+
+        business.UpgradeActionCount.Should().Be(2);
+    }
+
+    [Fact]
+    public void WorldObject_CountBusinessUpgradeAction_BelowRequiredLevel_DoesNotCountUpgradeAction()
+    {
+        var faker = new Faker();
+        var business = faker.WorldObject(itemName: "test_bus_upgradable", className: BuildingClassType.Business, state: WorldObjectState.Open);
+
+        business.CountBusinessUpgradeAction(GameSettingsManager.Instance.GetItem("test_bus_upgradable"), RequiredLevel - 1);
+
+        business.UpgradeActionCount.Should().BeNull();
+    }
+
+    [Fact]
+    public void WorldObject_CountBusinessUpgradeAction_NotUpgradable_DoesNotCountUpgradeAction()
+    {
+        var faker = new Faker();
+        var business = faker.WorldObject(itemName: "test_bus_goods", className: BuildingClassType.Business, state: WorldObjectState.Open);
+
+        business.CountBusinessUpgradeAction(GameSettingsManager.Instance.GetItem("test_bus_goods"), RequiredLevel);
+
+        business.UpgradeActionCount.Should().BeNull();
+    }
+
+    [Fact]
     public void WorldObject_Harvest_UpgradableBusiness_DoesNotCountUpgradeAction()
     {
         var faker = new Faker();

@@ -58,10 +58,13 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
                 coins = settings.FriendHelpDefaultCoinReward;
                 break;
             case "plotHarvest":
+                reputation = settings.FriendVisitPlotRepGain;
+                goods = settings.FriendHelpDefaultGoodsReward;
+                break;
             case "plotWater":
             case "plotRevive":
                 reputation = settings.FriendVisitPlotRepGain;
-                goods = settings.FriendHelpDefaultGoodsReward;
+                coins = settings.FriendHelpDefaultCoinReward;
                 break;
             default:
                 throw new Exception($"Not implemented help type {request.Type}");

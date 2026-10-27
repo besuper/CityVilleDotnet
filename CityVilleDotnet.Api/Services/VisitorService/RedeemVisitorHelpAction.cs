@@ -91,7 +91,7 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
 
             if (obj.GetClassName() == BuildingClassType.Plot && obj.IsWithered())
             {
-                obj.RevivePlot();
+                obj.SetFullGrown();
             }
             else if (obj.GetClassName() == BuildingClassType.Plot && obj.State == WorldObjectState.Planted)
             {
@@ -100,7 +100,11 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
             }
             else if (obj.GetClassName() == BuildingClassType.Business)
             {
-                player.RollPreySpawns(world, GameSettingsManager.Instance.GetItem(obj.ItemName) ?? throw new Exception($"Can't find game item for {obj.ItemName}"), experiments);
+                var businessItem = GameSettingsManager.Instance.GetItem(obj.ItemName) ?? throw new Exception($"Can't find game item for {obj.ItemName}");
+
+                player.CollectDoobersRewards(obj.ItemName);
+                player.RollPreySpawns(world, businessItem, experiments);
+                obj.CountBusinessUpgradeAction(businessItem, player.Level);
             }
             else
             {

@@ -46,6 +46,7 @@ public class FarmingSettings
     
     [XmlAttribute("boostGrowMultiplier")] public double BoostGrowMultiplier { get; set; }
     [XmlAttribute("boostGrowInstantHourLimit")] public int BoostGrowInstantHourLimit { get; set; }
+    [XmlAttribute("dailyCollectCycleTimeSeconds")] public int DailyCollectCycleTimeSeconds { get; set; }
     [XmlAttribute("instantReadyCropCostConstant3")] public double InstantReadyCropCostConstant3 { get; set; }
 
     [XmlAttribute("instantReadyResidenceCostConstant5")] public double InstantReadyResidenceCostConstant5 { get; set; }

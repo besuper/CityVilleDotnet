@@ -69,7 +69,7 @@ public class WorldObjectGrowthTest
     }
 
     [Fact]
-    public void WorldObject_RevivePlot_WitheredPlot_BecomesHarvestable()
+    public void WorldObject_SetFullGrown_WitheredPlot_BecomesHarvestable()
     {
         var time = new FakeTimeProvider(StartTime);
         ServerUtils.TimeProvider = time;
@@ -77,11 +77,70 @@ public class WorldObjectGrowthTest
         var plot = faker.WorldObject(itemName: "plot_crop", className: BuildingClassType.Plot, contractName: "plot_strawberries", state: WorldObjectState.Planted, plantTime: ServerUtils.GetCurrentTime());
 
         time.Advance(TimeSpan.FromSeconds(300));
-        plot.RevivePlot();
+        plot.SetFullGrown();
 
         plot.State.Should().Be(WorldObjectState.Grown);
+        plot.PlantTime!.Value.Should().BeApproximately(ServerUtils.GetCurrentTime() - 82_800, 1);
         plot.IsWithered().Should().BeFalse();
         plot.CanHarvest().Should().BeTrue();
+    }
+
+    // instant limit: boostGrowInstantHourLimit / 23 * dailyCollectCycleTimeSeconds = 1 / 23 * 86400s ≈ 3756.5s
+    [Fact]
+    public void WorldObject_BoostPlot_GrowTimeUnderInstantLimit_BecomesGrown()
+    {
+        var time = new FakeTimeProvider(StartTime);
+        ServerUtils.TimeProvider = time;
+        var faker = new Faker();
+        var plot = faker.WorldObject(itemName: "plot_crop", className: BuildingClassType.Plot, contractName: "plot_strawberries", state: WorldObjectState.Planted, plantTime: ServerUtils.GetCurrentTime());
+
+        plot.BoostPlot();
+
+        plot.State.Should().Be(WorldObjectState.Grown);
+        plot.CanHarvest().Should().BeTrue();
+    }
+
+    // test_crop_slow: 4 * 82800s = 331200s to grow, visit boost = 10% = 33120s
+    [Fact]
+    public void WorldObject_BoostPlot_GrowTimeOverInstantLimit_RemovesVisitBoostFromPlantTime()
+    {
+        var time = new FakeTimeProvider(StartTime);
+        ServerUtils.TimeProvider = time;
+        var faker = new Faker();
+        var plantTime = ServerUtils.GetCurrentTime();
+        var plot = faker.WorldObject(itemName: "plot_crop", className: BuildingClassType.Plot, contractName: "test_crop_slow", state: WorldObjectState.Planted, plantTime: plantTime);
+
+        plot.BoostPlot();
+
+        plot.State.Should().Be(WorldObjectState.Planted);
+        plot.PlantTime!.Value.Should().BeApproximately(plantTime - 33_120_000, 1);
+        plot.CanHarvest().Should().BeFalse();
+    }
+
+    [Fact]
+    public void WorldObject_BoostPlot_GrowTimeLeftUnderVisitBoost_BecomesGrown()
+    {
+        var time = new FakeTimeProvider(StartTime);
+        ServerUtils.TimeProvider = time;
+        var faker = new Faker();
+        var plot = faker.WorldObject(itemName: "plot_crop", className: BuildingClassType.Plot, contractName: "test_crop_slow", state: WorldObjectState.Planted, plantTime: ServerUtils.GetCurrentTime());
+
+        time.Advance(TimeSpan.FromSeconds(331_200 - 33_119));
+        plot.BoostPlot();
+
+        plot.State.Should().Be(WorldObjectState.Grown);
+        plot.CanHarvest().Should().BeTrue();
+    }
+
+    [Fact]
+    public void WorldObject_BoostPlot_NotAPlot_Throws()
+    {
+        var faker = new Faker();
+        var business = faker.WorldObject(itemName: "test_bus_tour", className: BuildingClassType.Business, state: WorldObjectState.Open, plantTime: ServerUtils.GetCurrentTime());
+
+        var act = () => business.BoostPlot();
+
+        act.Should().Throw<Exception>();
     }
 
     [Fact]

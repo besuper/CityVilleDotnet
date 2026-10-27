@@ -15,7 +15,8 @@
              sellBackRatio="0.05" goodsToCoinRatio="0.20"
              growMultiplier="1" cashGainedPerLevel="1"
              instantReadyCropCostConstant3="0.25" instantReadyResidenceCostConstant5="2.0"
-             witherMultiplier="3.0" witherRefundMultiplier="0.5" businessUpgradesRequiredLevel="15" />
+             witherMultiplier="3.0" witherRefundMultiplier="0.5" businessUpgradesRequiredLevel="15"
+             boostGrowMultiplier="0.1" boostGrowInstantHourLimit="1" dailyCollectCycleTimeSeconds="86400" />
 
     <citysim>
         <populations>
@@ -256,6 +257,26 @@
             <sizeX>1</sizeX>
             <sizeY>1</sizeY>
             <gates/>
+        </item>
+        <item name="test_bus_tour" type="business" buyable="true">
+            <keyword>Business</keyword>
+            <requiredLevel>1</requiredLevel>
+            <cost>200</cost>
+            <commodityReq>10</commodityReq>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <growTime>0.010425</growTime>
+            <commodity name="goods" default="1"/>
+            <randomModifiers>
+                <modifier type="item" tableName="test_bus_tour_table"/>
+            </randomModifiers>
+            <gates/>
+            <upgrade item="test_bus_upgradable_2">
+                <requirements>
+                    <requirement type="level" value="2"/>
+                    <requirement type="upgrade_actions" value="5"/>
+                </requirements>
+            </upgrade>
         </item>
         <item name="test_bus" type="business" buyable="true">
             <keyword>Business</keyword>
@@ -827,6 +848,11 @@
         <randomModifierTable type="item" name="test_harvest_end_ts_table">
             <roll percent="100">
                 <coin amount="50"/>
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="item" name="test_bus_tour_table">
+            <roll percent="100">
+                <coin amount="40"/>
             </roll>
         </randomModifierTable>
         <randomModifierTable type="item" name="test_populationtable">
