@@ -1534,16 +1534,16 @@ public class Player
 
                         continue;
                     case "countNumAtThisStreak":
-                        var count = GetWorld().CountStreakByItemName(task.Type);
+                        var count = GetWorld().CountStreakByItemNames(splitType ?? [taskType]);
 
                         if (count >= task.Streak)
-                            quest.Progress[index] = count;
+                            quest.Progress[index] = 1;
                         continue;
                     case "checkStreakEffect":
-                        var effect = GetWorld().GetStreakEffectByItemName(task.Type);
+                        var effect = GetWorld().GetStreakEffectByItemNames(splitType ?? [taskType]);
 
                         if (effect >= task.Streak)
-                            quest.Progress[index] = effect;
+                            quest.Progress[index] = 1;
                         continue;
                     case "countFranchiseExpansionsByName":
                         if (!calculatedResults.TryGetValue(resultKey, out value))

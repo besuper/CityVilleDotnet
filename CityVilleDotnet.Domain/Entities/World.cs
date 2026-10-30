@@ -546,18 +546,18 @@ public class World
         }
     }
 
-    public int CountStreakByItemName(string itemName)
+    public int CountStreakByItemNames(string[] itemNames)
     {
-        var obj = Objects.FirstOrDefault(o => o.StreakLength > 0 && o.GetDeepItemName() == itemName);
+        var obj = Objects.FirstOrDefault(o => o.StreakLength > 0 && itemNames.Contains(o.GetDeepItemName()));
 
         if (obj is null) return 0;
 
         return obj.StreakLength;
     }
 
-    public int GetStreakEffectByItemName(string itemName)
+    public int GetStreakEffectByItemNames(string[] itemNames)
     {
-        var obj = Objects.FirstOrDefault(o => o.EnergyModifier > 0 && o.GetDeepItemName() == itemName);
+        var obj = Objects.FirstOrDefault(o => o.EnergyModifier > 0 && itemNames.Contains(o.GetDeepItemName()));
 
         if (obj is null) return 0;
 
