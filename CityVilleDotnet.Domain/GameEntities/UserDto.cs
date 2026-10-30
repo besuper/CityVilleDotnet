@@ -96,7 +96,7 @@ public static class UserDtoMapper
                     PlayerNews = [], // TODO: Implement news
                     RollCounter = model.RollCounter,
                     RollCounterMap = new ASObject(model.FeatureRollCounters.ToDictionary(x => x.Feature, x => (object)x.Count)),
-                    SeenFlags = new ASObject(model.SeenFlags.Select(x => x.Key).Distinct().ToDictionary(x => x, _ => (object)true)),
+                    SeenFlags = new ASObject(model.SeenFlags.DistinctBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value is { } value ? (object)value : true)),
                     Coupons = model.Coupons.Where(x => x.WorldFlatId is null).Select(x => x.Name).ToList(),
                     AssociatedCoupons = new ASObject(model.Coupons
                         .Where(x => x.WorldFlatId is not null)

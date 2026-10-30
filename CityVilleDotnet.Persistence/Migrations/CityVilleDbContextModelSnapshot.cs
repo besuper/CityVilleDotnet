@@ -920,6 +920,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<Guid?>("PlayerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int?>("Value")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PlayerId");

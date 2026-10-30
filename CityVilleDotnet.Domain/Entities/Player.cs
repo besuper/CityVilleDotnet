@@ -531,10 +531,37 @@ public class Player
 
     public void SetSeenFlag(string flag)
     {
-        if (!HasSeenFlag(flag))
+        var seenFlag = SeenFlags.FirstOrDefault(x => x.Key == flag);
+
+        if (seenFlag is null)
         {
             SeenFlags.Add(new SeenFlag(flag));
         }
+        else if (seenFlag.Value == 0)
+        {
+            seenFlag.Value = null;
+        }
+    }
+
+    public void SetSeenFlagInt(string flag, int value)
+    {
+        var seenFlag = SeenFlags.FirstOrDefault(x => x.Key == flag);
+
+        if (seenFlag is null)
+        {
+            SeenFlags.Add(new SeenFlag(flag, value));
+        }
+        else
+        {
+            seenFlag.Value = value;
+        }
+    }
+
+    public void IncrementSeenFlag(string flag)
+    {
+        var seenFlag = SeenFlags.FirstOrDefault(x => x.Key == flag);
+
+        SetSeenFlagInt(flag, seenFlag is null ? 1 : (seenFlag.Value ?? 1) + 1);
     }
 
     public bool GiveCoupon(string name, int? worldFlatId = null)
