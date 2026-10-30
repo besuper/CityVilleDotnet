@@ -98,6 +98,7 @@ public static class UserDtoMapper
                     RollCounterMap = new ASObject(model.FeatureRollCounters.ToDictionary(x => x.Feature, x => (object)x.Count)),
                     SeenFlags = new ASObject(model.SeenFlags.DistinctBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value is { } value ? (object)value : true)),
                     Coupons = model.Coupons.Where(x => x.WorldFlatId is null).Select(x => x.Name).ToList(),
+                    FeatureThemes = model.NightModeActive ? ["night_theme"] : [],
                     AssociatedCoupons = new ASObject(model.Coupons
                         .Where(x => x.WorldFlatId is not null)
                         .GroupBy(x => x.WorldFlatId!.Value)
@@ -150,7 +151,7 @@ public static class UserDtoMapper
                         { "nightModeAvailable", true },
                         { "earlyUnlocked", true },
                         { "cityLightCount", 0 },
-                        { "active", false },
+                        { "active", model.NightModeActive },
                         { "numExpansionsPurchased", model.ExpansionsPurchased },
                     }
                 },

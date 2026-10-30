@@ -709,6 +709,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<bool>("MusicDisabled")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("NightModeActive")
+                        .HasColumnType("bit");
+
                     b.Property<int>("PremiumGoods")
                         .HasColumnType("int");
 

@@ -49,6 +49,7 @@ public class PlayerDto
 
     [JsonPropertyName("seenFlags")] public ASObject SeenFlags { get; set; } = new ASObject();
     [JsonPropertyName("coupons")] public List<string> Coupons { get; set; } = [];
+    [JsonPropertyName("featureThemes")] public List<string> FeatureThemes { get; set; } = [];
     [JsonPropertyName("associatedCoupons")] public ASObject AssociatedCoupons { get; set; } = new();
     [JsonPropertyName("flagContainer")] public required List<ASObject> FlagContainer { get; set; }
 

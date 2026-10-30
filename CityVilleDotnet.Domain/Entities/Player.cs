@@ -22,6 +22,7 @@ public class Player
     public DateTimeOffset LastTrackingTimestamp { get; private set; }
     public bool SfxDisabled { get; private set; }
     public bool MusicDisabled { get; private set; }
+    public bool NightModeActive { get; private set; }
     public List<InventoryItem> InventoryItems { get; set; } = [];
     public int Gold { get; private set; }
     public int Goods { get; private set; }
@@ -663,6 +664,16 @@ public class Player
     public void IncrementExpansionsPurchased()
     {
         ExpansionsPurchased++;
+    }
+
+    public void SetNightMode(bool active)
+    {
+        NightModeActive = active;
+
+        if (active)
+        {
+            HandleQuestsProgress("isNight");
+        }
     }
 
     public void RemoveFranchiseLocation(string friendSnuid, int worldFlatId)
