@@ -933,6 +933,9 @@ public class Player
                         GiveCoupon(element.Name);
                         StaticLogger.Current.LogDebug("Found coupon {CouponName}", element.Name);
                         break;
+                    // display only on client side (Doober::DOOBER_POPULATION)
+                    case "population":
+                        break;
                     default:
                         StaticLogger.Current.LogWarning("Unhandled reward type {RewardType}", rewardType);
                         break;

@@ -2,6 +2,7 @@
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
@@ -103,6 +104,8 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
 
         var newOrder = false;
 
+        var timeSent = request.HelpParams.TimeSent ?? ServerUtils.GetCurrentTimeSeconds();
+
         // Create batch visitor help order
         // Order reset with energy reset or if the batch is accepted
         var senderHelpOrder = currentUser.VisitorHelpOrders.FirstOrDefault(x =>
@@ -122,7 +125,7 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
                 OrderState = OrderState.Pending,
                 OrderType = OrderType.VisitorHelp,
                 TransmissionStatus = TransmissionStatus.Sent,
-                TimeSent = request.HelpParams.TimeSent,
+                TimeSent = timeSent,
                 HelpTargets = request.HelpParams.HelpTargets
             };
 
@@ -150,7 +153,7 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
                 OrderState = OrderState.Pending,
                 OrderType = OrderType.VisitorHelp,
                 TransmissionStatus = TransmissionStatus.Received,
-                TimeSent = request.HelpParams.TimeSent,
+                TimeSent = timeSent,
                 HelpTargets = request.HelpParams.HelpTargets
             };
 
@@ -185,5 +188,5 @@ public class HelpParamsRequest
     [AmfParam("senderID")] public string SenderId { get; set; } = string.Empty;
     [AmfParam("recipientID")] public string RecipientId { get; set; } = string.Empty;
     [AmfParam("helpTargets")] public int[] HelpTargets { get; set; } = [];
-    [AmfParam("timeSent")] public long TimeSent { get; set; }
+    [AmfParam("timeSent")] public long? TimeSent { get; set; }
 }
