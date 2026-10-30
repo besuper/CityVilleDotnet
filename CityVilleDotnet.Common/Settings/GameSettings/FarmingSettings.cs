@@ -68,6 +68,7 @@ public class FarmingSettings
     [XmlAttribute("crewMemberCashCost")] public int CrewMemberCashCost { get; set; }
     [XmlAttribute("sellBackRatio")] public double SellBackRatio { get; set; }
     [XmlAttribute("goodsToCoinRatio")] public double GoodsToCoinRatio { get; set; }
+    [XmlAttribute("wishlistSize")] public int WishlistSize { get; set; } = 5;
 
     public int GetZooDonationNpcPrice(string enclosureItemName)
     {

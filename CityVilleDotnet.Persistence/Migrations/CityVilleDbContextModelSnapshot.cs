@@ -17,7 +17,7 @@ namespace CityVilleDotnet.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.13")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -1037,6 +1037,29 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.ToTable("VisitorHelpOrder");
                 });
 
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.WishlistItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ItemName")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<Guid>("PlayerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("WishlistItem");
+                });
+
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.World", b =>
                 {
                     b.Property<int>("Id")
@@ -1723,6 +1746,15 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasForeignKey("PlayerId");
                 });
 
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.WishlistItem", b =>
+                {
+                    b.HasOne("CityVilleDotnet.Domain.Entities.Player", null)
+                        .WithMany("Wishlist")
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.World", b =>
                 {
                     b.HasOne("CityVilleDotnet.Domain.Entities.Player", "Player")
@@ -1873,6 +1905,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Navigation("SeenFlags");
 
                     b.Navigation("VisitorHelpOrders");
+
+                    b.Navigation("Wishlist");
 
                     b.Navigation("Worlds");
                 });

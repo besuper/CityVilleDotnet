@@ -108,7 +108,7 @@ public static class UserDtoMapper
                         ["m_value"] = x.Value,
                         ["lastModifiedGlobalEngineTime"] = x.LastModified.ToUnixTimeMilliseconds()
                     }).ToList(),
-                    Wishlist = [], // TODO: Implement wishlist
+                    Wishlist = model.Wishlist.OrderBy(x => x.Id).Select(object (x) => x.ItemName).ToList(),
                     Xp = model.Xp,
                     SocialLevel = model.SocialLevel,
                     SocialXp = model.SocialXp,

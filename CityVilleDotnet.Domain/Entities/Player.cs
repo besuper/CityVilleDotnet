@@ -45,6 +45,7 @@ public class Player
     public List<FeatureRollCounter> FeatureRollCounters { get; private set; } = [];
     public List<Flag> Flags { get; private set; } = [];
     public List<GlobalTableOverride> GlobalTableOverrides { get; private set; } = [];
+    public List<WishlistItem> Wishlist { get; private set; } = [];
     public bool IsNew { get; private set; } = true;
     public bool FirstDay { get; private set; } = true;
     public DateTimeOffset CreationTimestamp { get; private set; }
@@ -543,6 +544,26 @@ public class Player
         Coupons.Add(new Coupon(name, worldFlatId));
 
         return true;
+    }
+
+    public void AddToWishlist(string itemName, int wishlistSize)
+    {
+        if (Wishlist.Any(x => x.ItemName == itemName))
+        {
+            return;
+        }
+
+        if (Wishlist.Count >= wishlistSize)
+        {
+            throw new DomainException(GameErrorType.InvalidState);
+        }
+
+        Wishlist.Add(new WishlistItem(itemName));
+    }
+
+    public void RemoveFromWishlist(string itemName)
+    {
+        Wishlist.RemoveAll(x => x.ItemName == itemName);
     }
 
     public bool HasCoupon(string name)
