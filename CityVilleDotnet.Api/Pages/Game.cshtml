@@ -1,4 +1,7 @@
 ﻿@page
+@using System.Globalization
+@using CityVilleDotnet.Common.Utils
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CityVilleDotnet.Api.Resources.SharedResource> Localizer
 @{
 	Layout = "Shared/_GameLayout";
 }
@@ -26,6 +29,20 @@
 		</div>
 	</div>
 </div>
+
+@section Navbar {
+	<div class="d-flex align-items-center mr-lg-3 my-2" title="@Localizer["GameLanguage"]">
+		<label class="mb-0 mr-2 text-secondary" for="gameLocale"><i class="bi bi-globe2"></i></label>
+		<select id="gameLocale" class="custom-select custom-select-sm w-auto" aria-label="@Localizer["GameLanguage"]"
+		        onchange="document.cookie = 'gameLocale=' + this.value + '; path=/; max-age=31536000; SameSite=Lax'; window.location.reload();">
+			@foreach (var gameLocale in LocaleUtils.GameLocales)
+			{
+				var culture = CultureInfo.GetCultureInfo(gameLocale.Replace('_', '-'));
+				<option value="@gameLocale" selected="@(gameLocale == Model.GameLocale)">@culture.TextInfo.ToTitleCase(culture.NativeName)</option>
+			}
+		</select>
+	</div>
+}
 
 @if (Model.EnableCheat)
 {

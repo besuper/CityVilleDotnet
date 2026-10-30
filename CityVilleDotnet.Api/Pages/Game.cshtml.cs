@@ -29,6 +29,10 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
     public long ServerTime { get; set; } = 0;
     public string PictureUrl { get; set; } = "/blank.png";
 
+    public string GameLocale => LocaleUtils.GameLocales.Contains(Request.Cookies["gameLocale"] ?? "")
+        ? Request.Cookies["gameLocale"]!
+        : CultureInfo.CurrentCulture.Name.Replace("-", "_");
+
     public bool EnableCheat => configuration.GetValue<bool>("enableCheat");
     public Dictionary<string, object> RuntimeVars => configuration.GetSection("runtimeVars").Get<Dictionary<string, object>>() ?? new Dictionary<string, object>();
     public List<Experiment> Experiments => configuration.GetSection("experiments").Get<List<Experiment>>() ?? new List<Experiment>();
@@ -72,8 +76,8 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
     public string BuildFlashVars()
     {
-        var locale = CultureInfo.CurrentCulture.Name.Replace("-", "_");
-        
+        var locale = GameLocale;
+
         var flashVars = new Dictionary<string, string>()
         {
             ["optimizePreloader"] = "true",

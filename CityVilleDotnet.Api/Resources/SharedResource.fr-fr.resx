@@ -464,4 +464,7 @@
     <data name="LoginInvalidCredentials" xml:space="preserve">
         <value>Nom d'utilisateur ou mot de passe invalide.</value>
     </data>
+    <data name="GameLanguage" xml:space="preserve">
+        <value>Langue du jeu</value>
+    </data>
 </root>
