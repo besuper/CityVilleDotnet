@@ -21,12 +21,12 @@
                         <i class="bi bi-discord me-2"></i>@Localizer["ContinueWithDiscord"]
                     </button>
                 </form>
-                <button type="button" class="w-100 btn btn-link text-muted small text-decoration-none mb-2" data-bs-toggle="collapse" data-bs-target="#passwordForm" aria-expanded="@(showPasswordForm ? "true" : "false")" aria-controls="passwordForm">
-                    @Localizer["OrUsePassword"] <i class="bi bi-chevron-down"></i>
-                </button>
             }
 
-            <div class="collapse@(showPasswordForm ? " show" : "")" id="passwordForm">
+            <details open="@showPasswordForm">
+                <summary class="w-100 btn btn-link text-muted small text-decoration-none mb-2@(Model.DiscordEnabled ? "" : " d-none")">
+                    @Localizer["OrUsePassword"] <i class="bi bi-chevron-down"></i>
+                </summary>
                 <form id="account" method="post" novalidate>
                     <div class="form-floating mb-3">
                         <input asp-for="Input.Username" type="text" class="form-control" id="floatingUsername"
@@ -53,7 +53,7 @@
                         @Localizer["Login_"]
                     </button>
                 </form>
-            </div>
+            </details>
 
             <div class="mt-3 text-center">
                 <p>
