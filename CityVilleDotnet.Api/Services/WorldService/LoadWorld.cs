@@ -42,14 +42,19 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
         if (playerToLoad is null)
             throw new Exception($"Unable to find player with Player.Uid {request.TargetUsedId}");
 
+        if (playerToLoad.GetWorldByType(request.Type) is null)
+            throw new Exception($"World {request.Type} does not exist for this player");
+
+        playerToLoad.SwitchWorld(request.Type);
+
         if (playerToLoad.Id == playerId)
         {
-            if (playerToLoad.GetWorldByType(request.Type) is null)
-                throw new Exception($"World {request.Type} does not exist for player {playerId}");
-
-            playerToLoad.SwitchWorld(request.Type);
-
             await context.SaveChangesAsync(cancellationToken);
+        }
+        else
+        {
+            // We don't save the switch world when visiting a friend, but we have to switch it because ToDto use GetWorld
+            context.Entry(playerToLoad).State = EntityState.Detached;
         }
         
         var allWorlds = await context.Set<World>()
