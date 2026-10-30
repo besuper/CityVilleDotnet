@@ -19,6 +19,7 @@ internal sealed class BuyUpgradeBuildings(CityVilleDbContext context) : AmfServi
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x.Objects)
             .Include(x => x.InventoryItems)
+            .Include(x => x.SeenFlags)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
