@@ -1,25 +1,29 @@
 # CityVille .NET
-> A .NET 10 backend recreation of the classic CityVille game
+> A .NET 10 backend recreation of the classic CityVille (2012) flash game
 
-**Alpha Status**: This project is currently in alpha development. The game is playable but many features are still being implemented.
+**Beta status**: the game is playable and most core systems work, but many features are still being implemented.
 
 ## Features
 
--   Simple building system - build, farm and expand your city
--   Quest system - many quests are supported and functional
--   User account management and authentication
--   Basic friend system - add, visit and manage friends
--   Support for user inventory
--   Embedded [ruffle](https://ruffle.rs/) flash emulator - no need to install Flash
+-   **Three worlds**: Main city, Downtown and Lakefront 
+-   **Building & farming**: construction sites, businesses, residences, plots, greenhouse, remodel, upgrades
+-   **City expansion**: expansion licenses and incentivized expansions
+-   **Quests**: hundreds of quests and task actions
+-   **Franchises**: headquarters, supply, daily bonus, Samantha's city
+-   **Trains & ships**, zoo animals, factory workers, crew members and gates, mastery gates
+-   **Cops & bandits**, weather effects
+-   **Collections & wishlist**, inventory, consumables, bundles
+-   **Friends**: requests, visits, helping neighbors, energy
+-   **Multi languages**: english, spanish, french, italian, portuguese
 
 ## Getting Started
 
 ### Prerequisites
--   Docker & Docker Compose
--   .NET 10 SDK (for development without Docker)
--   MS SQL Server (required when running without Docker)
+-   Docker & Docker Compose, **or**
+-   .NET 10 SDK and MS SQL Server
+-   The game assets (see [Assets](#assets))
 
-### Quick Start
+### Run with Docker
 
 1.  **Clone the repository**
     ```bash
@@ -27,69 +31,87 @@
     cd CityVilleDotnet
     ```
 
-2.  **Create folders wwwroot/ and logs/**
-3.  **Set up game assets** (see Assets section below)
+2.  **Create the `wwwroot/` and `logs/` folders** at the repository root, and put the game assets in `wwwroot/`.
 
-4.  **Run with Docker**
-
+3.  **Start the stack**
     ```bash
     docker-compose up --build
     ```
 
-5.  **Access the game**
+4.  **Play** at `http://localhost:5221/Game`
 
-    -   Game: `http://localhost:8080/Game`
+### Run locally
 
-### Development Setup
+The default connection string targets a local SQL Server with Windows authentication (`appsettings.json`). The database is created and migrated on startup.
 
 ```bash
-# Restore dependencies
-dotnet restore
-
-# Run the backend locally
 dotnet run --project CityVilleDotnet.Api
 ```
 
+Then open `http://localhost:5221`. Assets go in `CityVilleDotnet.Api/wwwroot/`.
+
+### Prebuilt releases
+
+Self-contained builds for Windows, Linux and macOS are published weekly as pre-releases on the [releases page](https://github.com/besuper/CityVilleDotnet/releases).
+
 ## Assets
 
-**Important Notice**: Game assets (images, sounds, sprites) are not included in this repository as they are copyrighted material owned by Zynga Inc.
+**Important notice**: game assets (images, sounds, sprites, SWF, settings) are not included in this repository as they are copyrighted material owned by Zynga Inc.
 
-To run the game with proper assets:
-
-1.  **Get assets from Discord** - You can download the assets from [Raise the Empires discord](https://discord.gg/xrNE6Hg)
-2.  **Place assets** in the `wwwroot` folder structure:
+1.  **Get the assets** from the [Raise the Empires Discord](https://discord.gg/xrNE6Hg)
+2.  **Place them** in the `wwwroot` folder:
 
     ```
     wwwroot/
     ├── assets/
-    └── Game.2012.swf
-    └── Preloader.swf
-    └── gameSettings.xml
-    └── questSettings.xml
-    └── effectsConfig.xml
-    └── bootstrap.xml
+    ├── lang/
+    ├── Game.2012.swf
+    ├── Preloader.swf
+    ├── EmbeddedArt.swf
+    ├── FontMapper.swf
+    ├── gameSettings.xml
+    ├── questSettings.xml
+    ├── effectsConfig.xml
+    ├── bootstrap.xml
     └── settings.amf.z
-    └── FontMapper.swf
-    └── EmbeddedArt.swf
-    └── lang/locale_en_US.swf
     ```
 
+**Note**: this project is for educational purposes only. All game assets remain the property of Zynga Inc.
 
-**Note**: This project is for educational purposes only. All game assets remain the property of Zynga Inc.
+## Tests
+
+```bash
+dotnet test
+```
+
+-   `test/CityVilleDotnet.Test.Domain`: domain entity unit tests
+-   `test/CityVilleDotnet.Test.Integration`: transaction tests against a real SQL Server (**requires Docker**, via Testcontainers)
+-   `test/CityVilleDotnet.Factory`: bogus factories shared by both
 
 ## Project Structure
 
 ```
 CityVilleDotnet/
-├── CityVilleDotnet.Api/          # Game backend and endpoints
-├── CityVilleDotnet.Common/       # Shared utilities and helpers
-├── CityVilleDotnet.Domain/       # Business logic and entities
-├── CityVilleDotnet.Persistence/  # Data access layer
+├── CityVilleDotnet.Api/          # AMF gateway, transaction handlers (Services/), Razor Pages
+├── CityVilleDotnet.Common/       # Game & quest settings (XML), enums, utilities
+├── CityVilleDotnet.Domain/       # Entities and business logic, DTOs
+├── CityVilleDotnet.Persistence/  # EF Core DbContext, configurations, migrations
 ├── FluorineFX/                   # AMF serialization library
-├── docker-compose.yml            # Docker configuration
-└── Dockerfile                    # Container build instructions
+├── test/                         # Unit & integration tests, factories
+├── docker-compose.yml
+└── Dockerfile
 ```
+
+## Credits
+
+Thanks to everyone who helped bring CityVille back:
+
+-   **xmohamedX1** huge contribution on the assets: recovery, fixes
+-   **Captain Rusty** helped build the first prototype in 2011 and scraped assets from the wiki
+-   **MissTery** hosts the [raise the Empires Discord](https://discord.gg/xrNE6Hg) server & helping with assets
+-   **Antonio225** carried on maintaining the first prototype and helps a lot on discord
+-   **nidzo** helped recreate Samantha's city and with the assets
 
 ## License
 
-This project is licensed under the GPL-3.0 license - see the [LICENSE](https://github.com/besuper/CityVilleDotnet/blob/main/LICENSE) file for details.
+This project is licensed under the GPL-3.0 license - see the [LICENSE](LICENSE) file for details.
