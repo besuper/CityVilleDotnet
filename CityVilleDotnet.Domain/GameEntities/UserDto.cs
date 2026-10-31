@@ -180,6 +180,7 @@ public static class UserDtoMapper
                 {
                     "weather", new ASObject()
                     {
+                        { "disableWeatherEffect", model.WeatherEffectDisabled },
                         {
                             "supportedWeather", new ASObject()
                             {

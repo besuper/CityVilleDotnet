@@ -23,6 +23,7 @@ public class Player
     public bool SfxDisabled { get; private set; }
     public bool MusicDisabled { get; private set; }
     public bool NightModeActive { get; private set; }
+    public bool WeatherEffectDisabled { get; private set; }
     public List<InventoryItem> InventoryItems { get; set; } = [];
     public int Gold { get; private set; }
     public int Goods { get; private set; }
@@ -664,6 +665,11 @@ public class Player
     public void IncrementExpansionsPurchased()
     {
         ExpansionsPurchased++;
+    }
+
+    public void SetWeatherEffectDisabled(bool disabled)
+    {
+        WeatherEffectDisabled = disabled;
     }
 
     public void SetNightMode(bool active)

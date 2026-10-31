@@ -745,6 +745,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 
+                    b.Property<bool>("WeatherEffectDisabled")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Xp")
                         .HasColumnType("int");
 
