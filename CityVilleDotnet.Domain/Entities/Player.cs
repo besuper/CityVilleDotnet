@@ -840,6 +840,24 @@ public class Player
         GlobalTableOverrides.Remove(tableOverride);
     }
 
+    public void AddObjectTableOverrides(int objectId, List<QuestOverrideTable> tables)
+    {
+        var source = objectId.ToString();
+
+        foreach (var table in tables)
+        {
+            if (!GlobalTableOverrides.Any(x => x.Keyword == table.Keyword && x.Table == table.Table && x.Source == source))
+            {
+                GlobalTableOverrides.Add(new GlobalTableOverride(table.Keyword, table.Table, source));
+            }
+        }
+    }
+
+    public void RemoveObjectTableOverrides(int objectId)
+    {
+        GlobalTableOverrides.RemoveAll(x => x.Source == objectId.ToString());
+    }
+
     // From Player::processRandomModifiersFromConfig
     private void ProcessModifiers(GameItem gameItem, List<RandomModifier> modifiers, List<int> secureRands, int coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1)
     {

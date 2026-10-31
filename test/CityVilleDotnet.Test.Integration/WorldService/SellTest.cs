@@ -4,6 +4,7 @@ using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
+using CityVilleDotnet.Factory.GlobalTableOverride;
 using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
@@ -78,5 +79,58 @@ public class SellTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 
         (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.ForceReload);
         player.Gold.Should().Be(goldBefore);
+    }
+
+    [Fact]
+    public async Task Sell_BuildingWithTables_RemovesOnlyTablesOfTheBuilding()
+    {
+        var building = Faker.WorldObject(itemName: "test_upgrade_table_bus", className: BuildingClassType.Business, x: 10, y: 10, worldFlatId: 7);
+        var player = Faker.Player(world: Faker.World(objects: [building]));
+        player.GlobalTableOverrides.Add(Faker.GlobalTableOverride(keyword: "Business", table: "test_global_a_table", source: "7"));
+        player.GlobalTableOverrides.Add(Faker.GlobalTableOverride(keyword: "Community", table: "test_global_z_table", source: "7"));
+        player.GlobalTableOverrides.Add(Faker.GlobalTableOverride(keyword: "Business", table: "test_global_a_table", source: "8"));
+        player.GlobalTableOverrides.Add(Faker.GlobalTableOverride(keyword: "Business", table: "test_global_a_table", source: "qm_test_global_table"));
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new Sell(Context);
+
+        var response = await handler.HandlePacket(new SellRequest { Building = new SellBuildingRequest { Id = 7 } }, player.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+
+        var overrides = await GetOverrides(player.Id);
+
+        overrides.Select(x => x.Source).Should().BeEquivalentTo(new[] { "8", "qm_test_global_table" });
+    }
+
+    [Fact]
+    public async Task Sell_ConstructionSiteByTempId_RemovesItsBuildTables()
+    {
+        var site = Faker.WorldObject(itemName: "test_build_table_bus", className: BuildingClassType.Municipal, tempId: 16777217, x: 10, y: 10, worldFlatId: 7);
+        site.SetAsConstructionSite("construction_3x3_2stage", 2);
+        var player = Faker.Player(world: Faker.World(objects: [site]));
+        player.GlobalTableOverrides.Add(Faker.GlobalTableOverride(keyword: "Business", table: "test_global_a_table", source: "7"));
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new Sell(Context);
+
+        var response = await handler.HandlePacket(new SellRequest { Building = new SellBuildingRequest { Id = 16777217 } }, player.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+        (await GetOverrides(player.Id)).Should().BeEmpty();
+    }
+
+    private async Task<List<GlobalTableOverride>> GetOverrides(Guid playerId)
+    {
+        Context.ChangeTracker.Clear();
+
+        return await Context.Set<Player>()
+            .Where(x => x.Id == playerId)
+            .SelectMany(x => x.GlobalTableOverrides)
+            .ToListAsync(TestContext.Current.CancellationToken);
     }
 }

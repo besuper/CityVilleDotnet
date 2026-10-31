@@ -733,6 +733,58 @@
             </mechanics>
             <gates/>
         </item>
+        <item name="test_upgrade_table_bus" type="business" buyable="false">
+            <keyword>Business</keyword>
+            <gates>
+                <gate type="upgrade_inventory" name="pre_upgrade">
+                    <key name="test_gate_material" amount="2" viral="grindable">
+                        <overrideTable table="test_global_a_table" keyword="Business"/>
+                        <overrideTable table="test_global_z_table" keyword="Community"/>
+                    </key>
+                    <key name="test_gate_material_coin" amount="2" viral="feed">
+                        <overrideTable table="test_droptable" keyword="Business"/>
+                    </key>
+                </gate>
+                <gate type="inventory" name="other_gate">
+                    <key name="test_gate_material" amount="2" viral="grindable">
+                        <overrideTable table="test_droptable" keyword="Community"/>
+                    </key>
+                </gate>
+            </gates>
+        </item>
+        <item name="test_upgrade_table_composite" type="municipal" buyable="false">
+            <gates>
+                <gate type="composite" name="pre_upgrade">
+                    <key name="grindBuildable"/>
+                    <key name="statusBuildable"/>
+                    <key name="missingBuildable"/>
+                </gate>
+                <gate type="mechanic_inventory" name="grindBuildable">
+                    <key name="test_gate_material" amount="2" viral="grindable">
+                        <overrideTable table="test_global_a_table" keyword="Community"/>
+                    </key>
+                </gate>
+                <gate type="status" name="statusBuildable">
+                    <key name="test_gate_material" amount="2" viral="grindable">
+                        <overrideTable table="test_droptable" keyword="Community"/>
+                    </key>
+                </gate>
+            </gates>
+        </item>
+        <item name="test_build_table_bus" type="municipal" buyable="true">
+            <keyword>Business</keyword>
+            <cost>100</cost>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+            <construction>construction_3x3_2stage</construction>
+            <gates>
+                <gate name="build">
+                    <key name="test_gate_material" amount="2" viral="grindable">
+                        <overrideTable table="test_global_a_table" keyword="Business"/>
+                    </key>
+                </gate>
+            </gates>
+        </item>
         <item name="test_prey_shop" type="business" buyable="false">
             <keyword>test_prey_keyword</keyword>
             <sizeX>2</sizeX>

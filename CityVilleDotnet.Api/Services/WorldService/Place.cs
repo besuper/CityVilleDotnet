@@ -34,6 +34,7 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.Masteries)
+            .Include(x => x.GlobalTableOverrides)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Can't find user with UserId");
 
         var mapOwner = request.Params.FirstOrDefault()?.MapOwner;
@@ -77,6 +78,7 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
                 throw new Exception($"Construction item not found with {gameItem.Construction}");
 
             obj.SetAsConstructionSite(gameItem.Construction, constructionItem.NumberOfStages.Value);
+            player.AddObjectTableOverrides(objId, gameItem.GetGateOverrideTables("build"));
         }
         else
         {

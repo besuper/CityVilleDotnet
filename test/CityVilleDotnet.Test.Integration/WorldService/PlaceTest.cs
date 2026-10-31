@@ -5,10 +5,12 @@ using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
+using CityVilleDotnet.Factory.GlobalTableOverride;
 using CityVilleDotnet.Factory.MapRect;
 using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Test.Integration.Fixtures;
+using FluorineFx;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Time.Testing;
@@ -148,5 +150,93 @@ public class PlaceTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var building = await Context.Set<WorldObject>().FirstAsync(o => o.X == 10 && o.Y == 20, TestContext.Current.CancellationToken);
 
         building.HarvestEndTime.Should().Be(startTime.UtcDateTime.AddHours(23));
+    }
+
+    [Fact]
+    public async Task Place_ConstructionWithGrindableBuildGate_AddsBuildTablesWithNewId()
+    {
+        var user = Faker.Player(world: Faker.World());
+        user.SetGold(1000);
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new Place(Context, NullLogger<Place>.Instance);
+
+        var response = await handler.HandlePacket(CreatePlaceRequest("test_build_table_bus", BuildingClassType.Municipal, 10, 20), user.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+
+        var id = (response["data"] as ASObject)!["id"];
+        var overrides = await GetOverrides(user.Id);
+
+        overrides.Should().ContainSingle(x => x.Keyword == "Business" && x.Table == "test_global_a_table").Which.Source.Should().Be(id.ToString());
+    }
+
+    [Fact]
+    public async Task Place_TwoConstructionSites_AddsTablesForEachSite()
+    {
+        var user = Faker.Player(world: Faker.World());
+        user.SetGold(1000);
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new Place(Context, NullLogger<Place>.Instance);
+
+        await handler.HandlePacket(CreatePlaceRequest("test_build_table_bus", BuildingClassType.Municipal, 10, 20), user.Id, TestContext.Current.CancellationToken);
+        await handler.HandlePacket(CreatePlaceRequest("test_build_table_bus", BuildingClassType.Municipal, 20, 20), user.Id, TestContext.Current.CancellationToken);
+
+        var overrides = await GetOverrides(user.Id);
+
+        overrides.Should().HaveCount(2);
+        overrides.Select(x => x.Source).Should().OnlyHaveUniqueItems();
+    }
+
+    [Fact]
+    public async Task Place_ConstructionWithoutGrindableBuildGate_AddsNoTable()
+    {
+        var user = Faker.Player(world: Faker.World());
+        user.SetGold(1000);
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new Place(Context, NullLogger<Place>.Instance);
+
+        var response = await handler.HandlePacket(CreatePlaceRequest("test_gated_building", BuildingClassType.Municipal, 10, 20), user.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+        (await GetOverrides(user.Id)).Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Place_ExistingOverrides_AreKept()
+    {
+        var user = Faker.Player(world: Faker.World());
+        user.SetGold(1000);
+        user.GlobalTableOverrides.Add(Faker.GlobalTableOverride(keyword: "Business", table: "test_global_a_table", source: "qm_test_global_table"));
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new Place(Context, NullLogger<Place>.Instance);
+
+        await handler.HandlePacket(CreatePlaceRequest("test_build_table_bus", BuildingClassType.Municipal, 10, 20), user.Id, TestContext.Current.CancellationToken);
+
+        var overrides = await GetOverrides(user.Id);
+
+        overrides.Should().HaveCount(2);
+        overrides.Should().Contain(x => x.Source == "qm_test_global_table");
+    }
+
+    private async Task<List<GlobalTableOverride>> GetOverrides(Guid playerId)
+    {
+        Context.ChangeTracker.Clear();
+
+        return await Context.Set<Player>()
+            .Where(x => x.Id == playerId)
+            .SelectMany(x => x.GlobalTableOverrides)
+            .ToListAsync(TestContext.Current.CancellationToken);
     }
 }

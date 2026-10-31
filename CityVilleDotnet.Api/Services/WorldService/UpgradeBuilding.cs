@@ -25,6 +25,7 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.PreyGroups)
+            .Include(x => x.GlobalTableOverrides)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
@@ -79,6 +80,7 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
         player.HandleQuestsProgress("upgradeItemByName", itemName: obj.ItemName);
 
         obj.UpgradeBuilding(gameItem.GetFirstDeriveItem(gameItem), newItemName);
+        player.RemoveObjectTableOverrides(obj.WorldFlatId);
         world.CalculatePopulation();
 
         // The client unlocks the hub level locally without always sending unlockHubGate

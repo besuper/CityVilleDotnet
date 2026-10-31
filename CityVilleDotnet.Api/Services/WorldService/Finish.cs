@@ -71,6 +71,8 @@ public sealed class Finish(CityVilleDbContext context) : AmfService<FinishReques
                 context.Set<InventoryItem>().Remove(consumed);
         }
 
+        player.RemoveObjectTableOverrides(obj.WorldFlatId);
+
         if (obj.GetClassName() == BuildingClassType.ZooEnclosure)
             obj.GrantInitialZooAnimal(player.Snuid);
 

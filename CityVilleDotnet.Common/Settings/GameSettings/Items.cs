@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Xml.Serialization;
+using CityVilleDotnet.Common.Settings.QuestSettings;
 
 namespace CityVilleDotnet.Common.Settings.GameSettings;
 
@@ -229,6 +230,31 @@ public class GameItem
         if (!string.IsNullOrEmpty(gate.Type) && gate.Type is not ("inventory" or "upgrade_inventory")) return [];
 
         return keys.ToList();
+    }
+
+    // InventoryGate::addGlobalTable
+    public List<QuestOverrideTable> GetGateOverrideTables(string gateName)
+    {
+        var gate = GetGates().FirstOrDefault(x => x.Name == gateName);
+
+        if (gate is null)
+        {
+            return [];
+        }
+
+        var keys = gate.Keys.OfType<GateKey>();
+
+        if (gate.Type is "composite" or "composite_recipe")
+        {
+            return keys.SelectMany(x => GetGateOverrideTables(x.Name)).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(gate.Type) && gate.Type is not ("inventory" or "upgrade_inventory" or "recipe_gate" or "mechanic_inventory" or "crinventory"))
+        {
+            return [];
+        }
+
+        return keys.Where(x => x.Viral == "grindable").SelectMany(x => x.OverrideTables).ToList();
     }
 
     public RemodelDefinitionItem? GetRemodelDefinitionByName(string itemName)
@@ -509,6 +535,8 @@ public class GateKey
     [XmlAttribute("amount")] public int Amount { get; set; }
     [XmlAttribute("keepOnComplete")] public bool KeepOnComplete { get; set; }
     [XmlAttribute("removeAllOnComplete")] public bool RemoveAllOnComplete { get; set; }
+    [XmlAttribute("viral")] public string? Viral { get; set; }
+    [XmlElement("overrideTable")] public List<QuestOverrideTable> OverrideTables { get; set; } = [];
 
     [XmlAttribute("cashCost")]
     public string? CashCostString

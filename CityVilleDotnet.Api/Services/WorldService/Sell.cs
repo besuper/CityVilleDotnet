@@ -26,6 +26,7 @@ internal sealed class Sell(CityVilleDbContext context) : AmfService<SellRequest>
             .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.Slots)
             .Include(x => x.InventoryItems)
+            .Include(x => x.GlobalTableOverrides)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (user is null) throw new Exception("Player not found");
@@ -39,6 +40,7 @@ internal sealed class Sell(CityVilleDbContext context) : AmfService<SellRequest>
         if (gameItem is null) throw new Exception($"Can't find item with name {obj.ItemName}");
 
         world.RemoveBuilding(obj);
+        user.RemoveObjectTableOverrides(obj.WorldFlatId);
 
         if (obj.FranchiseLocation is not null && obj.ItemOwner is not null)
         {

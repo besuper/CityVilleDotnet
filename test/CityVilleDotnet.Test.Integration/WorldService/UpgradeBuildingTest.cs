@@ -4,6 +4,7 @@ using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
+using CityVilleDotnet.Factory.GlobalTableOverride;
 using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
@@ -216,5 +217,61 @@ public class UpgradeBuildingTest(DatabaseFixture fixture) : IntegrationTest(fixt
 
         response["errorType"].Should().Be((int)GameErrorType.InvalidState);
         business.ItemName.Should().Be("test_bus_upgradable");
+    }
+
+    [Fact]
+    public async Task UpgradeBuilding_Upgraded_RemovesOnlyTablesOfTheBuilding()
+    {
+        var business = Faker.WorldObject(itemName: "test_bus_upgradable", className: BuildingClassType.Business, state: WorldObjectState.Closed, x: 10, y: 10, worldFlatId: 7);
+        business.SetUpgradeAction(5);
+        var player = Faker.Player(world: Faker.World(objects: [business]));
+        player.SetLevel(2);
+        player.GlobalTableOverrides.Add(Faker.GlobalTableOverride(keyword: "Business", table: "test_global_a_table", source: "7"));
+        player.GlobalTableOverrides.Add(Faker.GlobalTableOverride(keyword: "Community", table: "test_global_z_table", source: "7"));
+        player.GlobalTableOverrides.Add(Faker.GlobalTableOverride(keyword: "Business", table: "test_global_a_table", source: "8"));
+        player.GlobalTableOverrides.Add(Faker.GlobalTableOverride(keyword: "Business", table: "test_global_a_table", source: "qm_test_global_table"));
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new UpgradeBuilding(Context);
+
+        var response = await handler.HandlePacket(CreateUpgradeBuildingRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+
+        var overrides = await GetOverrides(player.Id);
+
+        overrides.Select(x => x.Source).Should().BeEquivalentTo(new[] { "8", "qm_test_global_table" });
+    }
+
+    [Fact]
+    public async Task UpgradeBuilding_Rejected_KeepsTablesOfTheBuilding()
+    {
+        var business = Faker.WorldObject(itemName: "test_bus_upgradable", className: BuildingClassType.Business, state: WorldObjectState.Closed, x: 10, y: 10, worldFlatId: 7);
+        business.SetUpgradeAction(4);
+        var player = Faker.Player(world: Faker.World(objects: [business]));
+        player.SetLevel(2);
+        player.GlobalTableOverrides.Add(Faker.GlobalTableOverride(keyword: "Business", table: "test_global_a_table", source: "7"));
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new UpgradeBuilding(Context);
+
+        var response = await handler.HandlePacket(CreateUpgradeBuildingRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be((int)GameErrorType.InvalidState);
+        (await GetOverrides(player.Id)).Should().ContainSingle(x => x.Source == "7");
+    }
+
+    private async Task<List<GlobalTableOverride>> GetOverrides(Guid playerId)
+    {
+        Context.ChangeTracker.Clear();
+
+        return await Context.Set<Player>()
+            .Where(x => x.Id == playerId)
+            .SelectMany(x => x.GlobalTableOverrides)
+            .ToListAsync(TestContext.Current.CancellationToken);
     }
 }

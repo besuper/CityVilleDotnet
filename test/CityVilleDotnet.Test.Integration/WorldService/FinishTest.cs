@@ -1,9 +1,11 @@
 using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.WorldService;
 using CityVilleDotnet.Api.Services.WorldService.Common;
+using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
+using CityVilleDotnet.Factory.GlobalTableOverride;
 using CityVilleDotnet.Factory.MapRect;
 using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Factory.World;
@@ -234,5 +236,62 @@ public class FinishTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 
         var drawbridge = await Context.Set<WorldObject>().FirstAsync(o => o.X == 56 && o.Y == -93 && EF.Property<int?>(o, "WorldId") == world.Id, TestContext.Current.CancellationToken);
         drawbridge.ItemName.Should().Be("mun_drawbridge");
+    }
+
+    [Fact]
+    public async Task Finish_ConstructionWithBuildTables_RemovesOnlyTablesOfTheSite()
+    {
+        var building = Faker.WorldObject(itemName: "test_build_table_bus", className: BuildingClassType.Municipal, x: 10, y: 20, worldFlatId: 7);
+        building.SetAsConstructionSite("construction_3x3_2stage", 2);
+        building.AddConstructionStage();
+        building.AddConstructionStage();
+        var user = Faker.Player(world: Faker.World(objects: [building]));
+        user.AddItem("test_gate_material", 2);
+        user.GlobalTableOverrides.Add(Faker.GlobalTableOverride(keyword: "Business", table: "test_global_a_table", source: "7"));
+        user.GlobalTableOverrides.Add(Faker.GlobalTableOverride(keyword: "Business", table: "test_global_a_table", source: "8"));
+        user.GlobalTableOverrides.Add(Faker.GlobalTableOverride(keyword: "Business", table: "test_global_a_table", source: "qm_test_global_table"));
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new Finish(Context);
+
+        var response = await handler.HandlePacket(CreateFinishRequest(10, 20), user.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+
+        var overrides = await GetOverrides(user.Id);
+
+        overrides.Select(x => x.Source).Should().BeEquivalentTo(new[] { "8", "qm_test_global_table" });
+    }
+
+    [Fact]
+    public async Task Finish_ConstructionNotComplete_KeepsBuildTables()
+    {
+        var building = Faker.WorldObject(itemName: "test_build_table_bus", className: BuildingClassType.Municipal, x: 10, y: 20, worldFlatId: 7);
+        building.SetAsConstructionSite("construction_3x3_2stage", 2);
+        building.AddConstructionStage();
+        var user = Faker.Player(world: Faker.World(objects: [building]));
+        user.GlobalTableOverrides.Add(Faker.GlobalTableOverride(keyword: "Business", table: "test_global_a_table", source: "7"));
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new Finish(Context);
+
+        var response = await handler.HandlePacket(CreateFinishRequest(10, 20), user.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be((int)GameErrorType.InvalidState);
+        (await GetOverrides(user.Id)).Should().ContainSingle(x => x.Source == "7");
+    }
+
+    private async Task<List<GlobalTableOverride>> GetOverrides(Guid playerId)
+    {
+        Context.ChangeTracker.Clear();
+
+        return await Context.Set<Player>()
+            .Where(x => x.Id == playerId)
+            .SelectMany(x => x.GlobalTableOverrides)
+            .ToListAsync(TestContext.Current.CancellationToken);
     }
 }
