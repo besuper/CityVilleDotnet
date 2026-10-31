@@ -35,7 +35,7 @@ public class PurchaseRemainingCrew(CityVilleDbContext context, ILogger<PurchaseR
 
         if (gates.Count == 0) throw new Exception("No gates defined in this building");
 
-        var targetGate = (request.GateName.IsNullOrEmpty() ? gates.FirstOrDefault() : gates.FirstOrDefault(x => x.Name == request.GateName)) ?? throw new Exception($"Can't find target gate {request.GateName}");
+        var targetGate = (request.GateName.IsNullOrEmpty() ? gates.FirstOrDefault(x => x.Type == "crew") : gates.FirstOrDefault(x => x.Name == request.GateName)) ?? throw new Exception($"Can't find target gate {request.GateName}");
 
         var key = targetGate.Keys.FirstOrDefault(x => x?.Name == "required_crew") ?? throw new Exception("Can't find required key");
 

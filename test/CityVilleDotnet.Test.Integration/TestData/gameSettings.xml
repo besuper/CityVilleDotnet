@@ -431,6 +431,26 @@
                 </inventoryCheck>
             </inventoryChecks>
         </item>
+        <item name="test_crew_hood" type="neighborhood" buyable="true">
+            <gates>
+                <gate type="inventory" name="build">
+                    <key name="test_material" amount="3"/>
+                </gate>
+                <gate type="crew" name="storage">
+                    <key name="required_crew" amount="4" cashCost="2"/>
+                </gate>
+            </gates>
+        </item>
+        <item name="test_crew_upgrade" type="municipal" buyable="true">
+            <gates>
+                <gate type="crew" name="build">
+                    <key name="required_crew" amount="4" cashCost="2"/>
+                </gate>
+                <gate type="crew" name="pre_upgrade">
+                    <key name="required_crew" amount="10" cashCost="3"/>
+                </gate>
+            </gates>
+        </item>
         <item name="test_res_base" type="residence" buyable="true">
             <requiredLevel>1</requiredLevel>
             <cost>100</cost>
