@@ -15,6 +15,19 @@
 -   **Collections & wishlist**, inventory, consumables, bundles
 -   **Friends**: requests, visits, helping neighbors, energy
 -   **Multi languages**: english, spanish, french, italian, portuguese
+-   **Embedded [ruffle](https://ruffle.rs/) flash emulator**: no need to install Flash
+
+<!-- progress:start -->
+## Implementation progress
+_Last update: 2026-10-31 · 🟡 = partial_
+
+| | Progress | |
+|---|---|---|
+| Client transactions | <img src="docs/progress/transactions.svg" alt="31%"> 31% | 72 ✅ · 19 🟡 · 141 ❌ |
+| World actions | <img src="docs/progress/world_actions.svg" alt="57%"> 57% | 21 ✅ · 2 🟡 · 14 ❌ |
+| Quest task actions | <img src="docs/progress/quest_actions.svg" alt="92%"> 92% | 72 ✅ · 0 🟡 · 109 ❌ (% weighted by use) |
+| Completable quests | <img src="docs/progress/quests.svg" alt="74%"> 74% | 975 / 1312 |
+<!-- progress:end -->
 
 ## Getting Started
 
