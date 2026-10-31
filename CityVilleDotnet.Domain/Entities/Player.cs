@@ -1493,6 +1493,12 @@ public class Player
                     }
                 }
 
+                if (actionTask.StartsWith("checkFarmville2Level"))
+                {
+                    quest.Progress[index] = 1;
+                    continue;
+                }
+
                 // Here we can check global values like counting population or buildings
 
                 if (!IsWorldLoaded() || task.Type is null) continue;

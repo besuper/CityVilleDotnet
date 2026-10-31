@@ -200,6 +200,8 @@ public static class UserDtoMapper
                 { "trains", new ASObject { { "workers", model.GetWorld().ToTrainWorkersAsObject() } } },
                 { "factories", new ASObject { { "workers", model.GetWorld().ToFactoryWorkersAsObject() } } },
                 { "detectiveGameWorkerManager", new ASObject { { "workers", new ASObject() } } },
+                // FarmVille 2 (game id 118), max level to unlocks every checkFarmville2LevelX quest task
+                { "xpromoMetaData", new ASObject { { "118", new ASObject { { "level", 20 } } } } },
                 { "socialInventory", new ASObject { { "samObjectIds", new ASObject() } } },
                 { "globalTable", BuildGlobalTableAsObject(model) }
             }), // Enable or disable some features for the user
