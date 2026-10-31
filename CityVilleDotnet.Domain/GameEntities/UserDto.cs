@@ -165,6 +165,7 @@ public static class UserDtoMapper
                 { "poll", new ASObject() },
                 { "itemCounts", new ASObject() },
                 { "rollCall", false },
+                { "subway", new List<object>() },
                 {
                     "goal", new ASObject
                     {

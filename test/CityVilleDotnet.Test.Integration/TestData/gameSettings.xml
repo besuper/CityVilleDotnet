@@ -733,6 +733,55 @@
             </mechanics>
             <gates/>
         </item>
+        <item name="test_custom_table_provider" type="decoration" buyable="false">
+            <mechanics>
+                <gameEventMechanics gameMode="onAddToWorld">
+                    <mechanic type="test_custom_table" className="GlobalTableModifierMechanic" priority="10" action="add" targetKeyword="Business" table="test_global_a_table" source="none" oncePerKeyword="true" nonRemovable="false"/>
+                </gameEventMechanics>
+                <gameEventMechanics gameMode="load">
+                    <mechanic type="test_custom_table" className="GlobalTableModifierMechanic" priority="10" action="add" targetKeyword="Business" table="test_global_a_table" source="none" oncePerKeyword="true" nonRemovable="false"/>
+                </gameEventMechanics>
+                <gameEventMechanics gameMode="MacroObjectSell">
+                    <mechanic type="test_custom_table" className="GlobalTableModifierMechanic" priority="10" action="remove" targetKeyword="Business" table="test_global_a_table" source="none" oncePerKeyword="true" nonRemovable="false"/>
+                </gameEventMechanics>
+                <gameEventMechanics gameMode="sellObject">
+                    <mechanic type="test_custom_table" className="GlobalTableModifierMechanic" priority="10" action="remove" targetKeyword="Business" table="test_global_a_table" source="none" oncePerKeyword="true" nonRemovable="false"/>
+                </gameEventMechanics>
+                <gameEventMechanics gameMode="onPreUpgrade">
+                    <mechanic type="test_custom_table" className="GlobalTableModifierMechanic" priority="10" action="remove" targetKeyword="Business" table="test_global_a_table" source="none" oncePerKeyword="true" nonRemovable="false"/>
+                </gameEventMechanics>
+            </mechanics>
+            <gates/>
+        </item>
+        <item name="test_toggled_table_provider" type="decoration" buyable="false">
+            <mechanics>
+                <gameEventMechanics gameMode="load">
+                    <mechanic type="test_toggled_load_table" className="GlobalTableModifierMechanic" priority="10" action="add" targetKeyword="Business" table="test_toggled_load_table" source="none" oncePerKeyword="true" nonRemovable="false"/>
+                    <mechanic type="test_toggled_add_table" className="GlobalTableModifierMechanic" priority="10" action="add" targetKeyword="Business" table="test_toggled_add_table" source="none" oncePerKeyword="true" nonRemovable="false"/>
+                    <mechanic type="test_postexplode_table" className="GlobalTableModifierMechanic" priority="10" action="add" targetKeyword="Business" table="test_postexplode_table" source="none" oncePerKeyword="true" nonRemovable="false"/>
+                </gameEventMechanics>
+            </mechanics>
+            <gates/>
+        </item>
+        <item name="test_toggled_table_remover" type="decoration" buyable="false">
+            <mechanics>
+                <gameEventMechanics gameMode="load">
+                    <mechanic type="test_toggled_load_table" className="GlobalTableModifierMechanic" priority="10" action="remove" targetKeyword="Business" table="test_toggled_load_table" source="none" oncePerKeyword="true" nonRemovable="false"/>
+                </gameEventMechanics>
+                <gameEventMechanics gameMode="onAddToWorld">
+                    <mechanic type="test_toggled_add_table" className="GlobalTableModifierMechanic" priority="10" action="remove" targetKeyword="Business" table="test_toggled_add_table" source="none" oncePerKeyword="true" nonRemovable="false"/>
+                </gameEventMechanics>
+            </mechanics>
+            <gates/>
+        </item>
+        <item name="test_toggled_table_construction" type="decoration" buyable="false">
+            <mechanics>
+                <gameEventMechanics gameMode="postExplode">
+                    <mechanic type="test_postexplode_table" className="GlobalTableModifierMechanic" priority="10" action="add" targetKeyword="Business" table="test_postexplode_table" source="none" oncePerKeyword="true" nonRemovable="false"/>
+                </gameEventMechanics>
+            </mechanics>
+            <gates/>
+        </item>
         <item name="test_upgrade_table_bus" type="business" buyable="false">
             <keyword>Business</keyword>
             <gates>
@@ -894,6 +943,18 @@
             </roll>
         </randomModifierTable>
         <randomModifierTable type="item" name="test_global_z_table" rollRange="0">
+            <roll percent="100">
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="item" name="test_toggled_load_table" rollRange="1000000">
+            <roll percent="100">
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="item" name="test_toggled_add_table" rollRange="1000000">
+            <roll percent="100">
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="item" name="test_postexplode_table" rollRange="1000000">
             <roll percent="100">
             </roll>
         </randomModifierTable>

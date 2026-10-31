@@ -310,7 +310,7 @@ public class GameItem
         return Mechanics.GameEventMechanics
             .Where(x => x.GameMode == "load")
             .SelectMany(x => x.Mechanics ?? [])
-            .Where(x => x.Type == "globalTableModifiers" && x.Action == "add" && x.TargetKeyword is not null && x.Table is not null)
+            .Where(x => x.ClassName == "GlobalTableModifierMechanic" && x.Action == "add" && x.TargetKeyword is not null && x.Table is not null && !GameSettingsManager.UnsupportedGlobalTables.Contains(x.Table))
             .ToList();
     }
 

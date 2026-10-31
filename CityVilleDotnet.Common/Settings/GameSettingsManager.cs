@@ -9,6 +9,8 @@ public class GameSettingsManager
 {
     private static GameSettingsManager? _instance;
     private static readonly object Lock = new();
+    public static readonly HashSet<string> GlobalTableModifierTypes = [];
+    public static readonly HashSet<string> UnsupportedGlobalTables = [];
     private readonly Dictionary<string, GameItem?> _items;
     private readonly Dictionary<string, RandomModifierTable> _randomModifiers;
     private readonly Dictionary<string, RandomModifierPack> _randomModifierPacks;
@@ -202,6 +204,22 @@ public class GameSettingsManager
 
             _preyGroups = gameSettings.PreyGroups?.Groups ?? [];
             _gateTunings = gameSettings.DynamicTunings?.GateTunings ?? [];
+
+            var globalTableMechanics = _items.Values
+                .SelectMany(x => x?.Mechanics?.GameEventMechanics ?? [])
+                .SelectMany(x => (x.Mechanics ?? [])
+                    .Where(m => m.ClassName == "GlobalTableModifierMechanic")
+                    .Select(m => (x.GameMode, Mechanic: m)))
+                .ToList();
+
+            GlobalTableModifierTypes.UnionWith(globalTableMechanics
+                .Where(x => x.Mechanic.Type is not null)
+                .Select(x => x.Mechanic.Type!));
+
+            // tables removed on load/onAddToWorld or added on postExplode (glass factory) can't be derived from world objects, ignored for now
+            UnsupportedGlobalTables.UnionWith(globalTableMechanics
+                .Where(x => x.Mechanic.Table is not null && (x.Mechanic.Action == "remove" ? x.GameMode is "load" or "onAddToWorld" : x.GameMode == "postExplode"))
+                .Select(x => x.Mechanic.Table!));
 
             _globalTableProviders = _items.Values
                 .Where(x => x is not null && x.GetGlobalTableModifiers().Count > 0)

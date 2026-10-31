@@ -7,6 +7,7 @@ using Humanizer;
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Common.GameWorlds;
 using CityVilleDotnet.Api.Common.Identity;
+using CityVilleDotnet.Api.Services.GameMechanicService;
 using CityVilleDotnet.Api.Services.QuestService;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Exceptions;
@@ -27,6 +28,11 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, CityVille
             .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(AmfService)))
             .Where(t => t.FullName is not null)
             .ToFrozenDictionary(t => t.FullName!);
+    }
+
+    internal static string ResolveMechanicHandler(string mechanicType)
+    {
+        return GameSettingsManager.GlobalTableModifierTypes.Contains(mechanicType) ? nameof(GlobalTableModifiers) : mechanicType.Pascalize();
     }
 
     public override void Configure()
@@ -125,7 +131,7 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, CityVille
                     {
                         var mechanicType = (string)parameters[1];
 
-                        upperClassName = mechanicType.Pascalize();
+                        upperClassName = ResolveMechanicHandler(mechanicType);
                     }
 
                     using var worldUpdateTracker = new WorldUpdateTracker(context);
