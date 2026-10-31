@@ -62,7 +62,7 @@ public sealed class Place(CityVilleDbContext context, ILogger<Place> logger) : A
             request.Building.Id, // Use id from the client as a temp id to avoid desync
             request.Building.State,
             request.Building.Direction,
-            ServerUtils.GetCurrentTime(),
+            request.Building.BuildTime,
             ServerUtils.GetCurrentTime(),
             request.Building.Position.X,
             request.Building.Position.Y,
@@ -138,6 +138,7 @@ public class BuildingPlaceRequest
     [AmfParam("deleted")] public bool Deleted { get; set; }
     [AmfParam("direction")] public int Direction { get; set; }
     [AmfParam("id")] public int Id { get; set; }
+    [AmfParam("buildTime")] public double? BuildTime { get; set; }
 }
 
 public class PlaceValidator : AbstractValidator<PlaceRequest>
