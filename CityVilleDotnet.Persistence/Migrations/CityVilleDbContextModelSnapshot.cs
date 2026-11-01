@@ -1189,6 +1189,12 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<long?>("InactiveTime")
                         .HasColumnType("bigint");
 
+                    b.Property<int>("InvestmentCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("InvestmentReturns")
+                        .HasColumnType("int");
+
                     b.Property<string>("ItemName")
                         .IsRequired()
                         .HasMaxLength(64)

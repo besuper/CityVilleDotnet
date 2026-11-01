@@ -29,6 +29,7 @@ public class GreenHouseHarvest(CityVilleDbContext context, IConfiguration config
             .Include(x => x.GlobalTableOverrides)
             .Include(x => x.FeatureRollCounters)
             .Include(x => x.PreyGroups)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");

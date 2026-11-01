@@ -18,6 +18,7 @@ public class GameItem
     [XmlAttribute("doNotInherit")] public string? DoNotInherit { get; set; }
     [XmlAttribute("type")] public required string Type { get; set; }
     [XmlAttribute("className")] public string? ClassName { get; set; }
+    [XmlAttribute("initialState")] public string? InitialState { get; set; }
     [XmlAttribute("behavior")] public string? Behavior { get; set; }
     [XmlAttribute("sellSendsToInventory")] public string? SellSendsToInventory { get; set; }
     [XmlIgnore] public bool IsSellSendsToInventory => SellSendsToInventory == "true";
@@ -132,6 +133,15 @@ public class GameItem
     [XmlElement("berthsquares")] public string? BerthSquares { get; set; }
     [XmlElement("supportedShipKeywords")] public string? SupportedShipKeywords { get; set; }
     [XmlElement("image")] public List<ImageItem> Images { get; set; } = [];
+    [XmlElement("anyData")] public List<AnyDataItem> AnyData { get; set; } = [];
+    [XmlElement("contractPlaceableOn")] public string? ContractPlaceableOn { get; set; }
+
+    public double GetAnyDataDouble(string key, double defaultValue)
+    {
+        var value = AnyData.FirstOrDefault(x => x.Key == key)?.Value;
+
+        return double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var result) ? result : defaultValue;
+    }
     [XmlElement("bridgeparts")] public BridgePartsContainer? BridgeParts { get; set; }
     [XmlElement("themeParkStorage")] public ThemeParkStorageContainer? ThemeParkStorage { get; set; }
     [XmlElement("keyword")] public List<string> Keywords { get; set; } = [];
@@ -451,6 +461,13 @@ public class ThemeParkSlotItem
 }
 
 [Serializable]
+public class AnyDataItem
+{
+    [XmlAttribute("key")] public required string Key { get; set; }
+    [XmlAttribute("value")] public string? Value { get; set; }
+}
+
+[Serializable]
 public class ItemRewardItem
 {
     [XmlAttribute("quantity")] public int Quantity { get; set; } = 1;
@@ -523,6 +540,7 @@ public class GatesItem
     [XmlAttribute("name")] public string? Name { get; set; }
     [XmlAttribute("type")] public string? Type { get; set; }
     [XmlAttribute("cashCost")] public int CashCost { get; set; }
+    [XmlAttribute("data")] public string? Data { get; set; }
     [XmlAttribute("masteryLevel")] public int MasteryLevel { get; set; }
     [XmlAttribute("dynamicTuning")] public string? DynamicTuning { get; set; }
     [XmlElement("key")] public required List<GateKey?> Keys { get; set; }

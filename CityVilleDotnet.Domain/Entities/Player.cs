@@ -202,6 +202,27 @@ public class Player
         }
     }
 
+    // MechanicDataGate::buyAll, only the investment returns of HarvestInvestmentMechanic are stored
+    public void BuyInvestmentGate(WorldObject obj, GatesItem gate)
+    {
+        if (gate.Type != "mechanic" || gate.Data != "investmentData") throw new Exception($"Gate {gate.Name} of {obj.ItemName} is not an investment gate");
+
+        var keys = gate.Keys.OfType<GateKey>().ToList();
+
+        if (keys.Any(x => x.Name != "coin")) throw new Exception($"Gate {gate.Name} of {obj.ItemName} has unsupported keys");
+
+        var totalAmount = keys.Sum(x => x.Amount);
+        var currentAmount = Math.Min(obj.InvestmentReturns, totalAmount);
+
+        if (gate.CashCost > 0 && totalAmount > 0 && currentAmount < totalAmount)
+        {
+            var progress = 1 - (double)(totalAmount - currentAmount) / totalAmount;
+            RemoveCash(Math.Max((int)Math.Floor((1 - progress) * gate.CashCost), 1));
+        }
+
+        obj.CompleteInvestmentReturns(totalAmount);
+    }
+
     public List<InventoryItem> ConsumeInventoryGate(GameItem buildingItem, string gateName)
     {
         var removed = new List<InventoryItem>();
@@ -430,6 +451,7 @@ public class Player
         AddCash(GameSettingsManager.Instance.GetSettings().CashGainedPerLevel * levelsGained);
 
         UpdateEnergy();
+        HandleQuestsProgress("gainLevels", amount: levelsGained);
     }
 
     public void CompleteTutorial()
@@ -524,6 +546,71 @@ public class Player
 
         if (contract.Cost > 0)
             RemoveCoins(contract.Cost.Value);
+    }
+
+    // PlantContractMechanic::plant
+    public void PlantMechanicContract(WorldObject obj, GameItem buildingItem, GameItem contract)
+    {
+        // MapResource::canPlantContract
+        if (contract.ContractPlaceableOn is null || !buildingItem.HasKeyword(contract.ContractPlaceableOn)) throw new Exception($"Can't plant {contract.Name} on {obj.ItemName}");
+
+        var costMultiplier = Math.Max(buildingItem.GetAnyDataDouble("contractPlantCostMultiplier", 1), 1);
+
+        if (contract.Cash > 0)
+        {
+            RemoveCash((int)(contract.Cash.Value * costMultiplier));
+        }
+        else if (contract.Cost > 0)
+        {
+            RemoveCoins((int)(contract.Cost.Value * costMultiplier));
+        }
+        else
+        {
+            throw new Exception($"Plant cost of {contract.Name} is not supported");
+        }
+
+        obj.PlantMechanicContract(contract.Name);
+    }
+
+    // InstaReadyContractMechanic::makeReady
+    public void InstaReadyMechanicContract(WorldObject obj, GameItem buildingItem)
+    {
+        var costMultiplier = buildingItem.GetAnyDataDouble("contractInstaReadyCostMultiplier", 1);
+
+        RemoveCash(obj.GetMechanicContractInstaReadyCost(costMultiplier));
+
+        obj.SetFullGrown();
+    }
+
+    // HarvestInvestmentMechanic + InvestmentFormulas::applyStockExchangePayouts
+    public string HarvestInvestment(WorldObject obj, GameItem buildingItem)
+    {
+        if (obj.ContractName is null || !obj.HasGrown()) throw new Exception($"Investment of {obj.ItemName} is not ready to harvest");
+
+        var contractName = obj.ContractName;
+        var goldBefore = Gold;
+        var modifiersName = obj.InvestmentCount switch
+        {
+            0 => "firstTime",
+            1 => "secondTime",
+            _ => null
+        };
+
+        CollectDoobersRewards(contractName, coinMultiplier: 1 + (buildingItem.HarvestMultiplier ?? 0) / 100.0, modifiersName: modifiersName);
+
+        // Shares are rolled once and paid for each share owned, without the building multiplier
+        var shareName = contractName + "_share";
+        var shares = CountInventoryItem(shareName);
+
+        if (shares > 0)
+        {
+            CollectDoobersRewards(shareName, coinMultiplier: shares);
+            RemoveItem(shareName, shares);
+        }
+
+        obj.HarvestInvestment(Gold - goldBefore);
+
+        return contractName;
     }
 
     public bool HasSeenFlag(string flag)
@@ -700,7 +787,7 @@ public class Player
     }
 
     // From Player::processRandomModifiers → processRandomModifiersWithTable → processRandomModifiersFromConfig
-    public List<int> CollectDoobersRewards(string itemName, string modifierGroupName = "default", int coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1)
+    public List<int> CollectDoobersRewards(string itemName, string modifierGroupName = "default", double coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1, string? modifiersName = null)
     {
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
         if (gameItem is null) return [];
@@ -708,7 +795,9 @@ public class Player
         var secureRands = new List<int>();
 
         // From Player::selectLocalRandomModifiers
-        var selectedModifiers = SelectRandomModifiers(gameItem, modifierGroupName, secureRands);
+        var selectedModifiers = modifiersName is null
+            ? SelectRandomModifiers(gameItem, modifierGroupName, secureRands)
+            : gameItem.RandomModifiersList.FirstOrDefault(rm => rm.Name == modifiersName)?.Modifiers;
 
         if (selectedModifiers is null || selectedModifiers.Count == 0) return secureRands;
 
@@ -859,7 +948,7 @@ public class Player
     }
 
     // From Player::processRandomModifiersFromConfig
-    private void ProcessModifiers(GameItem gameItem, List<RandomModifier> modifiers, List<int> secureRands, int coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1)
+    private void ProcessModifiers(GameItem gameItem, List<RandomModifier> modifiers, List<int> secureRands, double coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1)
     {
         foreach (var itemModifier in modifiers)
         {
@@ -929,7 +1018,7 @@ public class Player
         }
     }
 
-    private void ApplyRollRewards(Roll roll, double multiplier, int coinMultiplier = 1, double premiumGoodsMultiplier = 1)
+    private void ApplyRollRewards(Roll roll, double multiplier, double coinMultiplier = 1, double premiumGoodsMultiplier = 1)
     {
         foreach (var (rewardType, rewardElements) in roll.Rewards)
         {
@@ -1455,6 +1544,7 @@ public class Player
                         }
                         case "placeByKeyword":
                         case "harvestByKeyword":
+                        case "harvestMechanicContractByKeywords":
                         case "harvestBusinessByKeyword":
                         case "openBusinessByKeyword":
                         case "finishConstructionByKeyword":
@@ -1479,6 +1569,7 @@ public class Player
                                 quest.Progress[index] += amount;
                             break;
                         case "incrementalPopulationCount":
+                        case "gainLevels":
                             quest.Progress[index] += amount;
                             break;
                         case "capturePreyByID":
@@ -1496,6 +1587,12 @@ public class Player
                 if (actionTask.StartsWith("checkFarmville2Level"))
                 {
                     quest.Progress[index] = 1;
+                    continue;
+                }
+
+                if (actionTask == "gainLevels" && Level >= GameSettingsManager.Instance.GetSettings().HighestLevel)
+                {
+                    quest.Progress[index] = int.Parse(task.Total);
                     continue;
                 }
 

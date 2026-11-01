@@ -140,4 +140,22 @@
             <task action="seenQuest" type="qh_test_hidden" total="1"/>
         </tasks>
     </quest>
+    <quest name="qm_test_stock_exchange" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="startContractByName" type="test_contract_stock" total="1"/>
+            <task action="harvestContractByName" type="test_contract_stock" total="1"/>
+            <task action="harvestMechanicContractByKeywords" type="test_stock_exchange_contract" total="1"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
+    <quest name="qm_test_gain_levels" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="gainLevels" type="" total="2"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
 </quests>

@@ -29,6 +29,7 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
             .Include(x => x.GlobalTableOverrides)
             .Include(x => x.FeatureRollCounters)
             .Include(x => x.PreyGroups)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
         
         var visitOrder = player.VisitorHelpOrders.FirstOrDefault(x => x.SenderId == request.SenderId && x.HelpTargets.Contains(request.WorldObjectId));

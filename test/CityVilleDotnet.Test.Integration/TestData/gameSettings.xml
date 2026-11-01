@@ -16,7 +16,8 @@
              growMultiplier="1" cashGainedPerLevel="1"
              instantReadyCropCostConstant3="0.25" instantReadyResidenceCostConstant5="2.0"
              witherMultiplier="3.0" witherRefundMultiplier="0.5" businessUpgradesRequiredLevel="15"
-             boostGrowMultiplier="0.1" boostGrowInstantHourLimit="1" dailyCollectCycleTimeSeconds="86400" />
+             boostGrowMultiplier="0.1" boostGrowInstantHourLimit="1" dailyCollectCycleTimeSeconds="86400"
+             highestLevel="5" />
 
     <citysim>
         <populations>
@@ -937,6 +938,69 @@
             </randomModifiers>
             <gates/>
         </item>
+        <item name="test_stockexchange" type="peepCapacityResource" buyable="false">
+            <keyword>test_stock_exchange</keyword>
+            <energyCost harvest="1"/>
+            <gates>
+                <gate type="mechanic" name="upgrade_investment" data="investmentData" cashCost="48">
+                    <key name="coin" amount="1000"/>
+                </gate>
+                <gate type="status" name="upgrade_status" cashCost="50">
+                    <key name="upgradeActionCount" amount="10"/>
+                </gate>
+            </gates>
+            <anyData key="contractPlantCostMultiplier" value="1.5"/>
+            <anyData key="contractInstaReadyCostMultiplier" value="2"/>
+            <harvestMultiplier>50</harvestMultiplier>
+            <mechanics>
+                <gameEventMechanics gameMode="GMPlant">
+                    <mechanic type="contractPlant" className="PlantContractMechanic" priority="1" data="contract"/>
+                </gameEventMechanics>
+                <gameEventMechanics gameMode="GMPlay">
+                    <mechanic type="contractHarvest" className="HarvestInvestmentMechanic" priority="1" data="contract"/>
+                </gameEventMechanics>
+                <gameEventMechanics gameMode="InstaReadyClick">
+                    <mechanic type="contractInstaReady" className="InstaReadyContractMechanic" priority="1" data="contract"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_stockexchange_cheap" type="peepCapacityResource" derivesFrom="test_stockexchange" buyable="false">
+            <anyData key="contractPlantCostMultiplier" value="0.5"/>
+        </item>
+        <item name="test_contract_stock" type="contract" buyable="true" allowWither="false">
+            <keyword>test_stock_exchange_contract</keyword>
+            <contractPlaceableOn>test_stock_exchange</contractPlaceableOn>
+            <cost>1000</cost>
+            <growTime>0.5</growTime>
+            <randomModifiers name="default">
+                <modifier type="coin" tableName="test_stock_payouts"/>
+            </randomModifiers>
+            <randomModifiers name="firstTime">
+                <modifier type="coin" tableName="test_stock_payouts_first"/>
+            </randomModifiers>
+            <randomModifiers name="secondTime">
+                <modifier type="coin" tableName="test_stock_payouts_second"/>
+            </randomModifiers>
+            <gates/>
+        </item>
+        <item name="test_contract_stock_share" type="tool" buyable="false">
+            <randomModifiers>
+                <modifier type="coin" tableName="test_stock_share_payouts"/>
+            </randomModifiers>
+            <gates/>
+        </item>
+        <item name="test_contract_stock_cash" type="contract" buyable="true" allowWither="false">
+            <contractPlaceableOn>test_stock_exchange</contractPlaceableOn>
+            <cash>5</cash>
+            <growTime>0.5</growTime>
+            <gates/>
+        </item>
+        <item name="test_contract_elsewhere" type="contract" buyable="true" allowWither="false">
+            <contractPlaceableOn>test_other_building</contractPlaceableOn>
+            <cost>1000</cost>
+            <growTime>0.5</growTime>
+            <gates/>
+        </item>
     </items>
 
     <levels_cv_level_regrade_var_0>
@@ -996,6 +1060,26 @@
         <randomModifierTable type="mixed" name="test_bridge_coupon_table">
             <roll percent="100">
                 <not_spawnable type="coupon" name="test_bridge_coupon"/>
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="item" name="test_stock_payouts">
+            <roll percent="100">
+                <coin amount="100"/>
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="item" name="test_stock_payouts_first">
+            <roll percent="100">
+                <coin amount="300"/>
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="item" name="test_stock_payouts_second">
+            <roll percent="100">
+                <coin amount="200"/>
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="item" name="test_stock_share_payouts">
+            <roll percent="100">
+                <coin amount="10"/>
             </roll>
         </randomModifierTable>
     </randomModifierTables>

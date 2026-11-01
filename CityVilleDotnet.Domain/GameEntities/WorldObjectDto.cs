@@ -156,6 +156,15 @@ public static class WorldObjectDtoMapper
             dto.MechanicData["harvestEndTS"] = ServerUtils.ToUnixTimeSeconds(model.HarvestEndTime.Value);
         }
 
+        if (model.InvestmentCount > 0 || model.InvestmentReturns > 0)
+        {
+            dto.MechanicData["investmentData"] = new ASObject
+            {
+                { "coin", model.InvestmentReturns },
+                { "coin_numInvestments", model.InvestmentCount }
+            };
+        }
+
         if (model.RemodelItemName is not null)
         {
             dto.MechanicData["remodel"] = new ASObject
@@ -196,6 +205,15 @@ public static class WorldObjectDtoMapper
         }
 
         var gameItem = GameSettingsManager.Instance.GetItem(model.ItemName);
+
+        if (model.ContractName is not null && gameItem?.GetGameEventMechanic("contractPlant") is not null)
+        {
+            dto.MechanicData["contract"] = new ASObject
+            {
+                { "contractName", model.ContractName },
+                { "plantTime", (model.PlantTime ?? 0) / 1000 }
+            };
+        }
         
         if (gameItem?.IsTimedSupplyState() == true)
         {

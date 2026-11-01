@@ -76,6 +76,8 @@ public class WorldObject
     public string? ParentMacroObjectId { get; private set; }
     public string? CustomName { get; private set; }
     public DateTime? HarvestEndTime { get; private set; }
+    public int InvestmentReturns { get; private set; }
+    public int InvestmentCount { get; private set; }
     public List<CrewMember> CrewMembers { get; private set; } = [];
     public List<WorldObjectMechanicCounter> MechanicCounters { get; private set; } = [];
     public List<WorldObjectStorageItem> StorageItems { get; private set; } = [];
@@ -415,7 +417,8 @@ public class WorldObject
         ItemName = TargetBuildingName;
         ClassName = TargetBuildingClass.Value;
 
-        State = GetConstructedState(ClassName);
+        var initialState = GameSettingsManager.Instance.GetItem(ItemName)?.InitialState;
+        State = initialState is null ? GetConstructedState(ClassName) : EnumExtensions.EnumExtensions.ParseFromDescription<WorldObjectState>(initialState);
         PlantTime = ServerUtils.GetCurrentTime();
 
         Stage = null;
@@ -931,6 +934,32 @@ public class WorldObject
         {
             PlantTime -= visitBoost;
         }
+    }
+
+    public void PlantMechanicContract(string contractName)
+    {
+        if (State != WorldObjectState.Plowed) throw new Exception($"Can't plant {contractName} on {ItemName} in state {State}");
+
+        StartContract(contractName, WorldObjectState.Planted);
+    }
+
+    public int GetMechanicContractInstaReadyCost(double costMultiplier)
+    {
+        if (State != WorldObjectState.Planted || PlantTime is null) throw new Exception($"No contract to make ready on {ItemName}");
+
+        return (int)Math.Round(Math.Max(GetHoursUntilReady() * costMultiplier, 1), MidpointRounding.AwayFromZero);
+    }
+
+    public void HarvestInvestment(int returns)
+    {
+        InvestmentReturns += returns;
+        InvestmentCount++;
+        Plow();
+    }
+
+    public void CompleteInvestmentReturns(int amount)
+    {
+        InvestmentReturns = Math.Max(InvestmentReturns, amount);
     }
 
     // From HarvestableResource::setFullGrown
