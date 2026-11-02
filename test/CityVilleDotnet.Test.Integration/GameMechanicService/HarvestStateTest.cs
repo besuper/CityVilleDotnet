@@ -3,6 +3,7 @@ using CityVilleDotnet.Api.Services.GameMechanicService;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Factory.Player;
+using CityVilleDotnet.Factory.Quest;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
 using CityVilleDotnet.Test.Integration.Fixtures;
@@ -45,6 +46,24 @@ public class HarvestStateTest(DatabaseFixture fixture) : IntegrationTest(fixture
 
         var inventoryItem = await Context.Set<InventoryItem>().FirstOrDefaultAsync(x => x.Name == "test_population_add", TestContext.Current.CancellationToken);
         inventoryItem.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task HarvestState_KeywordQuest_ProgressesHarvestMechanicByKeywords()
+    {
+        var bridge = Faker.WorldObject(itemName: "test_bridge", className: BuildingClassType.Bridge, x: 10, y: 10, worldFlatId: 5);
+        var player = Faker.Player(world: Faker.World(objects: [bridge]));
+        var quest = Faker.Quest(name: "qm_test_keywords", length: 3);
+        player.Quests.Add(quest);
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new HarvestState(Context, new ConfigurationBuilder().Build());
+
+        await handler.HandlePacket(new HarvestStateRequest { ObjectId = 5 }, player.Id, TestContext.Current.CancellationToken);
+
+        quest.Progress.Should().Equal(1, 0, 0);
     }
 
     [Fact]

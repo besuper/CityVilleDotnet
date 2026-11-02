@@ -19,14 +19,14 @@
 
 <!-- progress:start -->
 ## Implementation progress
-_Last update: 2026-10-31 · 🟡 = partial_
+_Last update: 2026-11-02 · 🟡 = partial_
 
 | | Progress | |
 |---|---|---|
-| Client transactions | <img src="docs/progress/transactions.svg" alt="31%"> 31% | 72 ✅ · 19 🟡 · 141 ❌ |
-| World actions | <img src="docs/progress/world_actions.svg" alt="57%"> 57% | 21 ✅ · 2 🟡 · 14 ❌ |
-| Quest task actions | <img src="docs/progress/quest_actions.svg" alt="92%"> 92% | 72 ✅ · 0 🟡 · 109 ❌ (% weighted by use) |
-| Completable quests | <img src="docs/progress/quests.svg" alt="74%"> 74% | 975 / 1312 |
+| Client transactions | <img src="docs/progress/transactions.svg" alt="32%"> 32% | 74 ✅ · 20 🟡 · 138 ❌ |
+| World actions | <img src="docs/progress/world_actions.svg" alt="57%"> 57% | 21 ✅ · 3 🟡 · 13 ❌ |
+| Quest task actions | <img src="docs/progress/quest_actions.svg" alt="93%"> 93% | 77 ✅ · 2 🟡 · 102 ❌ (% weighted by use) |
+| Completable quests | <img src="docs/progress/quests.svg" alt="82%"> 82% | 1075 / 1312 |
 <!-- progress:end -->
 
 ## Getting Started

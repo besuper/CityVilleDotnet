@@ -3,6 +3,7 @@ using CityVilleDotnet.Api.Services.VisitorService;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Factory.Player;
+using CityVilleDotnet.Factory.Quest;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
 using CityVilleDotnet.Test.Integration.Fixtures;
@@ -62,6 +63,19 @@ public class HelpTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         visitor.Gold.Should().Be(goldBefore + 25);
         visitor.Goods.Should().Be(goodsBefore);
         visitor.SocialXp.Should().Be(socialXpBefore + 1);
+    }
+
+    [Fact]
+    public async Task Help_PublicVisitorHelpQuest_ProgressesListedHelpType()
+    {
+        var (visitor, owner) = await SeedFriends();
+        var quest = Faker.Quest(name: "qm_test_public_visitor_help", length: 1);
+        visitor.Quests.Add(quest);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        await new Help(Context, NullLogger<Help>.Instance).HandlePacket(CreateRequest("plotWater", visitor, owner), visitor.Id, TestContext.Current.CancellationToken);
+
+        quest.Progress.Should().Equal(1);
     }
 
     [Fact]

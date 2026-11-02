@@ -64,6 +64,7 @@ public partial class Player
                         case "storeItemByClass":
                         case "finishConstructionByClass":
                         case "instantReadyByClass":
+                        case "publicVisitorHelpTypeGlobal":
                         case "neighborVisit": // This case is special, if type is empty we accept everything, if not we have to check if it matches who we visit
                         {
                             if (className is null)
@@ -112,6 +113,7 @@ public partial class Player
                         case "placeByKeyword":
                         case "harvestByKeyword":
                         case "harvestMechanicContractByKeywords":
+                        case "harvestMechanicByKeywords":
                         case "harvestBusinessByKeyword":
                         case "openBusinessByKeyword":
                         case "finishConstructionByKeyword":
@@ -121,8 +123,7 @@ public partial class Player
                             if (gameItem is null)
                                 throw new Exception("Can't validate byKeyword action without gameItem");
 
-                            if (gameItem.HasKeyword(taskType))
-                                quest.Progress[index] += 1;
+                            quest.Progress[index] += (splitType ?? [taskType]).Count(gameItem.HasKeyword);
 
                             break;
                         case "visitorHelp":
@@ -151,9 +152,20 @@ public partial class Player
                     }
                 }
 
-                if (actionTask.StartsWith("checkFarmville2Level"))
+                // Cross-promo games don't exist anymore
+                if (actionTask.StartsWith("checkFarmville2Level") || actionTask.StartsWith("checkChefVilleLevel") || actionTask is "checkXpromoGameLevel" or "checkBubbleSafariLevel")
                 {
-                    quest.Progress[index] = 1;
+                    quest.Progress[index] = int.Parse(task.Total);
+                    continue;
+                }
+
+                if (actionTask == "unlockIncentivizedExpansion")
+                {
+                    if (Worlds.Any(w => w.Type == LastPlayedWorldType && w.HasCompletedIncentivizedExpansion(splitType ?? [taskType])))
+                    {
+                        quest.Progress[index] = 1;
+                    }
+
                     continue;
                 }
 

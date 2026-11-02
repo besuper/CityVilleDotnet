@@ -33,6 +33,7 @@ public class ContractHarvestTest(DatabaseFixture fixture) : IntegrationTest(fixt
         building.SetFullGrown();
         player.AddItem("test_contract_stock_share", 2);
         player.Quests.Add(Faker.Quest(name: "qm_test_stock_exchange", length: 3));
+        player.Quests.Add(Faker.Quest(name: "qm_test_keywords", length: 3));
         var energyBefore = player.Energy;
 
         await Context.AddAsync(player, TestContext.Current.CancellationToken);
@@ -53,6 +54,7 @@ public class ContractHarvestTest(DatabaseFixture fixture) : IntegrationTest(fixt
         storedPlayer.Energy.Should().Be(energyBefore - 1);
         storedPlayer.CountInventoryItem("test_contract_stock_share").Should().Be(0);
         storedPlayer.Quests.First(x => x.Name == "qm_test_stock_exchange").Progress.Should().Equal(0, 1, 1);
+        storedPlayer.Quests.First(x => x.Name == "qm_test_keywords").Progress.Should().Equal(0, 0, 1);
 
         var storedBuilding = await Context.Set<WorldObject>().AsNoTracking().FirstAsync(x => x.Id == building.Id, TestContext.Current.CancellationToken);
         storedBuilding.State.Should().Be(WorldObjectState.Plowed);

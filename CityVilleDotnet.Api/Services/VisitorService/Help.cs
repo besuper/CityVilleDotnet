@@ -77,6 +77,7 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
         if (targetFriend.EnergyLeft <= 0) return GatewayService.CreateEmptyResponse();
 
         currentUser.HandleQuestsProgress("visitorHelp", request.Type);
+        currentUser.HandleQuestsProgress("publicVisitorHelpTypeGlobal", request.Type);
 
         var world = targetFriend.FriendPlayer.GetWorldByType(WorldType.Main) ?? throw new Exception("Main world not loaded");
 

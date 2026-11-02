@@ -52,6 +52,7 @@ public sealed class HarvestEndTS(CityVilleDbContext context, IConfiguration conf
 
         player.HandleQuestsProgress("harvestByClass", className: obj.GetClassName().ToString());
         player.HandleQuestsProgress("harvestByKeyword", itemName: obj.GetItemName());
+        player.HandleQuestsProgress("harvestMechanicByKeywords", itemName: obj.GetItemName());
         player.HandleQuestsProgress("harvestItemByName", itemName: obj.ItemName);
         player.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);
         player.HandleQuestsProgress("harvestResidenceByRegEx", itemName: obj.ItemName);

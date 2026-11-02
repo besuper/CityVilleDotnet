@@ -3,6 +3,7 @@ using CityVilleDotnet.Api.Services.GameMechanicService;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Factory.Player;
+using CityVilleDotnet.Factory.Quest;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
 using CityVilleDotnet.Test.Integration.Fixtures;
@@ -41,6 +42,25 @@ public class HarvestEndTSTest(DatabaseFixture fixture) : IntegrationTest(fixture
         player.Energy.Should().Be(energyBefore - 2);
         skyscraper.HarvestEndTime.Should().Be(StartTime.UtcDateTime.AddSeconds(3600));
         skyscraper.UpgradeActionCount.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task HarvestEndTS_KeywordQuest_ProgressesKeywordTasks()
+    {
+        ServerUtils.TimeProvider = new FakeTimeProvider(StartTime);
+        var skyscraper = Faker.WorldObject(itemName: "test_skyscraper", className: BuildingClassType.Skyscraper, worldFlatId: 42);
+        var player = Faker.Player(world: Faker.World(objects: [skyscraper]));
+        var quest = Faker.Quest(name: "qm_test_keywords", length: 3);
+        player.Quests.Add(quest);
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new HarvestEndTS(Context, new ConfigurationBuilder().Build());
+
+        await handler.HandlePacket(new HarvestEndTSRequest { ObjectId = 42, GameMode = "GMPlay" }, player.Id, TestContext.Current.CancellationToken);
+
+        quest.Progress.Should().Equal(1, 1, 0);
     }
 
     [Fact]

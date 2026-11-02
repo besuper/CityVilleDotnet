@@ -449,6 +449,11 @@ public partial class World
         return expansion;
     }
 
+    public bool HasCompletedIncentivizedExpansion(string[] expansionIds)
+    {
+        return IncentivizedExpansions.Any(x => x.IsCompleted && expansionIds.Contains(x.ExpansionId));
+    }
+
     public void AddMapRect(MapRect mapRect)
     {
         // FIXME: Check if this map already exist

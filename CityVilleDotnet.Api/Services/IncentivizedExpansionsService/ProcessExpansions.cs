@@ -21,6 +21,7 @@ public class ProcessExpansions(CityVilleDbContext context, ILogger<ProcessExpans
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x.IncentivizedExpansions)
             .Include(x => x.InventoryItems)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Can't find player");
@@ -186,6 +187,8 @@ public class ProcessExpansions(CityVilleDbContext context, ILogger<ProcessExpans
                     break;
             }
         }
+
+        player.HandleQuestsProgress("");
 
         await context.SaveChangesAsync(cancellationToken);
 

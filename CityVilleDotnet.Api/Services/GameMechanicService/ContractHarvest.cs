@@ -50,6 +50,7 @@ public class ContractHarvest(CityVilleDbContext context) : AmfService<ContractHa
 
         player.HandleQuestsProgress("harvestContractByName", itemName: contractName);
         player.HandleQuestsProgress("harvestMechanicContractByKeywords", itemName: contractName);
+        player.HandleQuestsProgress("harvestMechanicByKeywords", itemName: obj.GetItemName());
 
         await context.SaveChangesAsync(cancellationToken);
 

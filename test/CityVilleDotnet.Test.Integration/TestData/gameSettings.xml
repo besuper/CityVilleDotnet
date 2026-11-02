@@ -26,6 +26,13 @@
     </citysim>
 
     <items>
+        <item name="test_kw_item" type="decoration" buyable="false">
+            <keyword>test_kw_a</keyword>
+            <keyword>test_kw_b</keyword>
+        </item>
+        <item name="test_kw_other" type="decoration" buyable="false">
+            <keyword>test_kw_c</keyword>
+        </item>
         <item name="bus_bakery" type="business" buyable="true">
             <keyword>Business</keyword>
             <keyword>Business_Restaurant</keyword>
@@ -367,6 +374,7 @@
             </mechanics>
         </item>
         <item name="test_bridge" type="bridge" buyable="false">
+            <keyword>test_kw_b</keyword>
             <sizeX>3</sizeX>
             <sizeY>3</sizeY>
             <energyCost harvest="5"/>
@@ -376,6 +384,7 @@
             <gates/>
         </item>
         <item name="test_skyscraper" type="skyscraper" buyable="false">
+            <keyword>test_kw_a</keyword>
             <growTime>1</growTime>
             <sizeX>3</sizeX>
             <sizeY>3</sizeY>
@@ -1248,4 +1257,7 @@
             </modes>
         </preyGroup>
     </preyGroups>
+    <dynamicExpansions>
+        <dynamicExpansion id="test_expansion_a"/>
+    </dynamicExpansions>
 </settings>

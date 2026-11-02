@@ -158,4 +158,41 @@
             <questRewards xp="5"/>
         </resourceModifiers>
     </quest>
+    <quest name="qm_test_keywords" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="harvestMechanicByKeywords" type="test_kw_a,test_kw_b" total="5"/>
+            <task action="harvestByKeyword" type="test_kw_a" total="5"/>
+            <task action="harvestMechanicByKeywords" type="test_stock_exchange" total="1"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
+    <quest name="qm_test_incentivized_expansion" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="unlockIncentivizedExpansion" type="test_expansion_a,test_expansion_b" total="1"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
+    <quest name="qm_test_public_visitor_help" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="publicVisitorHelpTypeGlobal" type="plotWater,plotRevive" total="5"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
+    <quest name="qm_test_cross_promo" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="checkXpromoGameLevel" type="test_xpromo" total="10"/>
+            <task action="checkBubbleSafariLevel" type="" total="20"/>
+            <task action="checkChefVilleLevel4" type="" total="1"/>
+            <task action="checkFarmville2Level10" type="" total="1"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
 </quests>
