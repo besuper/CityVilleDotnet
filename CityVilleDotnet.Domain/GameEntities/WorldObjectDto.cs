@@ -140,10 +140,17 @@ public static class WorldObjectDtoMapper
 
         if (model.ParentMacroObjectId is not null)
         {
-            dto.MechanicData["macroObject"] = new ASObject
+            var macroObjectData = new ASObject
             {
                 { "parentMacroObjectId", model.ParentMacroObjectId }
             };
+
+            if (model.IsMacroObjectCandidate)
+            {
+                macroObjectData["isCandidate"] = "true";
+            }
+
+            dto.MechanicData["macroObject"] = macroObjectData;
         }
 
         if (model.CustomName is not null)

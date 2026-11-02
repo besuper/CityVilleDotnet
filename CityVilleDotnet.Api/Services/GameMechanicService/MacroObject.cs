@@ -12,7 +12,10 @@ public class MacroObject(CityVilleDbContext context) : AmfService<MacroObjectReq
 {
     public override async Task<ASObject> HandlePacket(MacroObjectRequest request, Guid playerId, CancellationToken cancellationToken)
     {
-        if (request.Params.Operation != "performExplode")
+        if (request.Params.Operation == "sellCandidate")
+            return GatewayService.CreateEmptyResponse();
+
+        if (request.Params.Operation is not ("performExplode" or "placeCandidate" or "moveCandidate"))
             throw new Exception($"Unsupported macroObject operation {request.Params.Operation}");
 
         var player = await context.Set<Player>()
@@ -21,9 +24,7 @@ public class MacroObject(CityVilleDbContext context) : AmfService<MacroObjectReq
             .ThenInclude(x => x.Objects)
             .ThenInclude(x => x.MechanicCounters)
             .Include(x => x.InventoryItems)
-            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
-
-        if (player is null) throw new Exception("Player not found");
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         var world = player.GetWorld();
 
@@ -34,23 +35,38 @@ public class MacroObject(CityVilleDbContext context) : AmfService<MacroObjectReq
         var mechanic = gameItem.Mechanics?.GetMechanicByGameMode(request.GameMode)?.GetMechanicItemByType("macroObject")
                        ?? throw new Exception($"No macroObject mechanic found for {owner.ItemName} in game mode {request.GameMode}");
 
-        if (mechanic.ExplodeToRect is null || mechanic.MacroPrefix is null)
-            throw new Exception($"No explodeToRect or macroPrefix defined on macroObject mechanic for {owner.ItemName}");
-
-        var worldRect = GameSettingsManager.Instance.GetWorldRect(mechanic.ExplodeToRect)
-                        ?? throw new Exception($"Can't find world rect {mechanic.ExplodeToRect}");
-
-        if (mechanic.GateName is not null)
+        if (request.Params.Operation == "placeCandidate")
         {
-            foreach (var consumed in player.ConsumeInventoryGate(gameItem, mechanic.GateName))
-                context.Set<InventoryItem>().Remove(consumed);
+            world.PlaceMacroObjectCandidate(owner, mechanic.PlacementValidator ?? throw new Exception($"No placementValidator defined on macroObject mechanic for {owner.ItemName}"));
         }
+        else if (request.Params.Operation == "moveCandidate")
+        {
+            owner.DetachFromMacroObject();
+        }
+        else
+        {
+            if (mechanic.ExplodeToRect is null || mechanic.MacroPrefix is null)
+                throw new Exception($"No explodeToRect or macroPrefix defined on macroObject mechanic for {owner.ItemName}");
 
-        var children = world.Explode(owner, worldRect, request.Params.TempIds.ToDictionary(x => x.Key, x => Convert.ToInt32(x.Value)));
-        world.CreateMacroObject(mechanic.MacroPrefix, owner.ItemName, children);
-        context.Remove(owner);
+            var worldRect = GameSettingsManager.Instance.GetWorldRect(mechanic.ExplodeToRect)
+                            ?? throw new Exception($"Can't find world rect {mechanic.ExplodeToRect}");
 
-        world.CalculatePopulation();
+            if (mechanic.GateName is not null)
+            {
+                foreach (var consumed in player.ConsumeInventoryGate(gameItem, mechanic.GateName))
+                {
+                    context.Set<InventoryItem>().Remove(consumed);
+                }
+            }
+
+            var tempIds = request.Params.TempIds ?? throw new Exception("Missing tempIds for performExplode");
+
+            var children = world.Explode(owner, worldRect, tempIds.ToDictionary(x => x.Key, x => Convert.ToInt32(x.Value)));
+            world.CreateMacroObject(mechanic.MacroPrefix, owner.ItemName, children);
+            context.Remove(owner);
+
+            world.CalculatePopulation();
+        }
 
         await context.SaveChangesAsync(cancellationToken);
 
@@ -68,5 +84,5 @@ public class MacroObjectRequest
 public class MacroObjectParamsRequest
 {
     [AmfParam("operation")] public string Operation { get; set; } = string.Empty;
-    [AmfParam("tempIds")] public ASObject TempIds { get; set; } = [];
+    [AmfParam("tempIds")] public ASObject? TempIds { get; set; }
 }

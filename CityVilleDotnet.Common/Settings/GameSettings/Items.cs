@@ -745,6 +745,15 @@ public class MasteryItem
         get => RequiredCount?.ToString();
         set => RequiredCount = string.IsNullOrEmpty(value) ? null : int.Parse(value);
     }
+
+    [XmlIgnore] public int? CashCost { get; set; }
+
+    [XmlAttribute("cashCost")]
+    public string? CashCostString
+    {
+        get => CashCost?.ToString();
+        set => CashCost = string.IsNullOrEmpty(value) ? null : int.Parse(value);
+    }
 }
 
 [Serializable]
@@ -789,6 +798,16 @@ public class MechanicItem
     [XmlAttribute("className")] public string? ClassName { get; set; }
     [XmlAttribute("explodeToRect")] public string? ExplodeToRect { get; set; }
     [XmlAttribute("macroPrefix")] public string? MacroPrefix { get; set; }
+    [XmlAttribute("placementValidator")] public string? PlacementValidator { get; set; }
+    [XmlAttribute("payoutMultipliers")] public string? PayoutMultipliers { get; set; }
+    [XmlIgnore] public int? Mastery { get; set; }
+
+    [XmlAttribute("mastery")]
+    public string? MasteryString
+    {
+        get => Mastery?.ToString();
+        set => Mastery = string.IsNullOrEmpty(value) ? null : int.Parse(value);
+    }
     [XmlAttribute("type")] public string? Type { get; set; }
     [XmlAttribute("consumableType")] public string? ConsumableType { get; set; }
     [XmlAttribute("consumableQuantity")] public int ConsumableQuantity { get; set; }

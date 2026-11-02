@@ -74,6 +74,7 @@ public class WorldObject
     public string? RemodelItemName { get; private set; }
     public int? RemodelBuilds { get; private set; }
     public string? ParentMacroObjectId { get; private set; }
+    public bool IsMacroObjectCandidate { get; private set; }
     public string? CustomName { get; private set; }
     public DateTime? HarvestEndTime { get; private set; }
     public int InvestmentReturns { get; private set; }
@@ -121,6 +122,25 @@ public class WorldObject
     public void AttachToMacroObject(string macroObjectName)
     {
         ParentMacroObjectId = macroObjectName;
+    }
+
+    public void AttachToMacroObjectAsCandidate(string macroObjectName)
+    {
+        ParentMacroObjectId = macroObjectName;
+        IsMacroObjectCandidate = true;
+    }
+
+    public void DetachFromMacroObject()
+    {
+        ParentMacroObjectId = null;
+        IsMacroObjectCandidate = false;
+    }
+
+    public (int Width, int Height) GetSize(GameItem item)
+    {
+        var isRotated = Direction % 2 == 1;
+
+        return ((isRotated ? item.SizeY : item.SizeX) ?? 0, (isRotated ? item.SizeX : item.SizeY) ?? 0);
     }
 
     public int GetBonusPopulation()
@@ -790,6 +810,11 @@ public class WorldObject
         Y = y;
         Z = z;
         Direction = direction;
+
+        if (IsMacroObjectCandidate)
+        {
+            DetachFromMacroObject();
+        }
     }
 
     public void StartContract(string contractName, WorldObjectState state, long? plantTime = null)
@@ -1026,6 +1051,24 @@ public class WorldObject
         return Math.Max(Math.Ceiling(baseCost), 1) * (1 + (gameItem.HarvestMultiplier ?? 0) / 100.0);
     }
 
+    // Airplane::getUnroundedCashCostToMakeReady
+    private double AirplaneCostToMakeReady()
+    {
+        if (State != WorldObjectState.Planted || PlantTime is null) return 0;
+
+        var settings = GameSettingsManager.Instance.GetSettings();
+        var growTime = GameSettingsManager.Instance.GetItem(GetItemName())?.GrowTime ?? 0;
+        var timeLeftMs = Math.Round(growTime * settings.InGameDaySeconds * 1000.0 * settings.GrowMultiplier) - (ServerUtils.GetCurrentTime() - PlantTime.Value);
+
+        return Math.Max(timeLeftMs / 3600000.0 / (growTime * 24 * settings.GrowMultiplier * 2) + 0.5, 0.501);
+    }
+
+    // Airplane::allowInstantReady
+    public bool AllowsInstantReady()
+    {
+        return ClassName != BuildingClassType.Airplane || GameSettingsManager.Instance.GetItem(ItemName)?.HasKeyword("noInstantReady") != true;
+    }
+
     public double GetUnroundedCostToMakeReady()
     {
         return ClassName switch
@@ -1034,6 +1077,7 @@ public class WorldObject
             BuildingClassType.Ship => ShipCostToMakeReady(),
             BuildingClassType.HarvestableShip => ShipCostToMakeReady(),
             BuildingClassType.Residence => ResidenceCostToMakeReady(),
+            BuildingClassType.Airplane => AirplaneCostToMakeReady(),
             _ => throw new NotImplementedException()
         };
     }

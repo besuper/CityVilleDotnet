@@ -38,7 +38,7 @@ public class MakeTypeInstantReady(CityVilleDbContext context, ILogger<MakeTypeIn
 
         var world = player.GetWorld();
 
-        var buildings = world.Objects.Where(o => o.ClassName == buildingType && o.State == WorldObjectState.Planted && !o.HasGrown()).ToList();
+        var buildings = world.Objects.Where(o => o.ClassName == buildingType && o.State == WorldObjectState.Planted && !o.HasGrown() && o.AllowsInstantReady()).ToList();
 
         var cost = (int)Math.Max(Math.Ceiling(buildings.Sum(x => x.GetUnroundedCostToMakeReady())), 1);
 

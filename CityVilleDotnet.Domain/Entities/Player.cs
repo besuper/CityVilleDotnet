@@ -564,6 +564,10 @@ public class Player
         {
             RemoveCoins((int)(contract.Cost.Value * costMultiplier));
         }
+        else if ((contract.CommodityRequired > 0 ? contract.CommodityRequired : contract.Goods) is > 0 and var goodsCost)
+        {
+            RemoveGoods((int)(goodsCost * costMultiplier));
+        }
         else
         {
             throw new Exception($"Plant cost of {contract.Name} is not supported");
@@ -580,6 +584,26 @@ public class Player
         RemoveCash(obj.GetMechanicContractInstaReadyCost(costMultiplier));
 
         obj.SetFullGrown();
+    }
+
+    // HarvestContractMechanic::processHarvest
+    public string HarvestMechanicContract(WorldObject obj, GameItem buildingItem, MechanicItem mechanic)
+    {
+        if (obj.ContractName is null || !obj.HasGrown()) throw new Exception($"Contract of {obj.ItemName} is not ready to harvest");
+
+        var contractName = obj.ContractName;
+        var goodsMultiplier = mechanic.PayoutMultipliers?.Contains("goods") == true ? 1 + (buildingItem.HarvestMultiplier ?? 0) / 100.0 : 1;
+
+        CollectDoobersRewards(contractName, goodsMultiplier: goodsMultiplier);
+
+        if (GameSettingsManager.Instance.GetItem(contractName)?.HasMasteries() == true)
+        {
+            IncrementMastery(contractName, mechanic.Mastery ?? 1);
+        }
+
+        obj.Plow();
+
+        return contractName;
     }
 
     // HarvestInvestmentMechanic + InvestmentFormulas::applyStockExchangePayouts
@@ -787,7 +811,7 @@ public class Player
     }
 
     // From Player::processRandomModifiers → processRandomModifiersWithTable → processRandomModifiersFromConfig
-    public List<int> CollectDoobersRewards(string itemName, string modifierGroupName = "default", double coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1, string? modifiersName = null)
+    public List<int> CollectDoobersRewards(string itemName, string modifierGroupName = "default", double coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1, string? modifiersName = null, double goodsMultiplier = 1)
     {
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
         if (gameItem is null) return [];
@@ -815,7 +839,7 @@ public class Player
             modifiers.AddRange(SelectGlobalTableModifiers(gameItem));
 
         // process each modifier (processRandomModifiersFromConfig)
-        ProcessModifiers(gameItem, modifiers, secureRands, coinMultiplier, construction, premiumGoodsMultiplier);
+        ProcessModifiers(gameItem, modifiers, secureRands, coinMultiplier, construction, premiumGoodsMultiplier, goodsMultiplier);
 
         return secureRands;
     }
@@ -948,7 +972,7 @@ public class Player
     }
 
     // From Player::processRandomModifiersFromConfig
-    private void ProcessModifiers(GameItem gameItem, List<RandomModifier> modifiers, List<int> secureRands, double coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1)
+    private void ProcessModifiers(GameItem gameItem, List<RandomModifier> modifiers, List<int> secureRands, double coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1, double goodsMultiplier = 1)
     {
         foreach (var itemModifier in modifiers)
         {
@@ -1008,7 +1032,7 @@ public class Player
 
                     if (secureRand < currentRollPercent && !found)
                     {
-                        ApplyRollRewards(roll, itemModifier.Multiplier, coinMultiplier, premiumGoodsMultiplier);
+                        ApplyRollRewards(roll, itemModifier.Multiplier, coinMultiplier, premiumGoodsMultiplier, goodsMultiplier);
                         found = true;
                     }
 
@@ -1018,7 +1042,7 @@ public class Player
         }
     }
 
-    private void ApplyRollRewards(Roll roll, double multiplier, double coinMultiplier = 1, double premiumGoodsMultiplier = 1)
+    private void ApplyRollRewards(Roll roll, double multiplier, double coinMultiplier = 1, double premiumGoodsMultiplier = 1, double goodsMultiplier = 1)
     {
         foreach (var (rewardType, rewardElements) in roll.Rewards)
         {
@@ -1061,9 +1085,10 @@ public class Player
 
                         break;
                     case "food" or "goods":
-                        if (amount <= 0) break;
-                        AddGoods(amount);
-                        StaticLogger.Current.LogDebug("Found goods {GoodsAmount}", amount);
+                        var goodsAmount = (int)Math.Ceiling(element.Amount / roll.Divisor * multiplier * goodsMultiplier);
+                        if (goodsAmount <= 0) break;
+                        AddGoods(goodsAmount);
+                        StaticLogger.Current.LogDebug("Found goods {GoodsAmount}", goodsAmount);
                         break;
                     case "premium_goods":
                         var premiumGoodsAmount = (int)Math.Ceiling(element.Amount / roll.Divisor * multiplier * premiumGoodsMultiplier);

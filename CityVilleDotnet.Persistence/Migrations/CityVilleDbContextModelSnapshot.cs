@@ -1195,6 +1195,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<int>("InvestmentReturns")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsMacroObjectCandidate")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ItemName")
                         .IsRequired()
                         .HasMaxLength(64)

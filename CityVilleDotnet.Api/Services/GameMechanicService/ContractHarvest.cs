@@ -26,6 +26,7 @@ public class ContractHarvest(CityVilleDbContext context) : AmfService<ContractHa
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.GlobalTableOverrides)
             .Include(x => x.FeatureRollCounters)
+            .Include(x => x.Masteries)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         var obj = player.GetWorld().GetBuildingByClientId(request.ObjectId);
@@ -35,14 +36,17 @@ public class ContractHarvest(CityVilleDbContext context) : AmfService<ContractHa
         var mechanic = gameItem.Mechanics?.GetMechanicByGameMode(request.GameMode)?.GetMechanicItemByType("contractHarvest")
                        ?? throw new Exception($"No contractHarvest mechanic found for {obj.ItemName} in game mode {request.GameMode}");
 
-        if (mechanic.ClassName != "HarvestInvestmentMechanic") throw new Exception($"Contract harvest {mechanic.ClassName} is not supported");
-
         if (gameItem.EnergyCost?.Harvest is not null)
         {
             player.RemoveEnergy(int.Parse(gameItem.EnergyCost.Harvest));
         }
 
-        var contractName = player.HarvestInvestment(obj, gameItem);
+        var contractName = mechanic.ClassName switch
+        {
+            "HarvestInvestmentMechanic" => player.HarvestInvestment(obj, gameItem),
+            "HarvestContractMechanic" or "HarvestPeepContractMechanic" => player.HarvestMechanicContract(obj, gameItem, mechanic),
+            _ => throw new Exception($"Contract harvest {mechanic.ClassName} is not supported")
+        };
 
         player.HandleQuestsProgress("harvestContractByName", itemName: contractName);
         player.HandleQuestsProgress("harvestMechanicContractByKeywords", itemName: contractName);
