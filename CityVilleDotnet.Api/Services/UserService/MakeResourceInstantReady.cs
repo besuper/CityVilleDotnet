@@ -2,6 +2,7 @@ using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
@@ -26,6 +27,28 @@ public class MakeResourceInstantReady(CityVilleDbContext context, ILogger<MakeRe
         var obj = world.GetBuildingByClientId(request.BuildingId);
 
         if (obj is null) throw new Exception("Building not found");
+
+        // A business is only made ready by hailing a taxi
+        if (obj.GetClassName().IsBusiness())
+        {
+            var taxiDispatches = await context.Set<Player>()
+                .Where(x => x.Id == playerId)
+                .SelectMany(x => x.Worlds)
+                .SelectMany(x => x.Objects)
+                .Where(x => x.ClassName == BuildingClassType.TaxiDispatch)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            if (!obj.MakeReadyByTaxi() || !player.UseTaxiInstaHarvest(taxiDispatches))
+            {
+                return new CityVilleResponse().Error(GameErrorType.InvalidState);
+            }
+
+            player.HandleQuestsProgress("instantReadyByClass", className: obj.ClassName.ToString());
+
+            await context.SaveChangesAsync(cancellationToken);
+            return GatewayService.CreateEmptyResponse();
+        }
 
         if (obj.State != WorldObjectState.Planted)
             return new CityVilleResponse().Error(GameErrorType.InvalidState);

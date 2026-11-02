@@ -62,6 +62,7 @@ public class WorldObject
     public string? ItemOwner { get; private set; }
     public int? Visits { get; private set; }
     public bool NeverOpened { get; private set; }
+    public bool IsTaxiReady { get; private set; }
     public int? UpgradeActionCount { get; private set; }
     public int? UpgradeActionCount2 { get; private set; }
     public string? UpgradeItemName { get; private set; }
@@ -560,10 +561,38 @@ public class WorldObject
         Workers.Clear();
     }
 
+    public int GetTaxiMaxInstaHarvests()
+    {
+        return ItemName switch
+        {
+            "mun_taxi_dispatch_2" => 6,
+            "mun_taxi_dispatch_3" => 9,
+            _ => 3
+        };
+    }
+
+    public bool MakeReadyByTaxi()
+    {
+        if (!GetClassName().IsBusiness() || (State != WorldObjectState.Open && State != WorldObjectState.ClosedHarvestable))
+        {
+            return false;
+        }
+
+        if (State == WorldObjectState.Open)
+        {
+            Visits = GameSettingsManager.Instance.GetItem(ItemName)?.CommodityRequired ?? throw new Exception("Can't find max visits for business building");
+            State = WorldObjectState.ClosedHarvestable;
+        }
+
+        IsTaxiReady = true;
+        return true;
+    }
+
     public (int CoinYield, int CashYield) Harvest(long? plantTime = null)
     {
         var coinYield = 0;
         var cashYield = 0;
+        IsTaxiReady = false;
 
         if (ContractName is not null)
         {

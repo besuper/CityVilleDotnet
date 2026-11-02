@@ -24,6 +24,8 @@ public class Player
     public bool MusicDisabled { get; private set; }
     public bool NightModeActive { get; private set; }
     public bool WeatherEffectDisabled { get; private set; }
+    public int TaxiNumInstaHarvests { get; private set; }
+    public double TaxiLastResetTime { get; private set; }
     public List<InventoryItem> InventoryItems { get; set; } = [];
     public int Gold { get; private set; }
     public int Goods { get; private set; }
@@ -494,6 +496,23 @@ public class Player
     public void AddCoins(int amount)
     {
         Gold += amount;
+    }
+
+    public bool UseTaxiInstaHarvest(IReadOnlyCollection<WorldObject> taxiDispatches)
+    {
+        if (Level < 25 || taxiDispatches.Count == 0 || TaxiNumInstaHarvests >= taxiDispatches.Max(x => x.GetTaxiMaxInstaHarvests()))
+        {
+            return false;
+        }
+
+        TaxiNumInstaHarvests++;
+        return true;
+    }
+
+    public void ResetTaxiInstaHarvests(double resetTime)
+    {
+        TaxiNumInstaHarvests = 0;
+        TaxiLastResetTime = resetTime;
     }
 
     public void RemoveCoins(int amount)

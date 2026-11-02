@@ -737,6 +737,12 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Property<int>("SocialXp")
                         .HasColumnType("int");
 
+                    b.Property<double>("TaxiLastResetTime")
+                        .HasColumnType("float");
+
+                    b.Property<int>("TaxiNumInstaHarvests")
+                        .HasColumnType("int");
+
                     b.Property<long>("TimeBeforeNextEnergy")
                         .HasColumnType("bigint");
 
@@ -1196,6 +1202,9 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("IsMacroObjectCandidate")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsTaxiReady")
                         .HasColumnType("bit");
 
                     b.Property<string>("ItemName")

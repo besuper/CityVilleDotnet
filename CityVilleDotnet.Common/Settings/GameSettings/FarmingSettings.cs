@@ -13,6 +13,10 @@ public class FarmingSettings
     [XmlAttribute("plowXp")] public int PlowXp { get; set; }
     [XmlAttribute("inGameDaySeconds")] public required int InGameDaySeconds { get; set; }
     [XmlAttribute("energyRegenerationSeconds")] public required double EnergyRegenerationSeconds { get; set; }
+    [XmlAttribute("taxiResetDuration")] public int TaxiResetDuration { get; set; }
+    [XmlAttribute("taxiHarvestModifier")] public double TaxiHarvestModifier { get; set; }
+    [XmlAttribute("taxiHarvestBuildingModifier")] public double TaxiHarvestBuildingModifier { get; set; }
+    [XmlAttribute("availableTaxiTypes")] public string AvailableTaxiTypes { get; set; } = string.Empty;
 
     [XmlAttribute("friendVisitConstructionRepGain")]
     public required int FriendVisitConstructionRepGain { get; set; }

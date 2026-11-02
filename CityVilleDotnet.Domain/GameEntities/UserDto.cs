@@ -197,6 +197,21 @@ public static class UserDtoMapper
                         { "summaries", new ASObject() }
                     }
                 },
+                {
+                    "taxis", new ASObject
+                    {
+                        { "numInstaHarvests", model.TaxiNumInstaHarvests },
+                        { "lastResetTime", model.TaxiLastResetTime },
+                        {
+                            "maxInstaHarvests", summaryWorlds
+                                .SelectMany(w => w.Objects)
+                                .Where(o => o.ClassName == BuildingClassType.TaxiDispatch)
+                                .Select(o => o.GetTaxiMaxInstaHarvests())
+                                .DefaultIfEmpty(3)
+                                .Max()
+                        }
+                    }
+                },
                 { "trains", new ASObject { { "workers", model.GetWorld().ToTrainWorkersAsObject() } } },
                 { "factories", new ASObject { { "workers", model.GetWorld().ToFactoryWorkersAsObject() } } },
                 { "detectiveGameWorkerManager", new ASObject { { "workers", new ASObject() } } },
