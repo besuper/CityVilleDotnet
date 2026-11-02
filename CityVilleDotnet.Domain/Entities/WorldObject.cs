@@ -1,18 +1,16 @@
 ﻿using System.Buffers.Binary;
 using System.Security.Cryptography;
 using System.Text;
-using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Settings.GameSettings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
-using Microsoft.Extensions.Logging;
 
 namespace CityVilleDotnet.Domain.Entities;
 
-public class WorldObject
+public partial class WorldObject
 {
     public WorldObject(string itemName, BuildingClassType className, string? contractName, bool deleted, int tempId, WorldObjectState state, int direction, double? buildTime, double? plantTime, int x, int y, int z, int worldFlatId)
     {
@@ -62,7 +60,6 @@ public class WorldObject
     public string? ItemOwner { get; private set; }
     public int? Visits { get; private set; }
     public bool NeverOpened { get; private set; }
-    public bool IsTaxiReady { get; private set; }
     public int? UpgradeActionCount { get; private set; }
     public int? UpgradeActionCount2 { get; private set; }
     public string? UpgradeItemName { get; private set; }
@@ -78,8 +75,6 @@ public class WorldObject
     public bool IsMacroObjectCandidate { get; private set; }
     public string? CustomName { get; private set; }
     public DateTime? HarvestEndTime { get; private set; }
-    public int InvestmentReturns { get; private set; }
-    public int InvestmentCount { get; private set; }
     public List<CrewMember> CrewMembers { get; private set; } = [];
     public List<WorldObjectMechanicCounter> MechanicCounters { get; private set; } = [];
     public List<WorldObjectStorageItem> StorageItems { get; private set; } = [];
@@ -561,33 +556,6 @@ public class WorldObject
         Workers.Clear();
     }
 
-    public int GetTaxiMaxInstaHarvests()
-    {
-        return ItemName switch
-        {
-            "mun_taxi_dispatch_2" => 6,
-            "mun_taxi_dispatch_3" => 9,
-            _ => 3
-        };
-    }
-
-    public bool MakeReadyByTaxi()
-    {
-        if (!GetClassName().IsBusiness() || (State != WorldObjectState.Open && State != WorldObjectState.ClosedHarvestable))
-        {
-            return false;
-        }
-
-        if (State == WorldObjectState.Open)
-        {
-            Visits = GameSettingsManager.Instance.GetItem(ItemName)?.CommodityRequired ?? throw new Exception("Can't find max visits for business building");
-            State = WorldObjectState.ClosedHarvestable;
-        }
-
-        IsTaxiReady = true;
-        return true;
-    }
-
     public (int CoinYield, int CashYield) Harvest(long? plantTime = null)
     {
         var coinYield = 0;
@@ -1004,18 +972,6 @@ public class WorldObject
         return (int)Math.Round(Math.Max(GetHoursUntilReady() * costMultiplier, 1), MidpointRounding.AwayFromZero);
     }
 
-    public void HarvestInvestment(int returns)
-    {
-        InvestmentReturns += returns;
-        InvestmentCount++;
-        Plow();
-    }
-
-    public void CompleteInvestmentReturns(int amount)
-    {
-        InvestmentReturns = Math.Max(InvestmentReturns, amount);
-    }
-
     // From HarvestableResource::setFullGrown
     public void SetFullGrown()
     {
@@ -1067,35 +1023,6 @@ public class WorldObject
         var settings = GameSettingsManager.Instance.GetSettings();
 
         return settings.InstantReadyResidenceCostConstant5 * Math.Pow(GetHoursUntilReady(), 0.25);
-    }
-
-    private double ShipCostToMakeReady()
-    {
-        var baseCost = PlotCostToMakeReady();
-        if (baseCost <= 0) return 0;
-
-        var gameItem = GameSettingsManager.Instance.GetItem(GetItemName());
-        if (gameItem is null || !gameItem.UseHarvestMultForCost) return baseCost;
-
-        return Math.Max(Math.Ceiling(baseCost), 1) * (1 + (gameItem.HarvestMultiplier ?? 0) / 100.0);
-    }
-
-    // Airplane::getUnroundedCashCostToMakeReady
-    private double AirplaneCostToMakeReady()
-    {
-        if (State != WorldObjectState.Planted || PlantTime is null) return 0;
-
-        var settings = GameSettingsManager.Instance.GetSettings();
-        var growTime = GameSettingsManager.Instance.GetItem(GetItemName())?.GrowTime ?? 0;
-        var timeLeftMs = Math.Round(growTime * settings.InGameDaySeconds * 1000.0 * settings.GrowMultiplier) - (ServerUtils.GetCurrentTime() - PlantTime.Value);
-
-        return Math.Max(timeLeftMs / 3600000.0 / (growTime * 24 * settings.GrowMultiplier * 2) + 0.5, 0.501);
-    }
-
-    // Airplane::allowInstantReady
-    public bool AllowsInstantReady()
-    {
-        return ClassName != BuildingClassType.Airplane || GameSettingsManager.Instance.GetItem(ItemName)?.HasKeyword("noInstantReady") != true;
     }
 
     public double GetUnroundedCostToMakeReady()
@@ -1171,37 +1098,6 @@ public class WorldObject
     public void SetUpgradeAction(int amount)
     {
         UpgradeActionCount = amount;
-    }
-
-    // BaseShip::connectedToPierNonExclusive, BasePier::isValidShipBerth
-    public bool IsBerthedAt(WorldObject pier)
-    {
-        var shipItem = GameSettingsManager.Instance.GetItem(ItemName);
-        var pierItem = GameSettingsManager.Instance.GetItem(pier.ItemName);
-
-        if (shipItem is null || pierItem is null || !pierItem.SupportsShip(shipItem)) return false;
-
-        var isRotated = Direction % 2 == 1;
-        var width = (isRotated ? shipItem.SizeY : shipItem.SizeX) ?? 0;
-        var height = (isRotated ? shipItem.SizeX : shipItem.SizeY) ?? 0;
-
-        return pierItem.GetBerthSquares().Any(square =>
-            pier.X + square.X >= X && pier.X + square.X <= X + width &&
-            pier.Y + square.Y >= Y && pier.Y + square.Y <= Y + height);
-    }
-
-    // CruiseShipLogicComponent::harvest
-    public void CountCruiseUpgradeAction(string contractName)
-    {
-        switch (contractName)
-        {
-            case "cruise_contract_alaskan" or "cruise_contract_scandinavian":
-                UpgradeActionCount = (UpgradeActionCount ?? 0) + 1;
-                break;
-            case "cruise_contract_mediterranean" or "cruise_contract_caribbean":
-                UpgradeActionCount2 = (UpgradeActionCount2 ?? 0) + 1;
-                break;
-        }
     }
 
     // TrainManager::performSchedulePurchase
