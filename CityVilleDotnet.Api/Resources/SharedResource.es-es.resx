@@ -471,4 +471,13 @@
     <data name="GameLanguage" xml:space="preserve">
         <value>Idioma del juego</value>
     </data>
+    <data name="SeenFlags" xml:space="preserve">
+        <value>Flags vistos</value>
+    </data>
+    <data name="AddSeenFlag" xml:space="preserve">
+        <value>Añadir flag visto</value>
+    </data>
+    <data name="AdminSeenFlagsUpdated" xml:space="preserve">
+        <value>Flags vistos actualizados correctamente.</value>
+    </data>
 </root>

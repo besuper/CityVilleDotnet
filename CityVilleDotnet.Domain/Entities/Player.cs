@@ -602,7 +602,7 @@ public partial class Player
         }
     }
 
-    public void SetSeenFlagInt(string flag, int value)
+    public void SetSeenFlagInt(string flag, int? value)
     {
         var seenFlag = SeenFlags.FirstOrDefault(x => x.Key == flag);
 
