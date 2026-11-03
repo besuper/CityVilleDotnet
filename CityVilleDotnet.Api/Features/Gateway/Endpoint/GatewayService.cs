@@ -163,7 +163,7 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, CityVille
 
                     response = new CityVilleResponse().Error(GameErrorType.InvalidData).ErrorMessage(errors).ToObject();
                 }
-                catch (OperationCanceledException) when (ct.IsCancellationRequested)
+                catch (Exception) when (ct.IsCancellationRequested)
                 {
                     logger.LogWarning("Function {FunctionName} with params {@Params} canceled", functionName, parameters);
                     return;
