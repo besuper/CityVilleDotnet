@@ -34,7 +34,8 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         : CultureInfo.CurrentCulture.Name.Replace("-", "_");
 
     public bool EnableCheat => configuration.GetValue<bool>("enableCheat");
-    public Dictionary<string, object> RuntimeVars => configuration.GetSection("runtimeVars").Get<Dictionary<string, object>>() ?? new Dictionary<string, object>();
+    public Dictionary<string, object> RuntimeVars => configuration.GetSection("runtimeVars").GetChildren()
+        .ToDictionary(x => x.Key, x => int.TryParse(x.Value, out var number) ? number : (object)(x.Value ?? string.Empty));
     public List<Experiment> Experiments => configuration.GetSection("experiments").Get<List<Experiment>>() ?? new List<Experiment>();
     
     public async Task<IActionResult> OnGetAsync()
@@ -96,7 +97,7 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             ["generateSchema"] = "1",
             ["sn_app_url"] = "",
             ["snapiEnable"] = "1",
-            ["game_config_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/gameSettings.xml?v=1",
+            ["game_config_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/gameSettings.xml?v=2",
             ["quest_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/questSettings.xml?v=1",
             ["effects_config_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/effectsConfig.xml",
             ["font_mapper_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/FontMapper.swf",
