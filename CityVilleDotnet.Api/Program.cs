@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder();
@@ -64,6 +65,13 @@ if (!string.IsNullOrEmpty(discordClientId))
         options.ClientSecret = builder.Configuration["Discord:ClientSecret"]!;
         options.CorrelationCookie.SameSite = SameSiteMode.Lax;
         options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.Events.OnRemoteFailure = context =>
+        {
+            var callback = context.Properties?.RedirectUri ?? "/Account/ExternalLogin?handler=Callback";
+            context.Response.Redirect(QueryHelpers.AddQueryString(callback, "remoteError", context.Failure?.Message ?? "error"));
+            context.HandleResponse();
+            return Task.CompletedTask;
+        };
     });
 }
 
