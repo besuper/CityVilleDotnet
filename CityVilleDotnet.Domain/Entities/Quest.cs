@@ -80,7 +80,7 @@ public class Quest
                 player.AddGoods(int.Parse(reward.Goods));
 
             if (reward.Item is not null)
-                player.AddItem(reward.Item);
+                player.AddItem(reward.Item, reward.ItemCount);
 
             if (reward.ItemUnlock is not null)
                 player.SetSeenFlag(reward.ItemUnlock);

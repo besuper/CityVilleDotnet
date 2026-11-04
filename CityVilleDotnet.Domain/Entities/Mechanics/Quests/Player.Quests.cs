@@ -203,6 +203,18 @@ public partial class Player
 
                         continue;
                     }
+                    case "countCompletedBuildingByName":
+                    {
+                        var names = splitType ?? [taskType];
+
+                        if (!calculatedResults.TryGetValue(resultKey, out value))
+                        {
+                            calculatedResults[resultKey] = value = Math.Max(names.Sum(x => GetWorld().CountCompletedBuildingByName(x)), 0);
+                        }
+
+                        quest.Progress[index] = value;
+                        continue;
+                    }
                     case "countWorldObjectByRegEx":
                     {
                         if (!calculatedResults.TryGetValue(resultKey, out value))

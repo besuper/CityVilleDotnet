@@ -195,4 +195,25 @@
             <questRewards xp="5"/>
         </resourceModifiers>
     </quest>
+    <quest name="qm_test_completed_building" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="countCompletedBuildingByName" type="test_completed_a,test_completed_b" total="1"/>
+        </tasks>
+    </quest>
+    <quest name="qm_test_item_count_reward" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="seenQuest" type="qm_test_item_count_reward" total="1"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards item="test_reward_item" itemCount="5"/>
+        </resourceModifiers>
+    </quest>
+    <quest name="qm_test_item_reward" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="seenQuest" type="qm_test_item_reward" total="1"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards item="test_reward_item"/>
+        </resourceModifiers>
+    </quest>
 </quests>

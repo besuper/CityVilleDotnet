@@ -26,7 +26,7 @@ public class GameSettingsManager
     private List<LevelItem> _levels = [];
     private List<ReputationItem> _reputationLevels = [];
     private List<CollectionSetting> _collections = [];
-    private List<ExpansionSetting> _expansions = [];
+    private Dictionary<string, List<ExpansionSetting>> _expansionGates = [];
     private List<PreyGroupSetting> _preyGroups = [];
     private List<GateTuningItem> _gateTunings = [];
     private bool _isInitialized;
@@ -162,8 +162,7 @@ public class GameSettingsManager
             }
 
             _collections = gameSettings.Collections.Collections;
-            // TODO: Support other expansions gates
-            _expansions = gameSettings.Expansions.ExpansionGates.FirstOrDefault(x => x.Name == "population")!.Expansions.Expansions;
+            _expansionGates = gameSettings.Expansions.ExpansionGates.ToDictionary(x => x.Name, x => x.Expansions.Expansions);
 
             foreach (var worldRect in gameSettings.WorldRects.WorldRects)
             {
@@ -235,7 +234,7 @@ public class GameSettingsManager
         logger.LogInformation("Loaded {LootTablesCount} loot tables", _lootTables.Count);
         logger.LogInformation("Loaded {CollectionsCount} collections", _collections.Count);
         logger.LogInformation("Loaded {WorldRectsCount} world rects", _worldRects.Count);
-        logger.LogInformation("Loaded {ExpansionsCount} expansions", _expansions.Count);
+        logger.LogInformation("Loaded {ExpansionGatesCount} expansion gates", _expansionGates.Count);
         logger.LogInformation("Loaded {DynamicExpansionsCount} dynamic expansions", _dynamicExpansions.Count);
         logger.LogInformation("Loaded {WorldConfigsCount} world configs", _worldConfigs.Count);
         logger.LogInformation("Loaded {ValidatorsCount} validators", _validators.Count);
@@ -446,9 +445,9 @@ public class GameSettingsManager
         return _globalTableProviders;
     }
 
-    public IReadOnlyCollection<ExpansionSetting> GetExpansions()
+    public IReadOnlyList<ExpansionSetting> GetExpansions(string gateName)
     {
-        return _expansions.AsReadOnly();
+        return _expansionGates[gateName].AsReadOnly();
     }
 
     public FarmingSettings GetSettings()

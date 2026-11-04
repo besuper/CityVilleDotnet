@@ -926,22 +926,21 @@ public partial class Player
         VisitorHelpOrders.Add(order);
     }
 
-    public int[]? GetExpansionData()
+    public int GetExpansionTier()
     {
-        var nextNum = ExpansionsPurchased + 1;
+        var world = GetWorld();
+        var lastTier = world.LastExpansionTier == 0 && world.Type != WorldType.Downtown ? ExpansionsPurchased : world.LastExpansionTier;
 
-        foreach (var expansion in GameSettingsManager.Instance.GetExpansions())
-        {
-            var expansionNum = int.Parse(expansion.Num);
+        return Math.Min(ExpansionsPurchased + 1, lastTier + GameSettingsManager.Instance.GetSettings().ExpansionDeltaMax);
+    }
 
-            // TODO: Support "MAX" num
-            if (expansionNum == nextNum)
-            {
-                return [int.Parse(expansion.Level), int.Parse(expansion.Permits), int.Parse(expansion.Cost)];
-            }
-        }
+    public int GetRequiredExpansionPermits(int tier)
+    {
+        var isDowntown = GetWorld().Type == WorldType.Downtown;
+        var expansions = GameSettingsManager.Instance.GetExpansions(isDowntown ? "appraisal_downtown" : "population");
+        var rowCount = isDowntown ? Math.Min(60, expansions.Count) : expansions.Count;
 
-        return null;
+        return expansions[Math.Min(tier, rowCount) - 1].Permits;
     }
 
     public int GetMasteryLevel(string itemName)

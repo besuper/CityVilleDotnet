@@ -3,6 +3,7 @@ using CityVilleDotnet.Api.Services.FarmService;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Factory.InventoryItem;
 using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Factory.World;
@@ -193,5 +194,135 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 
         updatedPlayer.Should().NotBeNull();
         updatedPlayer.Gold.Should().Be(150);
+    }
+
+    [Fact]
+    public async Task ExpandCity_TierAboveTable_UsesLastRowAndSavesTier()
+    {
+        var user = Faker.Player();
+        user.SetGold(20000);
+        user.InventoryItems.Add(Faker.InventoryItem(itemName: "permits", amount: 3));
+        IncrementExpansions(user, 10);
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
+        var response = await handler.HandlePacket(CreateRequest(ExpansionItemName), user.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+
+        var updatedPlayer = await Context.Set<Player>().Include(x => x.Worlds).FirstAsync(u => u.Id == user.Id, TestContext.Current.CancellationToken);
+
+        updatedPlayer.ExpansionsPurchased.Should().Be(11);
+        updatedPlayer.GetWorldByType(WorldType.Main)!.LastExpansionTier.Should().Be(11);
+        (await Context.Set<InventoryItem>().AnyAsync(i => i.Name == "permits", TestContext.Current.CancellationToken)).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ExpandCity_Downtown_UsesDowntownPermitsAndSavesTier()
+    {
+        var user = Faker.Player();
+        user.AddWorld(Faker.World(type: WorldType.Downtown));
+        user.SwitchWorld(WorldType.Downtown);
+        user.SetGold(20000);
+        user.InventoryItems.Add(Faker.InventoryItem(itemName: "permits", amount: 115));
+        IncrementExpansions(user, 20);
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
+        var response = await handler.HandlePacket(CreateRequest(ExpansionItemName), user.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+
+        var updatedPlayer = await Context.Set<Player>().Include(x => x.Worlds).Include(x => x.InventoryItems).FirstAsync(u => u.Id == user.Id, TestContext.Current.CancellationToken);
+
+        // Downtown tier starts capped at expansionDeltaMax (10), row 10 of appraisal_downtown requires 110 permits
+        updatedPlayer.CountInventoryItem("permits").Should().Be(5);
+        updatedPlayer.ExpansionsPurchased.Should().Be(21);
+        updatedPlayer.GetWorldByType(WorldType.Downtown)!.LastExpansionTier.Should().Be(10);
+        updatedPlayer.GetWorldByType(WorldType.Main)!.LastExpansionTier.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task ExpandCity_Downtown_NotEnoughPermits_ThrowsForceReload()
+    {
+        var user = Faker.Player();
+        user.AddWorld(Faker.World(type: WorldType.Downtown));
+        user.SwitchWorld(WorldType.Downtown);
+        user.SetGold(20000);
+        user.InventoryItems.Add(Faker.InventoryItem(itemName: "permits", amount: 109));
+        IncrementExpansions(user, 20);
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
+        var act = () => handler.HandlePacket(CreateRequest(ExpansionItemName), user.Id, TestContext.Current.CancellationToken);
+
+        (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.ForceReload);
+    }
+
+    [Fact]
+    public async Task ExpandCity_FreeExpansion_SkipsPermitsAndCoins_ConsumesFreeExpansion()
+    {
+        var user = Faker.Player();
+        user.SetGold(150);
+        user.InventoryItems.Add(Faker.InventoryItem(itemName: "free_expansions", amount: 1));
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
+        var response = await handler.HandlePacket(CreateRequest(ExpansionItemName), user.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+
+        var updatedPlayer = await Context.Set<Player>().FirstAsync(u => u.Id == user.Id, TestContext.Current.CancellationToken);
+
+        updatedPlayer.Gold.Should().Be(150);
+        updatedPlayer.ExpansionsPurchased.Should().Be(1);
+        (await Context.Set<InventoryItem>().AnyAsync(i => i.Name == "free_expansions", TestContext.Current.CancellationToken)).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ExpandCity_FreeExpansion_LightLevel_KeepsFreeExpansion()
+    {
+        var user = Faker.Player();
+        user.SetGold(150);
+        user.InventoryItems.Add(Faker.InventoryItem(itemName: "free_expansions", amount: 1));
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
+        var response = await handler.HandlePacket(CreateRequest("expand_12_12_light_level"), user.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+
+        var updatedPlayer = await Context.Set<Player>().Include(x => x.InventoryItems).FirstAsync(u => u.Id == user.Id, TestContext.Current.CancellationToken);
+
+        updatedPlayer.Gold.Should().Be(150);
+        updatedPlayer.CountInventoryItem("free_expansions").Should().Be(1);
+    }
+
+    private static ExpandCityRequest CreateRequest(string itemName)
+    {
+        return new ExpandCityRequest
+        {
+            ItemName = itemName,
+            Coordinates = new ExpandCityCoordinates { X = 40, Y = 40 },
+            Trees = []
+        };
+    }
+
+    private static void IncrementExpansions(Player player, int count)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            player.IncrementExpansionsPurchased();
+        }
     }
 }

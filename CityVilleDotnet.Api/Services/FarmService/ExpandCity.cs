@@ -15,6 +15,7 @@ namespace CityVilleDotnet.Api.Services.FarmService;
 public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) : AmfService<ExpandCityRequest>
 {
     private const string PermitName = "permits";
+    private const string FreeExpansionName = "free_expansions";
 
     public override async Task<ASObject> HandlePacket(ExpandCityRequest request, Guid playerId, CancellationToken cancellationToken)
     {
@@ -31,20 +32,16 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
             .ThenInclude(x => x.IncentivizedExpansions)
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
-            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Can't find player");
 
-        if (player is null) throw new Exception("Can't find player");
-
-        var permitData = player.GetExpansionData();
-
-        if (permitData is null) throw new Exception("Can't find permit data");
-
-        var requiredPermit = permitData[1];
+        var tier = player.GetExpansionTier();
+        var isFree = player.CountInventoryItem(FreeExpansionName) > 0;
+        var requiredPermit = isFree ? 0 : player.GetRequiredExpansionPermits(tier);
 
         if (player.CountInventoryItem(PermitName) < requiredPermit)
             throw new DomainException(GameErrorType.ForceReload, $"You need {requiredPermit} {PermitName} to expand this city");
 
-        if (item.Cost is not null)
+        if (item.Cost is not null && !isFree)
             player.RemoveCoins(item.Cost.Value);
 
         var world = player.GetWorld();
@@ -52,7 +49,7 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
         if (world.MapRects.Any(m => m.X == request.Coordinates.X && m.Y == request.Coordinates.Y))
         {
             logger.LogError("Map expansion already exist {PlayerSnuid} {MapRectsCount} | {CoordinatesX} {CoordinatesY}", player.Snuid, world.MapRects.Count, request.Coordinates.X, request.Coordinates.Y);
-            return new CityVilleResponse();
+            return new CityVilleResponse(); // TODO: not really good
         }
 
         var newMapRect = new MapRect
@@ -93,7 +90,7 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
                 newId = newTree.WorldFlatId
             });
         }
-        
+
         var finalIds = new List<int>();
         var incentivizedExpansion = world.IncentivizedExpansions.FirstOrDefault(e => e.IsActive() && e.X == request.Coordinates.X && e.Y == request.Coordinates.Y);
 
@@ -117,11 +114,27 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
             incentivizedExpansion.Complete();
         }
 
+        world.SetLastExpansionTier(tier);
         player.IncrementExpansionsPurchased();
-        var removedItem = player.RemoveItem(PermitName, requiredPermit);
 
-        if (removedItem is not null)
-            context.Set<InventoryItem>().Remove(removedItem);
+        if (isFree)
+        {
+            var removedItem = player.RemoveItem(FreeExpansionName, 1);
+
+            if (removedItem is not null)
+            {
+                context.Set<InventoryItem>().Remove(removedItem);
+            }
+        }
+        else if (requiredPermit > 0)
+        {
+            var removedItem = player.RemoveItem(PermitName, requiredPermit);
+
+            if (removedItem is not null)
+            {
+                context.Set<InventoryItem>().Remove(removedItem);
+            }
+        }
 
         player.HandleQuestsProgress("incrementalExpansionCount");
         player.HandleQuestsProgress("expand");

@@ -14,6 +14,7 @@ public class FarmingSettings
     [XmlAttribute("inGameDaySeconds")] public required int InGameDaySeconds { get; set; }
     [XmlAttribute("energyRegenerationSeconds")] public required double EnergyRegenerationSeconds { get; set; }
     [XmlAttribute("taxiResetDuration")] public int TaxiResetDuration { get; set; }
+    [XmlAttribute("expansionDeltaMax")] public int ExpansionDeltaMax { get; set; } = 4;
     [XmlAttribute("taxiHarvestModifier")] public double TaxiHarvestModifier { get; set; }
     [XmlAttribute("taxiHarvestBuildingModifier")] public double TaxiHarvestBuildingModifier { get; set; }
     [XmlAttribute("availableTaxiTypes")] public string AvailableTaxiTypes { get; set; } = string.Empty;

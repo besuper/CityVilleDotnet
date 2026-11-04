@@ -30,6 +30,7 @@ public partial class World
     public Player? Player { get; set; }
     public string? WorldCreated { get; private set; }
     public int MacroObjectIdCounter { get; private set; }
+    public int LastExpansionTier { get; private set; }
     public List<MacroObject> MacroObjects { get; set; } = [];
 
     public World()
@@ -203,6 +204,11 @@ public partial class World
     public int CountConstructionOrBuildingByName(string name)
     {
         return Objects.Count(x => x.ItemName.Equals(name) || name.Equals(x.TargetBuildingName));
+    }
+
+    public int CountCompletedBuildingByName(string name)
+    {
+        return Objects.Sum(x => x.ItemName.Equals(name) ? 1 : x.ClassName == BuildingClassType.ConstructionSite && name.Equals(x.TargetBuildingName) ? -1 : 0);
     }
 
     // From IMysteryCollectionManager::getUpgradeGroupName
@@ -452,6 +458,11 @@ public partial class World
     public bool HasCompletedIncentivizedExpansion(string[] expansionIds)
     {
         return IncentivizedExpansions.Any(x => x.IsCompleted && expansionIds.Contains(x.ExpansionId));
+    }
+
+    public void SetLastExpansionTier(int tier)
+    {
+        LastExpansionTier = tier;
     }
 
     public void AddMapRect(MapRect mapRect)

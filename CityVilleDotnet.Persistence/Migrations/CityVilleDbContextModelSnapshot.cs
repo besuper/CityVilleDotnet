@@ -1083,6 +1083,9 @@ namespace CityVilleDotnet.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("LastExpansionTier")
+                        .HasColumnType("int");
+
                     b.Property<int>("MacroObjectIdCounter")
                         .HasColumnType("int");
 

@@ -57,7 +57,7 @@ public static class WorldDtoMapper
             },
             Objects = model.Objects.Select(x => x.ToDto()).ToList(),
             ThemeCollections = model.ThemeCollections,
-            LastExpansionTier = 0,
+            LastExpansionTier = model.LastExpansionTier,
             WorldId = model.Type.ToDescriptionString(),
             WorldCreated = model.WorldCreated,
             MacroObjects = model.ToMacroObjectsAsObject(),

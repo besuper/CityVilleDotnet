@@ -9,7 +9,7 @@
              remodelingRequiredLevel="2"
              startingEnergy="12" startingEnergyMax="12" 
              startingGold="7000" startingCash="5" 
-             startingLevel="1" startingLightLevel="1" 
+             startingLevel="1" startingLightLevel="1" expansionDeltaMax="10" 
              startingXp="0" startingPopulation="0" 
              startingCommodities="100"
              sellBackRatio="0.05" goodsToCoinRatio="0.20"
@@ -255,6 +255,15 @@
             <sizeY>3</sizeY>
             <gates/>
         </item>
+        <item name="expand_12_12_light_level" type="expansion" height="12" width="12">
+            <cost>20000</cost>
+            <gates/>
+        </item>
+        <item name="free_expansions" type="decoration" buyable="false"/>
+        <item name="test_reward_item" type="decoration" buyable="false"/>
+        <item name="test_completed_a" type="residence" buyable="false"/>
+        <item name="test_completed_b" type="residence" buyable="false"/>
+        <item name="test_completed_site" type="constructionSite" buyable="false"/>
         <item name="expansion_18x18" type="expansion" height="18" width="18">
             <cost>20000</cost>
             <sizeX>18</sizeX>
@@ -1162,6 +1171,71 @@
                 <expansion num="01" level="1" permits2="1" cost2="5" goldMultiplier="1"/>
                 <expansion num="02" level="1" permits2="2" cost2="10" goldMultiplier="1.05"/>
                 <expansion num="03" level="2" permits2="3" cost2="15" goldMultiplier="1.1"/>
+            </expansions>
+        </expansionGates>
+        <expansionGates name="appraisal_downtown">
+            <expansions>
+                <expansion num="1" level="1" permits2="101"/>
+                <expansion num="2" level="1" permits2="102"/>
+                <expansion num="3" level="1" permits2="103"/>
+                <expansion num="4" level="1" permits2="104"/>
+                <expansion num="5" level="1" permits2="105"/>
+                <expansion num="6" level="1" permits2="106"/>
+                <expansion num="7" level="1" permits2="107"/>
+                <expansion num="8" level="1" permits2="108"/>
+                <expansion num="9" level="1" permits2="109"/>
+                <expansion num="10" level="1" permits2="110"/>
+                <expansion num="11" level="1" permits2="111"/>
+                <expansion num="12" level="1" permits2="112"/>
+                <expansion num="13" level="1" permits2="113"/>
+                <expansion num="14" level="1" permits2="114"/>
+                <expansion num="15" level="1" permits2="115"/>
+                <expansion num="16" level="1" permits2="116"/>
+                <expansion num="17" level="1" permits2="117"/>
+                <expansion num="18" level="1" permits2="118"/>
+                <expansion num="19" level="1" permits2="119"/>
+                <expansion num="20" level="1" permits2="120"/>
+                <expansion num="21" level="1" permits2="121"/>
+                <expansion num="22" level="1" permits2="122"/>
+                <expansion num="23" level="1" permits2="123"/>
+                <expansion num="24" level="1" permits2="124"/>
+                <expansion num="25" level="1" permits2="125"/>
+                <expansion num="26" level="1" permits2="126"/>
+                <expansion num="27" level="1" permits2="127"/>
+                <expansion num="28" level="1" permits2="128"/>
+                <expansion num="29" level="1" permits2="129"/>
+                <expansion num="30" level="1" permits2="130"/>
+                <expansion num="31" level="1" permits2="131"/>
+                <expansion num="32" level="1" permits2="132"/>
+                <expansion num="33" level="1" permits2="133"/>
+                <expansion num="34" level="1" permits2="134"/>
+                <expansion num="35" level="1" permits2="135"/>
+                <expansion num="36" level="1" permits2="136"/>
+                <expansion num="37" level="1" permits2="137"/>
+                <expansion num="38" level="1" permits2="138"/>
+                <expansion num="39" level="1" permits2="139"/>
+                <expansion num="40" level="1" permits2="140"/>
+                <expansion num="41" level="1" permits2="141"/>
+                <expansion num="42" level="1" permits2="142"/>
+                <expansion num="43" level="1" permits2="143"/>
+                <expansion num="44" level="1" permits2="144"/>
+                <expansion num="45" level="1" permits2="145"/>
+                <expansion num="46" level="1" permits2="146"/>
+                <expansion num="47" level="1" permits2="147"/>
+                <expansion num="48" level="1" permits2="148"/>
+                <expansion num="49" level="1" permits2="149"/>
+                <expansion num="50" level="1" permits2="150"/>
+                <expansion num="51" level="1" permits2="151"/>
+                <expansion num="52" level="1" permits2="152"/>
+                <expansion num="53" level="1" permits2="153"/>
+                <expansion num="54" level="1" permits2="154"/>
+                <expansion num="55" level="1" permits2="155"/>
+                <expansion num="56" level="1" permits2="156"/>
+                <expansion num="57" level="1" permits2="157"/>
+                <expansion num="58" level="1" permits2="158"/>
+                <expansion num="59" level="1" permits2="159"/>
+                <expansion num="60" level="1" permits2="160"/>
+                <expansion num="61" level="1" permits2="161"/>
             </expansions>
         </expansionGates>
     </expansionRequirements>
