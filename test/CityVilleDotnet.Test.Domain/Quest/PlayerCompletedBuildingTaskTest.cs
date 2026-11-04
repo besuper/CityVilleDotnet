@@ -11,7 +11,7 @@ namespace CityVilleDotnet.Test.Domain.Quest;
 [Collection("Domain")]
 public class PlayerCompletedBuildingTaskTest
 {
-    private static Domain.Entities.WorldObject ConstructionSite(Faker faker, string targetName)
+    private static CityVilleDotnet.Domain.Entities.WorldObject ConstructionSite(Faker faker, string targetName)
     {
         var site = faker.WorldObject(itemName: targetName);
         site.SetAsConstructionSite("test_completed_site", 0);

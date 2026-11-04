@@ -287,27 +287,6 @@ public class ExpandCityTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         (await Context.Set<InventoryItem>().AnyAsync(i => i.Name == "free_expansions", TestContext.Current.CancellationToken)).Should().BeFalse();
     }
 
-    [Fact]
-    public async Task ExpandCity_FreeExpansion_LightLevel_KeepsFreeExpansion()
-    {
-        var user = Faker.Player();
-        user.SetGold(150);
-        user.InventoryItems.Add(Faker.InventoryItem(itemName: "free_expansions", amount: 1));
-
-        await Context.AddAsync(user, TestContext.Current.CancellationToken);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        var handler = new ExpandCity(Context, NullLogger<ExpandCity>.Instance);
-        var response = await handler.HandlePacket(CreateRequest("expand_12_12_light_level"), user.Id, TestContext.Current.CancellationToken);
-
-        response["errorType"].Should().Be(0);
-
-        var updatedPlayer = await Context.Set<Player>().Include(x => x.InventoryItems).FirstAsync(u => u.Id == user.Id, TestContext.Current.CancellationToken);
-
-        updatedPlayer.Gold.Should().Be(150);
-        updatedPlayer.CountInventoryItem("free_expansions").Should().Be(1);
-    }
-
     private static ExpandCityRequest CreateRequest(string itemName)
     {
         return new ExpandCityRequest

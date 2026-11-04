@@ -1,5 +1,6 @@
 using AwesomeAssertions;
 using Bogus;
+using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Factory.World;
@@ -10,7 +11,7 @@ namespace CityVilleDotnet.Test.Domain.Expansion;
 [Collection("Domain")]
 public class PlayerExpansionTest
 {
-    private static Domain.Entities.Player CreatePlayer(Faker faker, int expansionsPurchased, WorldType worldType = WorldType.Main, int lastExpansionTier = 0)
+    private static Player CreatePlayer(Faker faker, int expansionsPurchased, WorldType worldType = WorldType.Main, int lastExpansionTier = 0)
     {
         var player = faker.Player();
 
