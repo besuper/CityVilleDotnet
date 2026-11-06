@@ -81,7 +81,7 @@ public class FranchiseInfoDto
 
 public static class WorldObjectDtoMapper
 {
-    public static WorldObjectDto ToDto(this WorldObject model)
+    public static WorldObjectDto ToDto(this WorldObject model, IReadOnlyCollection<WorldObject>? worldObjects = null)
     {
         if (model.HasGrown())
             model.SetReadyToHarvest();
@@ -290,9 +290,13 @@ public static class WorldObjectDtoMapper
             dto.State = WorldObjectState.Static.ToDescriptionString(); // restore to static state
         }
 
-        if (model.ClassName == BuildingClassType.Mall)
+        if (gameItem?.GetObjectStorageMechanic() is not null)
         {
-            dto.MechanicData["slots"] = new List<object>();
+            dto.MechanicData["slots"] = (worldObjects ?? [])
+                .Where(x => x.StoredInId == model.WorldFlatId)
+                .OrderBy(x => x.StorageSlotIndex)
+                .Select(x => (object)x.ToDto(worldObjects))
+                .ToList();
         }
 
         if (model.ClassName == BuildingClassType.ThemePark && gameItem?.ThemeParkStorage is not null)

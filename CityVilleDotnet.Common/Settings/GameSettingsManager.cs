@@ -392,6 +392,11 @@ public class GameSettingsManager
         return _worldConfigs.TryGetValue(name, out var config) ? config : null;
     }
 
+    public ValidateItem? GetValidator(string name)
+    {
+        return _validators.GetValueOrDefault(name);
+    }
+
     public bool IsValidatorSatisfied(string? validatorName, int playerLevel)
     {
         if (!_isInitialized)

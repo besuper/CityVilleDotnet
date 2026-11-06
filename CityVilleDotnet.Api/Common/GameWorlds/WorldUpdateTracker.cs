@@ -1,4 +1,4 @@
-using CityVilleDotnet.Api.Common.Amf;
+﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.GameEntities;
 using CityVilleDotnet.Persistence;
@@ -21,6 +21,7 @@ public sealed class WorldUpdateTracker : IDisposable
     private readonly HashSet<int> _mapRectWorldIds = [];
     private readonly HashSet<int> _macroWorldIds = [];
     private readonly List<string> _removedMacroNames = [];
+    private readonly HashSet<int> _storageContainerFlatIds = [];
     private World? _renamedWorld;
 
     public WorldUpdateTracker(CityVilleDbContext context)
@@ -73,6 +74,13 @@ public sealed class WorldUpdateTracker : IDisposable
 
         if (entry.State != EntityState.Deleted)
             _changedObjects.Add(obj);
+
+        var storedIn = entry.Property(nameof(WorldObject.StoredInId));
+
+        if (entry.State == EntityState.Modified && storedIn.IsModified)
+        {
+            _storageContainerFlatIds.UnionWith(new[] { (int?)storedIn.OriginalValue, (int?)storedIn.CurrentValue }.OfType<int>());
+        }
     }
 
     private static int? GetForeignKey(EntityEntry entry, string name)
@@ -112,7 +120,7 @@ public sealed class WorldUpdateTracker : IDisposable
         var worldUpdate = new ASObject();
 
         if (_changedObjectIds.Count > 0 || _removedObjects.Count > 0)
-            worldUpdate["objects"] = await BuildObjectsAsync(cancellationToken);
+            worldUpdate["objects"] = await BuildObjectsAsync(worldIds[0], cancellationToken);
 
         if (_mapRectWorldIds.Count > 0)
             worldUpdate["mapRects"] = await BuildMapRectsAsync(worldIds[0], cancellationToken);
@@ -126,7 +134,7 @@ public sealed class WorldUpdateTracker : IDisposable
         ((ASObject)response["metadata"])["worldUpdate"] = worldUpdate;
     }
 
-    private async Task<ASObject> BuildObjectsAsync(CancellationToken cancellationToken)
+    private async Task<ASObject> BuildObjectsAsync(int worldId, CancellationToken cancellationToken)
     {
         var objects = await _context.Set<WorldObject>()
             .AsNoTracking()
@@ -135,7 +143,9 @@ public sealed class WorldUpdateTracker : IDisposable
             .Include(x => x.StorageItems)
             .Include(x => x.Slots)
             .Include(x => x.FranchiseLocation)
-            .Where(x => _changedObjectIds.Contains(x.Id) && EF.Property<int?>(x, WorldIdKey) != null)
+            .Where(x => EF.Property<int?>(x, WorldIdKey) == worldId)
+            // every stored object is needed to rebuild nested slots (a neighborhood stored in a super neighborhood keeps its residences)
+            .Where(x => _changedObjectIds.Contains(x.Id) || _storageContainerFlatIds.Contains(x.WorldFlatId) || (_storageContainerFlatIds.Count > 0 && x.StoredInId != null))
             .ToListAsync(cancellationToken);
 
         var result = new ASObject();
@@ -147,7 +157,14 @@ public sealed class WorldUpdateTracker : IDisposable
 
         foreach (var obj in objects)
         {
-            result[obj.WorldFlatId.ToString()] = AmfConverter.Convert(obj.ToDto());
+            if (obj.StoredInId is null)
+            {
+                result[obj.WorldFlatId.ToString()] = AmfConverter.Convert(obj.ToDto(objects));
+            }
+            else if (_changedObjectIds.Contains(obj.Id))
+            {
+                result[obj.WorldFlatId.ToString()] = null;
+            }
         }
 
         return result;

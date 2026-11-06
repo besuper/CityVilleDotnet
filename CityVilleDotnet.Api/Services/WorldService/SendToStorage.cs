@@ -36,7 +36,7 @@ public class SendToStorage(CityVilleDbContext context) : AmfService<SendToStorag
 
         player.AddItem(obj.GetItemName(), 1, storageRequest.Key, isStackable ? null : obj);
 
-        world.Objects.Remove(obj);
+        world.RemoveBuilding(obj);
 
         if (isStackable)
             context.Remove(obj);

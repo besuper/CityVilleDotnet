@@ -1,4 +1,4 @@
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 using CityVilleDotnet.Common.Global;
 using Microsoft.Extensions.Logging;
 
@@ -20,7 +20,12 @@ public class ValidateItem
 
     public bool IsValid(int playerLevel)
     {
-        return AllOf.All(x => x.IsAllValid(playerLevel)) && (AnyOf.Count == 0 || AnyOf.Any(x => x.IsAnyValid(playerLevel)));
+        return IsValid(x => x.IsValid(playerLevel));
+    }
+
+    public bool IsValid(Func<ValidateFunc, bool> isFuncValid)
+    {
+        return AllOf.All(x => x.IsAllValid(isFuncValid)) && (AnyOf.Count == 0 || AnyOf.Any(x => x.IsAnyValid(isFuncValid)));
     }
 }
 
@@ -32,18 +37,18 @@ public class ValidateGroup
     [XmlElement("allOf")] public List<ValidateGroup> AllOf { get; set; } = [];
     [XmlElement("anyOf")] public List<ValidateGroup> AnyOf { get; set; } = [];
 
-    public bool IsAllValid(int playerLevel)
+    public bool IsAllValid(Func<ValidateFunc, bool> isFuncValid)
     {
-        return Functions.All(x => x.IsValid(playerLevel))
-               && AllOf.All(x => x.IsAllValid(playerLevel))
-               && (AnyOf.Count == 0 || AnyOf.Any(x => x.IsAnyValid(playerLevel)));
+        return Functions.All(isFuncValid)
+               && AllOf.All(x => x.IsAllValid(isFuncValid))
+               && (AnyOf.Count == 0 || AnyOf.Any(x => x.IsAnyValid(isFuncValid)));
     }
 
-    public bool IsAnyValid(int playerLevel)
+    public bool IsAnyValid(Func<ValidateFunc, bool> isFuncValid)
     {
-        return Functions.Any(x => x.IsValid(playerLevel))
-               || AllOf.Any(x => x.IsAllValid(playerLevel))
-               || AnyOf.Any(x => x.IsAnyValid(playerLevel));
+        return Functions.Any(isFuncValid)
+               || AllOf.Any(x => x.IsAllValid(isFuncValid))
+               || AnyOf.Any(x => x.IsAnyValid(isFuncValid));
     }
 }
 
@@ -53,6 +58,10 @@ public class ValidateFunc
     [XmlAttribute("_class")] public string? Class { get; set; }
     [XmlAttribute("_name")] public string? Name { get; set; }
     [XmlAttribute("level")] public int Level { get; set; }
+    [XmlAttribute("type")] public string? Type { get; set; }
+    [XmlAttribute("keyword")] public string? Keyword { get; set; }
+    [XmlAttribute("itemName")] public string? ItemName { get; set; }
+    [XmlAttribute("check")] public string? Check { get; set; }
 
     public bool IsValid(int playerLevel)
     {

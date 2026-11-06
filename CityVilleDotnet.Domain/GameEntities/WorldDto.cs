@@ -55,7 +55,7 @@ public static class WorldDtoMapper
                 PopulationSummary = model.ToPopulationSummaryDto(),
                 AppraisalSummary = model.ToAppraisalSummaryDto()
             },
-            Objects = model.Objects.Select(x => x.ToDto()).ToList(),
+            Objects = model.Objects.Where(x => x.StoredInId is null).Select(x => x.ToDto(model.Objects)).ToList(),
             ThemeCollections = model.ThemeCollections,
             LastExpansionTier = model.LastExpansionTier,
             WorldId = model.Type.ToDescriptionString(),

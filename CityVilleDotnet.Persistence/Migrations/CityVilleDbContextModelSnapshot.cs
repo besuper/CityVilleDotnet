@@ -1245,6 +1245,12 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("int");
 
+                    b.Property<int?>("StorageSlotIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StoredInId")
+                        .HasColumnType("int");
+
                     b.Property<int>("StreakLength")
                         .HasColumnType("int");
 

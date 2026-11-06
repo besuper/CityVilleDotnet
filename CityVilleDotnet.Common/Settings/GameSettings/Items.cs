@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Xml.Serialization;
 using CityVilleDotnet.Common.Settings.QuestSettings;
 
@@ -26,6 +26,8 @@ public class GameItem
     [XmlIgnore] public bool InteractOnLock => InteractOnLockString == "true";
     [XmlAttribute("allowWither")] public string? AllowWitherString { get; set; }
     [XmlIgnore] public bool AllowWither => AllowWitherString != "false";
+    [XmlAttribute("storable")] public string? StorableString { get; set; }
+    [XmlIgnore] public bool Storable => StorableString != "false";
     [XmlIgnore] public int? Height { get; set; }
 
     [XmlAttribute("height")]
@@ -147,6 +149,7 @@ public class GameItem
     [XmlElement("keyword")] public List<string> Keywords { get; set; } = [];
     [XmlElement("mastery")] public required List<MasteryItem> MasteryItems { get; set; }
     [XmlElement("storageUnit")] public StorageUnitItem? StorageUnit { get; set; }
+    [XmlElement("validate")] public List<ValidateItem> Validations { get; set; } = [];
     [XmlElement("inventoryChecks")] public InventoryChecksContainer? InventoryChecks { get; set; }
     [XmlElement("inventoryLimit")] public int InventoryLimit { get; set; }
     [XmlElement("positiveStreak")] public string? PositiveStreak { get; set; }
@@ -296,6 +299,16 @@ public class GameItem
     public bool HasMasteries()
     {
         return MasteryItems.Count > 0;
+    }
+
+    public MechanicItem? GetObjectStorageMechanic()
+    {
+        return StorageUnit is null || ThemeParkStorage is not null ? null : Mechanics?.GetMechanicByGameMode("GMMechanicStore")?.GetMechanicItemByType("slots");
+    }
+
+    public ValidateItem? GetValidation(string name)
+    {
+        return Validations.FirstOrDefault(x => x.Name == name);
     }
 
     public MechanicItem? GetGameEventMechanic(string type)

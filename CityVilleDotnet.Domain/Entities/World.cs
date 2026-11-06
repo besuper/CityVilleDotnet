@@ -150,7 +150,7 @@ public partial class World
 
     public WorldObject? GetBuildingByCoord(int x, int y, int z)
     {
-        return Objects.FirstOrDefault(w => w.X == x && w.Y == y && (w.Z ?? 0) == z);
+        return Objects.FirstOrDefault(w => w.StoredInId is null && w.X == x && w.Y == y && (w.Z ?? 0) == z);
     }
 
     public WorldObject? GetBuildingById(int id)
@@ -238,12 +238,12 @@ public partial class World
 
     public int GetHubLevel(PreyGroupSetting setting)
     {
-        return Objects.Select(x => setting.GetHubByName(x.ItemName)?.Level ?? 0).DefaultIfEmpty(0).Max();
+        return Objects.Where(x => x.StoredInId is null).Select(x => setting.GetHubByName(x.ItemName)?.Level ?? 0).DefaultIfEmpty(0).Max();
     }
 
     public int CountBuildingByNames(IReadOnlyCollection<string> names)
     {
-        return Objects.Count(x => names.Contains(x.ItemName));
+        return Objects.Count(x => x.StoredInId is null && names.Contains(x.ItemName));
     }
 
     public int CountCrewMembersByItemName(string itemName)
@@ -267,20 +267,20 @@ public partial class World
 
     public bool HasRemodelHeadquarters()
     {
-        return Objects.Any(x => RemodelHeadquartersNames.Contains(x.ItemName));
+        return Objects.Any(x => x.StoredInId is null && RemodelHeadquartersNames.Contains(x.ItemName));
     }
     
     public int CountBuildingByClassName(string className)
     {
         var classType = Enum.Parse<BuildingClassType>(className);
         
-        return Objects.Count(x => x.ClassName == classType);
+        return Objects.Count(x => x.StoredInId is null && x.ClassName == classType);
     }
 
     public int CountBuildingByRegex(string pattern)
     {
         var regex = new Regex(pattern);
-        return Objects.Count(x => regex.IsMatch(x.ItemName));
+        return Objects.Count(x => x.StoredInId is null && regex.IsMatch(x.ItemName));
     }
 
     public int CountWorldObjectByKeyword(string keyword)
@@ -318,6 +318,11 @@ public partial class World
 
     public void RemoveBuilding(WorldObject obj)
     {
+        if (Objects.Any(x => x.StoredInId == obj.WorldFlatId))
+        {
+            throw new Exception($"Can't remove {obj.ItemName} ({obj.WorldFlatId}), it still stores buildings");
+        }
+
         Objects.Remove(obj);
     }
 

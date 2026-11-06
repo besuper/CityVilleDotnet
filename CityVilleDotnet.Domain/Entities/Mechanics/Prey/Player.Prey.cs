@@ -56,9 +56,9 @@ public partial class Player
             case "SuperNeighborhoodHarvestMechanic":
                 RollPreySpawns(world, item, experiments);
 
-                foreach (var slot in obj.Slots.OrderBy(x => x.SlotIndex))
+                foreach (var neighborhood in world.GetStoredObjects(obj))
                 {
-                    RollPreySpawns(world, GameSettingsManager.Instance.GetItem(slot.ItemName) ?? throw new Exception($"Can't find game item for {slot.ItemName}"), experiments);
+                    RollPreySpawns(world, GameSettingsManager.Instance.GetItem(neighborhood.ItemName) ?? throw new Exception($"Can't find game item for {neighborhood.ItemName}"), experiments);
                 }
 
                 RollPreySpawns(world, item, experiments);

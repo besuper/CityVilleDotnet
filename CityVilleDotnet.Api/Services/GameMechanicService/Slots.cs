@@ -1,7 +1,8 @@
-using CityVilleDotnet.Api.Common.Amf;
+﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Api.Services.WorldService;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Persistence;
@@ -17,9 +18,16 @@ internal sealed class Slots(CityVilleDbContext context) : AmfService<SlotsReques
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || o.WorldFlatId == request.Action.ObjectId || o.TempId == request.Action.ObjectId))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || o.WorldFlatId == request.Action.ObjectId || o.TempId == request.Action.ObjectId || o.StoredInId == request.ObjectId))
             .ThenInclude(x => x.Slots)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || o.WorldFlatId == request.Action.ObjectId || o.TempId == request.Action.ObjectId || o.StoredInId == request.ObjectId))
+            .ThenInclude(x => x.CrewMembers)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || o.WorldFlatId == request.Action.ObjectId || o.TempId == request.Action.ObjectId || o.StoredInId == request.ObjectId))
+            .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.InventoryItems)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         var world = player.GetWorld();
@@ -79,19 +87,44 @@ internal sealed class Slots(CityVilleDbContext context) : AmfService<SlotsReques
             }
             case "storeObject":
             {
-                var storage = gameItem.ThemeParkStorage ?? throw new Exception($"No theme park storage on {obj.ItemName}");
-                var slotIndex = request.Action.SlotIndex ?? throw new Exception("Missing slot index");
                 var stored = world.GetBuildingByClientId(request.Action.ObjectId ?? throw new Exception("Missing object id"));
 
-                if (stored.ItemName != storage.GetSlotItemName(slotIndex, "storage"))
+                if (gameItem.ThemeParkStorage is null)
                 {
-                    throw new Exception($"Item {stored.ItemName} can't be stored in slot {slotIndex} of {obj.ItemName}");
+                    world.StoreObject(obj, gameItem, stored);
+                }
+                else
+                {
+                    var storage = gameItem.ThemeParkStorage;
+                    var slotIndex = request.Action.SlotIndex ?? throw new Exception("Missing slot index");
+
+                    if (stored.ItemName != storage.GetSlotItemName(slotIndex, "storage"))
+                    {
+                        throw new Exception($"Item {stored.ItemName} can't be stored in slot {slotIndex} of {obj.ItemName}");
+                    }
+
+                    obj.FillSlot(slotIndex, stored.ItemName, storage.Slots.Count);
+
+                    world.RemoveBuilding(stored);
+                    context.Set<WorldObject>().Remove(stored);
                 }
 
-                obj.FillSlot(slotIndex, stored.ItemName, storage.Slots.Count);
+                player.HandleQuestsProgress("storeItemInMechanicUser", itemName: obj.ItemName);
+                player.HandleQuestsProgress("storeItemInMechanicUserByKeyword", itemName: obj.ItemName);
+                break;
+            }
+            case "removeObject":
+            {
+                if (gameItem.GetObjectStorageMechanic() is null)
+                {
+                    throw new Exception($"No object storage on {obj.ItemName}");
+                }
 
-                world.RemoveBuilding(stored);
-                context.Set<WorldObject>().Remove(stored);
+                world.PlaceFromStorage(obj,
+                    request.Action.SlotId ?? throw new Exception("Missing slot id"),
+                    request.Action.NewX ?? throw new Exception("Missing x"),
+                    request.Action.NewY ?? throw new Exception("Missing y"),
+                    request.Action.Dir ?? throw new Exception("Missing direction"));
                 break;
             }
             case "placeObjectFromStorage":
@@ -139,6 +172,10 @@ public class SlotsActionRequest
     [AmfParam("args")] public object[]? Args { get; set; }
     [AmfParam("slotIndex")] public int? SlotIndex { get; set; }
     [AmfParam("objectId")] public int? ObjectId { get; set; }
+    [AmfParam("slotId")] public int? SlotId { get; set; }
+    [AmfParam("newX")] public int? NewX { get; set; }
+    [AmfParam("newY")] public int? NewY { get; set; }
+    [AmfParam("dir")] public int? Dir { get; set; }
     [AmfParam("objectData")] public BuildingPlaceRequest? ObjectData { get; set; }
 }
 

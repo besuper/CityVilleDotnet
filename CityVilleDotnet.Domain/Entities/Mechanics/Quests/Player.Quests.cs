@@ -117,6 +117,7 @@ public partial class Player
                         case "harvestBusinessByKeyword":
                         case "openBusinessByKeyword":
                         case "finishConstructionByKeyword":
+                        case "storeItemInMechanicUserByKeyword":
                             if (itemName is null)
                                 throw new Exception("Can't validate byKeyword action without itemName");
 
@@ -124,6 +125,13 @@ public partial class Player
                                 throw new Exception("Can't validate byKeyword action without gameItem");
 
                             quest.Progress[index] += (splitType ?? [taskType]).Count(gameItem.HasKeyword);
+
+                            break;
+                        case "storeItemInMechanicUser":
+                            if (gameItem?.Type == taskType)
+                            {
+                                quest.Progress[index] += 1;
+                            }
 
                             break;
                         case "visitorHelp":
@@ -185,6 +193,7 @@ public partial class Player
                 switch (actionTask)
                 {
                     case "countWorldObjectByName":
+                    case "countWorldObjectAndInMallsByName":
                     case "countConstructionOrBuildingByName":
                     {
                         //bus_toyota1_zyngage,bus_toyota1_zyngage_2,bus_toyota1_zyngage_3
@@ -304,6 +313,17 @@ public partial class Player
                             calculatedResults[resultKey] = value = GetWorld().CountWorldObjectByKeyword(task.Type);
 
                         quest.Progress[index] = value;
+                        continue;
+                    case "countSlottedContainerObjects":
+                        if (!calculatedResults.TryGetValue(resultKey, out value))
+                        {
+                            calculatedResults[resultKey] = value = GetWorld().GetMaxStoredObjectsByClass(taskType);
+                        }
+
+                        quest.Progress[index] = value;
+                        continue;
+                    case "checkThemeparkSlots":
+                        quest.Progress[index] = GetWorld().GetMaxFilledSlots(splitType ?? [taskType], task.Slots?.Split(',').Select(int.Parse).ToList() ?? []);
                         continue;
                     case "countAnimalsObjects":
                         if (!calculatedResults.TryGetValue(resultKey, out value))

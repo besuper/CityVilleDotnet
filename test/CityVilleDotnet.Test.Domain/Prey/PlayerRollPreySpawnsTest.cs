@@ -1,4 +1,4 @@
-using AwesomeAssertions;
+﻿using AwesomeAssertions;
 using Bogus;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Settings.GameSettings;
@@ -32,6 +32,35 @@ public class PlayerRollPreySpawnsTest
         player.PreyGroups.Add(faker.PreyGroup(groupId: "test_prey", preys: preys));
 
         return (player, world);
+    }
+
+    private static int? RollSuperNeighborhood(Faker faker, int storedNeighborhoods)
+    {
+        var (player, world) = CreatePlayer(faker, withHub: true, preys: []);
+        var superHood = faker.WorldObject(itemName: "test_prey_superhood", className: BuildingClassType.SuperNeighborhood, worldFlatId: 1);
+        world.Objects.Add(superHood);
+
+        for (var i = 0; i < storedNeighborhoods; i++)
+        {
+            var hood = faker.WorldObject(itemName: "test_prey_hood", className: BuildingClassType.Neighborhood, worldFlatId: 10 + i);
+            hood.StoreIn(superHood.WorldFlatId, i);
+            world.Objects.Add(hood);
+        }
+
+        player.RollHarvestStatePreySpawns(world, superHood, Item("test_prey_superhood"), NoExperiments);
+
+        return RollCount(player, "test_prey");
+    }
+
+    [Fact]
+    public void Player_RollHarvestStatePreySpawns_SuperNeighborhood_AlsoRollsForEachStoredNeighborhood()
+    {
+        var faker = new Faker();
+
+        var empty = RollSuperNeighborhood(faker, 0);
+        var withTwoNeighborhoods = RollSuperNeighborhood(faker, 2);
+
+        withTwoNeighborhoods.Should().Be(empty + 2);
     }
 
     [Fact]

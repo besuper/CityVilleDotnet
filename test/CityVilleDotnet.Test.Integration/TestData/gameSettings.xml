@@ -875,6 +875,19 @@
             <sizeY>2</sizeY>
             <gates/>
         </item>
+        <item name="test_prey_superhood" type="superneighborhood" className="SuperNeighborhood" buyable="false">
+            <keyword>test_prey_keyword</keyword>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="GMPlay">
+                    <mechanic type="harvestState" className="SuperNeighborhoodHarvestMechanic" priority="5"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_prey_hood" type="neighborhood" className="Neighborhood" buyable="false">
+            <keyword>test_prey_keyword</keyword>
+            <gates/>
+        </item>
         <item name="test_prey_gated_deco" type="decoration" buyable="false">
             <keyword>test_prey_gated_spawner</keyword>
             <sizeX>1</sizeX>
@@ -1015,7 +1028,167 @@
             <growTime>0.5</growTime>
             <gates/>
         </item>
+        <item name="test_storage_hood" type="neighborhood" className="Neighborhood" buyable="true">
+            <keyword>test_storage_kw</keyword>
+            <storageUnit name="neighborhood">
+                <maxCapacity>3</maxCapacity>
+                <initialCapacity>2</initialCapacity>
+            </storageUnit>
+            <validate name="storage">
+                <allOf>
+                    <func _class="ItemValidationUtil" _name="isType" type="residence"/>
+                    <func _class="ItemValidationUtil" _name="hasKeyword" keyword="test_other_kw,test_family"/>
+                </allOf>
+            </validate>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="GMMechanicStore">
+                    <mechanic type="slots" className="NeighborhoodStorageMechanic" priority="1" maxCapacity="4"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_storage_hood_level2" derivesFrom="test_storage_hood" buyable="false"/>
+        <item name="test_storage_superhood" type="superneighborhood" className="SuperNeighborhood" buyable="true">
+            <storageUnit name="superneighborhood">
+                <maxCapacity>2</maxCapacity>
+                <initialCapacity>2</initialCapacity>
+            </storageUnit>
+            <validate name="storage">
+                <allOf>
+                    <func _class="ItemValidationUtil" _name="isType" type="neighborhood"/>
+                </allOf>
+            </validate>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="GMMechanicStore">
+                    <mechanic type="slots" className="SuperNeighborhoodStorageMechanic" priority="1" maxCapacity="4"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_storage_mall" type="mall" className="Mall" buyable="true">
+            <storageUnit name="mall">
+                <maxCapacity>4</maxCapacity>
+                <initialCapacity>2</initialCapacity>
+            </storageUnit>
+            <validate name="storage">
+                <anyOf>
+                    <allOf>
+                        <func _class="ItemValidationUtil" _name="isType" type="business"/>
+                        <func _class="FranchiseValidationUtil" _name="checkFranchise" check="false"/>
+                        <func _class="ItemValidationUtil" _name="doesntHaveKeyword" keyword="test_premium"/>
+                    </allOf>
+                </anyOf>
+            </validate>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="GMMechanicStore">
+                    <mechanic type="slots" className="MallStorageMechanic" priority="1" gateType="crew"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_storage_center" type="municipalcenter" className="MunicipalCenter" buyable="true">
+            <storageUnit name="municipalcenter">
+                <maxCapacity>5</maxCapacity>
+                <initialCapacity>2</initialCapacity>
+            </storageUnit>
+            <validate name="storage">
+                <allOf>
+                    <func _class="ItemValidationUtil" _name="isType" type="municipal"/>
+                    <func _class="ItemValidationUtil" _name="isNotType" type="neighborhood"/>
+                </allOf>
+            </validate>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="GMMechanicStore">
+                    <mechanic type="slots" className="MunicipalCenterStorageMechanic" priority="1" maxCapacity="4"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_storage_facility" type="storage" className="StorageFacility" buyable="true">
+            <storageUnit name="storagefacility">
+                <maxCapacity>5</maxCapacity>
+                <initialCapacity>2</initialCapacity>
+            </storageUnit>
+            <validate name="storage">
+                <allOf>
+                    <func _class="ItemValidationUtil" _name="isType" type="storage"/>
+                </allOf>
+            </validate>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="GMMechanicStore">
+                    <mechanic type="slots" className="GatedStorageMechanic" priority="1" maxCapacity="4"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_storage_unknown_func" type="neighborhood" buyable="true">
+            <storageUnit name="neighborhood">
+                <maxCapacity>3</maxCapacity>
+                <initialCapacity>2</initialCapacity>
+            </storageUnit>
+            <validate name="storage">
+                <allOf>
+                    <func _class="ItemValidationUtil" _name="isUnknownTestFunction"/>
+                </allOf>
+            </validate>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="GMMechanicStore">
+                    <mechanic type="slots" className="GatedStorageMechanic" priority="1" maxCapacity="4"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_family_house" type="residence" className="Residence" buyable="true">
+            <keyword>test_family</keyword>
+            <gates/>
+        </item>
+        <item name="test_banned_house" type="residence" className="Residence" buyable="true">
+            <keyword>test_family</keyword>
+            <gates/>
+        </item>
+        <item name="test_plain_house" type="residence" className="Residence" buyable="true">
+            <gates/>
+        </item>
+        <item name="test_unstorable_house" type="residence" className="Residence" storable="false" buyable="true">
+            <keyword>test_family</keyword>
+            <gates/>
+        </item>
+        <item name="test_shop" type="business" className="Business" buyable="true">
+            <gates/>
+        </item>
+        <item name="test_premium_shop" type="business" className="Business" buyable="true">
+            <keyword>test_premium</keyword>
+            <gates/>
+        </item>
+        <item name="test_banned_shop" type="business" className="Business" buyable="true">
+            <keyword>test_mall_banned</keyword>
+            <gates/>
+        </item>
+        <item name="test_town_hall" type="municipal" className="Municipal" buyable="true">
+            <gates/>
+        </item>
+        <item name="test_farm_silo" type="storage" className="Storage" buyable="true">
+            <gates/>
+        </item>
     </items>
+
+    <validators>
+        <validate name="globalNeighborhoodStorageValidate">
+            <allOf>
+                <func _class="MapResourceValidationUtil" _name="isNotItem" itemName="test_banned_house"/>
+            </allOf>
+        </validate>
+        <validate name="globalMallStorageValidate">
+            <allOf>
+                <func _class="ItemValidationUtil" _name="doesntHaveKeyword" keyword="test_mall_banned"/>
+            </allOf>
+        </validate>
+        <validate name="globalMunicipalCenterStorageValidate">
+            <allOf>
+                <func _class="MapResourceValidationUtil" _name="isNotItem" itemName="test_banned_house"/>
+            </allOf>
+        </validate>
+    </validators>
 
     <levels_cv_level_regrade_var_0>
         <level num="1" requiredXP="0" energyMax="12"/>

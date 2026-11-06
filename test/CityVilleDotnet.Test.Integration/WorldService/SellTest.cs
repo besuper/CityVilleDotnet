@@ -1,7 +1,8 @@
-using AwesomeAssertions;
+﻿using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.WorldService;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Exceptions;
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Factory.GlobalTableOverride;
@@ -39,6 +40,26 @@ public class SellTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 
         remaining.Should().ContainSingle().Which.WorldFlatId.Should().Be(5);
         player.Gold.Should().Be(goldBefore + 3);
+    }
+
+    [Fact]
+    public async Task Sell_ContainerStoringBuildings_ThrowsAndKeepsEverything()
+    {
+        var hood = Faker.WorldObject(itemName: "test_storage_hood", className: BuildingClassType.Neighborhood, x: 10, y: 10, worldFlatId: 5);
+        var house = Faker.WorldObject(itemName: "test_family_house", className: BuildingClassType.Residence, x: 20, y: 20, worldFlatId: 6);
+        var world = Faker.World(objects: [hood, house]);
+        world.StoreObject(hood, GameSettingsManager.Instance.GetItem("test_storage_hood")!, house);
+        var player = Faker.Player(world: world);
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var act = () => new Sell(Context).HandlePacket(new SellRequest { Building = new SellBuildingRequest { Id = 5 } }, player.Id, TestContext.Current.CancellationToken);
+
+        await act.Should().ThrowAsync<Exception>();
+        Context.ChangeTracker.Clear();
+        var remaining = await Context.Set<WorldObject>().CountAsync(x => x.Id == hood.Id || x.Id == house.Id, TestContext.Current.CancellationToken);
+        remaining.Should().Be(2);
     }
 
     [Fact]

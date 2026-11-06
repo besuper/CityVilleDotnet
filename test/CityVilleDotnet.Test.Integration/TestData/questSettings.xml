@@ -195,6 +195,19 @@
             <questRewards xp="5"/>
         </resourceModifiers>
     </quest>
+    <quest name="qm_test_store_in_mechanic" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="storeItemInMechanicUser" type="neighborhood" total="2"/>
+            <task action="storeItemInMechanicUserByKeyword" type="test_storage_kw" total="2"/>
+        </tasks>
+    </quest>
+    <quest name="qm_test_storage_counts" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="countSlottedContainerObjects" type="Neighborhood" total="5"/>
+            <task action="countWorldObjectAndInMallsByName" type="test_shop" total="5"/>
+            <task action="checkThemeparkSlots" type="test_theme_park" slots="0,1" total="2"/>
+        </tasks>
+    </quest>
     <quest name="qm_test_completed_building" delay="1" visible="true" spawns_from="_manual">
         <tasks>
             <task action="countCompletedBuildingByName" type="test_completed_a,test_completed_b" total="1"/>

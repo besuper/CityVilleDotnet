@@ -1,4 +1,4 @@
-using CityVilleDotnet.Api.Common.Amf;
+﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Api.Pages;
 using CityVilleDotnet.Common.Settings;
@@ -21,7 +21,7 @@ public sealed class HarvestState(CityVilleDbContext context, IConfiguration conf
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || globalTableProviders.Contains(o.ItemName) || hubNames.Contains(o.ItemName)))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || globalTableProviders.Contains(o.ItemName) || hubNames.Contains(o.ItemName) || o.StoredInId == request.ObjectId))
             .ThenInclude(x => x.Slots)
             .Include(x => x.InventoryItems)
             .Include(x => x.Collections)
