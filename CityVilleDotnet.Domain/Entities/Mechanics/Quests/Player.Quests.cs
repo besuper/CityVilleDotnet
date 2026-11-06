@@ -30,6 +30,13 @@ public partial class Player
 
                 if (quest.Progress[index] + quest.Purchased[index] >= int.Parse(task.Total)) continue;
 
+                // GameQuestUtility::isQuestTaskAutoComplete
+                if (task.AutoComplete)
+                {
+                    quest.Progress[index] = int.Parse(task.Total);
+                    continue;
+                }
+
                 var actionTask = task.Action;
                 var taskType = task.Type ?? "";
                 var splitType = taskType.Contains(',') ? taskType.Split(',') : null;

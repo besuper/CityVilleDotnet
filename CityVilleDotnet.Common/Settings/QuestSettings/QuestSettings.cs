@@ -76,6 +76,7 @@ public class QuestTask
     [XmlAttribute("groupId")] public string? GroupId { get; set; }
     [XmlAttribute("gate")] public string? Gate { get; set; }
     [XmlAttribute("slots")] public string? Slots { get; set; }
+    [XmlAttribute("autoComplete")] public bool AutoComplete { get; set; }
     [XmlIgnore] public int? Streak { get; set; }
 
     [XmlAttribute("streak")]

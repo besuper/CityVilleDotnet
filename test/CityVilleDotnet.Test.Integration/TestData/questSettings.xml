@@ -89,6 +89,15 @@
             <questRewards xp="5"/>
         </resourceModifiers>
     </quest>
+    <quest name="qm_test_auto_complete" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task autoComplete="true" action="consumeItemsAtInit" type="test_pamphlet" total="20" sticky="true"/>
+            <task action="visitorHelp" type="businessSendTour" total="5" sticky="true"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
     <quest name="qm_test_capture_prey" delay="1" visible="true" spawns_from="_manual">
         <tasks>
             <task action="capturePreyByID" type="" groupId="test_prey" total="5"/>
