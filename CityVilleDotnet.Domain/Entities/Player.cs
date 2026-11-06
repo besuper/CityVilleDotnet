@@ -853,7 +853,7 @@ public partial class Player
 
     public int CountCollectableByName(string itemName)
     {
-        return Collections.Sum(x => x.Items.Count(y => y.Name == itemName));
+        return Collections.Sum(x => x.Items.Where(y => y.Name == itemName).Sum(y => y.Amount));
     }
 
     public bool HasLicense(string licenseName)
