@@ -213,6 +213,15 @@
     <data name="AdminCannotRemoveOwnAdmin" xml:space="preserve">
         <value>No puedes quitarte tus propios derechos de administrador.</value>
     </data>
+    <data name="AdminImpersonate" xml:space="preserve">
+        <value>Iniciar sesión como este jugador</value>
+    </data>
+    <data name="AdminImpersonateDescription" xml:space="preserve">
+        <value>Abre el juego con la sesión de este jugador. Se cerrará la sesión de tu cuenta de administrador.</value>
+    </data>
+    <data name="AdminImpersonateConfirm" xml:space="preserve">
+        <value>¿Iniciar sesión como este jugador? Se cerrará la sesión de tu cuenta actual.</value>
+    </data>
     <data name="AdminConfirm" xml:space="preserve">
         <value>¿Seguro que quieres cambiar los derechos de administrador de este jugador?</value>
     </data>

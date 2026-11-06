@@ -11,7 +11,7 @@ using Microsoft.Extensions.Localization;
 
 namespace CityVilleDotnet.Api.Pages.Admin.Players;
 
-public class EditModel(CityVilleDbContext dbContext, UserManager<ApplicationUser> userManager, IStringLocalizer<Resources.SharedResource> localizer) : PageModel
+public class EditModel(CityVilleDbContext dbContext, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IStringLocalizer<Resources.SharedResource> localizer) : PageModel
 {
     private const int MaxItemNameLength = 64;
     private const int MaxQuestNameLength = 64;
@@ -104,6 +104,21 @@ public class EditModel(CityVilleDbContext dbContext, UserManager<ApplicationUser
 
         TempData["Success"] = localizer["AdminPlayerUpdated"].Value;
         return RedirectToTab(id, "overview");
+    }
+
+    public async Task<IActionResult> OnPostImpersonateAsync(Guid id, CancellationToken ct)
+    {
+        var appUser = await dbContext.Set<Player>()
+            .Where(x => x.Id == id)
+            .Select(x => x.AppUser)
+            .FirstOrDefaultAsync(ct);
+
+        if (appUser is null)
+            return NotFound();
+
+        await signInManager.SignInAsync(appUser, isPersistent: false);
+
+        return LocalRedirect("/Game");
     }
 
     public async Task<IActionResult> OnPostAddItemAsync(Guid id, string? itemName, int amount, CancellationToken ct)

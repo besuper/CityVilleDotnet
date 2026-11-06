@@ -112,6 +112,20 @@
 				</form>
 			</div>
 		</div>
+
+		<div class="card border-0 shadow-sm mb-4">
+			<div class="card-body d-flex align-items-center justify-content-between flex-wrap">
+				<div>
+					<h6 class="font-weight-bold text-dark mb-1"><i class="bi bi-person-badge mr-2 text-warning"></i>@Localizer["AdminImpersonate"]</h6>
+					<div class="text-muted small">@Localizer["AdminImpersonateDescription"]</div>
+				</div>
+				<form method="post" asp-page-handler="Impersonate" asp-route-id="@player.Id" data-confirm="@Localizer["AdminImpersonateConfirm"]">
+					<button type="submit" class="btn btn-sm btn-outline-warning font-weight-bold">
+						<i class="bi bi-box-arrow-in-right mr-1"></i>@Localizer["AdminImpersonate"]
+					</button>
+				</form>
+			</div>
+		</div>
 	</div>
 
 	<div class="tab-pane fade" id="inventory" role="tabpanel">

@@ -209,6 +209,15 @@
     <data name="AdminCannotRemoveOwnAdmin" xml:space="preserve">
         <value>Vous ne pouvez pas retirer vos propres droits d'administrateur.</value>
     </data>
+    <data name="AdminImpersonate" xml:space="preserve">
+        <value>Se connecter en tant que ce joueur</value>
+    </data>
+    <data name="AdminImpersonateDescription" xml:space="preserve">
+        <value>Ouvre le jeu connecté sur le compte de ce joueur. Vous serez déconnecté de votre compte administrateur.</value>
+    </data>
+    <data name="AdminImpersonateConfirm" xml:space="preserve">
+        <value>Se connecter en tant que ce joueur ? Vous serez déconnecté de votre compte actuel.</value>
+    </data>
     <data name="AdminConfirm" xml:space="preserve">
         <value>Voulez-vous vraiment modifier les droits d'administrateur de ce joueur ?</value>
     </data>

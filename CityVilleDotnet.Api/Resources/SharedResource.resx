@@ -219,6 +219,15 @@
     <data name="AdminCannotRemoveOwnAdmin" xml:space="preserve">
         <value>You cannot remove your own admin rights.</value>
     </data>
+    <data name="AdminImpersonate" xml:space="preserve">
+        <value>Log in as this player</value>
+    </data>
+    <data name="AdminImpersonateDescription" xml:space="preserve">
+        <value>Opens the game logged in as this player. You will be logged out of your admin account.</value>
+    </data>
+    <data name="AdminImpersonateConfirm" xml:space="preserve">
+        <value>Log in as this player? You will be logged out of your current account.</value>
+    </data>
     <data name="AdminConfirm" xml:space="preserve">
         <value>Are you sure you want to change the admin rights of this player?</value>
     </data>
