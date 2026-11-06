@@ -1,4 +1,6 @@
-﻿namespace CityVilleDotnet.Domain.Entities;
+﻿using CityVilleDotnet.Common.Settings;
+
+namespace CityVilleDotnet.Domain.Entities;
 
 public enum FriendshipStatus
 {
@@ -18,7 +20,7 @@ public class Friend
 
     public bool Requested { get; set; }
 
-    public int EnergyLeft { get; set; } = 5;
+    public int EnergyLeft { get; set; }
 
     public long LastEnergyLeftReset { get; set; } = 0;
 
@@ -30,6 +32,7 @@ public class Friend
 
         Status = FriendshipStatus.Pending;
         Requested = requested;
+        EnergyLeft = GameSettingsManager.Instance.GetSettings().MaxVisitingEnergy;
     }
 
     public Friend()
@@ -48,5 +51,15 @@ public class Friend
         if (FriendPlayer is null) throw new Exception("Friend player is not loaded");
 
         return FriendPlayer;
+    }
+
+    public bool CanResetEnergy(long now) => now - LastEnergyLeftReset >= GameSettingsManager.Instance.GetSettings().InGameDaySeconds * 1000L;
+
+    public int GetAvailableEnergy(long now) => CanResetEnergy(now) ? GameSettingsManager.Instance.GetSettings().MaxVisitingEnergy : EnergyLeft;
+
+    public void ResetEnergy(long now)
+    {
+        EnergyLeft = GameSettingsManager.Instance.GetSettings().MaxVisitingEnergy;
+        LastEnergyLeftReset = now;
     }
 }

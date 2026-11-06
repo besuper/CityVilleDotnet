@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 
@@ -23,6 +24,7 @@ public class NeighborDto
     [JsonPropertyName("isSubscriber")] public bool IsSubscriber { get; set; }
 
     [JsonPropertyName("energyLeft")] public int EnergyLeft { get; set; }
+    [JsonPropertyName("badges")] public List<string> Badges { get; set; } = [];
 
     [JsonPropertyName("lastLoginTimestamp")]
     public int LastLoginTimestamp { get; set; }
@@ -61,7 +63,7 @@ public static class NeighborDtoMapper
             NonSNNeighbor = false,
             IsSubscriber = false,
 
-            EnergyLeft = model.EnergyLeft,
+            EnergyLeft = model.GetAvailableEnergy(ServerUtils.GetCurrentTime()),
             LastLoginTimestamp = 0,
             HelpRequests = 0,
             PlayerClassType = -1

@@ -37,10 +37,9 @@ public class InitialVisit(CityVilleDbContext context) : AmfService<InitialVisitR
         // TODO: Implement rewards system (https://cityville.fandom.com/wiki/Neighbors)
         var currentTimestamp = ServerUtils.GetCurrentTime();
 
-        if (currentTimestamp - targetFriend.LastEnergyLeftReset >= 23 * 60 * 60 * 1000L)
+        if (targetFriend.CanResetEnergy(currentTimestamp))
         {
-            targetFriend.EnergyLeft = 5;
-            targetFriend.LastEnergyLeftReset = currentTimestamp;
+            targetFriend.ResetEnergy(currentTimestamp);
 
             // Clean all orders from the previous friendship help batch even if its pending/unclaimed
             var sentOrders = currentUser.VisitorHelpOrders.Where(x => x.RecipientId == request.Content.RecipientId && x.SenderId == request.Content.SenderId).ToList();
