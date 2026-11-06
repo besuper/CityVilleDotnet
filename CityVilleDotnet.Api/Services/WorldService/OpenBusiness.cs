@@ -1,5 +1,4 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
-using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
@@ -16,7 +15,7 @@ internal sealed class OpenBusiness(CityVilleDbContext context) : AmfService<Open
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects.Where(o => o.X == request.Building.Position.X && o.Y == request.Building.Position.Y))
+            .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.Building.Id || o.TempId == request.Building.Id))
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
@@ -28,7 +27,7 @@ internal sealed class OpenBusiness(CityVilleDbContext context) : AmfService<Open
 
         var world = player.GetWorld();
 
-        var obj = world.GetBuildingByCoord(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z) ?? throw new Exception($"Can't find building");
+        var obj = world.GetBuildingByClientId(request.Building.Id);
 
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
 
@@ -56,5 +55,5 @@ public class OpenBusinessRequest
 
 public class BuildingOpenBusiness
 {
-    [AmfParam("position")] public PerformActionPositionRequest Position { get; set; } = new();
+    [AmfParam("id")] public int Id { get; set; }
 }

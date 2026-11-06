@@ -1,6 +1,5 @@
 using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.WorldService;
-using CityVilleDotnet.Api.Services.WorldService.Common;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Domain.Entities;
@@ -16,21 +15,18 @@ namespace CityVilleDotnet.Test.Integration.WorldService;
 [Collection("Database")]
 public class OpenBusinessTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 {
-    private static OpenBusinessRequest CreateOpenBusinessRequest(int x, int y)
+    private static OpenBusinessRequest CreateOpenBusinessRequest(int id)
     {
         return new OpenBusinessRequest
         {
-            Building = new BuildingOpenBusiness
-            {
-                Position = new PerformActionPositionRequest { X = x, Y = y, Z = 0 }
-            }
+            Building = new BuildingOpenBusiness { Id = id }
         };
     }
 
     [Fact]
     public async Task OpenBusiness_ClosedBusiness_ConsumesGoodsWithoutEnergyCost()
     {
-        var business = Faker.WorldObject(itemName: "test_bus_goods", className: BuildingClassType.Business, state: WorldObjectState.Closed, x: 10, y: 10);
+        var business = Faker.WorldObject(itemName: "test_bus_goods", className: BuildingClassType.Business, state: WorldObjectState.Closed);
         var world = Faker.World(objects: [business]);
         var player = Faker.Player(world: world);
         player.SetGoods(100);
@@ -41,7 +37,7 @@ public class OpenBusinessTest(DatabaseFixture fixture) : IntegrationTest(fixture
         var energyBefore = player.Energy;
         var handler = new OpenBusiness(Context);
 
-        var response = await handler.HandlePacket(CreateOpenBusinessRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
+        var response = await handler.HandlePacket(CreateOpenBusinessRequest(business.WorldFlatId), player.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
 
@@ -56,7 +52,7 @@ public class OpenBusinessTest(DatabaseFixture fixture) : IntegrationTest(fixture
     [Fact]
     public async Task OpenBusiness_NotEnoughGoods_ThrowsNotEnoughMoney()
     {
-        var business = Faker.WorldObject(itemName: "test_bus_goods", className: BuildingClassType.Business, state: WorldObjectState.Closed, x: 10, y: 10);
+        var business = Faker.WorldObject(itemName: "test_bus_goods", className: BuildingClassType.Business, state: WorldObjectState.Closed);
         var world = Faker.World(objects: [business]);
         var player = Faker.Player(world: world);
         player.SetGoods(14);
@@ -66,7 +62,7 @@ public class OpenBusinessTest(DatabaseFixture fixture) : IntegrationTest(fixture
 
         var handler = new OpenBusiness(Context);
 
-        var act = () => handler.HandlePacket(CreateOpenBusinessRequest(10, 10), player.Id, TestContext.Current.CancellationToken);
+        var act = () => handler.HandlePacket(CreateOpenBusinessRequest(business.WorldFlatId), player.Id, TestContext.Current.CancellationToken);
 
         (await act.Should().ThrowAsync<DomainException>()).Which.Reason.Should().Be(GameErrorType.NotEnoughMoney);
     }
