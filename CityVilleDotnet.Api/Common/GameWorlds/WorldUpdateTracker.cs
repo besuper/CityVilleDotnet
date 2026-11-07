@@ -142,6 +142,7 @@ public sealed class WorldUpdateTracker : IDisposable
             .Include(x => x.MechanicCounters)
             .Include(x => x.StorageItems)
             .Include(x => x.Slots)
+            .Include(x => x.SupplyResources)
             .Include(x => x.FranchiseLocation)
             .Where(x => EF.Property<int?>(x, WorldIdKey) == worldId)
             // every stored object is needed to rebuild nested slots (a neighborhood stored in a super neighborhood keeps its residences)

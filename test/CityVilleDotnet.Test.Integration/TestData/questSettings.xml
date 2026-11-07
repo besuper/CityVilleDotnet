@@ -177,6 +177,29 @@
             <questRewards xp="5"/>
         </resourceModifiers>
     </quest>
+    <quest name="qm_test_mall_supply" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="openBusinessByClass" type="Mall" total="5"/>
+            <task action="openBusinessByKeyword" type="test_mall_kw" total="5"/>
+            <task action="countSupplyItemByName" type="test_supply_mall" total="5"/>
+            <task action="openBusinessByName" type="test_supply_mall" total="5"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
+    <quest name="qm_test_mall_harvest" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="harvestByKeyword" type="test_mall_kw" total="5"/>
+            <task action="harvestBusinessByKeyword" type="test_mall_kw" total="5"/>
+            <task action="harvestItemByName" type="test_supply_mall" total="5"/>
+            <task action="harvestResidenceByName" type="test_supply_mall" total="5"/>
+            <task action="harvestResidenceByRegEx" type="^test_supply_mall$" total="5"/>
+        </tasks>
+        <resourceModifiers>
+            <questRewards xp="5"/>
+        </resourceModifiers>
+    </quest>
     <quest name="qm_test_incentivized_expansion" delay="1" visible="true" spawns_from="_manual">
         <tasks>
             <task action="unlockIncentivizedExpansion" type="test_expansion_a,test_expansion_b" total="1"/>

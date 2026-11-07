@@ -220,4 +220,57 @@ public class SlotsObjectStorageTest(DatabaseFixture fixture) : IntegrationTest(f
         var residences = (IEnumerable)((ASObject)storedHood["mechanicData"])["slots"];
         residences.Cast<object>().Should().ContainSingle();
     }
+
+    // test_supply_mall supplied with test_mall_shop_a (10 customers) and test_mall_shop_b (20 customers), stored at HoodId so Remove can be reused
+    private async Task<(Player Player, WorldObject Mall)> SeedSuppliedMall(params string[] shopNames)
+    {
+        var mall = Faker.WorldObject(itemName: "test_supply_mall", className: BuildingClassType.Mall, x: 1, y: 1, worldFlatId: HoodId);
+        var shops = shopNames.Select((name, i) => Faker.WorldObject(itemName: name, className: BuildingClassType.Business, x: 10 + i, y: 10, worldFlatId: FirstHouseId + i)).ToList();
+
+        for (var i = 0; i < shops.Count; i++)
+        {
+            shops[i].StoreIn(HoodId, i);
+        }
+
+        mall.OpenStorageSupply(shops);
+        var player = Faker.Player(world: Faker.World(objects: [mall, .. shops]));
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        Context.ChangeTracker.Clear();
+
+        return (player, mall);
+    }
+
+    private async Task<WorldObject> LoadMall(WorldObject mall)
+    {
+        Context.ChangeTracker.Clear();
+
+        return await Context.Set<WorldObject>().AsNoTracking().Include(x => x.SupplyResources).SingleAsync(x => x.Id == mall.Id, TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task Slots_RemoveObject_SuppliedMall_RemovesTheSuppliedShop()
+    {
+        var (player, mall) = await SeedSuppliedMall("test_mall_shop_a", "test_mall_shop_b");
+
+        var response = await Remove(player, 1);
+
+        response["errorType"].Should().Be(0);
+        var storedMall = await LoadMall(mall);
+        storedMall.GetSupplyResourceNames().Should().Equal("test_mall_shop_a");
+        storedMall.State.Should().Be(WorldObjectState.Open);
+    }
+
+    [Fact]
+    public async Task Slots_RemoveObject_LastSuppliedShop_ClosesMallSupply()
+    {
+        var (player, mall) = await SeedSuppliedMall("test_mall_shop_a");
+
+        await Remove(player, 0);
+
+        var storedMall = await LoadMall(mall);
+        storedMall.IsStorageSupplied().Should().BeFalse();
+        storedMall.State.Should().Be(WorldObjectState.Static);
+    }
 }

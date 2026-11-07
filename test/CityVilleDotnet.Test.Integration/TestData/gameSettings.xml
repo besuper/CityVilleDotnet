@@ -1170,6 +1170,80 @@
         <item name="test_farm_silo" type="storage" className="Storage" buyable="true">
             <gates/>
         </item>
+        <item name="test_supply_mall" type="mall" className="Mall" buyable="true">
+            <keyword>test_mall_kw</keyword>
+            <commodity name="goods" default="1"/>
+            <energyCost harvest="1"/>
+            <storageUnit name="mall">
+                <maxCapacity>4</maxCapacity>
+                <initialCapacity>4</initialCapacity>
+            </storageUnit>
+            <validate name="storage">
+                <allOf>
+                    <func _class="ItemValidationUtil" _name="isType" type="business"/>
+                </allOf>
+            </validate>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="GMPlay">
+                    <mechanic type="supply" className="StorageSupplyMechanic" priority="5" storageSource="slots" harvestStateName="harvestState" blockOthers="true" pick="supply"/>
+                    <mechanic type="harvestState" className="MallHarvestMechanic" priority="4" blockOthers="true" pick="harvest"/>
+                </gameEventMechanics>
+                <gameEventMechanics gameMode="GMMechanicStore">
+                    <mechanic type="slots" className="MallStorageMechanic" priority="1" gateType="crew"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_supply_mall_premium" type="mall" className="Mall" buyable="true">
+            <commodity name="premium_goods" default="1"/>
+            <energyCost harvest="1"/>
+            <energyModifier>
+                <slotsFilled amount="1" discount="0"/>
+                <slotsFilled amount="2" discount="5"/>
+            </energyModifier>
+            <storageUnit name="mall">
+                <maxCapacity>4</maxCapacity>
+                <initialCapacity>4</initialCapacity>
+            </storageUnit>
+            <validate name="storage">
+                <allOf>
+                    <func _class="ItemValidationUtil" _name="isType" type="business"/>
+                </allOf>
+            </validate>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="GMPlay">
+                    <mechanic type="supply" className="StorageSupplyMechanic" priority="5" storageSource="slots" harvestStateName="harvestState" blockOthers="true" pick="supply"/>
+                    <mechanic type="harvestState" className="MallHarvestMechanic" priority="4" blockOthers="true" pick="harvest"/>
+                </gameEventMechanics>
+                <gameEventMechanics gameMode="GMMechanicStore">
+                    <mechanic type="slots" className="MallStorageMechanic" priority="1" gateType="crew"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_mall_shop_a" type="business" className="Business" buyable="true">
+            <commodityReq>10</commodityReq>
+            <commodity name="goods" default="1"/>
+            <energyCost harvest="1"/>
+            <randomModifiers>
+                <modifier type="item" tableName="test_mall_shop_table"/>
+            </randomModifiers>
+            <gates/>
+            <upgrade item="test_bus_upgradable_2">
+                <requirements>
+                    <requirement type="upgrade_actions" value="5"/>
+                </requirements>
+            </upgrade>
+        </item>
+        <item name="test_mall_shop_b" type="business" className="Business" buyable="true">
+            <commodityReq>20</commodityReq>
+            <commodity name="premium_goods" default="1"/>
+            <energyCost harvest="2"/>
+            <randomModifiers>
+                <modifier type="item" tableName="test_mall_shop_table"/>
+            </randomModifiers>
+            <gates/>
+        </item>
     </items>
 
     <validators>
@@ -1237,6 +1311,11 @@
         <randomModifierTable type="item" name="test_bus_tour_table">
             <roll percent="100">
                 <coin amount="40"/>
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="item" name="test_mall_shop_table">
+            <roll percent="100">
+                <coin amount="5"/>
             </roll>
         </randomModifierTable>
         <randomModifierTable type="item" name="test_populationtable">
@@ -1503,4 +1582,8 @@
     <dynamicExpansions>
         <dynamicExpansion id="test_expansion_a"/>
     </dynamicExpansions>
+    <commodities>
+        <commodity name="goods" default="1" bonus="0"/>
+        <commodity name="premium_goods" default="0" bonus="10"/>
+    </commodities>
 </settings>

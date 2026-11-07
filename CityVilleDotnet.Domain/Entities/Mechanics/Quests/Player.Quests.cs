@@ -85,6 +85,7 @@ public partial class Player
                         case "harvestResidenceByName":
                         case "harvestPlotByName":
                         case "openBusinessByName":
+                        case "countSupplyItemByName":
                         case "harvestBusinessByName":
                         case "placeBuildingByName":
                         case "sendTourNeighborBusinessByName":

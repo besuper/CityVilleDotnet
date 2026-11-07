@@ -36,6 +36,7 @@ internal sealed class ProcessVisitsBatch(CityVilleDbContext context, ILogger<Pro
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(w => ids.Contains(w.WorldFlatId) || ids.Contains(w.TempId)))
+            .ThenInclude(x => x.SupplyResources)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         var world = player.GetWorld();

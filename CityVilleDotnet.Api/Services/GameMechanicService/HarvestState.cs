@@ -23,6 +23,9 @@ public sealed class HarvestState(CityVilleDbContext context, IConfiguration conf
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || globalTableProviders.Contains(o.ItemName) || hubNames.Contains(o.ItemName) || o.StoredInId == request.ObjectId))
             .ThenInclude(x => x.Slots)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || globalTableProviders.Contains(o.ItemName) || hubNames.Contains(o.ItemName) || o.StoredInId == request.ObjectId))
+            .ThenInclude(x => x.SupplyResources)
             .Include(x => x.InventoryItems)
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
@@ -49,22 +52,44 @@ public sealed class HarvestState(CityVilleDbContext context, IConfiguration conf
                 .LoadAsync(cancellationToken);
         }
 
-        if (gameItem.EnergyCost?.Harvest is not null)
+        if (gameItem.IsStorageSupply())
+        {
+            player.RemoveEnergy(obj.GetStorageSupplyHarvestEnergyCost(gameItem));
+        }
+        else if (gameItem.EnergyCost?.Harvest is not null)
+        {
             player.RemoveEnergy(int.Parse(gameItem.EnergyCost.Harvest));
+        }
 
         // CustomerStateHarvestMechanic.applyPayoutMultipliers
         var coinMultiplier = gameItem.IsCustomerSupplyState()
             ? Math.Max(obj.Visits ?? 0, 1)
             : 1;
 
+        var supplyResourceNames = obj.GetSupplyResourceNames();
+
         obj.Harvest();
-        player.CollectDoobersRewards(obj.GetItemName(), coinMultiplier: coinMultiplier);
+
+        if (gameItem.IsStorageSupply())
+        {
+            player.CollectStorageSupplyRewards(gameItem, supplyResourceNames);
+        }
+        else
+        {
+            player.CollectDoobersRewards(obj.GetItemName(), coinMultiplier: coinMultiplier);
+        }
+
         player.RollHarvestStatePreySpawns(world, obj, gameItem, experiments);
 
         player.HandleQuestsProgress("harvestByClass", className: obj.GetClassName().ToString());
         player.HandleQuestsProgress("harvestBusinessByName", itemName: obj.GetItemName());
         player.HandleQuestsProgress("harvestBusinessByClass", className: obj.GetClassName().ToString());
         player.HandleQuestsProgress("harvestMechanicByKeywords", itemName: obj.GetItemName());
+        player.HandleQuestsProgress("harvestByKeyword", itemName: obj.GetItemName());
+        player.HandleQuestsProgress("harvestBusinessByKeyword", itemName: obj.GetItemName());
+        player.HandleQuestsProgress("harvestItemByName", itemName: obj.GetItemName());
+        player.HandleQuestsProgress("harvestResidenceByName", itemName: obj.GetItemName());
+        player.HandleQuestsProgress("harvestResidenceByRegEx", itemName: obj.GetItemName());
 
         await context.SaveChangesAsync(cancellationToken);
 

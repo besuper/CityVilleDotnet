@@ -1426,6 +1426,32 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.ToTable("WorldObjectStorageItem");
                 });
 
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.WorldObjectSupplyResource", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ItemName")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WorldObjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorldObjectId");
+
+                    b.ToTable("WorldObjectSupplyResource");
+                });
+
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.WorldObjectWorker", b =>
                 {
                     b.Property<int>("Id")
@@ -1888,6 +1914,15 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.WorldObjectSupplyResource", b =>
+                {
+                    b.HasOne("CityVilleDotnet.Domain.Entities.WorldObject", null)
+                        .WithMany("SupplyResources")
+                        .HasForeignKey("WorldObjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.WorldObjectWorker", b =>
                 {
                     b.HasOne("CityVilleDotnet.Domain.Entities.WorldObject", null)
@@ -2031,6 +2066,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Navigation("Slots");
 
                     b.Navigation("StorageItems");
+
+                    b.Navigation("SupplyResources");
 
                     b.Navigation("Workers");
                 });

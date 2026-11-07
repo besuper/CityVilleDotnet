@@ -31,6 +31,7 @@ public class WorldObjectConfiguration : IEntityTypeConfiguration<WorldObject>
         builder.HasMany(x => x.MechanicCounters).WithOne().IsRequired();
         builder.HasMany(x => x.StorageItems).WithOne().IsRequired();
         builder.HasMany(x => x.Slots).WithOne().IsRequired();
+        builder.HasMany(x => x.SupplyResources).WithOne().IsRequired();
         builder.HasMany(x => x.Workers).WithOne().IsRequired();
         
         builder.Property(x => x.ActivationTime);

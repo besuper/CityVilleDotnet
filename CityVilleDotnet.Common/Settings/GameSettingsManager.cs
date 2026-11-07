@@ -29,6 +29,7 @@ public class GameSettingsManager
     private Dictionary<string, List<ExpansionSetting>> _expansionGates = [];
     private List<PreyGroupSetting> _preyGroups = [];
     private List<GateTuningItem> _gateTunings = [];
+    private List<CommodityItem> _commodities = [];
     private bool _isInitialized;
 
     private GameSettingsManager()
@@ -203,6 +204,7 @@ public class GameSettingsManager
 
             _preyGroups = gameSettings.PreyGroups?.Groups ?? [];
             _gateTunings = gameSettings.DynamicTunings?.GateTunings ?? [];
+            _commodities = gameSettings.Commodities;
 
             var globalTableMechanics = _items.Values
                 .SelectMany(x => x?.Mechanics?.GameEventMechanics ?? [])
@@ -251,6 +253,12 @@ public class GameSettingsManager
             throw new InvalidOperationException("GameSettingsManager not initialized");
 
         return _items.TryGetValue(itemName, out var item) ? item : null;
+    }
+
+    // GameSettingsInit::getCommodityBonus
+    public int GetCommodityBonus(string? commodityName)
+    {
+        return _commodities.FirstOrDefault(x => x.Name == commodityName)?.Bonus ?? 0;
     }
 
     public IReadOnlyList<PreyGroupSetting> GetPreyGroups()

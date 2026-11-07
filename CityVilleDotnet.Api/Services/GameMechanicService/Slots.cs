@@ -26,6 +26,9 @@ internal sealed class Slots(CityVilleDbContext context) : AmfService<SlotsReques
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || o.WorldFlatId == request.Action.ObjectId || o.TempId == request.Action.ObjectId || o.StoredInId == request.ObjectId))
             .ThenInclude(x => x.FranchiseLocation)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || o.WorldFlatId == request.Action.ObjectId || o.TempId == request.Action.ObjectId || o.StoredInId == request.ObjectId))
+            .ThenInclude(x => x.SupplyResources)
             .Include(x => x.InventoryItems)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");

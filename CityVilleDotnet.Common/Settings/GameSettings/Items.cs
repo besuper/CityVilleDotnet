@@ -127,6 +127,7 @@ public class GameItem
     [XmlElement("randomModifiers")] public List<RandomModifiers> RandomModifiersList { get; set; } = [];
     [XmlElement("randomModifierGroups")] public RandomModifierGroupsContainer? RandomModifierGroups { get; set; }
     [XmlElement("energyCost")] public EnergyCost? EnergyCost { get; set; }
+    [XmlArray("energyModifier"), XmlArrayItem("slotsFilled")] public List<EnergySlotsFilled> EnergyModifier { get; set; } = [];
     [XmlElement("mechanics")] public MechanicsContainer? Mechanics { get; set; }
     [XmlAttribute("mechanicPack")] public string? MechanicPack { get; set; }
     [XmlElement("gates")] public required GatesContainer? Gates { get; set; }
@@ -353,6 +354,11 @@ public class GameItem
         return GetSupplyStateMechanicClass() == "SupplyMechanic";
     }
 
+    public bool IsStorageSupply()
+    {
+        return GetGameEventMechanic("supply")?.ClassName == "StorageSupplyMechanic";
+    }
+
     public GameItem GetFirstDeriveItem(GameItem item)
     {
         if (item.DerivesFrom is not null)
@@ -525,6 +531,13 @@ public class EnergyCost
     [XmlAttribute("open")] public string? Open { get; set; }
     [XmlAttribute("clean")] public string? Clean { get; set; }
     [XmlAttribute("clear")] public string? Clear { get; set; }
+}
+
+[Serializable]
+public class EnergySlotsFilled
+{
+    [XmlAttribute("amount")] public int Amount { get; set; }
+    [XmlAttribute("discount")] public int Discount { get; set; }
 }
 
 [Serializable]
@@ -841,6 +854,8 @@ public class MechanicItem
     [XmlAttribute("validate")] public string? Validate { get; set; }
     [XmlAttribute("duration")] public double Duration { get; set; }
     [XmlAttribute("upgradeActionMechanic")] public bool UpgradeActionMechanic { get; set; }
+    [XmlAttribute("mysteryBusinessReq")] public int MysteryBusinessReq { get; set; }
+    [XmlAttribute("previousState")] public string? PreviousState { get; set; }
 
     public bool AllowsItem(GameItem? item)
     {
@@ -867,6 +882,7 @@ public class CommodityItem
     [XmlAttribute("name")] public required string Name { get; set; }
     [XmlAttribute("capacity")] public int Capacity { get; set; }
     [XmlAttribute("default")] public int Default { get; set; }
+    [XmlAttribute("bonus")] public int Bonus { get; set; }
 }
 
 [Serializable]

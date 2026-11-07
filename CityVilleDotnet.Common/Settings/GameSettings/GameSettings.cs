@@ -29,4 +29,5 @@ public class GameSettings
     [XmlElement("citysim")] public required CitySim CitySim { get; set; }
     [XmlElement("preyGroups")] public PreyGroupsContainer? PreyGroups { get; set; }
     [XmlElement("dynamicTunings")] public DynamicTuningsContainer? DynamicTunings { get; set; }
+    [XmlArray("commodities"), XmlArrayItem("commodity")] public List<CommodityItem> Commodities { get; set; } = [];
 }

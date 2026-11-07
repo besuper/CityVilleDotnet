@@ -598,7 +598,13 @@ public partial class WorldObject
             PlantTime = plantTime ?? ServerUtils.GetCurrentTime();
         }
         
-        if (ClassName.IsBusiness() || GameSettingsManager.Instance.GetItem(ItemName)?.GetSupplyStateMechanicClass() is not null)
+        var harvestedItem = GameSettingsManager.Instance.GetItem(ItemName);
+
+        if (harvestedItem?.IsStorageSupply() == true)
+        {
+            CloseStorageSupply();
+        }
+        else if (ClassName.IsBusiness() || harvestedItem?.GetSupplyStateMechanicClass() is not null)
         {
             State = WorldObjectState.Closed;
             Visits = 0;
@@ -682,13 +688,14 @@ public partial class WorldObject
     public bool UpdateVisits(int visits)
     {
         var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
+        var isStorageSupply = gameItem?.IsStorageSupply() == true;
 
-        if (!ClassName.IsBusiness() && !(gameItem?.IsCustomerSupplyState() ?? false))
+        if (!ClassName.IsBusiness() && !(gameItem?.IsCustomerSupplyState() ?? false) && !isStorageSupply)
         {
             return false;
         }
 
-        if (State != WorldObjectState.Open)
+        if (State != WorldObjectState.Open || (isStorageSupply && !IsStorageSupplied()))
         {
             return false;
         }
@@ -696,7 +703,7 @@ public partial class WorldObject
         if (gameItem is null)
             throw new Exception("Can't find game item for business building");
 
-        var maxVisits = gameItem.CommodityRequired;
+        var maxVisits = isStorageSupply ? GetSupplyCustomersReq() : gameItem.CommodityRequired;
 
         if (maxVisits is null)
             throw new Exception("Can't find max visits for business building");

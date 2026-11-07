@@ -59,11 +59,17 @@ public partial class World
             throw new Exception($"Invalid storage slot {slotIndex} on object {container.WorldFlatId}");
         }
 
-        stored[slotIndex].TakeOutOfStorage(x, y, direction);
+        var removed = stored[slotIndex];
+        removed.TakeOutOfStorage(x, y, direction);
 
         foreach (var next in stored.Skip(slotIndex + 1))
         {
             next.ShiftStorageSlot();
+        }
+
+        if (container.IsStorageSupplied())
+        {
+            container.RemoveSupplyResource(removed.ItemName, GetStoredObjects(container));
         }
     }
 }

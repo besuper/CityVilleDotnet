@@ -299,6 +299,27 @@ public static class WorldObjectDtoMapper
                 .ToList();
         }
 
+        if (gameItem?.IsStorageSupply() == true)
+        {
+            if (model.State is WorldObjectState.Open or WorldObjectState.ClosedHarvestable)
+            {
+                dto.State = WorldObjectState.Static.ToDescriptionString(); // malls only have a static image
+            }
+
+            // StorageSupplyMechanic::generateHarvestState
+            if (model.IsStorageSupplied())
+            {
+                var customersReq = model.GetSupplyCustomersReq();
+
+                dto.MechanicData["harvestState"] = new ASObject
+                {
+                    { "customers", Math.Min(model.Visits ?? 0, customersReq) },
+                    { "customersReq", customersReq },
+                    { "resources", model.GetSupplyResourceNames().Select(x => (object)x).ToList() }
+                };
+            }
+        }
+
         if (model.ClassName == BuildingClassType.ThemePark && gameItem?.ThemeParkStorage is not null)
         {
             dto.MechanicData["slots"] = Enumerable.Range(0, gameItem.ThemeParkStorage.Slots.Count)
