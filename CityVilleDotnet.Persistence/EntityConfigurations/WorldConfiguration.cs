@@ -14,6 +14,7 @@ public class WorldConfiguration : IEntityTypeConfiguration<World>
         builder.Property(x => x.SizeX);
         builder.Property(x => x.SizeY);
         builder.Property(x => x.WorldName).HasMaxLength(32);
+        builder.Property(x => x.PendingWorldName).HasMaxLength(32);
         builder.Property(x => x.NextBuildingId);
         builder.Property(x => x.WorldCreated).HasMaxLength(32);
         builder.Property(x => x.MacroObjectIdCounter);

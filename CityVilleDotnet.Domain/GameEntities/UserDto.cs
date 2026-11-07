@@ -82,6 +82,15 @@ public static class UserDtoMapper
                         Count = model.CountInventoryItems(),
                         Items = new ASObject(model.InventoryItems.Where(x => x.StorageType is null).ToDictionary(x => x.Name, x => (object)x.Amount))
                     },
+                    RequestInventory = new ASObject
+                    {
+                        ["m_inventories"] = new ASObject(model.RequestInventoryItems
+                            .GroupBy(x => x.InventoryName)
+                            .ToDictionary(g => g.Key, object (g) => new ASObject
+                            {
+                                ["storage"] = new ASObject(g.ToDictionary(x => x.ItemName, x => (object)x.Amount))
+                            }))
+                    },
                     LastTrackingTimestamp = model.LastTrackingTimestamp.ToUnixTimeMilliseconds(),
                     Level = model.Level,
                     Licenses = new ASObject(model.Licenses.ToDictionary(x => x.Name, x => (object)x.Amount)),
@@ -126,6 +135,7 @@ public static class UserDtoMapper
                 World = model.GetWorld().ToDto(),
                 Username = model.Username,
                 WorldName = model.GetWorld().WorldName,
+                PendingWorldName = model.GetWorld().PendingWorldName,
                 WorldSummary = new ASObject(summaryWorlds.ToDictionary(w => w.Type.ToDescriptionString(), object (w) => BuildWorldSummary(w, model, activeQuests)))
             },
             Franchises = model.Franchises.Select(x => x.ToDto()).ToList(),

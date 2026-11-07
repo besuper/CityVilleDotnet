@@ -152,6 +152,7 @@ public class GameItem
     [XmlElement("validate")] public List<ValidateItem> Validations { get; set; } = [];
     [XmlElement("inventoryChecks")] public InventoryChecksContainer? InventoryChecks { get; set; }
     [XmlElement("inventoryLimit")] public int InventoryLimit { get; set; }
+    [XmlElement("signatures")] public bool? Signatures { get; set; }
     [XmlElement("positiveStreak")] public string? PositiveStreak { get; set; }
     [XmlElement("negativeStreak")] public string? NegativeStreak { get; set; }
     [XmlElement("positiveStreakMaxEffect")] public int PositiveStreakMaxEffect { get; set; }

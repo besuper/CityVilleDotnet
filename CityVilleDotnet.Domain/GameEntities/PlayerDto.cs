@@ -25,6 +25,8 @@ public class PlayerDto
 
     [JsonPropertyName("inventory")] public required InventoryDto Inventory { get; set; }
 
+    [JsonPropertyName("requestInventory")] public ASObject RequestInventory { get; set; } = new();
+
     [JsonPropertyName("gold")] public int Gold { get; set; } = 500;
 
     [JsonPropertyName("cash")] public int Cash { get; set; } = 0;

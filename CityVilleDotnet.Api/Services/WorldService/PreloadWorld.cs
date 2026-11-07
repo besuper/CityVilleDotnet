@@ -49,6 +49,7 @@ public class PreloadWorld(CityVilleDbContext context, ILogger<PreloadWorld> logg
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
             .Include(x => x.Licenses)
+            .Include(x => x.RequestInventoryItems)
             .Include(x => x.Franchises)
             .ThenInclude(x => x.Locations)
             .Include(x => x.LotOrders) // FIXME: Limit orders

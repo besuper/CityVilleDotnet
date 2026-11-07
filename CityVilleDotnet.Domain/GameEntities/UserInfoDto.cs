@@ -8,6 +8,9 @@ public class UserInfoDto
     [JsonPropertyName("worldName")]
     public string WorldName { get; set; } = "";
 
+    [JsonPropertyName("pendingWorldName")]
+    public string? PendingWorldName { get; set; }
+
     [JsonPropertyName("is_new")]
     public bool IsNew { get; set; }
 

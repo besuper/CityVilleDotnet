@@ -1,4 +1,6 @@
-﻿using CityVilleDotnet.Common.Utils;
+﻿using CityVilleDotnet.Common.Enums;
+using CityVilleDotnet.Common.Exceptions;
+using CityVilleDotnet.Common.Utils;
 
 namespace CityVilleDotnet.Domain.Entities;
 
@@ -7,6 +9,7 @@ public class Franchise
     public int Id { get; set; }
     public string FranchiseType { get; set; }
     public string FranchiseName { get; set; }
+    public string? PendingName { get; private set; }
     public long TimeLastCollected { get; set; }
     public List<FranchiseLocation> Locations { get; set; } = [];
 
@@ -20,6 +23,19 @@ public class Franchise
     public void SetFranchiseName(string franchiseName)
     {
         FranchiseName = franchiseName;
+    }
+
+    public void SetPendingName(string pendingName)
+    {
+        PendingName = pendingName.Trim();
+    }
+
+    public string FinalizePendingName()
+    {
+        FranchiseName = PendingName ?? throw new DomainException(GameErrorType.InvalidState);
+        PendingName = null;
+
+        return FranchiseName;
     }
 
     public FranchiseLocation AddLocation(LotOrder order, int commodityReq)

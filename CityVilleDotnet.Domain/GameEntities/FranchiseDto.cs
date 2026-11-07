@@ -10,6 +10,8 @@ public class FranchiseDto
 
     [JsonPropertyName("franchise_name")] public required string FranchiseName { get; set; }
 
+    [JsonPropertyName("pendingName")] public string? PendingName { get; set; }
+
     [JsonPropertyName("locations")] public required Dictionary<string, FranchiseLocationDto> Locations { get; set; }
 
     [JsonPropertyName("time_last_collected")]
@@ -24,6 +26,7 @@ public static class FranchiseDtoMapper
         {
             FranchiseType = model.FranchiseType,
             FranchiseName = model.FranchiseName,
+            PendingName = model.PendingName,
             TimeLastCollected = model.TimeLastCollected,
             Locations = model.Locations.ToDictionary(x => x.Uid, x => x.ToDto())
         };

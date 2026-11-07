@@ -270,6 +270,10 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
+                    b.Property<string>("PendingName")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
                     b.Property<Guid>("PlayerId")
                         .HasColumnType("uniqueidentifier");
 
@@ -903,6 +907,37 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.ToTable("Quest");
                 });
 
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.RequestInventoryItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("InventoryName")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("ItemName")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<Guid>("PlayerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("RequestInventoryItem");
+                });
+
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.SamanthaWorldVersion", b =>
                 {
                     b.Property<int>("Id")
@@ -1091,6 +1126,10 @@ namespace CityVilleDotnet.Persistence.Migrations
 
                     b.Property<int>("NextBuildingId")
                         .HasColumnType("int");
+
+                    b.Property<string>("PendingWorldName")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<Guid?>("PlayerId")
                         .HasColumnType("uniqueidentifier");
@@ -1750,6 +1789,15 @@ namespace CityVilleDotnet.Persistence.Migrations
                         .HasForeignKey("PlayerId");
                 });
 
+            modelBuilder.Entity("CityVilleDotnet.Domain.Entities.RequestInventoryItem", b =>
+                {
+                    b.HasOne("CityVilleDotnet.Domain.Entities.Player", null)
+                        .WithMany("RequestInventoryItems")
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CityVilleDotnet.Domain.Entities.SeenFlag", b =>
                 {
                     b.HasOne("CityVilleDotnet.Domain.Entities.Player", null)
@@ -1937,6 +1985,8 @@ namespace CityVilleDotnet.Persistence.Migrations
                     b.Navigation("PreyGroups");
 
                     b.Navigation("Quests");
+
+                    b.Navigation("RequestInventoryItems");
 
                     b.Navigation("SeenFlags");
 
