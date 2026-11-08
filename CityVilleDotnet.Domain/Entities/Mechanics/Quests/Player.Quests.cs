@@ -361,6 +361,16 @@ public partial class Player
                             quest.Progress[index] = value;
 
                         continue;
+                    case "countWorldObjectByClass":
+                        if (!calculatedResults.TryGetValue(resultKey, out value))
+                        {
+                            calculatedResults[resultKey] = value = GetWorld().CountBuildingByClassName(taskType);
+                        }
+
+                        if (value > quest.Progress[index])
+                            quest.Progress[index] = value;
+
+                        continue;
                     case "countHeadquarters":
                         if (!calculatedResults.TryGetValue(resultKey, out value))
                             calculatedResults[resultKey] = value = GetWorld().CountBuildingByClassName(taskType);

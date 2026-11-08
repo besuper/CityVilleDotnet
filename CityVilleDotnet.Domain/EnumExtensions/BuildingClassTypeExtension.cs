@@ -58,6 +58,54 @@ public static class BuildingClassTypeExtension
             : BuildingClassType.Decoration;
     }
 
+    // Client class inheritance  extends MechanicMapResource
+    private static readonly Dictionary<BuildingClassType, BuildingClassType> ParentClass = new()
+    {
+        [BuildingClassType.Wilderness] = BuildingClassType.Decoration,
+        [BuildingClassType.Storage] = BuildingClassType.Decoration,
+        [BuildingClassType.Road] = BuildingClassType.Decoration,
+        [BuildingClassType.Sidewalk] = BuildingClassType.Decoration,
+        [BuildingClassType.ItemStorage] = BuildingClassType.Decoration,
+        [BuildingClassType.HolidayTree] = BuildingClassType.Decoration,
+        [BuildingClassType.RainbowDecoration] = BuildingClassType.Decoration,
+        [BuildingClassType.Stadium] = BuildingClassType.Decoration,
+        [BuildingClassType.MonorailTrack] = BuildingClassType.Decoration,
+        [BuildingClassType.ParkingLot] = BuildingClassType.Road,
+        [BuildingClassType.Bridge] = BuildingClassType.ParkingLot,
+        [BuildingClassType.BridgePart] = BuildingClassType.ParkingLot,
+        [BuildingClassType.Landmark] = BuildingClassType.Municipal,
+        [BuildingClassType.University] = BuildingClassType.Municipal,
+        [BuildingClassType.ZooEnclosure] = BuildingClassType.Municipal,
+        [BuildingClassType.XPromoBuilding] = BuildingClassType.Municipal,
+        [BuildingClassType.Skyscraper] = BuildingClassType.Residence,
+        [BuildingClassType.Corporation] = BuildingClassType.Residence,
+        [BuildingClassType.CustomResidence] = BuildingClassType.Residence,
+        [BuildingClassType.Factory] = BuildingClassType.Plot,
+        [BuildingClassType.Pier] = BuildingClassType.BasePier,
+        [BuildingClassType.DockHouse] = BuildingClassType.BasePier,
+        [BuildingClassType.SuperNeighborhood] = BuildingClassType.Neighborhood,
+        [BuildingClassType.LaunchPad] = BuildingClassType.Airplane,
+        [BuildingClassType.FarmersMarketConstructionSite] = BuildingClassType.ConstructionSite
+    };
+
+    private static readonly List<BuildingClassType> RootClasses = [BuildingClassType.MechanicMapResource, BuildingClassType.LotSite, BuildingClassType.TrainTracks, BuildingClassType.Headquarter, BuildingClassType.Dock];
+
+    // AS3 `is` operator
+    public static bool IsA(this BuildingClassType type, BuildingClassType parent)
+    {
+        while (type != parent)
+        {
+            if (RootClasses.Contains(type))
+            {
+                return false;
+            }
+
+            type = ParentClass.GetValueOrDefault(type, BuildingClassType.MechanicMapResource);
+        }
+
+        return true;
+    }
+
     public static bool IsBusiness(this BuildingClassType type)
     {
         return AllowedBusiness.Contains(type);

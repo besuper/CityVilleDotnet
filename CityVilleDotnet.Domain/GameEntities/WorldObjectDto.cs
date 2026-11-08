@@ -224,6 +224,11 @@ public static class WorldObjectDtoMapper
         
         if (gameItem?.IsTimedSupplyState() == true)
         {
+            if (model.ClassName == BuildingClassType.TimedBusiness)
+            {
+                dto.State = WorldObjectState.Static.ToDescriptionString(); // timed businesses only have a static image
+            }
+
             if (model.State == WorldObjectState.Open && model.PlantTime is not null)
             {
                 var timestamp = (long)(model.PlantTime.Value / 1000);

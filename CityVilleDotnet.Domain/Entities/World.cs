@@ -274,7 +274,7 @@ public partial class World
     {
         var classType = Enum.Parse<BuildingClassType>(className);
         
-        return Objects.Count(x => x.StoredInId is null && x.ClassName == classType);
+        return Objects.Count(x => x.StoredInId is null && x.ClassName.IsA(classType));
     }
 
     public int CountBuildingByRegex(string pattern)
