@@ -12,13 +12,62 @@
 	<script type="text/javascript" src="jquery.min.js"></script>
 	<script type="text/javascript" src="flash_integration.min.js"></script>
 	<script type="text/javascript" src="swfobject.min.js"></script>
+	
 	<script>
 		document.cookie = "nativeFlash=" + (navigator.plugins && navigator.plugins["Shockwave Flash"] ? "1" : "0") + "; path=/; max-age=31536000; SameSite=Lax";
 	</script>
+	
+	<script>
+		const cvTouch = matchMedia("(pointer: coarse)").matches;
+		const cvIos = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+		
+		if (cvTouch) {
+			Object.defineProperty(window, "devicePixelRatio", { get: () => 1 });
+		}
+	</script>
+	
 	<script type="text/javascript" src="ruffle/ruffle.js?v=2"></script>
+	
+	<style>
+		#cvGame { width: 960px; height: 756px; }
+		#cvRotate, .cv-overlay-btn { display: none; }
+
+		@@media (pointer: coarse) {
+			html, body { overflow: hidden; }
+			.cv-overlay-btn { display: block; position: fixed; left: 4px; z-index: 1046; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 8px; background: rgba(0, 0, 0, .5); color: #fff; font-size: 1.25rem; }
+			#cvMenuToggle { top: 4px; }
+			#cvCheatToggle { bottom: 4px; }
+			#cheatCard { display: none; }
+			body.cv-cheat-open #cheatCard { display: flex; position: fixed; left: 4px; bottom: 44px; z-index: 1045; width: min(420px, calc(100vw - 8px)); max-height: calc(100dvh - 52px); overflow-y: auto; margin: 0 !important; }
+			body.cv-cheat-open #cheatCard .card-header { display: none !important; }
+			body.cv-cheat-open #cheatPanel { display: block; }
+			#cheatCard input { font-size: 16px; }
+			.cv-navbar { display: none; }
+			body.cv-menu-open .cv-navbar { display: flex; position: fixed; top: 0; left: 0; right: 0; z-index: 1045; padding: 0 8px 0 48px; }
+			.cv-navbar .container { padding: 0; }
+			.cv-navbar .container > a { display: none !important; }
+			#cvGame { position: fixed; inset: 0; width: 100vw; height: 100dvh; z-index: 1040; background: #000; touch-action: none; }
+			#flashOuterContainer { transform-origin: 0 0; }
+			#flashContent, #cvGame object, #cvGame ruffle-object, #cvGame ruffle-embed { width: 100% !important; height: 100% !important; }
+		}
+
+		@@media (pointer: coarse) and (orientation: portrait) {
+			#cvRotate { display: flex; position: fixed; inset: 0; z-index: 1050; background: #000; color: #fff; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+		}
+	</style>
 }
 
-<div style="width:960px;height:756px;" class="mx-auto">
+<button id="cvMenuToggle" class="cv-overlay-btn" type="button" aria-label="@Localizer["ToggleMenu"]"
+        onclick="document.body.classList.toggle('cv-menu-open'); this.firstElementChild.classList.toggle('bi-x-lg'); this.firstElementChild.classList.toggle('bi-list');">
+	<i class="bi bi-list"></i>
+</button>
+
+<div id="cvRotate">
+	<i class="bi bi-phone-landscape display-4 mb-3"></i>
+	<p class="px-4">@Localizer["RotateDevice"]</p>
+</div>
+
+<div id="cvGame" class="mx-auto">
 	<div id="flashOuterContainer">
 		<div id="flashContent">
 			<object id="flashapp" name="flashapp" width="960" height="756" type="application/x-shockwave-flash"
@@ -46,6 +95,10 @@
 
 @if (Model.EnableCheat)
 {
+	<button id="cvCheatToggle" class="cv-overlay-btn" type="button" aria-label="@Localizer["CheatMenu"]"
+	        onclick="document.body.classList.toggle('cv-cheat-open'); this.firstElementChild.classList.toggle('bi-chevron-up'); this.firstElementChild.classList.toggle('bi-chevron-down');">
+		<i class="bi bi-chevron-up"></i>
+	</button>
 	await Html.RenderPartialAsync("_CheatMenu");
 }
 
@@ -124,6 +177,19 @@
 		}
 	}
 
+	// Resize the game for mobile clients
+	if (cvTouch) {
+		const fitGame = () => {
+			const scale = Math.min(1, innerWidth / 960, innerHeight / 756);
+			const container = document.getElementById("flashOuterContainer");
+			container.style.width = (innerWidth / scale) + "px";
+			container.style.height = (innerHeight / scale) + "px";
+			container.style.transform = "scale(" + scale + ")";
+		};
+		addEventListener("resize", fitGame);
+		fitGame();
+	}
+
 	window.RufflePlayer = window.RufflePlayer || {};
 	window.RufflePlayer.config = {
 		allowScriptAccess: true,
@@ -134,6 +200,8 @@
 		allowFullscreen: true,
 		wmode: "window",
 		deviceFontRenderer: "canvas",
-		maxExecutionDuration: 360
+		maxExecutionDuration: 360,
+		quality: cvTouch ? "low" : "high",
+		preferredRenderer: cvIos ? "wgpu-webgl" : null
 	};
 </script>

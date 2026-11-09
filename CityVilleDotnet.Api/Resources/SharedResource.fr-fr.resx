@@ -476,6 +476,12 @@
     <data name="GameLanguage" xml:space="preserve">
         <value>Langue du jeu</value>
     </data>
+    <data name="RotateDevice" xml:space="preserve">
+        <value>Tournez votre appareil en mode paysage pour jouer</value>
+    </data>
+    <data name="ToggleMenu" xml:space="preserve">
+        <value>Menu</value>
+    </data>
     <data name="SeenFlags" xml:space="preserve">
         <value>Flags vus</value>
     </data>

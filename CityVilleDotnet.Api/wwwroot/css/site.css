@@ -6,3 +6,19 @@
 
 .cv-hover { transition: background 0.15s; }
 .cv-hover:hover { background: rgba(0,0,0,0.04); }
+
+@media (pointer: coarse) {
+    .cv-navbar [class*="container"] { max-width: none; flex-wrap: nowrap; }
+    .cv-navbar .navbar-toggler { display: none !important; }
+    .cv-navbar .navbar-collapse { display: flex !important; flex-basis: auto; }
+    .cv-navbar .navbar-nav { flex-direction: row; margin-left: 0 !important; }
+    .cv-navbar .nav-link, .cv-navbar .navbar-collapse > .d-flex { margin: 4px 2px !important; }
+    .cv-navbar .nav-link { padding: 6px 10px !important; }
+    .cv-navbar .dropdown img { width: 36px !important; height: 36px !important; }
+}
+
+@media (pointer: coarse) and (max-width: 767px) {
+    .cv-navbar [class*="container"] > a { display: none !important; }
+    .cv-navbar .nav-link { font-size: 0; }
+    .cv-navbar .nav-link i { font-size: 1.1rem; margin-right: 0 !important; }
+}

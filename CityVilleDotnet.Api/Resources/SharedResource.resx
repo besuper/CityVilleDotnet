@@ -486,6 +486,12 @@
     <data name="GameLanguage" xml:space="preserve">
         <value>Game language</value>
     </data>
+    <data name="RotateDevice" xml:space="preserve">
+        <value>Rotate your device to landscape to play</value>
+    </data>
+    <data name="ToggleMenu" xml:space="preserve">
+        <value>Menu</value>
+    </data>
     <data name="SeenFlags" xml:space="preserve">
         <value>Seen flags</value>
     </data>
