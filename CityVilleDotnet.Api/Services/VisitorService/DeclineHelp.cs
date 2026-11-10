@@ -21,7 +21,9 @@ public sealed class DeclineHelp(CityVilleDbContext context) : AmfService<Decline
         if (user is null)
             throw new Exception("Player not found");
 
-        var ordersToRemove = user.VisitorHelpOrders.ToList();
+        var ordersToRemove = user.VisitorHelpOrders
+            .Where(o => o.SenderId == request.HelpOrder.SenderId && o.RecipientId == request.HelpOrder.RecipientId)
+            .ToList();
 
         foreach (var order in ordersToRemove)
         {

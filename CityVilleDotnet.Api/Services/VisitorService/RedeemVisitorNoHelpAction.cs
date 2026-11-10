@@ -16,7 +16,7 @@ public sealed class RedeemVisitorNoHelpAction(CityVilleDbContext context) : AmfS
             .Include(x => x.VisitorHelpOrders.Where(o => o.SenderId == request.VisitorId))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
-        foreach (var order in player.VisitorHelpOrders.ToList())
+        foreach (var order in player.VisitorHelpOrders.Where(o => o.SenderId == request.VisitorId).ToList())
         {
             player.VisitorHelpOrders.Remove(order);
             context.Remove(order);
