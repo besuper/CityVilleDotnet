@@ -74,6 +74,7 @@ public class FarmingSettings
     [XmlAttribute("crewMemberCashCost")] public int CrewMemberCashCost { get; set; }
     [XmlAttribute("sellBackRatio")] public double SellBackRatio { get; set; }
     [XmlAttribute("goodsToCoinRatio")] public double GoodsToCoinRatio { get; set; }
+    [XmlAttribute("coinsForCash")] public int CoinsForCash { get; set; } = 1000;
     [XmlAttribute("wishlistSize")] public int WishlistSize { get; set; } = 5;
     [XmlAttribute("maxVisitingEnergy")] public int MaxVisitingEnergy { get; set; } = 5;
 

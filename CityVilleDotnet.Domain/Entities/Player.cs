@@ -473,6 +473,12 @@ public partial class Player
         Gold += amount;
     }
 
+    public void BuyCoinsForCash(int cash)
+    {
+        RemoveCash(cash);
+        AddCoins(cash * GameSettingsManager.Instance.GetSettings().CoinsForCash);
+    }
+
     public void RemoveCoins(int amount)
     {
         if (Gold < amount) throw new DomainException(GameErrorType.NotEnoughMoney);
