@@ -558,7 +558,7 @@
             </itemRewards>
         </item>
         <item name="test_permits" type="decoration" buyable="false" placeable="false"/>
-        <item name="test_island_macro"giftable="false" type="keys_island" className="MechanicMapResource" storable="true" buyable="false" placeable="true" sellSendsToInventory="true" persistent="true" placeableOn="land">
+        <item name="test_island_macro" giftable="false" type="keys_island" className="MechanicMapResource" storable="true" buyable="false" placeable="true" sellSendsToInventory="true" persistent="true" placeableOn="land">
             <requiredLevel>30</requiredLevel>
             <cost>780600</cost>
             <sizeX>10</sizeX>
