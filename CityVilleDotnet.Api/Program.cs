@@ -88,11 +88,6 @@ builder.Services.AddRazorPages(options => options.Conventions.AuthorizeFolder("/
 builder.Services.AddFastEndpoints();
 builder.Services.AddHttpContextAccessor();
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
-}
-
 builder.Services.ConfigureHttpJsonOptions(options => { options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 builder.Services.Configure<JsonOptions>(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 

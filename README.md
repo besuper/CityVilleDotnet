@@ -1,5 +1,5 @@
 # CityVille .NET
-> A .NET 10 backend recreation of the classic CityVille (2012) flash game
+> A .NET 11 backend recreation of the classic CityVille (2012) flash game
 
 **Beta status**: the game is playable and most core systems work, but many features are still being implemented.
 
@@ -33,7 +33,7 @@ _Last update: 2026-11-02 · 🟡 = partial_
 
 ### Prerequisites
 -   Docker & Docker Compose, **or**
--   .NET 10 SDK and MS SQL Server
+-   .NET 11 SDK and MS SQL Server
 -   The game assets (see [Assets](#assets))
 
 ### Run with Docker
