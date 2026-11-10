@@ -307,7 +307,7 @@ public static class UserDtoMapper
         var root = new ASObject();
 
         // TODO: Add VisitorHelp and TrainOrder
-        foreach (var order in model.LotOrders.Where(x => x.OrderState == OrderState.Pending))
+        foreach (var order in model.LotOrders.Where(x => x.OrderState == OrderState.Pending || (x.OrderState == OrderState.Accepted && x.TransmissionStatus == TransmissionStatus.Sent)))
         {
             var orderTypeKey = order.OrderType.ToDescriptionString(); // "order_lot"
             var transmissionKey = order.TransmissionStatus.ToDescriptionString(); // "sent"/"received"
