@@ -112,7 +112,6 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
         var senderHelpOrder = currentUser.VisitorHelpOrders.FirstOrDefault(x =>
             x.TransmissionStatus == TransmissionStatus.Sent &&
             x.OrderState == OrderState.Pending &&
-            x.Status == VisitorHelpStatus.Unclaimed &&
             x.SenderId == request.HelpParams.SenderId &&
             x.RecipientId == request.HelpParams.RecipientId);
 
@@ -140,7 +139,6 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
         var receiveHelpOrder = targetFriend.FriendPlayer.VisitorHelpOrders.FirstOrDefault(x =>
             x.TransmissionStatus == TransmissionStatus.Received &&
             x.OrderState == OrderState.Pending &&
-            x.Status == VisitorHelpStatus.Unclaimed &&
             x.SenderId == request.HelpParams.SenderId &&
             x.RecipientId == request.HelpParams.RecipientId);
 

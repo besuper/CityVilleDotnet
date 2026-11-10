@@ -1,7 +1,6 @@
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Domain.Entities;
-using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluentValidation;
 using FluorineFx;
@@ -16,8 +15,7 @@ public sealed class DeclineHelp(CityVilleDbContext context) : AmfService<Decline
         var user = await context.Set<Player>()
             .Include(x => x!.VisitorHelpOrders.Where(o =>
                 o.SenderId == request.HelpOrder.SenderId &&
-                o.RecipientId == request.HelpOrder.RecipientId &&
-                o.Status == VisitorHelpStatus.Unclaimed))
+                o.RecipientId == request.HelpOrder.RecipientId))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (user is null)
