@@ -2,6 +2,7 @@ using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Exceptions;
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
@@ -46,7 +47,10 @@ public sealed class DenyOrder(CityVilleDbContext context) : AmfService<DenyOrder
 
         if (sentOrder is not null)
         {
+            var gameItem = GameSettingsManager.Instance.GetItem(sentOrder.ResourceType) ?? throw new Exception($"Game item {sentOrder.ResourceType} not found");
+
             context.Set<LotOrder>().Remove(sentOrder);
+            senderPlayer!.RefundLotOrder(gameItem);
         }
 
         await context.SaveChangesAsync(cancellationToken);

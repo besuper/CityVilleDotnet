@@ -15,11 +15,13 @@ namespace CityVilleDotnet.Test.Integration.LotOrderService;
 public class DenyOrderTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 {
     private const int LotId = 42;
+    private const string ResourceType = "test_lot_coins";
 
     private async Task<(Player Receiver, Player Sender)> SeedPlayers()
     {
         var receiver = Faker.Player();
         var sender = Faker.Player();
+        sender.SetGold(1000);
 
         await Context.AddRangeAsync([receiver, sender], TestContext.Current.CancellationToken);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -32,11 +34,11 @@ public class DenyOrderTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var senderId = sender.Snuid.ToString();
         var recipientId = receiver.Snuid.ToString();
 
-        receiver.AddLotOrder(Faker.LotOrder(senderId: senderId, recipientId: recipientId, lotId: lotId, transmissionStatus: TransmissionStatus.Received));
+        receiver.AddLotOrder(Faker.LotOrder(senderId: senderId, recipientId: recipientId, lotId: lotId, transmissionStatus: TransmissionStatus.Received, resourceType: ResourceType));
 
         if (withSentOrder)
         {
-            sender.AddLotOrder(Faker.LotOrder(senderId: senderId, recipientId: recipientId, lotId: lotId, transmissionStatus: TransmissionStatus.Sent));
+            sender.AddLotOrder(Faker.LotOrder(senderId: senderId, recipientId: recipientId, lotId: lotId, transmissionStatus: TransmissionStatus.Sent, resourceType: ResourceType));
         }
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -48,7 +50,7 @@ public class DenyOrderTest(DatabaseFixture fixture) : IntegrationTest(fixture)
     }
 
     [Fact]
-    public async Task DenyOrder_PendingOrder_RemovesReceivedAndSentOrders()
+    public async Task DenyOrder_PendingOrder_RemovesBothOrdersAndRefundsSender()
     {
         var (receiver, sender) = await SeedPlayers();
         await AddOrders(receiver, sender, LotId);
@@ -57,12 +59,13 @@ public class DenyOrderTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var response = await new DenyOrder(Context).HandlePacket(CreateRequest(sender, LotId), receiver.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
+        sender.Gold.Should().Be(1200);
         var remaining = await Context.Set<LotOrder>().AsNoTracking().ToListAsync(TestContext.Current.CancellationToken);
         remaining.Should().HaveCount(2).And.OnlyContain(x => x.LotId == LotId + 1);
     }
 
     [Fact]
-    public async Task DenyOrder_SentOrderMissing_RemovesReceivedOrder()
+    public async Task DenyOrder_SentOrderMissing_RemovesReceivedOrderWithoutRefund()
     {
         var (receiver, sender) = await SeedPlayers();
         await AddOrders(receiver, sender, LotId, withSentOrder: false);
@@ -70,6 +73,7 @@ public class DenyOrderTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var response = await new DenyOrder(Context).HandlePacket(CreateRequest(sender, LotId), receiver.Id, TestContext.Current.CancellationToken);
 
         response["errorType"].Should().Be(0);
+        sender.Gold.Should().Be(1000);
         (await Context.Set<LotOrder>().AnyAsync(TestContext.Current.CancellationToken)).Should().BeFalse();
     }
 

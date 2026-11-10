@@ -10,14 +10,15 @@ public static class LotOrderFactory
         string? senderId = null,
         string? recipientId = null,
         int? lotId = null,
-        TransmissionStatus transmissionStatus = TransmissionStatus.Received)
+        TransmissionStatus transmissionStatus = TransmissionStatus.Received,
+        string? resourceType = null)
     {
         return new Domain.Entities.LotOrder
         {
             SenderId = senderId ?? faker.Random.Int(1, 99999).ToString(),
             RecipientId = recipientId ?? faker.Random.Int(1, 99999).ToString(),
             LotId = lotId ?? faker.Random.Int(1, 9999),
-            ResourceType = faker.Random.String2(64),
+            ResourceType = resourceType ?? faker.Random.String2(64),
             OrderResourceName = faker.Random.String2(64),
             OrderState = OrderState.Pending,
             OrderType = OrderType.Lot,

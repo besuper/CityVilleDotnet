@@ -1,5 +1,6 @@
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
@@ -28,7 +29,14 @@ public sealed class PlaceOrder(CityVilleDbContext context) : AmfService<PlaceOrd
 
         if (receiverPlayer is null) throw new Exception("Can't find player with recipientId");
 
-        //TODO Remove gold or cash
+        var gameItem = GameSettingsManager.Instance.GetItem(order.ResourceType);
+
+        if (gameItem is null)
+        {
+            throw new Exception($"Game item {order.ResourceType} not found");
+        }
+
+        player.PayLotOrder(gameItem);
 
         var lotOrder = new LotOrder
         {

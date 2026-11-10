@@ -499,6 +499,13 @@
             <sizeY>3</sizeY>
             <gates/>
         </item>
+        <item name="test_lot_coins" type="business" buyable="true">
+            <cost>200</cost>
+            <cash>5</cash>
+        </item>
+        <item name="test_lot_cash" type="business" buyable="true">
+            <cash>4</cash>
+        </item>
         <item name="test_bus_premium_goods" type="business" buyable="true">
             <keyword>Business</keyword>
             <keyword>Business_Restaurant</keyword>

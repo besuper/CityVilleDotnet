@@ -921,6 +921,25 @@ public partial class Player
         LotOrders.Add(lotOrder);
     }
 
+    // TLotOrderPlace: coins first, cash only when the item has no coin cost
+    public void PayLotOrder(GameItem item)
+    {
+        if (item.Cost > 0)
+        {
+            RemoveCoins(item.Cost.Value);
+        }
+        else if (item.Cash > 0)
+        {
+            RemoveCash(item.Cash.Value);
+        }
+    }
+
+    // LotManager::cancel always refunds the coin cost
+    public void RefundLotOrder(GameItem item)
+    {
+        AddCoins(item.Cost ?? 0);
+    }
+
     public void AddVisitorHelpOrder(VisitorHelpOrder order)
     {
         VisitorHelpOrders.Add(order);
