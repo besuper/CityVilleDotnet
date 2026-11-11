@@ -124,7 +124,7 @@
 			"first_name": "@Model.UserName",
 			"name": "@Model.UserName",
 			"sex": "M",
-			"pic_square": "@Model.PictureUrl",
+			"pic_square": "@($"{Request.Scheme}://{Request.Host}{Request.PathBase}{Model.PictureUrl}")",
 			"level": @(Model.Level)
 		};
 	}
