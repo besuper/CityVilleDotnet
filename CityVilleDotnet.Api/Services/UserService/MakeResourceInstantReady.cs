@@ -58,7 +58,7 @@ public class MakeResourceInstantReady(CityVilleDbContext context, ILogger<MakeRe
         logger.LogDebug("Bought instant finish for {BuildingClassType} cost {Cost}", obj.ClassName, cost);
 
         player.RemoveCash(cost);
-        obj.SetReadyToHarvest();
+        obj.MakeInstantReady();
 
         player.HandleQuestsProgress("instantReadyByClass", className: obj.ClassName.ToString());
 

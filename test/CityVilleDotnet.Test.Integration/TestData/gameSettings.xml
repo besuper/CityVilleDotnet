@@ -404,6 +404,9 @@
                 </gameEventMechanics>
             </mechanics>
         </item>
+        <item name="test_launchpad" type="launchpad" buyable="false">
+            <growTime>1</growTime>
+        </item>
         <item name="test_corporation" type="corporation" buyable="false">
             <sizeX>3</sizeX>
             <sizeY>3</sizeY>

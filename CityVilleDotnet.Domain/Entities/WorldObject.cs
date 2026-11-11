@@ -529,6 +529,19 @@ public partial class WorldObject
         State = WorldObjectState.Grown;
     }
 
+    // Skyscraper/Corporation::makeReady only reset their harvestEndTS
+    public void MakeInstantReady()
+    {
+        if (ClassName is BuildingClassType.Skyscraper or BuildingClassType.Corporation)
+        {
+            HarvestEndTime = ServerUtils.GetCurrentUtcDateTime();
+        }
+        else
+        {
+            SetReadyToHarvest();
+        }
+    }
+
     public bool IsWithered()
     {
         if (State != WorldObjectState.Grown && State != WorldObjectState.Planted) return false;
@@ -1032,6 +1045,17 @@ public partial class WorldObject
         return settings.InstantReadyResidenceCostConstant5 * Math.Pow(GetHoursUntilReady(), 0.25);
     }
 
+    // Corporation::getUnroundedCashCostToMakeReady
+    private double CorporationCostToMakeReady()
+    {
+        var hoursLeft = (HarvestEndTime - ServerUtils.GetCurrentUtcDateTime())?.TotalHours ?? 0;
+        if (hoursLeft <= 0) return 0;
+
+        var settings = GameSettingsManager.Instance.GetSettings();
+
+        return settings.InstantReadyResidenceCostConstant5 * Math.Pow(hoursLeft, 0.25);
+    }
+
     public double GetUnroundedCostToMakeReady()
     {
         return ClassName switch
@@ -1039,8 +1063,10 @@ public partial class WorldObject
             BuildingClassType.Plot => PlotCostToMakeReady(),
             BuildingClassType.Ship => ShipCostToMakeReady(),
             BuildingClassType.HarvestableShip => ShipCostToMakeReady(),
-            BuildingClassType.Residence => ResidenceCostToMakeReady(),
+            BuildingClassType.Residence or BuildingClassType.Skyscraper or BuildingClassType.CustomResidence => ResidenceCostToMakeReady(),
+            BuildingClassType.Corporation => CorporationCostToMakeReady(),
             BuildingClassType.Airplane => AirplaneCostToMakeReady(),
+            BuildingClassType.LaunchPad => 3,
             _ => throw new NotImplementedException()
         };
     }

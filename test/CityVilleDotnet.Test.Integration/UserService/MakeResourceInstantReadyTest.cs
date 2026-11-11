@@ -101,4 +101,79 @@ public class MakeResourceInstantReadyTest(DatabaseFixture fixture) : Integration
         response["errorType"].Should().Be((int)GameErrorType.InvalidState);
         player.Cash.Should().Be(50);
     }
+
+    [Fact]
+    public async Task MakeResourceInstantReady_Corporation_ChargesClientCostAndResetsHarvestTimer()
+    {
+        // 10 minutes left: 2.0 * (1/6) ^ 0.25 = 1.28 => 2 cash
+        var corporation = Faker.WorldObject(itemName: "test_corporation", className: BuildingClassType.Corporation, state: WorldObjectState.Planted, worldFlatId: 5);
+        corporation.InitHarvestEndTime();
+        var world = Faker.World(objects: [corporation]);
+        var player = Faker.Player(world: world);
+        player.SetCash(50);
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new MakeResourceInstantReady(Context, NullLogger<MakeResourceInstantReady>.Instance);
+
+        var response = await handler.HandlePacket(new MakeResourceInstantReadyRequest { BuildingId = 5 }, player.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+        player.Cash.Should().Be(48);
+
+        var updatedCorporation = await Context.Set<WorldObject>().FirstAsync(x => x.Id == corporation.Id, TestContext.Current.CancellationToken);
+
+        updatedCorporation.State.Should().Be(WorldObjectState.Planted);
+        updatedCorporation.HarvestEndTime.Should().BeCloseTo(ServerUtils.GetCurrentUtcDateTime(), TimeSpan.FromSeconds(10));
+    }
+
+    [Fact]
+    public async Task MakeResourceInstantReady_Skyscraper_ChargesClientCostAndResetsHarvestTimer()
+    {
+        // 23 hours left: 2.0 * 23 ^ 0.25 = 4.38 => 5 cash
+        var skyscraper = Faker.WorldObject(itemName: "test_skyscraper", className: BuildingClassType.Skyscraper, state: WorldObjectState.Planted, plantTime: ServerUtils.GetCurrentTime(), worldFlatId: 5);
+        skyscraper.InitHarvestEndTime();
+        var world = Faker.World(objects: [skyscraper]);
+        var player = Faker.Player(world: world);
+        player.SetCash(50);
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new MakeResourceInstantReady(Context, NullLogger<MakeResourceInstantReady>.Instance);
+
+        var response = await handler.HandlePacket(new MakeResourceInstantReadyRequest { BuildingId = 5 }, player.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+        player.Cash.Should().Be(45);
+
+        var updatedSkyscraper = await Context.Set<WorldObject>().FirstAsync(x => x.Id == skyscraper.Id, TestContext.Current.CancellationToken);
+
+        updatedSkyscraper.State.Should().Be(WorldObjectState.Planted);
+        updatedSkyscraper.HarvestEndTime.Should().BeCloseTo(ServerUtils.GetCurrentUtcDateTime(), TimeSpan.FromSeconds(10));
+    }
+
+    [Fact]
+    public async Task MakeResourceInstantReady_LaunchPad_ChargesFixedCostAndSetsGrown()
+    {
+        var launchPad = Faker.WorldObject(itemName: "test_launchpad", className: BuildingClassType.LaunchPad, state: WorldObjectState.Planted, plantTime: ServerUtils.GetCurrentTime(), worldFlatId: 5);
+        var world = Faker.World(objects: [launchPad]);
+        var player = Faker.Player(world: world);
+        player.SetCash(50);
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var handler = new MakeResourceInstantReady(Context, NullLogger<MakeResourceInstantReady>.Instance);
+
+        var response = await handler.HandlePacket(new MakeResourceInstantReadyRequest { BuildingId = 5 }, player.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+        player.Cash.Should().Be(47);
+
+        var updatedLaunchPad = await Context.Set<WorldObject>().FirstAsync(x => x.Id == launchPad.Id, TestContext.Current.CancellationToken);
+
+        updatedLaunchPad.State.Should().Be(WorldObjectState.Grown);
+    }
 }
