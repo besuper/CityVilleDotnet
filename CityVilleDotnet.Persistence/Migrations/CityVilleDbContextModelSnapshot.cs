@@ -16,7 +16,7 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261111125854_AddCars";
+    public override string LastMigrationId => "20261111164430_CityAtNight";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -740,6 +740,12 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
                 b.Property<int>("Cash")
                     .HasColumnType("int");
 
+                b.Property<bool>("CityAtNightEarlyUnlocked")
+                    .HasColumnType("bit");
+
+                b.Property<int>("CityLightCount")
+                    .HasColumnType("int");
+
                 b.Property<DateTimeOffset>("CreationTimestamp")
                     .HasColumnType("datetimeoffset");
 
@@ -773,10 +779,19 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
                 b.Property<int>("Level")
                     .HasColumnType("int");
 
+                b.Property<int>("LightExpansionsPurchased")
+                    .HasColumnType("int");
+
+                b.Property<int>("LightLevel")
+                    .HasColumnType("int");
+
                 b.Property<bool>("MusicDisabled")
                     .HasColumnType("bit");
 
                 b.Property<bool>("NightModeActive")
+                    .HasColumnType("bit");
+
+                b.Property<bool>("NightModeAvailable")
                     .HasColumnType("bit");
 
                 b.Property<int>("PremiumGoods")

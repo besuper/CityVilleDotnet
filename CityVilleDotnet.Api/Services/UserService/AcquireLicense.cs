@@ -18,14 +18,22 @@ public class AcquireLicense(CityVilleDbContext context) : AmfService<AcquireLice
 
         if (gameItem is null) throw new Exception($"Game item {request.ItemName} not found");
 
-        if (gameItem.UnlockCost is null)
-            throw new Exception($"Game item {request.ItemName} does not have unlock cash defined");
-
         var player = await context.Set<Player>()
             .Include(x => x.Licenses)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Can't find player");
+
+        if (request.ItemName == Player.LightExpansionName)
+        {
+            player.AcquireLightExpansionLicense();
+            await context.SaveChangesAsync(cancellationToken);
+
+            return new CityVilleResponse();
+        }
+
+        if (gameItem.UnlockCost is null)
+            throw new Exception($"Game item {request.ItemName} does not have unlock cash defined");
 
         if (player.Cash < gameItem.Cash)
             return new CityVilleResponse().Error(GameErrorType.NotEnoughMoney);

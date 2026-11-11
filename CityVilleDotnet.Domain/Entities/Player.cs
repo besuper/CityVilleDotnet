@@ -144,6 +144,9 @@ public partial class Player
                 case "cars":
                     AddCar(itemName, amount);
                     return;
+                case "cityAtNight":
+                    AddCityLights(amount);
+                    return;
             }
 
             var inventoryLimit = GameSettingsManager.Instance.GetItem(itemName)?.InventoryLimit ?? 0;

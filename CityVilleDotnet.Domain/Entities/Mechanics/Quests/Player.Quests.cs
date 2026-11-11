@@ -61,7 +61,12 @@ public partial class Player
                         case "citySamHQ":
                         case "sendFranchiseSupply":
                         case "carHarvest":
+                        case "isNight":
+                        case "unlockCityAtNight":
                             quest.Progress[index] += 1;
+                            break;
+                        case "countLights":
+                            quest.Progress[index] += amount;
                             break;
                         case "craftCollection":
                             if (taskType == "all" || taskType == itemName)
@@ -174,6 +179,17 @@ public partial class Player
 
                             break;
                     }
+                }
+
+                if (actionType == "harvestItemByName" && actionTask == "harvestItemByNameAtNight" && NightModeActive && itemName is not null && (taskType == itemName || splitType?.Contains(itemName) == true))
+                {
+                    quest.Progress[index] += 1;
+                }
+
+                if (actionTask == "isLightLevel")
+                {
+                    quest.Progress[index] = GetComputedLightLevel();
+                    continue;
                 }
 
                 // Cross-promo games don't exist anymore

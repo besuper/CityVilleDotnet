@@ -91,6 +91,11 @@ public sealed class Finish(CityVilleDbContext context) : AmfService<FinishReques
 
         player.CollectDoobersRewards(constructionItemName);
 
+        if (finishedItem?.GetGameEventMechanic("finish")?.ClassName == "CityAtNightMechanic")
+        {
+            player.OpenCityAtNight(finishedItem.Name);
+        }
+
         await context.SaveChangesAsync(cancellationToken);
 
         return new CityVilleResponse().Data(new ASObject

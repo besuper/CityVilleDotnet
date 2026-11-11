@@ -1,3 +1,4 @@
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace CityVilleDotnet.Common.Settings.GameSettings;
@@ -81,6 +82,14 @@ public class FarmingSettings
     [XmlAttribute("coinsForCash")] public int CoinsForCash { get; set; } = 1000;
     [XmlAttribute("wishlistSize")] public int WishlistSize { get; set; } = 5;
     [XmlAttribute("maxVisitingEnergy")] public int MaxVisitingEnergy { get; set; } = 5;
+    [XmlAnyAttribute] public XmlAttribute[]? OtherAttributes { get; set; }
+
+    public int GetCityAtNightUnlockPrice(int variant)
+    {
+        var value = OtherAttributes?.FirstOrDefault(x => x.Name == $"cityAtNightUnlockPrice_{variant}")?.Value;
+
+        return int.TryParse(value, out var price) ? price : 90;
+    }
 
     public int GetZooDonationNpcPrice(string enclosureItemName)
     {

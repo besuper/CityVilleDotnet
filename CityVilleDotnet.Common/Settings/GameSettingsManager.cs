@@ -25,6 +25,7 @@ public class GameSettingsManager
     private Dictionary<string, List<string>> _addToWorldCallbackItems = [];
     private FarmingSettings? _farmSettings;
     private List<LevelItem> _levels = [];
+    private List<LightLevelItem> _lightLevels = [];
     private List<ReputationItem> _reputationLevels = [];
     private List<CollectionSetting> _collections = [];
     private Dictionary<string, List<ExpansionSetting>> _expansionGates = [];
@@ -156,6 +157,7 @@ public class GameSettingsManager
             }
 
             _levels = gameSettings.Levels.Levels;
+            _lightLevels = gameSettings.LightLevels?.Levels ?? [];
             _reputationLevels = gameSettings.Reputation.Levels;
             _farmSettings = gameSettings.Farming;
 
@@ -381,6 +383,11 @@ public class GameSettingsManager
     public IReadOnlyCollection<LevelItem> GetLevels()
     {
         return _levels.AsReadOnly();
+    }
+
+    public IReadOnlyList<LightLevelItem> GetLightLevels()
+    {
+        return _lightLevels.AsReadOnly();
     }
 
     public IReadOnlyCollection<ReputationItem> GetSocialLevels()

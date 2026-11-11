@@ -123,7 +123,7 @@ public static class UserDtoMapper
                     SocialLevel = model.SocialLevel,
                     SocialXp = model.SocialXp,
                     Orders = BuildOrdersAsObject(model),
-                    LightLevel = 0, // TODO
+                    LightLevel = model.LightLevel,
                     PaidEnergy = 0, // TODO
                     EnergyModifiers = energyModifiers,
                     FeatureData = new ASObject(new Dictionary<string, object>()),
@@ -158,11 +158,11 @@ public static class UserDtoMapper
                 {
                     "cityAtNight", new ASObject()
                     {
-                        { "nightModeAvailable", true },
-                        { "earlyUnlocked", true },
-                        { "cityLightCount", 0 },
+                        { "nightModeAvailable", model.NightModeAvailable },
+                        { "earlyUnlocked", model.CityAtNightEarlyUnlocked },
+                        { "cityLightCount", model.CityLightCount },
                         { "active", model.NightModeActive },
-                        { "numExpansionsPurchased", model.ExpansionsPurchased },
+                        { "numExpansionsPurchased", model.LightExpansionsPurchased },
                     }
                 },
                 { "remodel", new ASObject() { { "enabled", model.GetWorld().HasRemodelHeadquarters() } } },

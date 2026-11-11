@@ -27,9 +27,15 @@ public class AcquireExpansionLicense(CityVilleDbContext context) : AmfService<Ac
 
         if (player is null) throw new Exception("Can't find player");
 
+        if (request.ItemName == Player.LightExpansionName)
+        {
+            player.AcquireLightExpansionLicense();
+        }
         // The client only considers a license valid when its amount is exactly 1
-        if (!player.HasLicense(request.ItemName))
+        else if (!player.HasLicense(request.ItemName))
+        {
             player.AddLicense(request.ItemName);
+        }
 
         await context.SaveChangesAsync(cancellationToken);
 

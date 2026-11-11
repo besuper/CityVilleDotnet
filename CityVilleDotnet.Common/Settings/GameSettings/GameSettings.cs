@@ -11,6 +11,7 @@ public class GameSettings
     [XmlElement("mechanicPacks")] public MechanicPacksContainer? MechanicPacks { get; set; }
 
     [XmlElement("levels_cv_level_regrade_var_0")] public required LevelsContainer Levels { get; set; }
+    [XmlElement("light_levels")] public LightLevelsContainer? LightLevels { get; set; }
     [XmlElement("reputation")] public required ReputationContainer Reputation { get; set; }
 
     [XmlElement("farming")] public required FarmingSettings Farming { get; set; }

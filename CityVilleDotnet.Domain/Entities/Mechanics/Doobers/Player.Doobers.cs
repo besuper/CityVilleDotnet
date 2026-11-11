@@ -185,11 +185,19 @@ public partial class Player
                     continue;
             }
 
-            // Skip validates by default, we should validate before but not necessary
             if (!string.IsNullOrEmpty(itemModifier.Validate))
             {
-                StaticLogger.Current.LogWarning("Skipping modifier with validate={Validate} for {ItemName}", itemModifier.Validate, gameItem.Name);
-                continue;
+                var isValid = IsCityAtNightModifierValid(itemModifier.Validate);
+
+                if (isValid is null)
+                {
+                    StaticLogger.Current.LogWarning("Skipping modifier with validate={Validate} for {ItemName}", itemModifier.Validate, gameItem.Name);
+                }
+
+                if (isValid is not true)
+                {
+                    continue;
+                }
             }
 
             // TODO: Maybe implement this

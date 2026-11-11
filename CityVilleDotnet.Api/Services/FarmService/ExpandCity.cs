@@ -31,8 +31,16 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x.IncentivizedExpansions)
             .Include(x => x.InventoryItems)
+            .Include(x => x.Licenses)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Can't find player");
+
+        var isLightExpansion = request.ItemName == Player.LightExpansionName;
+
+        if (isLightExpansion && !player.HasPassedLightLevelGate())
+        {
+            throw new DomainException(GameErrorType.ForceReload, "Light level too low to expand this city");
+        }
 
         var tier = player.GetExpansionTier();
         var isFree = player.CountInventoryItem(FreeExpansionName) > 0;
@@ -115,7 +123,20 @@ public class ExpandCity(CityVilleDbContext context, ILogger<ExpandCity> logger) 
         }
 
         world.SetLastExpansionTier(tier);
-        player.IncrementExpansionsPurchased();
+
+        if (isLightExpansion)
+        {
+            var license = player.PurchaseLightExpansion();
+
+            if (license is not null)
+            {
+                context.Set<LicenseItem>().Remove(license);
+            }
+        }
+        else
+        {
+            player.IncrementExpansionsPurchased();
+        }
 
         if (isFree)
         {

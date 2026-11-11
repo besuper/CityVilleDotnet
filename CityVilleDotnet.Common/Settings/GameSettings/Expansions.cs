@@ -26,4 +26,6 @@ public class ExpansionsContainer
 public class ExpansionSetting
 {
     [XmlAttribute("permits2")] public int Permits { get; set; }
+    [XmlAttribute("lightlevel")] public int LightLevel { get; set; }
+    [XmlAttribute("cost")] public int Cost { get; set; }
 }
