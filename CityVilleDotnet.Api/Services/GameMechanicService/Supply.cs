@@ -21,6 +21,9 @@ internal sealed class Supply(CityVilleDbContext context) : AmfService<SupplyRequ
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || o.StoredInId == request.ObjectId))
             .ThenInclude(x => x.SupplyResources)
+            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || o.StoredInId == request.ObjectId))
+            .ThenInclude(x => x.Slots)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
@@ -38,6 +41,10 @@ internal sealed class Supply(CityVilleDbContext context) : AmfService<SupplyRequ
 
             player.SupplyStorage(stored);
             obj.OpenStorageSupply(stored);
+        }
+        else if (gameItem.IsThemeParkSupply())
+        {
+            player.SupplyThemePark(obj);
         }
         else
         {

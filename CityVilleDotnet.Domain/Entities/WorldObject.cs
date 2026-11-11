@@ -613,7 +613,7 @@ public partial class WorldObject
         
         var harvestedItem = GameSettingsManager.Instance.GetItem(ItemName);
 
-        if (harvestedItem?.IsStorageSupply() == true)
+        if (harvestedItem?.IsStorageSupply() == true || harvestedItem?.IsThemeParkSupply() == true)
         {
             CloseStorageSupply();
         }
@@ -702,13 +702,14 @@ public partial class WorldObject
     {
         var gameItem = GameSettingsManager.Instance.GetItem(ItemName);
         var isStorageSupply = gameItem?.IsStorageSupply() == true;
+        var isThemeParkSupply = gameItem?.IsThemeParkSupply() == true;
 
-        if (!ClassName.IsBusiness() && !(gameItem?.IsCustomerSupplyState() ?? false) && !isStorageSupply)
+        if (!ClassName.IsBusiness() && !(gameItem?.IsCustomerSupplyState() ?? false) && !isStorageSupply && !isThemeParkSupply)
         {
             return false;
         }
 
-        if (State != WorldObjectState.Open || (isStorageSupply && !IsStorageSupplied()))
+        if (State != WorldObjectState.Open || ((isStorageSupply || isThemeParkSupply) && !IsStorageSupplied()))
         {
             return false;
         }
@@ -716,7 +717,9 @@ public partial class WorldObject
         if (gameItem is null)
             throw new Exception("Can't find game item for business building");
 
-        var maxVisits = isStorageSupply ? GetSupplyCustomersReq() : gameItem.CommodityRequired;
+        var maxVisits = isStorageSupply ? GetSupplyCustomersReq()
+            : isThemeParkSupply ? GetThemeParkCustomersReq()
+            : gameItem.CommodityRequired;
 
         if (maxVisits is null)
             throw new Exception("Can't find max visits for business building");

@@ -330,6 +330,24 @@ public static class WorldObjectDtoMapper
             dto.MechanicData["slots"] = Enumerable.Range(0, gameItem.ThemeParkStorage.Slots.Count)
                 .Select(i => (object)(model.Slots.Any(x => x.SlotIndex == i) ? "filled" : "empty"))
                 .ToList();
+
+            if (model.State is WorldObjectState.Open or WorldObjectState.ClosedHarvestable)
+            {
+                dto.State = WorldObjectState.Static.ToDescriptionString(); // theme parks only have a static image
+            }
+
+            // ThemeParkSupplyMechanic::generateHarvestState
+            if (model.IsStorageSupplied())
+            {
+                var customersReq = model.GetThemeParkCustomersReq();
+
+                dto.MechanicData["harvestState"] = new ASObject
+                {
+                    { "customers", Math.Min(model.Visits ?? 0, customersReq) },
+                    { "customersReq", customersReq },
+                    { "filledSlotCount", model.SupplyResources.Count }
+                };
+            }
         }
 
         if (model.ClassName == BuildingClassType.ZooEnclosure)

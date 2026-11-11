@@ -359,6 +359,11 @@ public class GameItem
         return GetGameEventMechanic("supply")?.ClassName == "StorageSupplyMechanic";
     }
 
+    public bool IsThemeParkSupply()
+    {
+        return GetGameEventMechanic("supply")?.ClassName == "ThemeParkSupplyMechanic";
+    }
+
     public GameItem GetFirstDeriveItem(GameItem item)
     {
         if (item.DerivesFrom is not null)
@@ -478,6 +483,7 @@ public class ThemeParkSlotItem
 {
     [XmlAttribute("type")] public string? Type { get; set; }
     [XmlAttribute("item")] public string? Item { get; set; }
+    [XmlAttribute("commodityReq")] public int CommodityRequired { get; set; }
 }
 
 [Serializable]

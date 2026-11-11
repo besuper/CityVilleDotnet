@@ -56,14 +56,19 @@ public sealed class HarvestState(CityVilleDbContext context, IConfiguration conf
         {
             player.RemoveEnergy(obj.GetStorageSupplyHarvestEnergyCost(gameItem));
         }
+        else if (gameItem.IsThemeParkSupply())
+        {
+            // ThemeParkHarvestMechanic::getRequiredEnergy
+            player.RemoveEnergy(obj.SupplyResources.Count);
+        }
         else if (gameItem.EnergyCost?.Harvest is not null)
         {
             player.RemoveEnergy(int.Parse(gameItem.EnergyCost.Harvest));
         }
 
         // CustomerStateHarvestMechanic.applyPayoutMultipliers
-        var coinMultiplier = gameItem.IsCustomerSupplyState()
-            ? Math.Max(obj.Visits ?? 0, 1)
+        var coinMultiplier = gameItem.IsCustomerSupplyState() ? Math.Max(obj.Visits ?? 0, 1)
+            : gameItem.IsThemeParkSupply() ? Math.Max(obj.GetThemeParkCustomersReq(), 1)
             : 1;
 
         var supplyResourceNames = obj.GetSupplyResourceNames();
