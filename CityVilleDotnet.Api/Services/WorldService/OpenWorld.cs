@@ -47,6 +47,8 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
             .Include(x => x.Worlds.Where(w => w.Type == request.WorldType))
             .ThenInclude(w => w.TrainOrder)
             .ThenInclude(o => o!.Workers)
+            .Include(x => x.Cars)
+            .Include(x => x.CraftingParts)
             .FirstOrDefaultAsync(x => x.Snuid == request.OwnerId, cancellationToken);
 
         if (playerToLoad is null)

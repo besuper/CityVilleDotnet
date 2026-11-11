@@ -136,6 +136,16 @@ public partial class Player
     {
         if (storageKey is null)
         {
+            switch (GameSettingsManager.Instance.GetItem(itemName)?.GetAddFeatureDataKey())
+            {
+                case "crafting":
+                    AddCraftingPart(itemName, amount);
+                    return;
+                case "cars":
+                    AddCar(itemName, amount);
+                    return;
+            }
+
             var inventoryLimit = GameSettingsManager.Instance.GetItem(itemName)?.InventoryLimit ?? 0;
 
             if (inventoryLimit > 0)

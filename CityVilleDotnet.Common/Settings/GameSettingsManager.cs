@@ -22,6 +22,7 @@ public class GameSettingsManager
     private readonly Dictionary<string, TieredValueItem> _tieredValues;
     private readonly Dictionary<string, AssetPlaceholder> _assetPlaceholders;
     private List<string> _globalTableProviders = [];
+    private Dictionary<string, List<string>> _addToWorldCallbackItems = [];
     private FarmingSettings? _farmSettings;
     private List<LevelItem> _levels = [];
     private List<ReputationItem> _reputationLevels = [];
@@ -30,6 +31,7 @@ public class GameSettingsManager
     private List<PreyGroupSetting> _preyGroups = [];
     private List<GateTuningItem> _gateTunings = [];
     private List<CommodityItem> _commodities = [];
+    private List<CraftCollection> _craftCollections = [];
     private bool _isInitialized;
 
     private GameSettingsManager()
@@ -226,6 +228,12 @@ public class GameSettingsManager
                 .Where(x => x is not null && x.GetGlobalTableModifiers().Count > 0)
                 .Select(x => x!.Name)
                 .ToList();
+
+            _addToWorldCallbackItems = _items.Values
+                .Where(x => x is not null)
+                .SelectMany(x => x!.GetAddToWorldCallbacks().Select(m => (Key: $"{m.FactoryClass}::{m.Callback}", x.Name)))
+                .GroupBy(x => x.Key)
+                .ToDictionary(g => g.Key, g => g.Select(x => x.Name).Distinct().ToList());
         }
 
         logger.LogInformation("Loaded gameSettings.xml with {ItemsCount} items ({DerivedItemsCount} derived from a parent item)", _items.Count, derivedItemsCount);
@@ -241,10 +249,38 @@ public class GameSettingsManager
         logger.LogInformation("Loaded {WorldConfigsCount} world configs", _worldConfigs.Count);
         logger.LogInformation("Loaded {ValidatorsCount} validators", _validators.Count);
         logger.LogInformation("Loaded {GlobalTableProvidersCount} global table providers", _globalTableProviders.Count);
+        logger.LogInformation("Loaded {AddToWorldCallbacksCount} add to world callbacks", _addToWorldCallbackItems.Count);
         logger.LogInformation("Loaded {AssetPlaceholdersCount} asset placeholders", _assetPlaceholders.Count);
         logger.LogInformation("Loaded {PreyGroupsCount} prey groups", _preyGroups.Count);
 
+        var craftCollectionsPath = Path.Combine(Path.GetDirectoryName(path) ?? string.Empty, "craft_collections.xml");
+
+        if (File.Exists(craftCollectionsPath))
+        {
+            using var craftStream = new FileStream(craftCollectionsPath, FileMode.Open);
+            var craftCollections = (CraftCollectionsContainer?)new XmlSerializer(typeof(CraftCollectionsContainer)).Deserialize(craftStream);
+            _craftCollections = craftCollections?.Collections ?? [];
+        }
+
+        logger.LogInformation("Loaded {CraftCollectionsCount} craft collections", _craftCollections.Count);
+
         _isInitialized = true;
+    }
+
+    public CraftCollection? GetCraftCollection(string name)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return _craftCollections.FirstOrDefault(x => x.Name == name);
+    }
+
+    public IReadOnlyList<CraftCollection> GetCraftCollections()
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return _craftCollections;
     }
 
     public GameItem? GetItem(string itemName)
@@ -456,6 +492,18 @@ public class GameSettingsManager
             throw new InvalidOperationException("GameSettingsManager not initialized");
 
         return _globalTableProviders;
+    }
+
+    // Items whose AddToWorldMechanic calls one of the factoryClass static callbacks when placed
+    public List<string> GetItemsByAddToWorldCallback(string factoryClass, params string[] callbacks)
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return callbacks
+            .SelectMany(x => _addToWorldCallbackItems.GetValueOrDefault($"{factoryClass}::{x}") ?? [])
+            .Distinct()
+            .ToList();
     }
 
     public IReadOnlyList<ExpansionSetting> GetExpansions(string gateName)

@@ -132,7 +132,10 @@ public class EditModel(CityVilleDbContext dbContext, UserManager<ApplicationUser
         }
 
         var player = await dbContext.Set<Player>()
+            .AsSplitQuery()
             .Include(x => x.InventoryItems)
+            .Include(x => x.Cars)
+            .Include(x => x.CraftingParts.Where(p => p.Name == itemName))
             .FirstOrDefaultAsync(x => x.Id == id, ct);
 
         if (player is null)

@@ -14,7 +14,10 @@ public class BuyConsumable(CityVilleDbContext context) : AmfService<BuyConsumabl
     public override async Task<ASObject> HandlePacket(BuyConsumableRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var player = await context.Set<Player>()
+            .AsSplitQuery()
             .Include(x => x.InventoryItems)
+            .Include(x => x.Cars)
+            .Include(x => x.CraftingParts.Where(p => p.Name == request.ItemName))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         var gameItem = GameSettingsManager.Instance.GetItem(request.ItemName) ?? throw new Exception($"Can't find game item {request.ItemName}");

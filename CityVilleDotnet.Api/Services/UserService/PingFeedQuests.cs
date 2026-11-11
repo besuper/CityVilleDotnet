@@ -27,6 +27,8 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
             .ThenInclude(x => x.MapRects)
             .Include(x => x.Masteries)
             .Include(x => x.InventoryItems)
+            .Include(x => x.Cars)
+            .Include(x => x.CraftingParts)
             .Include(x => x.Franchises)
             .ThenInclude(x => x.Locations)
             .Include(x => x.SeenFlags)

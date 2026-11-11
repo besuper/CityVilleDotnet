@@ -153,6 +153,7 @@ public class GameItem
     [XmlElement("validate")] public List<ValidateItem> Validations { get; set; } = [];
     [XmlElement("inventoryChecks")] public InventoryChecksContainer? InventoryChecks { get; set; }
     [XmlElement("inventoryLimit")] public int InventoryLimit { get; set; }
+    [XmlElement("tier")] public string? Tier { get; set; }
     [XmlElement("signatures")] public bool? Signatures { get; set; }
     [XmlElement("positiveStreak")] public string? PositiveStreak { get; set; }
     [XmlElement("negativeStreak")] public string? NegativeStreak { get; set; }
@@ -210,6 +211,18 @@ public class GameItem
     public int GetStreakMaxEffect()
     {
         return StartingStreakValue > 0 ? StartingStreakValue : PositiveStreakMaxEffect;
+    }
+
+    // From InventoryCheckManager::onItemAdd, the item is stored in featureData[featureDataKey] instead of the inventory
+    public string? GetAddFeatureDataKey()
+    {
+        return InventoryChecks?.Checks.FirstOrDefault(x => x is { Type: "add", Callback: "onItemAdd" })?.Params?.FeatureDataKey;
+    }
+
+    // From Item::carTier
+    public int GetCarTier()
+    {
+        return int.TryParse(Tier, out var tier) ? tier : 1;
     }
 
     private static int[] ParseStreakRewards(string? rewards)
@@ -339,6 +352,13 @@ public class GameItem
             .ToList();
     }
 
+    // From AddToWorldMechanic, the factoryClass static callback is called when the item is placed
+    public IEnumerable<MechanicItem> GetAddToWorldCallbacks()
+    {
+        return Mechanics?.GetMechanicByGameMode("onAddToWorld")?.Mechanics?
+            .Where(x => x is { ClassName: "AddToWorldMechanic", FactoryClass: not null, Callback: not null }) ?? [];
+    }
+
     public string? GetSupplyStateMechanicClass()
     {
         return GetGameEventMechanic("supplyState")?.ClassName;
@@ -458,6 +478,7 @@ public class InventoryCheckParams
         set => Quantity = string.IsNullOrEmpty(value) ? null : int.Parse(value);
     }
 
+    [XmlAttribute("featureDataKey")] public string? FeatureDataKey { get; set; }
     [XmlAttribute("isPopulationItem")] public string? IsPopulationItemString { get; set; }
     [XmlIgnore] public bool IsPopulationItem => IsPopulationItemString == "true";
 }
@@ -855,6 +876,8 @@ public class MechanicItem
     [XmlAttribute("yOffset")] public int YOffset { get; set; }
     [XmlAttribute("action")] public string? Action { get; set; }
     [XmlAttribute("gateName")] public string? GateName { get; set; }
+    [XmlAttribute("factoryClass")] public string? FactoryClass { get; set; }
+    [XmlAttribute("callback")] public string? Callback { get; set; }
     [XmlAttribute("targetKeyword")] public string? TargetKeyword { get; set; }
     [XmlAttribute("table")] public string? Table { get; set; }
     [XmlAttribute("validate")] public string? Validate { get; set; }

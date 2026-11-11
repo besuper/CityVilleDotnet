@@ -32,7 +32,10 @@ internal sealed class AddInventoryItem(UserManager<ApplicationUser> userManager,
         }
 
         var player = await dbContext.Set<Player>()
+            .AsSplitQuery()
             .Include(x => x!.InventoryItems)
+            .Include(x => x.Cars)
+            .Include(x => x.CraftingParts.Where(p => p.Name == req.ItemName))
             .FirstOrDefaultAsync(x => x.AppUser!.Id == currentUser.Id, ct);
 
         if (player is null)

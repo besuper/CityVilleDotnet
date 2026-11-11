@@ -60,7 +60,15 @@ public partial class Player
                         case "buildingremodeled":
                         case "citySamHQ":
                         case "sendFranchiseSupply":
+                        case "carHarvest":
                             quest.Progress[index] += 1;
+                            break;
+                        case "craftCollection":
+                            if (taskType == "all" || taskType == itemName)
+                            {
+                                quest.Progress[index] += 1;
+                            }
+
                             break;
                         case "harvestByClass":
                         case "startContractByClass":
@@ -386,6 +394,17 @@ public partial class Player
                             quest.Progress[index] = 1;
                         }
 
+                        continue;
+                    case "haveEachCar":
+                        if ((splitType ?? [taskType]).All(x => GetCarAmount(x) > 0))
+                        {
+                            quest.Progress[index] = 1;
+                        }
+
+                        continue;
+                    // TODO: Implement quest extra data
+                    case "numberOfCarParts":
+                        quest.Progress[index] = Math.Max(quest.Progress[index], (splitType ?? [taskType]).Sum(GetCraftingPartAmount));
                         continue;
                     case "couponObtained":
                         if (HasCoupon(taskType))

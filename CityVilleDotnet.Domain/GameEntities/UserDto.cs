@@ -222,6 +222,15 @@ public static class UserDtoMapper
                         }
                     }
                 },
+                {
+                    "cars", new ASObject
+                    {
+                        { "carsenabled", model.CarsEnabled },
+                        { "craftenabled", model.CarCraftEnabled },
+                        { "inventory", new ASObject(model.Cars.ToDictionary(x => x.Name, x => (object)x.Amount)) }
+                    }
+                },
+                { "crafting", new ASObject { { "inventory", new ASObject(model.CraftingParts.ToDictionary(x => x.Name, x => (object)x.Amount)) } } },
                 { "trains", new ASObject { { "workers", model.GetWorld().ToTrainWorkersAsObject() } } },
                 { "factories", new ASObject { { "workers", model.GetWorld().ToFactoryWorkersAsObject() } } },
                 { "detectiveGameWorkerManager", new ASObject { { "workers", new ASObject() } } },

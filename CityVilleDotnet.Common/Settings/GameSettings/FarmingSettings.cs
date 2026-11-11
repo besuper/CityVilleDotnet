@@ -18,6 +18,10 @@ public class FarmingSettings
     [XmlAttribute("taxiHarvestModifier")] public double TaxiHarvestModifier { get; set; }
     [XmlAttribute("taxiHarvestBuildingModifier")] public double TaxiHarvestBuildingModifier { get; set; }
     [XmlAttribute("availableTaxiTypes")] public string AvailableTaxiTypes { get; set; } = string.Empty;
+    [XmlAttribute("carHarvestModifier")] public double CarHarvestModifier { get; set; }
+    [XmlAttribute("carHarvestBuildingModifier")] public double CarHarvestBuildingModifier { get; set; }
+    [XmlAttribute("availableCarTypes")] public string AvailableCarTypes { get; set; } = string.Empty;
+    [XmlAttribute("bulkCarCraftPurchaseDiscount")] public double BulkCarCraftPurchaseDiscount { get; set; }
 
     [XmlAttribute("friendVisitConstructionRepGain")]
     public required int FriendVisitConstructionRepGain { get; set; }
