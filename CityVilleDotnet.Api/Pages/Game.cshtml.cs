@@ -129,7 +129,7 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             flashVars["amf_settings_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/settings_rev{revision}.amf.z";
         }
 
-        if (Request.Cookies["nativeFlash"] == "1" && !Request.Query.ContainsKey("disableCache") && !Request.Query.ContainsKey("rev"))
+        if (Request.Cookies["nativeFlash"] == "1" && !Request.Query.ContainsKey("disableCache") && !Request.Query.ContainsKey("rev") && Request.Query["player"] != "swf2es")
         {
             flashVars["zcache_gameswf_gamesettings"] = "true";
             flashVars["zcache_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/zcache/ZCache.swf";

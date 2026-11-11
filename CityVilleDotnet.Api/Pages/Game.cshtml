@@ -4,6 +4,7 @@
 @inject Microsoft.Extensions.Localization.IStringLocalizer<CityVilleDotnet.Api.Resources.SharedResource> Localizer
 @{
 	Layout = "Shared/_GameLayout";
+	var useSwf2es = Request.Query["player"] == "swf2es";
 }
 
 @model CityVilleDotnet.Api.Pages.GameModel
@@ -26,8 +27,19 @@
 		}
 	</script>
 	
-	<script type="text/javascript" src="ruffle/ruffle.js?v=2"></script>
-	
+	@if (useSwf2es)
+	{
+		<script type="module">
+			import { configure, replaceFlash } from "https://unpkg.com/swf2es@0.1";
+			configure({ cache: true });
+			replaceFlash();
+		</script>
+	}
+	else
+	{
+		<script type="text/javascript" src="ruffle/ruffle.js?v=2"></script>
+	}
+
 	<style>
 		#cvGame { width: 960px; height: 756px; }
 		#cvRotate, .cv-overlay-btn { display: none; }
@@ -48,7 +60,7 @@
 			.cv-navbar .container > a { display: none !important; }
 			#cvGame { position: fixed; inset: 0; width: 100vw; height: 100dvh; z-index: 1040; background: #000; touch-action: none; }
 			#flashOuterContainer { transform-origin: 0 0; }
-			#flashContent, #cvGame object, #cvGame ruffle-object, #cvGame ruffle-embed { width: 100% !important; height: 100% !important; }
+			#flashContent, #cvGame object, #cvGame ruffle-object, #cvGame ruffle-embed, #cvGame swf2es-player { width: 100% !important; height: 100% !important; }
 		}
 
 		@@media (pointer: coarse) and (orientation: portrait) {
