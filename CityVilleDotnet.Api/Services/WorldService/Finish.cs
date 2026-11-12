@@ -36,7 +36,7 @@ public sealed class Finish(CityVilleDbContext context) : AmfService<FinishReques
             .ThenInclude(x => x.Items)
             .Include(x => x.GlobalTableOverrides)
             .Include(x => x.Coupons)
-            .Include(x => x.Flags.Where(f => f.Name == "completed_bridge"))
+            .Include(x => x.Flags.Where(f => f.Name == "completed_bridge" || f.Name.StartsWith("flag_")))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");

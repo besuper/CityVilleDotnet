@@ -218,6 +218,19 @@ public partial class Player
             // Client only rolls when the table exists, otherwise the roll counter must not move (processRandomModifiersFromConfig)
             if (modifierTable is null) continue;
 
+            // noRepeatReward modifier is rolled once ever
+            if (itemModifier.IsNoRepeatReward())
+            {
+                var flagName = $"flag_{itemModifier.TableName}_{gameItem.Name}";
+
+                if (Flags.Any(x => x.Name == flagName && x.Value > 0))
+                {
+                    continue;
+                }
+
+                SetFlag(flagName, 1);
+            }
+
             IncrementRollCounter();
 
             var secureRand = SecureRand.GenerateRand(0, modifierTable.RollRange, RollCounter, Snuid.ToString());

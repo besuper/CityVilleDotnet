@@ -39,6 +39,10 @@ public class RandomModifier
 
     [XmlAttribute("variants")] public string? Variants { get; set; }
 
+    [XmlAttribute("noRepeatReward")] public string? NoRepeatRewardString { get; set; }
+
+    public bool IsNoRepeatReward() => NoRepeatRewardString == "true";
+
     [XmlIgnore] public double Multiplier { get; set; } = 1;
 
     [XmlAttribute("multiplier")]

@@ -16,7 +16,7 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261111164430_CityAtNight";
+    public override string LastMigrationId => "20261112192546_WidenFlagName";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -293,8 +293,8 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
 
                 b.Property<string>("Name")
                     .IsRequired()
-                    .HasMaxLength(64)
-                    .HasColumnType("nvarchar(64)");
+                    .HasMaxLength(128)
+                    .HasColumnType("nvarchar(128)");
 
                 b.Property<Guid>("PlayerId")
                     .HasColumnType("uniqueidentifier");
