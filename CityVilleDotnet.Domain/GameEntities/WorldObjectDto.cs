@@ -59,6 +59,8 @@ public class WorldObjectDto
 
     [JsonPropertyName("neverOpened")] public bool NeverOpened { get; set; }
 
+    [JsonPropertyName("isMoveLocked")] public bool IsMoveLocked { get; set; }
+
     [JsonPropertyName("endPosition")] public WorldObjectPositionDto? EndPosition { get; set; }
 
     [JsonPropertyName("mechanicData")] public Dictionary<string, object?> MechanicData { get; set; } = new Dictionary<string, object?>();

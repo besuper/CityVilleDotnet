@@ -10,6 +10,8 @@ public class PlayerDto
 {
     [JsonPropertyName("uid")] public string Uid { get; set; } = "333";
 
+    [JsonPropertyName("firstPlayDate")] public long FirstPlayDate { get; set; }
+
     [JsonPropertyName("lastTrackingTimestamp")]
     public long LastTrackingTimestamp { get; set; } = 0;
 

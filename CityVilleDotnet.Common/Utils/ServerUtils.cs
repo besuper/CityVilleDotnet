@@ -9,15 +9,15 @@ public static class ServerUtils
     private static readonly List<string> RequiredFiles =
     [
         "wwwroot/Preloader.swf",
-        "wwwroot/gameSettings.xml",
-        "wwwroot/questSettings.xml",
+        "wwwroot/gameSettings_rev2013.xml",
+        "wwwroot/questSettings_rev2013.xml",
         "wwwroot/effectsConfig.xml",
         "wwwroot/FontMapper.swf",
         "wwwroot/lang/locale_en_US.swf",
         "wwwroot/bootstrap.xml",
-        "wwwroot/settings.amf.z",
+        "wwwroot/settings_rev2013.amf.z",
         "wwwroot/EmbeddedArt.swf",
-        "wwwroot/Game.2012.swf"
+        "wwwroot/Game_rev2013.swf"
     ];
 
     private static readonly AsyncLocal<TimeProvider?> CurrentTimeProvider = new();

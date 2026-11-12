@@ -55,6 +55,7 @@ public static class UserDtoMapper
                 Player = new PlayerDto
                 {
                     Uid = model.Snuid.ToString(),
+                    FirstPlayDate = model.CreationTimestamp.ToUnixTimeSeconds(),
                     Cash = model.Cash,
                     Collections = new ASObject(model.Collections
                         .GroupBy(item => item.Name)
