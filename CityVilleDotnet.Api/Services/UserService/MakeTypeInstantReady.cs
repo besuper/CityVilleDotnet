@@ -31,7 +31,7 @@ public class MakeTypeInstantReady(CityVilleDbContext context, ILogger<MakeTypeIn
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x.Objects.Where(o => o.ClassName == buildingType && o.State == WorldObjectState.Planted))
+            .ThenInclude(x => x.Objects.Where(o => (o.ClassName == buildingType && o.State == WorldObjectState.Planted) || o.ItemName.StartsWith("macro_terminal_cargo_")))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
@@ -40,7 +40,8 @@ public class MakeTypeInstantReady(CityVilleDbContext context, ILogger<MakeTypeIn
 
         var buildings = world.Objects.Where(o => o.ClassName == buildingType && o.State == WorldObjectState.Planted && !o.HasGrown() && o.AllowsInstantReady()).ToList();
 
-        var cost = (int)Math.Max(Math.Ceiling(buildings.Sum(x => x.GetUnroundedCostToMakeReady())), 1);
+        var airplaneGrowTimeDiscount = world.GetAirplaneGrowTimeDiscount();
+        var cost = (int)Math.Max(Math.Ceiling(buildings.Sum(x => x.GetUnroundedCostToMakeReady(airplaneGrowTimeDiscount))), 1);
 
         logger.LogDebug("Bought instant finish for type {BuildingType} cost {Cost}", buildingType, cost);
 

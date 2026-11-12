@@ -4,6 +4,20 @@ namespace CityVilleDotnet.Domain.Entities;
 
 public partial class World
 {
+    private static readonly (string ItemName, double Discount)[] CargoTerminalDiscounts =
+    [
+        ("macro_terminal_cargo_2", 0.08),
+        ("macro_terminal_cargo_3", 0.15),
+        ("macro_terminal_cargo_4", 0.25),
+        ("macro_terminal_cargo_5", 0.35)
+    ];
+
+    // Item::applyDiscountGrowTime, the first upgraded cargo terminal found sets the discount
+    public double GetAirplaneGrowTimeDiscount()
+    {
+        return CargoTerminalDiscounts.FirstOrDefault(x => CountBuildingByName(x.ItemName) > 0).Discount;
+    }
+
     // EditMacroObjectCandidateMechanic::placeCandidate
     public void PlaceMacroObjectCandidate(WorldObject candidate, string placementValidator)
     {

@@ -17,7 +17,7 @@ public class MakeResourceInstantReady(CityVilleDbContext context, ILogger<MakeRe
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.BuildingId || o.TempId == request.BuildingId))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.BuildingId || o.TempId == request.BuildingId || o.ItemName.StartsWith("macro_terminal_cargo_")))
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
@@ -53,7 +53,7 @@ public class MakeResourceInstantReady(CityVilleDbContext context, ILogger<MakeRe
         if (obj.State != WorldObjectState.Planted)
             return new CityVilleResponse().Error(GameErrorType.InvalidState);
 
-        var cost = obj.GetCostToMakeReady();
+        var cost = obj.GetCostToMakeReady(world.GetAirplaneGrowTimeDiscount());
 
         logger.LogDebug("Bought instant finish for {BuildingClassType} cost {Cost}", obj.ClassName, cost);
 

@@ -1074,7 +1074,7 @@ public partial class WorldObject
         return settings.InstantReadyResidenceCostConstant5 * Math.Pow(hoursLeft, 0.25);
     }
 
-    public double GetUnroundedCostToMakeReady()
+    public double GetUnroundedCostToMakeReady(double airplaneGrowTimeDiscount = 0)
     {
         return ClassName switch
         {
@@ -1083,15 +1083,15 @@ public partial class WorldObject
             BuildingClassType.HarvestableShip => ShipCostToMakeReady(),
             BuildingClassType.Residence or BuildingClassType.Skyscraper or BuildingClassType.CustomResidence => ResidenceCostToMakeReady(),
             BuildingClassType.Corporation => CorporationCostToMakeReady(),
-            BuildingClassType.Airplane => AirplaneCostToMakeReady(),
+            BuildingClassType.Airplane => AirplaneCostToMakeReady(airplaneGrowTimeDiscount),
             BuildingClassType.LaunchPad => 3,
             _ => throw new NotImplementedException()
         };
     }
 
-    public int GetCostToMakeReady()
+    public int GetCostToMakeReady(double airplaneGrowTimeDiscount = 0)
     {
-        return (int)Math.Max(Math.Ceiling(GetUnroundedCostToMakeReady()), 1);
+        return (int)Math.Max(Math.Ceiling(GetUnroundedCostToMakeReady(airplaneGrowTimeDiscount)), 1);
     }
 
     public string GetDeepItemName()
