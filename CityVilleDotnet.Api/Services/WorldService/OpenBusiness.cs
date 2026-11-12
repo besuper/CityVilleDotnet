@@ -34,7 +34,7 @@ internal sealed class OpenBusiness(CityVilleDbContext context) : AmfService<Open
         if (gameItem is null)
             throw new Exception($"Can't find game item with name {obj.ItemName}");
 
-        player.ProcessGoods(gameItem);
+        player.ProcessGoods(gameItem, request.Params.FirstOrDefault() ?? "goods");
 
         obj.OpenBusiness(player.Level);
 
@@ -51,6 +51,7 @@ internal sealed class OpenBusiness(CityVilleDbContext context) : AmfService<Open
 public class OpenBusinessRequest
 {
     [AmfParam(1)] public BuildingOpenBusiness Building { get; set; } = new();
+    [AmfParam(3)] public string[] Params { get; set; } = [];
 }
 
 public class BuildingOpenBusiness

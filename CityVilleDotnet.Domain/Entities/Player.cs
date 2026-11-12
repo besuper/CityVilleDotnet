@@ -1227,37 +1227,62 @@ public partial class Player
         }
     }
 
-    public void ProcessGoods(GameItem item, string desiredGoodType = "goods", int? leftToPay = null)
+    public void ProcessGoods(GameItem item, string desiredGoodType = "goods")
     {
-        var commodityReq = item.CommodityRequired;
-        
-        if (commodityReq is null) throw new Exception("Can't supply item without commodity req");
-        if (item.Commodity.Count == 0) throw new Exception("Can't supply item without commodity");
-        if (!item.Commodity.Any(x => x.Name == "goods")) desiredGoodType = "premium_goods";
+        var commodityReq = item.CommodityRequired ?? throw new Exception("Can't supply item without commodity req");
+        var accepted = GetAcceptedCommodities(item);
 
-        var toPay = leftToPay ?? commodityReq.Value;
-        var leftGoods = toPay - GetGoodsByType(desiredGoodType);
-
-        if (leftGoods > 0)
+        if (accepted.Count == 0)
         {
-            if (desiredGoodType == "premium_goods" || !item.Commodity.Any(x => x.Name == "premium_goods")) throw new DomainException(GameErrorType.NotEnoughMoney);
-
-            var toRemove = toPay - leftGoods;
-
-            if (toRemove > 0)
-            {
-                RemoveGoodByType(desiredGoodType, toRemove);
-            }
-
-            ProcessGoods(item, "premium_goods", leftGoods);
+            throw new Exception("Can't supply item without commodity");
         }
-        else
+
+        if (!accepted.Contains(desiredGoodType))
         {
-            RemoveGoodByType(desiredGoodType, toPay);
+            desiredGoodType = GetFallbackCommodity(accepted, desiredGoodType, commodityReq) ?? throw new DomainException(GameErrorType.NotEnoughMoney);
+        }
+
+        var missing = commodityReq - GetGoodsByType(desiredGoodType);
+
+        if (missing <= 0)
+        {
+            RemoveGoodByType(desiredGoodType, commodityReq);
 
             // Only trigger openBusinessByCommodityType if we use 100% of the resource
             HandleQuestsProgress("openBusinessByCommodityType", itemName: desiredGoodType);
+            return;
         }
+
+        var fallback = GetFallbackCommodity(accepted, desiredGoodType, missing) ?? throw new DomainException(GameErrorType.NotEnoughMoney);
+
+        if (commodityReq - missing > 0)
+        {
+            RemoveGoodByType(desiredGoodType, commodityReq - missing);
+        }
+
+        RemoveGoodByType(fallback, missing);
+    }
+
+    private static List<string> GetAcceptedCommodities(GameItem item)
+    {
+        var accepted = item.Commodity.Select(x => x.Name).ToList();
+
+        if (accepted.Contains("goods") && !accepted.Contains("premium_goods"))
+        {
+            accepted.Add("premium_goods");
+        }
+
+        return accepted;
+    }
+
+    private string? GetFallbackCommodity(List<string> accepted, string desiredGoodType, int amount)
+    {
+        if (desiredGoodType != "goods" && accepted.Contains("goods") && Goods >= amount)
+        {
+            return "goods";
+        }
+
+        return accepted.FirstOrDefault(x => x != "goods" && x != desiredGoodType && GetGoodsByType(x) >= amount);
     }
 
     public void GiveUpgradeRewards(List<UpgradeReward> rewards)

@@ -93,7 +93,7 @@ public class ProcessGoodsTest
     }
 
     [Fact]
-    public void Player_ProcessGoods_NotEnoughGoodsNoPremiumGoods()
+    public void Player_ProcessGoods_GoodsOnlyItem_FallsBackToPremiumGoods()
     {
         var faker = new Faker();
         var player = faker.Player();
@@ -106,12 +106,10 @@ public class ProcessGoodsTest
         player.SetGoods(0);
         player.SetPremiumGoods(500);
 
-        var act = () => player.ProcessGoods(defaultItem);
-
-        act.Should().Throw<DomainException>().Which.Reason.Should().Be(GameErrorType.NotEnoughMoney);
+        player.ProcessGoods(defaultItem);
 
         player.Goods.Should().Be(0);
-        player.PremiumGoods.Should().Be(500);
+        player.PremiumGoods.Should().Be(485);
     }
 
     [Fact]
