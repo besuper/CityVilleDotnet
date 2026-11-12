@@ -18,6 +18,8 @@ public class BuyConsumable(CityVilleDbContext context) : AmfService<BuyConsumabl
             .Include(x => x.InventoryItems)
             .Include(x => x.Cars)
             .Include(x => x.CraftingParts.Where(p => p.Name == request.ItemName))
+            .Include(x => x.Collections)
+            .ThenInclude(x => x.Items)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         var gameItem = GameSettingsManager.Instance.GetItem(request.ItemName) ?? throw new Exception($"Can't find game item {request.ItemName}");
@@ -27,7 +29,7 @@ public class BuyConsumable(CityVilleDbContext context) : AmfService<BuyConsumabl
         else if (gameItem.Cost > 0)
             player.RemoveCoins(gameItem.Cost.Value * request.Amount);
         
-        player.AddItem(request.ItemName, request.Amount);
+        player.AddGift(request.ItemName, request.Amount);
 
         await context.SaveChangesAsync(cancellationToken);
 

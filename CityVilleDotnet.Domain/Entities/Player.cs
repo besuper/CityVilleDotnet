@@ -189,6 +189,22 @@ public partial class Player
         return removed;
     }
 
+    // The 2013 client puts collectable items in their collection instead of the inventory
+    public void AddGift(string itemName, int amount = 1)
+    {
+        var collectionName = GameSettingsManager.Instance.GetItem(itemName)?.Type == "collectable"
+            ? GameSettingsManager.Instance.GetCollectionByItemName(itemName)
+            : null;
+
+        if (collectionName is null)
+        {
+            AddItem(itemName, amount);
+            return;
+        }
+
+        AddItemToCollection(collectionName, itemName, amount);
+    }
+
     public void AddItem(string itemName, int amount = 1, string? storageKey = null, WorldObject? storedObject = null)
     {
         if (storageKey is null)
