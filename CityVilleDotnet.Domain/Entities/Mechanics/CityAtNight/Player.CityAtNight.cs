@@ -14,6 +14,7 @@ public partial class Player
     public bool CityAtNightEarlyUnlocked { get; private set; }
     public bool NightModeAvailable { get; private set; }
     public int LightExpansionsPurchased { get; private set; }
+    public bool IsPlazaBuild { get; private set; }
 
     // this work only with CITY_AT_NIGHT_GAME_MODE = 1 and cv_CityatNights_Main = 3 !!
     private bool IsCityAtNightCore()
@@ -53,11 +54,18 @@ public partial class Player
     }
 
     // From CityAtNightMechanic::executeOverrideForGameEvent (onAddToWorld)
+    // initial doobers are only dropped for the first plaza
     public void OpenCityAtNight(string finishedItemName)
     {
         NightModeAvailable = true;
 
+        if (IsPlazaBuild)
+        {
+            return;
+        }
+
         CollectDoobersRewards(finishedItemName, modifiersName: "initial");
+        IsPlazaBuild = true;
     }
 
     // From CityAtNightData::incrementCityLightCount
