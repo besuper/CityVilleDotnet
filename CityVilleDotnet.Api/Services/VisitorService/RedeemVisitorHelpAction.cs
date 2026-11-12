@@ -37,12 +37,12 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
         if (visitOrder is null)
             throw new Exception("Can't find help visit order");
 
-        var gameItem = GameSettingsManager.Instance.GetItem(request.ItemName) ?? throw new Exception($"Can't find game item for {request.ItemName}");
+        var world = player.GetWorldByType(WorldType.Main) ?? throw new Exception("Main world not loaded");
+        var obj = world.GetBuildingById(request.WorldObjectId) ?? throw new Exception($"Can't find building with id {request.WorldObjectId}");
+        var action = obj.GetVisitReplayAction();
 
-        if (request.Action == "harvest")
+        if (action == "harvest")
         {
-            var world = player.GetWorldByType(WorldType.Main) ?? throw new Exception("Main world not loaded");
-            var obj = world.GetBuildingById(request.WorldObjectId) ?? throw new Exception($"Can't find building with id {request.WorldObjectId}");
 
             if (obj.CanHarvest())
             {
@@ -60,9 +60,9 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
                 {
                     player.HandleQuestsProgress("harvestPlotByName", itemName: itemName);
 
-                    if (gameItem.HasMasteries())
+                    if (GameSettingsManager.Instance.GetItem(itemName)?.HasMasteries() == true)
                     {
-                        player.IncrementMastery(gameItem.Name);
+                        player.IncrementMastery(itemName);
                     }
                 }
 
@@ -74,10 +74,8 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
             }
         }
 
-        if (request.Action == "build")
+        if (action == "build")
         {
-            var world = player.GetWorldByType(WorldType.Main) ?? throw new Exception("Main world not loaded");
-            var obj = world.GetBuildingById(request.WorldObjectId) ?? throw new Exception($"Can't find building with id {request.WorldObjectId}");
 
             if (obj.ClassName == BuildingClassType.ConstructionSite && !obj.IsConstructionComplete())
             {
@@ -85,10 +83,8 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
             }
         }
 
-        if (request.Action == "")
+        if (action == "")
         {
-            var world = player.GetWorldByType(WorldType.Main) ?? throw new Exception("Main world not loaded");
-            var obj = world.GetBuildingById(request.WorldObjectId) ?? throw new Exception($"Can't find building with id {request.WorldObjectId}");
 
             if (obj.GetClassName() == BuildingClassType.Plot && obj.IsWithered())
             {
@@ -109,7 +105,7 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
             }
             else
             {
-                logger.LogError("Not supported help type {RequestAction}", request.Action);
+                logger.LogError("Not supported help type {RequestAction}", action);
             }
         }
 
@@ -133,7 +129,4 @@ public class RedeemVisitorHelpActionRequest
 {
     [AmfParam(0)] public string SenderId { get; set; } = string.Empty;
     [AmfParam(1)] public int WorldObjectId { get; set; }
-    [AmfParam(2)] public BuildingClassType ClassName { get; set; }
-    [AmfParam(3)] public string ItemName { get; set; } = string.Empty;
-    [AmfParam(4)] public string Action { get; set; } = string.Empty;
 }

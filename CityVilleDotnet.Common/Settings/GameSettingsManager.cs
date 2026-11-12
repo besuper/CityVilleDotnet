@@ -66,7 +66,7 @@ public class GameSettingsManager
         }
     }
 
-    public void Initialize(ILogger<GameSettingsManager> logger, string path = "wwwroot/gameSettings.xml")
+    public void Initialize(ILogger<GameSettingsManager> logger, string path = "wwwroot/gameSettings_rev2013.xml")
     {
         if (_isInitialized)
             return;

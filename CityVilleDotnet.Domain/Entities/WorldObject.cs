@@ -495,6 +495,21 @@ public partial class WorldObject
         };
     }
 
+    // Client MapResource::getVisitReplayEquivalentActionString, no longer sent by the 2013 client
+    public string GetVisitReplayAction()
+    {
+        return ClassName switch
+        {
+            BuildingClassType.ConstructionSite => "build",
+            BuildingClassType.Wilderness => "clear",
+            BuildingClassType.Plot or BuildingClassType.Factory or BuildingClassType.Ship => HasGrown() && !IsWithered() ? "harvest" : "",
+            BuildingClassType.Residence or BuildingClassType.CustomResidence or BuildingClassType.Municipal or BuildingClassType.Landmark
+                or BuildingClassType.Corporation or BuildingClassType.Skyscraper or BuildingClassType.University
+                or BuildingClassType.XPromoBuilding or BuildingClassType.ZooEnclosure => "harvest",
+            _ => ""
+        };
+    }
+
     public bool CanHarvest()
     {
         if (GetClassName().IsBusiness())

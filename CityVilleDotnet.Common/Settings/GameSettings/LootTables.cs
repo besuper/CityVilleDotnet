@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Xml.Serialization;
 
 namespace CityVilleDotnet.Common.Settings.GameSettings;
@@ -71,6 +72,6 @@ public class LootItem
     public string? WeightString
     {
         get => Weight.ToString();
-        set => Weight = string.IsNullOrEmpty(value) ? 0 : int.Parse(value);
+        set => Weight = double.TryParse(value, CultureInfo.InvariantCulture, out var weight) ? (int)weight : 0;
     }
 }

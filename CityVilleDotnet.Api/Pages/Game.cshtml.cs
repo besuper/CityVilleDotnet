@@ -85,7 +85,7 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             ["preImageCopy"] = "",
             ["preImageUrl"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/assets/Loader_europeandistrict_507.png",
             ["serverTime"] = $"{ServerTime}",
-            ["swfLocation"] = "Game.2012.swf",
+            ["swfLocation"] = "Game_rev2013.swf",
             ["zySnid"] = "0",
             ["zySnuid"] = $"{Uid}",
             ["zyUid"] = $"{Uid}",
@@ -93,17 +93,17 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             ["zySig"] = $"{Uid}",
             ["static_asset_prefix"] = "",
             ["app_fb_proxy_url"] = "",
-            ["flashRevision"] = "26346",
+            ["flashRevision"] = "26347",
             ["generateSchema"] = "1",
             ["sn_app_url"] = "",
             ["snapiEnable"] = "1",
-            ["game_config_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/gameSettings.xml?v=2",
-            ["quest_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/questSettings.xml?v=1",
+            ["game_config_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/gameSettings_rev2013.xml?v=2",
+            ["quest_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/questSettings_rev2013.xml?v=1",
             ["effects_config_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/effectsConfig.xml",
             ["font_mapper_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/FontMapper.swf",
             ["localization_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/lang/locale_{locale}.swf",
             ["bootstrap_config_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/bootstrap.xml",
-            ["amf_settings_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/settings.amf.z",
+            ["amf_settings_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/settings_rev2013.amf.z",
             ["embedded_art_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/EmbeddedArt.swf",
             ["static_asset_urls"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/",
             ["asset_urls"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/",
@@ -117,16 +117,6 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         foreach (var param in Request.Query)
         {
             flashVars[param.Key] = param.Value.ToString();
-        }
-
-        if (Request.Query.ContainsKey("rev"))
-        {
-            var revision = Request.Query["rev"].ToString();
-            
-            flashVars["swfLocation"] = $"Game_rev{revision}.swf";
-            flashVars["game_config_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/gameSettings_rev{revision}.xml";
-            flashVars["quest_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/questSettings_rev{revision}.xml";
-            flashVars["amf_settings_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/settings_rev{revision}.amf.z";
         }
 
         if (Request.Cookies["nativeFlash"] == "1" && !Request.Query.ContainsKey("disableCache") && !Request.Query.ContainsKey("rev") && Request.Query["player"] != "swf2es")

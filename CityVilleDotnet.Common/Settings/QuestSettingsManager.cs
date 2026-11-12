@@ -89,7 +89,7 @@ public class QuestSettingsManager
         }
     }
 
-    public void Initialize(ILogger<QuestSettingsManager> logger, string path = "wwwroot/questSettings.xml")
+    public void Initialize(ILogger<QuestSettingsManager> logger, string path = "wwwroot/questSettings_rev2013.xml")
     {
         if (_isInitialized)
             return;

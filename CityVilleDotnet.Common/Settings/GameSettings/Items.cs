@@ -87,7 +87,7 @@ public class GameItem
     public string? CashString
     {
         get => Cash?.ToString();
-        set => Cash = string.IsNullOrEmpty(value) ? 0 : int.Parse(value);
+        set => Cash = double.TryParse(value, CultureInfo.InvariantCulture, out var cash) ? (int)cash : 0;
     }
 
     [XmlIgnore] public int? Cash { get; set; }
