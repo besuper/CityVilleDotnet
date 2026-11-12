@@ -86,9 +86,66 @@ public partial class Player
         Quests.Add(Quest.Create("q_rename_city", 1, QuestType.Active));
     }
 
+    // Player::addCollectable
     public void AddItemToCollection(string collectionName, string itemName, int amount = 1)
     {
-        GetOrCreateCollection(collectionName).AddItem(itemName, amount);
+        var collection = GetOrCreateCollection(collectionName);
+        collection.AddItem(itemName, amount);
+
+        var setting = GameSettingsManager.Instance.GetCollectionByName(collectionName);
+
+        if (setting is null)
+        {
+            return;
+        }
+
+        var owned = CountCollectableByName(itemName);
+        var pickUpRewards = setting.Collectables.Collectables.FirstOrDefault(x => x.Name == itemName)?.PickUpRewards;
+
+        if (pickUpRewards is not null)
+        {
+            GrantPickUpRewards(pickUpRewards, owned - amount, owned);
+        }
+
+        if (setting.IsAutoTradeIn() && !setting.IsTradeInRemove() && setting.Collectables.Collectables.All(x => CountCollectableByName(x.Name) >= x.TradeInCount * (collection.TradeIns + 1)))
+        {
+            collection.Complete();
+            GrantCollectionRewards(setting.GetTradeInRewards(collection.TradeIns));
+
+            if (setting.OneTimeRewards.Count > 0)
+            {
+                collection.TradeIn();
+            }
+        }
+    }
+
+    // Collection::grantPickUpReward
+    private void GrantPickUpRewards(PickUpRewards rewards, int ownedBefore, int ownedAfter)
+    {
+        foreach (var (type, reward) in rewards.GetReached(ownedBefore, ownedAfter))
+        {
+            switch (type)
+            {
+                case "xp":
+                    AddXp(reward.Amount);
+                    break;
+                case "coin":
+                    AddCoins(reward.Amount);
+                    break;
+                case "goods":
+                    AddGoods(reward.Amount);
+                    break;
+                case "energy":
+                    AddEnergy(reward.Amount);
+                    break;
+                case "permits":
+                    AddItem("permits", reward.Amount);
+                    break;
+                case "item":
+                    AddItem(reward.Name!, reward.Amount);
+                    break;
+            }
+        }
     }
 
     private Collection GetOrCreateCollection(string collectionName)
@@ -126,7 +183,7 @@ public partial class Player
             .OfType<InventoryItem>()
             .ToList();
 
-        GrantCollectionRewards(collectionSetting);
+        GrantCollectionRewards(collectionSetting.TradeInRewards);
         GetOrCreateCollection(collectionSetting.Name).TradeIn();
 
         return removed;
@@ -825,16 +882,16 @@ public partial class Player
                 toRemove.Add(removedItem);
         }
 
-        GrantCollectionRewards(targetCollection);
+        GrantCollectionRewards(targetCollection.TradeInRewards);
 
         collection.Complete();
         
         return toRemove;
     }
 
-    private void GrantCollectionRewards(CollectionSetting collectionSetting)
+    private void GrantCollectionRewards(TradeInRewards rewards)
     {
-        foreach (var (type, reward) in collectionSetting.TradeInRewards.Rewards)
+        foreach (var (type, reward) in rewards.Rewards)
         {
             switch (type)
             {

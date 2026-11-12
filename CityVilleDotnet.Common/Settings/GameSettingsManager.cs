@@ -164,6 +164,7 @@ public class GameSettingsManager
             foreach (var collection in gameSettings.Collections.Collections)
             {
                 collection.TradeInRewards.OnDeserialized();
+                collection.OneTimeRewards.ForEach(x => x.OnDeserialized());
             }
 
             _collections = gameSettings.Collections.Collections;
