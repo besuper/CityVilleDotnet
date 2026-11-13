@@ -125,7 +125,7 @@ public class FallbackAssetMiddleware(
     {
         context.Response.StatusCode = 200;
         context.Response.ContentType = contentType;
-        context.Response.Headers.CacheControl = "public, max-age=2592000"; // 1 month
+        context.Response.Headers.CacheControl = "private, max-age=2592000"; // 1 month
         context.Response.Headers.Expires = DateTime.UtcNow.AddMonths(1).ToString("R");
     }
 }

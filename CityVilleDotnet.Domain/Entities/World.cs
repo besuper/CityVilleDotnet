@@ -307,10 +307,20 @@ public partial class World
     // The mun_drawbridge need to be added from the server side since the client never spawn it
     public void AddDrawbridgeSite()
     {
-        var construction = GameSettingsManager.Instance.GetItem("mun_drawbridge")?.Construction ?? throw new Exception("Can't find construction of mun_drawbridge");
+        AddServerConstructionSite("mun_drawbridge", 56, -93);
+    }
+
+    public void AddAlpsStationSite()
+    {
+        AddServerConstructionSite("mun_alps_station_2", 144, 39);
+    }
+
+    private void AddServerConstructionSite(string itemName, int x, int y)
+    {
+        var construction = GameSettingsManager.Instance.GetItem(itemName)?.Construction ?? throw new Exception($"Can't find construction of {itemName}");
 
         var now = ServerUtils.GetCurrentTime();
-        var site = new WorldObject("mun_drawbridge", BuildingClassType.PeepCapacityResource, null, false, -1, WorldObjectState.Static, 0, now, now, 56, -93, 0, GetAvailableBuildingId());
+        var site = new WorldObject(itemName, BuildingClassType.PeepCapacityResource, null, false, -1, WorldObjectState.Static, 0, now, now, x, y, 0, GetAvailableBuildingId());
 
         site.SetAsConstructionSite(construction, 0);
         AddBuilding(site);

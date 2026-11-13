@@ -21,6 +21,7 @@ using CityVilleDotnet.Api.Middleware;
 using CityVilleDotnet.Common.Global;
 using CityVilleDotnet.Common.Utils;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
@@ -176,13 +177,24 @@ app.UseExceptionHandler("/Error");
 
 app.UseResponseCompression();
 
+app.Use(async (ctx, next) =>
+{
+    if (ctx.Request.Path.StartsWithSegments("/assets") && !(await ctx.AuthenticateAsync()).Succeeded)
+    {
+        ctx.Response.StatusCode = StatusCodes.Status404NotFound;
+        return;
+    }
+
+    await next(ctx);
+});
+
 app.UseStaticFiles(new StaticFileOptions
 {
     OnPrepareResponse = ctx =>
     {
         if (ctx.Context.Request.Path.StartsWithSegments("/assets"))
         {
-            ctx.Context.Response.Headers.CacheControl = "public, max-age=2592000";
+            ctx.Context.Response.Headers.CacheControl = "private, max-age=2592000";
         }
     }
 });

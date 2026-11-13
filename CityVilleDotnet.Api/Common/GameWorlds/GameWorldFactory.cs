@@ -17,7 +17,7 @@ public static class GameWorldFactory
 
     public static async Task<bool> EnsureCreatedAsync(CityVilleDbContext context, Guid playerId, int ownerSnuid, WorldType type, CancellationToken cancellationToken)
     {
-        if (type is not (WorldType.Downtown or WorldType.Lakefront)) return false;
+        if (type is not (WorldType.Downtown or WorldType.Lakefront or WorldType.Alps)) return false;
 
         var player = await context.Set<Player>()
             .AsSplitQuery()
@@ -29,9 +29,13 @@ public static class GameWorldFactory
 
         if (player.GetWorldByType(type) is not null) return false;
 
-        var world = type == WorldType.Downtown
-            ? await CreateDowntownAsync(cancellationToken)
-            : CreateLakefront();
+        var world = type switch
+        {
+            WorldType.Downtown => await CreateDowntownAsync(cancellationToken),
+            WorldType.Lakefront => CreateFromWorldRect(type, "LakeFront"),
+            WorldType.Alps => CreateFromWorldRect(type, "Alps"),
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
+        };
 
         world.CalculatePopulation();
         player.AddWorld(world);
@@ -85,10 +89,11 @@ public static class GameWorldFactory
         return world;
     }
 
-    private static World CreateLakefront()
+    private static World CreateFromWorldRect(WorldType type, string name)
     {
-        var worldRect = GameSettingsManager.Instance.GetWorldRect(WorldType.Lakefront.ToDescriptionString())
-                        ?? throw new Exception("Can't find world_lakefront worldRect");
+        var worldId = type.ToDescriptionString();
+        var worldRect = GameSettingsManager.Instance.GetWorldRect(worldId)
+                        ?? throw new Exception($"Can't find {worldId} worldRect");
 
         var mapRects = new List<MapRect>();
 
@@ -108,14 +113,14 @@ public static class GameWorldFactory
         foreach (var rectObj in worldRect.Objects.Objects)
         {
             var item = GameSettingsManager.Instance.GetItem(rectObj.ItemName)
-                       ?? throw new Exception($"Can't find item {rectObj.ItemName} from world_lakefront worldRect");
+                       ?? throw new Exception($"Can't find item {rectObj.ItemName} from {worldId} worldRect");
 
             var className = item.GetBuildingClassType();
 
             objects.Add(WorldObject.CreateFromWorldRect(rectObj, className, -1, rectObj.X, rectObj.Y, 0, objects.Count + 1));
         }
 
-        return new World("LakeFront", WorldSize, WorldSize, 0, 0, 0, 0, 0, mapRects, objects, WorldType.Lakefront);
+        return new World(name, WorldSize, WorldSize, 0, 0, 0, 0, 0, mapRects, objects, type);
     }
 
     private static void SetupFtueHouse(List<WorldObject> objects)

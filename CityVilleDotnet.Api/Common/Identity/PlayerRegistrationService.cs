@@ -43,6 +43,7 @@ public class PlayerRegistrationService(
 
         var world = new World("", 36, 36, 30, 0, 50, 0, 0, mapRects, objects);
         world.AddDrawbridgeSite();
+        world.AddAlpsStationSite();
 
         var newPlayer = new Player(user, world);
 
