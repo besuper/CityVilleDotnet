@@ -7,6 +7,15 @@ namespace CityVilleDotnet.Domain.Entities;
 
 public partial class Player
 {
+    public int GetDecoStorageCapacity()
+    {
+        return InventoryItems
+            .Where(x => x.StorageType is null)
+            .Select(x => GameSettingsManager.Instance.GetItem(x.Name)?.GetCapacitySetQuantity() ?? 0)
+            .Append(50) // Initial max capacity
+            .Max();
+    }
+
     // StorageSupplyMechanic::updatePlayerCommodities + awardUpgradeActions
     public void SupplyStorage(IReadOnlyCollection<WorldObject> storedObjects)
     {

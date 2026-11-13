@@ -219,6 +219,11 @@ public class GameItem
         return InventoryChecks?.Checks.FirstOrDefault(x => x is { Type: "add", Callback: "onItemAdd" })?.Params?.FeatureDataKey;
     }
 
+    public int? GetCapacitySetQuantity()
+    {
+        return InventoryChecks?.Checks.FirstOrDefault(x => x is { Type: "add", Callback: "onCapacitySet" })?.Params?.Quantity;
+    }
+
     // From Item::carTier
     public int GetCarTier()
     {

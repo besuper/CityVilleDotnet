@@ -1,6 +1,9 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Services.WorldService.Common;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.EnumExtensions;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluentValidation;
 using FluorineFx;
@@ -22,24 +25,29 @@ public class PlaceFromStorage(CityVilleDbContext context) : AmfService<PlaceFrom
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
-        if (request.Storage.Length == 0) throw new Exception("Invalid storage request");
 
-        var storageRequest = request.Storage[0];
-        var item = player.InventoryItems.FirstOrDefault(x => x.StorageType == storageRequest.Key && x.Name == request.Building.ItemName);
+        // client always sends deco_2, items may still be stored under a 2012 building key
+        var item = player.InventoryItems.FirstOrDefault(x => x.StorageType is not null && x.Name == request.Building.ItemName);
 
         if (item is null) throw new Exception("Item can't be found from inventory");
 
-        var inventoryItem = player.RemoveItem(request.Building.ItemName, 1, storageRequest.Key);
+        var inventoryItem = player.RemoveItem(request.Building.ItemName, 1, item.StorageType);
         var world = player.GetWorld();
 
-        if (item.StoredObject is not null)
+        var building = request.Building;
+        var objId = world.GetAvailableBuildingId();
+
+        if (item.StoredObject is null && !building.ClassName.IsStackable())
         {
-            var newBuilding = item.StoredObject.Clone(request.Building.Position.X, request.Building.Position.Y, request.Building.Position.Z, world.GetAvailableBuildingId());
-
-            newBuilding.SetDirection(request.Building.Direction);
-
-            world.Objects.Add(newBuilding);
+            throw new Exception($"Stored item {building.ItemName} has no stored object");
         }
+
+        var newBuilding = item.StoredObject?.Clone(building.Id, building.Position.X, building.Position.Y, building.Position.Z, objId)
+                          ?? new WorldObject(building.ItemName, building.ClassName, null, false, building.Id, building.State, building.Direction, null, ServerUtils.GetCurrentTime(), building.Position.X, building.Position.Y, building.Position.Z, objId);
+
+        newBuilding.SetDirection(building.Direction);
+
+        world.AddBuilding(newBuilding);
 
         if (inventoryItem is not null)
         {
@@ -62,7 +70,6 @@ public class PlaceFromStorage(CityVilleDbContext context) : AmfService<PlaceFrom
 public class PlaceFromStorageRequest
 {
     [AmfParam(1)] public BuildingPlaceFromStorageRequest Building { get; set; } = new();
-    [AmfParam(3)] public StorageDetails[] Storage { get; set; } = [];
 }
 
 public class BuildingPlaceFromStorageRequest
@@ -70,6 +77,9 @@ public class BuildingPlaceFromStorageRequest
     [AmfParam("position")] public PerformActionPositionRequest Position { get; set; } = new();
     [AmfParam("itemName")] public string ItemName { get; set; } = string.Empty;
     [AmfParam("direction")] public int Direction { get; set; }
+    [AmfParam("id")] public int Id { get; set; }
+    [AmfParam("className")] public BuildingClassType ClassName { get; set; }
+    [AmfParam("state")] public WorldObjectState State { get; set; }
 }
 
 public class PlaceFromStorageRequestValidator : AbstractValidator<PlaceFromStorageRequest>

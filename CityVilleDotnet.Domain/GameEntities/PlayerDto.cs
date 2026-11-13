@@ -91,56 +91,41 @@ public class PlayerDto
 
 public static class PlayerDtoMapper
 {
+    // 2013 now only use deco_2 instead of building name (decoration, warehouse_deluxe) 
     public static Dictionary<string, object> ToStorageComponentDto(this Player model)
     {
-        var mStorage = new Dictionary<string, object>();
-
-        foreach (var obj in model.GetWorld().Objects)
+        var mStorage = new Dictionary<string, object>
         {
-            if (obj.ClassName != BuildingClassType.ItemStorage) continue;
-
-            var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
-
-            if (gameItem?.StorageUnit is null) continue;
-
-            var storageType = gameItem.StorageUnit.StorageType;
-            var storageKey = gameItem.StorageUnit.StorageKey;
-
-            if (storageType is null || storageKey is null) continue;
-
-            if (!mStorage.ContainsKey(storageType))
-                mStorage[storageType] = new Dictionary<string, object>();
-
-            var byType = (Dictionary<string, object>)mStorage[storageType];
-
-            if (!byType.ContainsKey(storageKey))
+            ["deco_2"] = new Dictionary<string, object>
             {
-                var innerStorage = new Dictionary<string, object>();
+                // capacity upgraded to 80/115/150 by capacity_set items
+                ["deco_2"] = model.ToStorageUnitDto(model.GetDecoStorageCapacity()) // Merge every items inside the same mStorage
+            }
+        };
+        
+        // send empty decoration and warehouse_deluxe mStorage to avoid the client crash 
+        foreach (var obj in model.GetWorld().Objects.Where(x => x.ClassName == BuildingClassType.ItemStorage))
+        {
+            var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName);
+            var upgradeItem = gameItem?.Upgrade is null ? null : GameSettingsManager.Instance.GetItem(gameItem.Upgrade.Name);
 
-                foreach (var item in model.InventoryItems.Where(x => x.StorageType == storageKey))
+            foreach (var storageUnit in new[] { gameItem?.StorageUnit, upgradeItem?.StorageUnit })
+            {
+                if (storageUnit?.StorageType is null || storageUnit.StorageKey is null)
                 {
-                    if (item.StoredObject is null)
-                    {
-                        innerStorage[item.Name] = item.Amount;
-                    }
-                    else
-                    {
-                        var worldObjects = new List<WorldObjectDto>();
-
-                        for (var i = 0; i < item.Amount; i++)
-                        {
-                            worldObjects.Add(item.StoredObject.ToDto());
-                        }
-
-                        innerStorage[item.Name] = worldObjects;
-                    }
+                    continue;
                 }
 
-                byType[storageKey] = new Dictionary<string, object>
+                if (!mStorage.ContainsKey(storageUnit.StorageType))
                 {
-                    ["m_storage"] = innerStorage,
-                    ["m_capacity"] = gameItem.StorageUnit.InitialCapacity,
-                    ["m_maxCapacity"] = gameItem.StorageUnit.MaxCapacity
+                    mStorage[storageUnit.StorageType] = new Dictionary<string, object>();
+                }
+
+                ((Dictionary<string, object>)mStorage[storageUnit.StorageType])[storageUnit.StorageKey] = new Dictionary<string, object>
+                {
+                    ["m_storage"] = new Dictionary<string, object>(),
+                    ["m_capacity"] = storageUnit.InitialCapacity,
+                    ["m_maxCapacity"] = storageUnit.MaxCapacity
                 };
             }
         }
@@ -148,6 +133,33 @@ public static class PlayerDtoMapper
         return new Dictionary<string, object>
         {
             ["m_storage"] = mStorage
+        };
+    }
+
+    private static Dictionary<string, object> ToStorageUnitDto(this Player model, int capacity)
+    {
+        var innerStorage = new Dictionary<string, object>();
+
+        foreach (var group in model.InventoryItems.Where(x => x.StorageType is not null).GroupBy(x => x.Name))
+        {
+            if (group.Any(x => x.StoredObject is null))
+            {
+                innerStorage[group.Key] = group.Sum(x => x.Amount);
+            }
+            else
+            {
+                innerStorage[group.Key] = group
+                    .SelectMany(x => Enumerable.Repeat(x.StoredObject!, x.Amount))
+                    .Select(x => x.ToDto())
+                    .ToList();
+            }
+        }
+
+        return new Dictionary<string, object>
+        {
+            ["m_storage"] = innerStorage,
+            ["m_capacity"] = capacity,
+            ["m_maxCapacity"] = capacity
         };
     }
 }

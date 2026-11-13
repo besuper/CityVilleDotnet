@@ -1030,9 +1030,9 @@ public partial class WorldObject
         Direction = direction;
     }
 
-    public WorldObject Clone(int x, int y, int z, int id)
+    public WorldObject Clone(int tempId, int x, int y, int z, int id)
     {
-        return new WorldObject(ItemName, ClassName, ContractName, Deleted, TempId, State, Direction, ServerUtils.GetCurrentTime(), ServerUtils.GetCurrentTime(), x, y, z, id);
+        return new WorldObject(ItemName, ClassName, ContractName, Deleted, tempId, State, Direction, ServerUtils.GetCurrentTime(), ServerUtils.GetCurrentTime(), x, y, z, id);
     }
 
     private double GetHoursUntilReady()
