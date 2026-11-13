@@ -112,6 +112,9 @@ public partial class Player
                         case "moveByName":
                         case "upgradeItemByName":
                         case "acceptTrainByName":
+                        case "countStoreItem":
+                        case "countMoveToStorage":
+                        case "countPlaceFromStorage":
                         {
                             if (itemName is null)
                                 throw new Exception("Can't validate byName action without itemName");

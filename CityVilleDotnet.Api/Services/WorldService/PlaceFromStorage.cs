@@ -22,6 +22,7 @@ public class PlaceFromStorage(CityVilleDbContext context) : AmfService<PlaceFrom
             .ThenInclude(x => x.MechanicCounters)
             .Include(x => x.InventoryItems)
             .ThenInclude(x => x.StoredObject)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
@@ -48,6 +49,8 @@ public class PlaceFromStorage(CityVilleDbContext context) : AmfService<PlaceFrom
         newBuilding.SetDirection(building.Direction);
 
         world.AddBuilding(newBuilding);
+
+        player.HandleQuestsProgress("countPlaceFromStorage", itemName: building.ItemName);
 
         if (inventoryItem is not null)
         {

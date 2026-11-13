@@ -42,7 +42,17 @@ public class SendToStorage(CityVilleDbContext context) : AmfService<SendToStorag
             context.Remove(obj);
         
         player.HandleQuestsProgress("storeItemByClass", className: storageRequest.Key);
-        
+
+        switch (storageRequest.Origin)
+        {
+            case "store":
+                player.HandleQuestsProgress("countStoreItem", itemName: obj.GetItemName());
+                break;
+            case "move":
+                player.HandleQuestsProgress("countMoveToStorage", itemName: obj.GetItemName());
+                break;
+        }
+
         world.CalculatePopulation();
 
         await context.SaveChangesAsync(cancellationToken);
