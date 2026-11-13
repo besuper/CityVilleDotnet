@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="240" height="10">
 <clipPath id="r"><rect width="240" height="10" rx="5"/></clipPath>
 <pattern id="s" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="4" height="8" fill="#fff" fill-opacity=".25"/></pattern>
-<g clip-path="url(#r)"><rect fill="#8b949e" fill-opacity=".3" width="240" height="10"/><rect fill="#2da44e" width="196.6" height="10"/><rect fill="#d4a72c" x="196.6" width="0.0" height="10"/><rect fill="url(#s)" width="196.6" height="10"/></g>
+<g clip-path="url(#r)"><rect fill="#8b949e" fill-opacity=".3" width="240" height="10"/><rect fill="#2da44e" width="205.2" height="10"/><rect fill="#d4a72c" x="205.2" width="0.0" height="10"/><rect fill="url(#s)" width="205.2" height="10"/></g>
 </svg>

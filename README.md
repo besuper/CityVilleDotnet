@@ -1,5 +1,5 @@
 # CityVille .NET
-> A .NET 11 backend recreation of the classic CityVille (2012) flash game
+> A .NET 11 backend recreation of the classic CityVille (2013 version) flash game
 
 **Beta status**: the game is playable and most core systems work, but many features are still being implemented.
 
@@ -19,14 +19,14 @@
 
 <!-- progress:start -->
 ## Implementation progress
-_Last update: 2026-11-02 · 🟡 = partial_
+_Last update: 2026-11-13 · 🟡 = partial_
 
 | | Progress | |
 |---|---|---|
-| Client transactions | <img src="docs/progress/transactions.svg" alt="32%"> 32% | 74 ✅ · 20 🟡 · 138 ❌ |
-| World actions | <img src="docs/progress/world_actions.svg" alt="57%"> 57% | 21 ✅ · 3 🟡 · 13 ❌ |
-| Quest task actions | <img src="docs/progress/quest_actions.svg" alt="93%"> 93% | 77 ✅ · 2 🟡 · 102 ❌ (% weighted by use) |
-| Completable quests | <img src="docs/progress/quests.svg" alt="82%"> 82% | 1075 / 1312 |
+| Client transactions | <img src="docs/progress/transactions.svg" alt="36%"> 36% | 91 ✅ · 20 🟡 · 145 ❌ |
+| World actions | <img src="docs/progress/world_actions.svg" alt="53%"> 53% | 20 ✅ · 4 🟡 · 14 ❌ |
+| Quest task actions | <img src="docs/progress/quest_actions.svg" alt="94%"> 94% | 95 ✅ · 3 🟡 · 83 ❌ (% weighted by use) |
+| Completable quests | <img src="docs/progress/quests.svg" alt="86%"> 86% | 1091 / 1276 |
 <!-- progress:end -->
 
 ## Getting Started
@@ -78,7 +78,7 @@ Self-contained builds for Windows, Linux and macOS are published weekly as pre-r
     wwwroot/
     ├── assets/
     ├── lang/
-    ├── Game.2012.swf
+    ├── Game.2013.swf
     ├── Preloader.swf
     ├── EmbeddedArt.swf
     ├── FontMapper.swf
