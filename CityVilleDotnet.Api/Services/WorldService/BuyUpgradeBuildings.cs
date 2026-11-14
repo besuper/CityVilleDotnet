@@ -44,9 +44,8 @@ internal sealed class BuyUpgradeBuildings(CityVilleDbContext context) : AmfServi
             if (gameItem.Upgrade?.Name is null || gameItem.Upgrade.IsRandom)
                 return new CityVilleResponse().Error(GameErrorType.InvalidState);
 
-            player.HandleQuestsProgress("upgradeItemByName", itemName: obj.ItemName);
-
             obj.UpgradeBuilding(gameItem.GetFirstDeriveItem(gameItem), gameItem.Upgrade.Name);
+            player.HandleQuestsProgress("upgradeItemByName", itemName: gameItem.Name);
             player.GiveUpgradeRewards(gameItem.Upgrade.Rewards?.Rewards ?? []);
 
             results.Add(new ASObject { ["id"] = obj.WorldFlatId });

@@ -77,9 +77,8 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
                 context.Set<InventoryItem>().Remove(consumed);
         }
 
-        player.HandleQuestsProgress("upgradeItemByName", itemName: obj.ItemName);
-
         obj.UpgradeBuilding(gameItem.GetFirstDeriveItem(gameItem), newItemName);
+        player.HandleQuestsProgress("upgradeItemByName", itemName: gameItem.Name);
         player.RemoveObjectTableOverrides(obj.WorldFlatId);
         world.CalculatePopulation();
 

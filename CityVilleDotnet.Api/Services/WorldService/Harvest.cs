@@ -103,7 +103,7 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<Harvest> logge
         logger.LogDebug("Secure rands {SecureRandsCount}", secureRands.Count);
 
         user.HandleQuestsProgress("harvestByClass", className: className.ToString());
-        user.HandleQuestsProgress("harvestByKeyword", itemName: itemName); 
+        user.HandleQuestsProgress("harvestByKeyword", itemName: obj.ItemName);
         user.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);
         user.HandleQuestsProgress("harvestResidenceByRegEx", itemName: obj.ItemName);
         user.HandleQuestsProgress("harvestItemByName", itemName: obj.ItemName);
