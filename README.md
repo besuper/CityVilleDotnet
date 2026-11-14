@@ -5,7 +5,7 @@
 
 ## Features
 
--   **Three worlds**: Main city, Downtown and Lakefront 
+-   **Four worlds**: Main city, Downtown, Lakefront and Alps
 -   **Building & farming**: construction sites, businesses, residences, plots, greenhouse, remodel, upgrades
 -   **City expansion**: expansion licenses and incentivized expansions
 -   **Quests**: hundreds of quests and task actions
@@ -28,6 +28,16 @@ _Last update: 2026-11-13 · 🟡 = partial_
 | Quest task actions | <img src="docs/progress/quest_actions.svg" alt="94%"> 94% | 95 ✅ · 3 🟡 · 83 ❌ (% weighted by use) |
 | Completable quests | <img src="docs/progress/quests.svg" alt="86%"> 86% | 1091 / 1276 |
 <!-- progress:end -->
+
+## Versions
+
+This server only supports one version of CityVille at a time. If you want to play other versions, switch between branches.
+
+| Version |                              Branch                              |   Last update   |
+|:-------:|:----------------------------------------------------------------:|:---------------:|
+|  2011   | [**2011**](https://github.com/besuper/CityVilleDotnet/tree/main) |   2026-01-30    |
+|  2012   | [**2012**](https://github.com/besuper/CityVilleDotnet/tree/2012) |   2026-11-11    |
+|  2013   | [**2013**](https://github.com/besuper/CityVilleDotnet/tree/2013) | Current version |
 
 ## Getting Started
 
