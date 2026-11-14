@@ -49,7 +49,7 @@ internal sealed class RequestManualQuest(CityVilleDbContext context, ILogger<Req
 
         var quests = new ASObject
         {
-            { "QuestComponent", AmfConverter.Convert(player.Quests.ToQuestComponent()) }
+            { "QuestComponent", AmfConverter.Convert(player.ToQuestComponent()) }
         };
 
         return new CityVilleResponse().Data(new ASObject { { "questStarted", 1 } }).MetaData(quests);

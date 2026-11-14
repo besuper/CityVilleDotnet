@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
@@ -24,7 +25,7 @@ public class QuestDto
 
 public static class QuestDtoMapper
 {
-    public static QuestDto ToDto(this Quest model)
+    public static QuestDto ToDto(this Quest model, Player player)
     {
         return new QuestDto
         {
@@ -34,12 +35,31 @@ public static class QuestDtoMapper
             Purchased = model.Purchased,
             Expired = false,
             ActivatedTime = new DateTimeOffset(model.CreatedAt).ToUnixTimeSeconds(),
-            IsNew = (ServerUtils.GetCurrentDateTime() - model.CreatedAt) < TimeSpan.FromSeconds(10)
+            IsNew = (ServerUtils.GetCurrentDateTime() - model.CreatedAt) < TimeSpan.FromSeconds(10),
+            ExtraData = BuildExtraData(model, player)
         };
     }
-    
-    public static List<QuestDto> ToQuestComponent(this List<Quest> model)
+
+    public static List<QuestDto> ToQuestComponent(this Player player)
     {
-        return model.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto()).ToList();
+        return player.Quests.Where(x => x.QuestType == QuestType.Active).Select(x => x.ToDto(player)).ToList();
+    }
+
+    private static ASObject BuildExtraData(Quest model, Player player)
+    {
+        var extraData = new ASObject();
+        var tasks = QuestSettingsManager.Instance.GetItem(model.Name)?.Tasks.Tasks ?? [];
+
+        for (var index = 0; index < tasks.Count; index++)
+        {
+            switch (tasks[index].Action)
+            {
+                case "countLights":
+                    extraData["oldLightCount"] = player.CityLightCount - model.Progress[index];
+                    break;
+            }
+        }
+
+        return extraData;
     }
 }

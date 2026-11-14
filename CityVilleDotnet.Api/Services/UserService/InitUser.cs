@@ -145,7 +145,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
         var quests = new ASObject();
 
         if (!user.IsNew)
-            quests["QuestComponent"] = AmfConverter.Convert(user.Quests.ToQuestComponent());
+            quests["QuestComponent"] = AmfConverter.Convert(user.ToQuestComponent());
 
         if (userObj is null) throw new DomainException(GameErrorType.ForceReload, "Error while initializing user");
 

@@ -131,7 +131,7 @@ public static class UserDtoMapper
                     ShowNpcCloud = true,
                     StorageComponent = model.ToStorageComponentDto(),
                     AdditionalWareHouseSlots = 0,
-                    ActiveQuests = activeQuests.Select(q => q.ToDto()).ToList()
+                    ActiveQuests = activeQuests.Select(q => q.ToDto(model)).ToList()
                 },
                 World = model.GetWorld().ToDto(),
                 Username = model.Username,

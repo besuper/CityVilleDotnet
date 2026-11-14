@@ -2,6 +2,7 @@ using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluentValidation;
 using FluorineFx;
@@ -20,6 +21,7 @@ public class BuyConsumable(CityVilleDbContext context) : AmfService<BuyConsumabl
             .Include(x => x.CraftingParts.Where(p => p.Name == request.ItemName))
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         var gameItem = GameSettingsManager.Instance.GetItem(request.ItemName) ?? throw new Exception($"Can't find game item {request.ItemName}");

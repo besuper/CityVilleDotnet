@@ -29,7 +29,7 @@ public class HandleQuestProgress(CityVilleDbContext context) : AmfService<Handle
 
         var rep = new ASObject
         {
-            ["QuestComponent"] = AmfConverter.Convert(player.Quests.ToQuestComponent())
+            ["QuestComponent"] = AmfConverter.Convert(player.ToQuestComponent())
         };
 
         return new CityVilleResponse().MetaData(rep);

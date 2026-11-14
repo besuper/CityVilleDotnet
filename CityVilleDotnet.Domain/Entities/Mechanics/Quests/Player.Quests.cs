@@ -446,6 +446,17 @@ public partial class Player
 
                         continue;
                     }
+                    case "hasExpansionsByCoords":
+                    {
+                        var worldId = GetWorld().Type.ToDescriptionString();
+                        
+                        var owned = taskType.Split('|')
+                            .Select(coord => coord.Split(','))
+                            .Count(coords => coords.Length > 2 && coords[2] == worldId && GetWorld().IsPointInTerritory(int.Parse(coords[0]), int.Parse(coords[1])));
+
+                        quest.Progress[index] = Math.Max(quest.Progress[index], owned);
+                        continue;
+                    }
                 }
             }
         }

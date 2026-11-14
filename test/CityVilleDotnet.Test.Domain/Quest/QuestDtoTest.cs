@@ -1,8 +1,9 @@
-using AwesomeAssertions;
+﻿using AwesomeAssertions;
 using Bogus;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Domain.GameEntities;
+using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Factory.Quest;
 using CityVilleDotnet.Test.Domain.Fixtures;
 using Microsoft.Extensions.Time.Testing;
@@ -21,7 +22,7 @@ public class QuestDtoTest
         var faker = new Faker();
         var quest = faker.Quest();
 
-        quest.ToDto().ActivatedTime.Should().Be(StartTime.ToUnixTimeSeconds());
+        quest.ToDto(faker.Player()).ActivatedTime.Should().Be(StartTime.ToUnixTimeSeconds());
     }
 
     [Fact]
@@ -34,7 +35,7 @@ public class QuestDtoTest
 
         time.Advance(TimeSpan.FromSeconds(9));
 
-        quest.ToDto().IsNew.Should().BeTrue();
+        quest.ToDto(faker.Player()).IsNew.Should().BeTrue();
     }
 
     [Fact]
@@ -47,7 +48,7 @@ public class QuestDtoTest
 
         time.Advance(TimeSpan.FromSeconds(11));
 
-        quest.ToDto().IsNew.Should().BeFalse();
+        quest.ToDto(faker.Player()).IsNew.Should().BeFalse();
     }
 
     [Fact]
@@ -55,9 +56,10 @@ public class QuestDtoTest
     {
         var faker = new Faker();
         var active = faker.Quest(questType: QuestType.Active);
-        var quests = new[] { active, faker.Quest(questType: QuestType.Completed), faker.Quest(questType: QuestType.Pending) }.ToList();
+        var player = faker.Player();
+        player.Quests.AddRange([active, faker.Quest(questType: QuestType.Completed), faker.Quest(questType: QuestType.Pending)]);
 
-        var component = quests.ToQuestComponent();
+        var component = player.ToQuestComponent();
 
         component.Should().ContainSingle().Which.Name.Should().Be(active.Name);
     }

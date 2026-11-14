@@ -43,7 +43,7 @@ internal sealed class PingFeedQuests(CityVilleDbContext context) : AmfService
 
         return new CityVilleResponse().MetaData(new ASObject
         {
-            ["QuestComponent"] = AmfConverter.Convert(user.Quests.ToQuestComponent())
+            ["QuestComponent"] = AmfConverter.Convert(user.ToQuestComponent())
         });
     }
 }
