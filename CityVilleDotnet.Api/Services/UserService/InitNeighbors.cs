@@ -1,4 +1,5 @@
 ﻿using CityVilleDotnet.Api.Common.Amf;
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
@@ -33,7 +34,8 @@ internal sealed class InitNeighbors(CityVilleDbContext context) : AmfService
             Fake = 1,
             Level = player.Level + 1, // FriendBarSlot::updateSlot
             Xp = player.Xp + 10,
-            CityName = string.Empty
+            CityName = string.Empty,
+            LastLoginTimestamp = (int)ServerUtils.GetCurrentTimeSeconds()
         });
 
         return new CityVilleResponse().Data(new ASObject

@@ -64,8 +64,7 @@ public static class NeighborDtoMapper
             IsSubscriber = false,
 
             EnergyLeft = model.GetAvailableEnergy(ServerUtils.GetCurrentTime()),
-            // TODO: Implement this later, 1 is ok to fix the neighbors in the wrong place
-            LastLoginTimestamp = 1,
+            LastLoginTimestamp = (int)Math.Max(1, friend.LastTrackingTimestamp.ToUnixTimeSeconds()),
             HelpRequests = 0,
             PlayerClassType = -1
         };
