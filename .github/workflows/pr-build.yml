@@ -3,12 +3,12 @@ name: Build & test
 on:
   push:
     branches:
-      - main
       - '2012'
+      - '2013'
   pull_request:
     branches:
-      - main
       - '2012'
+      - '2013'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
