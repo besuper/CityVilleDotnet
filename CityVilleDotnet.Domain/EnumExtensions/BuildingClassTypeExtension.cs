@@ -5,7 +5,7 @@ namespace CityVilleDotnet.Domain.EnumExtensions;
 
 public static class BuildingClassTypeExtension
 {
-    private static readonly List<BuildingClassType> AllowedBusiness = [BuildingClassType.Business, BuildingClassType.SocialBusiness, BuildingClassType.Hotel, BuildingClassType.TimedBusiness];
+    private static readonly List<BuildingClassType> AllowedBusiness = [BuildingClassType.Business, BuildingClassType.SocialBusiness, BuildingClassType.Hotel, BuildingClassType.TimedBusiness, BuildingClassType.MonorailStation];
     private static readonly List<BuildingClassType> IsStackableList = [BuildingClassType.Decoration, BuildingClassType.Road, BuildingClassType.ParkingLot , BuildingClassType.Sidewalk, BuildingClassType.GreenHouse, BuildingClassType.Airplane, BuildingClassType.Ship, BuildingClassType.HarvestableShip, BuildingClassType.Amphitheater];
 
     private static readonly List<BuildingClassType> HarvestableResources =
