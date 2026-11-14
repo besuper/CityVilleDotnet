@@ -57,6 +57,8 @@ public class QuestDtoTest
         var faker = new Faker();
         var active = faker.Quest(questType: QuestType.Active);
         var player = faker.Player();
+        
+        player.Quests.Clear();
         player.Quests.AddRange([active, faker.Quest(questType: QuestType.Completed), faker.Quest(questType: QuestType.Pending)]);
 
         var component = player.ToQuestComponent();
