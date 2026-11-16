@@ -40,6 +40,7 @@ public static class UserDtoMapper
         }
 
         var (gas, gasLastCheck) = model.GetCurrentGas(ServerUtils.GetCurrentTimeSeconds());
+        var (currentBonusDay, previousBonusDay) = model.GetDailyBonusStreak();
 
         var dto = new UserDto()
         {
@@ -128,6 +129,8 @@ public static class UserDtoMapper
                     Xp = model.Xp,
                     SocialLevel = model.SocialLevel,
                     SocialXp = model.SocialXp,
+                    CurrentBonusDay = currentBonusDay,
+                    PreviousBonusDay = previousBonusDay,
                     Orders = BuildOrdersAsObject(model),
                     LightLevel = model.LightLevel,
                     PaidEnergy = 0, // TODO

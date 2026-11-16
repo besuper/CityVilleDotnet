@@ -258,6 +258,8 @@
         </item>
         <item name="free_expansions" type="decoration" buyable="false"/>
         <item name="test_reward_item" type="decoration" buyable="false"/>
+        <item name="test_daily_item" type="decoration" buyable="false"/>
+        <item name="test_daily_surprise" type="decoration" buyable="false"/>
         <item name="test_completed_a" type="residence" buyable="false"/>
         <item name="test_completed_b" type="residence" buyable="false"/>
         <item name="test_completed_site" type="constructionSite" buyable="false"/>
@@ -1412,6 +1414,36 @@
             <tier id="5" action="mul" amount="1.15" round="down" min="0"/>
         </gateTunings>
     </dynamicTunings>
+
+    <dailyBonus maxRecoveryDays="0">
+        <consecutiveDay number="1" recoveryCash="0" _zexp="test_dailybonus" _zvar="0,2">
+            <energy amount="3"/>
+        </consecutiveDay>
+        <consecutiveDay number="2" recoveryCash="10" _zexp="test_dailybonus" _zvar="0,2">
+            <coin amount="100"/>
+            <cash amount="2"/>
+            <goods amount="50"/>
+            <item name="test_daily_item"/>
+        </consecutiveDay>
+        <consecutiveDay number="3" surprise="true" recoveryCash="20" _zexp="test_dailybonus" _zvar="0,2">
+            <randomchance>
+                <item name="test_daily_surprise" weight="1"/>
+            </randomchance>
+        </consecutiveDay>
+        <consecutiveDay number="1" recoveryCash="0" _zexp="test_dailybonus" _zvar="1">
+            <goods amount="25"/>
+        </consecutiveDay>
+        <consecutiveDay number="2" recoveryCash="10" _zexp="test_dailybonus" _zvar="1">
+            <energy amount="2"/>
+            <xp amount="10"/>
+        </consecutiveDay>
+        <consecutiveDay number="3" surprise="true" recoveryCash="20" _zexp="test_dailybonus" _zvar="1">
+            <randomchance>
+                <cash amount="1" weight="1"/>
+                <coin amount="500" weight="1"/>
+            </randomchance>
+        </consecutiveDay>
+    </dailyBonus>
 
     <lootTables>
         <lootTable name="zoo_animals_test_enclosure" totalWeight="100">

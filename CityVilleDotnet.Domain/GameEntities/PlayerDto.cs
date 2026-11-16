@@ -46,6 +46,9 @@ public class PlayerDto
 
     [JsonPropertyName("socialXp")] public int SocialXp { get; set; } = 0;
 
+    [JsonPropertyName("currentBonusDay")] public int CurrentBonusDay { get; set; }
+    [JsonPropertyName("previousBonusDay")] public int PreviousBonusDay { get; set; }
+
     [JsonPropertyName("energy")] public int Energy { get; set; } = 12;
 
     [JsonPropertyName("energyMax")] public int EnergyMax { get; set; } = 12;

@@ -33,6 +33,7 @@ public class GameSettingsManager
     private List<GateTuningItem> _gateTunings = [];
     private List<CommodityItem> _commodities = [];
     private List<RegenerableResourceItem> _regenerableResources = [];
+    private List<DailyBonusDay> _dailyBonusDays = [];
     private List<CraftCollection> _craftCollections = [];
     private bool _isInitialized;
 
@@ -212,6 +213,7 @@ public class GameSettingsManager
             _gateTunings = gameSettings.DynamicTunings?.GateTunings ?? [];
             _commodities = gameSettings.Commodities;
             _regenerableResources = gameSettings.RegenerableResources;
+            _dailyBonusDays = gameSettings.DailyBonus?.Days ?? [];
 
             var globalTableMechanics = _items.Values
                 .SelectMany(x => x?.Mechanics?.GameEventMechanics ?? [])
@@ -297,6 +299,11 @@ public class GameSettingsManager
     }
 
     // GameSettingsInit::getCommodityBonus
+    public List<DailyBonusDay> GetDailyBonusDays(IReadOnlyDictionary<string, int> experiments)
+    {
+        return _dailyBonusDays.Where(x => x.IsInExperiment(experiments)).ToList();
+    }
+
     public int GetCommodityBonus(string? commodityName)
     {
         return _commodities.FirstOrDefault(x => x.Name == commodityName)?.Bonus ?? 0;
