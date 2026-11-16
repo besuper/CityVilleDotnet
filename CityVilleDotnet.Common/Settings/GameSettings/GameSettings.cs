@@ -31,4 +31,5 @@ public class GameSettings
     [XmlElement("preyGroups")] public PreyGroupsContainer? PreyGroups { get; set; }
     [XmlElement("dynamicTunings")] public DynamicTuningsContainer? DynamicTunings { get; set; }
     [XmlArray("commodities"), XmlArrayItem("commodity")] public List<CommodityItem> Commodities { get; set; } = [];
+    [XmlArray("regenerableResources"), XmlArrayItem("regenerableResource")] public List<RegenerableResourceItem> RegenerableResources { get; set; } = [];
 }

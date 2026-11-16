@@ -5,7 +5,6 @@ using CityVilleDotnet.Common.Enums;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
-using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
@@ -56,8 +55,6 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<Harvest> logge
         if (gameItem is null)
             throw new Exception($"Can't find game item for {itemName}");
 
-        var className = obj.GetClassName();
-
         var isFranchiseHarvest = obj.IsFranchiseSupplied();
 
         if (!isFranchiseHarvest && !obj.CanHarvest())
@@ -69,7 +66,6 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<Harvest> logge
         }
 
         var contractName = obj.ContractName;
-        var hasContract = obj.ContractName is not null;
 
         int coinYield;
         int cashYield;
@@ -82,51 +78,13 @@ internal sealed class Harvest(CityVilleDbContext context, ILogger<Harvest> logge
         }
         else
         {
-            var coinMultiplier = className.IsBusiness() ? Math.Max(obj.Visits ?? 0, 1) : 1;
-
-            var premiumGoodsMultiplier = 1.0;
-            var workerBonus = gameItem.GetWorkerHarvestBonus();
-
-            if (workerBonus?.Field == "premium_goods" && obj.Workers.Count > 0)
-                premiumGoodsMultiplier += obj.Workers.Count * workerBonus.PercentModifier / 100.0;
-
-            (coinYield, cashYield) = obj.Harvest(ServerUtils.GetActionTime(request.ClientEnqueueTime));
-            secureRands = user.CollectDoobersRewards(itemName, coinMultiplier: coinMultiplier, premiumGoodsMultiplier: premiumGoodsMultiplier);
-
-            if (obj.ClassName == BuildingClassType.HarvestableShip && contractName is not null)
-                world.CountCruiseUpgradeActions(obj, contractName);
+            (coinYield, cashYield, secureRands) = user.HarvestObject(world, obj, ServerUtils.GetActionTime(request.ClientEnqueueTime));
         }
 
-        user.RollPreySpawns(world, GameSettingsManager.Instance.GetItem(obj.ItemName) ?? throw new Exception($"Can't find game item for {obj.ItemName}"), experiments);
+        user.TrackHarvest(world, obj, itemName, contractName, experiments);
 
         logger.LogDebug("Secure rands {Join}", string.Join(",", secureRands.ToArray()));
         logger.LogDebug("Secure rands {SecureRandsCount}", secureRands.Count);
-
-        user.HandleQuestsProgress("harvestByClass", className: className.ToString());
-        user.HandleQuestsProgress("harvestByKeyword", itemName: obj.ItemName);
-        user.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);
-        user.HandleQuestsProgress("harvestResidenceByRegEx", itemName: obj.ItemName);
-        user.HandleQuestsProgress("harvestItemByName", itemName: obj.ItemName);
-
-        if (contractName is not null)
-        {
-            user.HandleQuestsProgress("harvestContractByName", itemName: contractName);
-        }
-
-        if (obj.ClassName == BuildingClassType.Plot || hasContract)
-        {
-            user.HandleQuestsProgress("harvestPlotByName", itemName: itemName);
-
-            if (gameItem.HasMasteries())
-                user.IncrementMastery(gameItem.Name);
-        }
-
-        if (obj.ClassName == BuildingClassType.Business)
-        {
-            user.HandleQuestsProgress("harvestBusinessByName", itemName: itemName);
-            user.HandleQuestsProgress("harvestBusinessByClass", className: className.ToString());
-            user.HandleQuestsProgress("harvestBusinessByKeyword", itemName: itemName);
-        }
 
         var objectPopulation = gameItem.Population?.Min ?? -1;
         var worldPopulation = world.GetCurrentPopulation();

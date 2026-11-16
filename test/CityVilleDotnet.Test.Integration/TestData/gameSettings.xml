@@ -7,6 +7,7 @@
              friendVisitWildernessRepGain="1" friendVisitResidenceRepGain="1"
              franchise1DailyBonus="25" welcomeTrainQuestAmount="250"
              remodelingRequiredLevel="2"
+             automationRequiredLevel="2" automationNumEntitiesBeforeSavingsKickIn="5" automationCostSavingsRatio="0.2"
              startingEnergy="12" startingEnergyMax="12" 
              startingGold="7000" startingCash="5" 
              startingLevel="1" startingLightLevel="1" expansionDeltaMax="10" 
@@ -1261,6 +1262,35 @@
             </randomModifiers>
             <gates/>
         </item>
+        <item name="test_auto_res" type="residence" buyable="false">
+            <keyword>test_auto_kw</keyword>
+            <requiredLevel>1</requiredLevel>
+            <coinYield>20</coinYield>
+            <growTime>0.005</growTime>
+            <energyCost harvest="2"/>
+            <population min="20" max="80" cap="60"/>
+            <sizeX>3</sizeX>
+            <sizeY>3</sizeY>
+        </item>
+        <item name="test_gas_cash" type="gas" consumable="true" buyable="true" placeable="false">
+            <cash>5</cash>
+            <regenerableRewards>
+                <reward name="gas" amount="5"/>
+            </regenerableRewards>
+        </item>
+        <item name="test_gas_coins" type="gas" consumable="true" buyable="true" placeable="false">
+            <cost>100</cost>
+            <regenerableRewards>
+                <reward name="gas" amount="3"/>
+            </regenerableRewards>
+        </item>
+        <item name="test_gas_consume" type="decoration" buyable="false" placeable="false">
+            <inventoryChecks>
+                <inventoryCheck type="add" callback="onRegenerableResourceAdd">
+                    <params quantity="1" regenerableResource="gas"/>
+                </inventoryCheck>
+            </inventoryChecks>
+        </item>
     </items>
 
     <validators>
@@ -1603,4 +1633,7 @@
         <commodity name="goods" default="1" bonus="0"/>
         <commodity name="premium_goods" default="0" bonus="10"/>
     </commodities>
+    <regenerableResources>
+        <regenerableResource name="gas" regenInterval="86400" regenAmount="4" regenCap="12" softCap="50"/>
+    </regenerableResources>
 </settings>

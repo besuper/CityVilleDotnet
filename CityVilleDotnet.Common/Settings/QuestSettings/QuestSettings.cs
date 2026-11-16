@@ -168,6 +168,8 @@ public class QuestRewards
 
     [XmlAttribute("energy")] public string? Energy { get; set; }
 
+    [XmlAttribute("gas")] public string? Gas { get; set; }
+
     [XmlAttribute("itemUnlock")] public string? ItemUnlock { get; set; }
 
     [XmlAttribute("item")] public string? Item { get; set; }

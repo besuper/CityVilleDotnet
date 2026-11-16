@@ -66,6 +66,7 @@ public partial class Player
                             quest.Progress[index] += 1;
                             break;
                         case "countLights":
+                        case "autoHarvest":
                             quest.Progress[index] += amount;
                             break;
                         case "craftCollection":

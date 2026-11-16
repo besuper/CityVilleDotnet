@@ -66,6 +66,10 @@ public class FarmingSettings
     [XmlAttribute("ZooDonationNPCPrice_enclosure_mountain")] public int ZooDonationNpcPriceEnclosureMountain { get; set; }
     [XmlAttribute("ZooDonationNPCPrice_enclosure_arctic")] public int ZooDonationNpcPriceEnclosureArctic { get; set; }
 
+    [XmlAttribute("automationRequiredLevel")] public int AutomationRequiredLevel { get; set; }
+    [XmlAttribute("automationNumEntitiesBeforeSavingsKickIn")] public int AutomationNumEntitiesBeforeSavingsKickIn { get; set; }
+    [XmlAttribute("automationCostSavingsRatio")] public double AutomationCostSavingsRatio { get; set; }
+
     [XmlAttribute("startingEnergy")] public int StartingEnergy { get; set; }
     [XmlAttribute("startingEnergyMax")] public int StartingEnergyMax { get; set; }
     [XmlAttribute("startingGold")] public int StartingGold { get; set; }

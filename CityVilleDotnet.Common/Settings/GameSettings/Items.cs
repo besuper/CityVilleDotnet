@@ -92,6 +92,8 @@ public class GameItem
 
     [XmlIgnore] public int? Cash { get; set; }
 
+    [XmlArray("regenerableRewards"), XmlArrayItem("reward")] public List<RegenerableRewardItem> RegenerableRewards { get; set; } = [];
+
     [XmlElement("growTime")] public double? GrowTime { get; set; }
 
     [XmlElement("coinYield")] public int? CoinYield { get; set; }
@@ -217,6 +219,12 @@ public class GameItem
     public string? GetAddFeatureDataKey()
     {
         return InventoryChecks?.Checks.FirstOrDefault(x => x is { Type: "add", Callback: "onItemAdd" })?.Params?.FeatureDataKey;
+    }
+
+    // InventoryCheckManager::onRegenerableResourceAdd
+    public InventoryCheckParams? GetRegenerableResourceAddParams()
+    {
+        return InventoryChecks?.Checks.FirstOrDefault(x => x is { Type: "add", Callback: "onRegenerableResourceAdd" })?.Params;
     }
 
     public int? GetCapacitySetQuantity()
@@ -484,6 +492,7 @@ public class InventoryCheckParams
     }
 
     [XmlAttribute("featureDataKey")] public string? FeatureDataKey { get; set; }
+    [XmlAttribute("regenerableResource")] public string? RegenerableResource { get; set; }
     [XmlAttribute("isPopulationItem")] public string? IsPopulationItemString { get; set; }
     [XmlIgnore] public bool IsPopulationItem => IsPopulationItemString == "true";
 }
@@ -917,6 +926,22 @@ public class CommodityItem
     [XmlAttribute("capacity")] public int Capacity { get; set; }
     [XmlAttribute("default")] public int Default { get; set; }
     [XmlAttribute("bonus")] public int Bonus { get; set; }
+}
+
+[Serializable]
+public class RegenerableRewardItem
+{
+    [XmlAttribute("name")] public required string Name { get; set; }
+    [XmlAttribute("amount")] public int Amount { get; set; }
+}
+
+[Serializable]
+public class RegenerableResourceItem
+{
+    [XmlAttribute("name")] public required string Name { get; set; }
+    [XmlAttribute("regenInterval")] public int RegenInterval { get; set; }
+    [XmlAttribute("regenAmount")] public int RegenAmount { get; set; }
+    [XmlAttribute("regenCap")] public int RegenCap { get; set; }
 }
 
 [Serializable]

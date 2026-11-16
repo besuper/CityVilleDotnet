@@ -32,6 +32,7 @@ public class GameSettingsManager
     private List<PreyGroupSetting> _preyGroups = [];
     private List<GateTuningItem> _gateTunings = [];
     private List<CommodityItem> _commodities = [];
+    private List<RegenerableResourceItem> _regenerableResources = [];
     private List<CraftCollection> _craftCollections = [];
     private bool _isInitialized;
 
@@ -210,6 +211,7 @@ public class GameSettingsManager
             _preyGroups = gameSettings.PreyGroups?.Groups ?? [];
             _gateTunings = gameSettings.DynamicTunings?.GateTunings ?? [];
             _commodities = gameSettings.Commodities;
+            _regenerableResources = gameSettings.RegenerableResources;
 
             var globalTableMechanics = _items.Values
                 .SelectMany(x => x?.Mechanics?.GameEventMechanics ?? [])
@@ -298,6 +300,11 @@ public class GameSettingsManager
     public int GetCommodityBonus(string? commodityName)
     {
         return _commodities.FirstOrDefault(x => x.Name == commodityName)?.Bonus ?? 0;
+    }
+
+    public RegenerableResourceItem GetRegenerableResource(string name)
+    {
+        return _regenerableResources.FirstOrDefault(x => x.Name == name) ?? throw new Exception($"Can't find regenerable resource {name}");
     }
 
     public IReadOnlyList<PreyGroupSetting> GetPreyGroups()

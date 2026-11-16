@@ -50,6 +50,8 @@ public class PlayerDto
 
     [JsonPropertyName("energyMax")] public int EnergyMax { get; set; } = 12;
     [JsonPropertyName("lastEnergyCheck")] public int LastEnergyCheck { get; set; } = 0;
+    [JsonPropertyName("regenerableResources")] public ASObject RegenerableResources { get; set; } = new();
+    [JsonPropertyName("regenerableLastUpdates")] public ASObject RegenerableLastUpdates { get; set; } = new();
 
     [JsonPropertyName("seenFlags")] public ASObject SeenFlags { get; set; } = new ASObject();
     [JsonPropertyName("coupons")] public List<string> Coupons { get; set; } = [];

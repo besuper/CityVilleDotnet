@@ -209,6 +209,12 @@ public partial class Player
     {
         if (storageKey is null)
         {
+            if (GameSettingsManager.Instance.GetItem(itemName)?.GetRegenerableResourceAddParams() is { RegenerableResource: "gas", Quantity: { } gas })
+            {
+                AddGas(gas);
+                return;
+            }
+
             switch (GameSettingsManager.Instance.GetItem(itemName)?.GetAddFeatureDataKey())
             {
                 case "crafting":
