@@ -17,7 +17,7 @@ internal sealed class Build(CityVilleDbContext context) : AmfService<BuildReques
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects.Where(o => o.X == request.Building.Position.X && o.Y == request.Building.Position.Y))
+            .ThenInclude(x => x!.Objects.Where(o => (o.X == request.Building.Position.X && o.Y == request.Building.Position.Y) || o.EnergyModifier > 0))
             .ThenInclude(x => x.FranchiseLocation)
             .Include(x => x.InventoryItems)
             .Include(x => x.Collections)
