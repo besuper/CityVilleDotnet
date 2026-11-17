@@ -572,6 +572,7 @@ public class EnergyCost
     [XmlAttribute("open")] public string? Open { get; set; }
     [XmlAttribute("clean")] public string? Clean { get; set; }
     [XmlAttribute("clear")] public string? Clear { get; set; }
+    [XmlAttribute("unlockMovement")] public string? UnlockMovement { get; set; }
 }
 
 [Serializable]

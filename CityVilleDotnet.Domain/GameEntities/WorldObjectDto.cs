@@ -117,6 +117,7 @@ public static class WorldObjectDtoMapper
             Builds = model.Builds,
             Visits = model.Visits,
             NeverOpened = model.NeverOpened,
+            IsMoveLocked = model.IsMoveLocked,
             HarvestCounter = model.UpgradeActionCount ?? 0, // This is for Plot
             UpgradeActionCount = model.UpgradeActionCount ?? 0, // This is for Business
             UpgradeActionCount2 = model.UpgradeActionCount2 ?? 0, // This is for DockHouse and TrainStation

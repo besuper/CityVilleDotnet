@@ -1251,7 +1251,7 @@ public partial class Player
 
     public void ProcessGoods(GameItem item, string desiredGoodType = "goods")
     {
-        var commodityReq = item.CommodityRequired ?? throw new Exception("Can't supply item without commodity req");
+        var commodityReq = item.CommodityRequired ?? throw new Exception($"Can't supply item {item.Name} without commodity req");
         var accepted = GetAcceptedCommodities(item);
 
         if (accepted.Count == 0)

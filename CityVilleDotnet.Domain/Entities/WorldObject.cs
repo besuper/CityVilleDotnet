@@ -30,6 +30,7 @@ public partial class WorldObject
         Y = y;
         Z = z;
         NeverOpened = true;
+        IsMoveLocked = className == BuildingClassType.Wilderness;
     }
 
     public WorldObject()
@@ -75,6 +76,7 @@ public partial class WorldObject
     public int? RemodelBuilds { get; private set; }
     public string? ParentMacroObjectId { get; private set; }
     public bool IsMacroObjectCandidate { get; private set; }
+    public bool IsMoveLocked { get; private set; }
     public string? CustomName { get; private set; }
     public DateTime? HarvestEndTime { get; private set; }
     public List<CrewMember> CrewMembers { get; private set; } = [];
@@ -126,6 +128,13 @@ public partial class WorldObject
     {
         ParentMacroObjectId = macroObjectName;
         IsMacroObjectCandidate = true;
+    }
+
+    public void UnlockMovement()
+    {
+        if (!IsMoveLocked) return;
+
+        IsMoveLocked = false;
     }
 
     public void DetachFromMacroObject()

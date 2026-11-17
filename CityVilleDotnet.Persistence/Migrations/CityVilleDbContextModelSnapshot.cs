@@ -16,7 +16,7 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261116204508_AddDailyBonus";
+    public override string LastMigrationId => "20261117204658_AddIsMoveLocked";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -1337,6 +1337,9 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
                     .HasColumnType("int");
 
                 b.Property<bool>("IsMacroObjectCandidate")
+                    .HasColumnType("bit");
+
+                b.Property<bool>("IsMoveLocked")
                     .HasColumnType("bit");
 
                 b.Property<bool>("IsTaxiReady")
