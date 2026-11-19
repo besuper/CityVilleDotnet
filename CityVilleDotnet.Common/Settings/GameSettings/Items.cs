@@ -18,6 +18,7 @@ public class GameItem
     [XmlAttribute("doNotInherit")] public string? DoNotInherit { get; set; }
     [XmlAttribute("type")] public required string Type { get; set; }
     [XmlAttribute("className")] public string? ClassName { get; set; }
+    [XmlAttribute("subLicenseID")] public int SubLicenseId { get; set; }
     [XmlAttribute("initialState")] public string? InitialState { get; set; }
     [XmlAttribute("behavior")] public string? Behavior { get; set; }
     [XmlAttribute("sellSendsToInventory")] public string? SellSendsToInventory { get; set; }

@@ -16,7 +16,7 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261117204658_AddIsMoveLocked";
+    public override string LastMigrationId => "20261119162929_AddUniversityLogoAndSubLicenses";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -1070,6 +1070,32 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
                 b.ToTable("SeenFlag");
             });
 
+        modelBuilder.Entity("CityVilleDotnet.Domain.Entities.SubLicense", b =>
+            {
+                var id = b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
+
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(id);
+
+                b.Property<int>("Mask")
+                    .HasColumnType("int");
+
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(64)
+                    .HasColumnType("nvarchar(64)");
+
+                b.Property<Guid>("PlayerId")
+                    .HasColumnType("uniqueidentifier");
+
+                b.HasKey("Id");
+
+                b.HasIndex("PlayerId");
+
+                b.ToTable("SubLicense");
+            });
+
         modelBuilder.Entity("CityVilleDotnet.Domain.Entities.TrainOrder", b =>
             {
                 var id = b.Property<int>("Id")
@@ -1399,6 +1425,10 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
 
                 b.Property<int>("TempId")
                     .HasColumnType("int");
+
+                b.Property<string>("UniversityLogo")
+                    .HasMaxLength(64)
+                    .HasColumnType("nvarchar(64)");
 
                 b.Property<int?>("UpgradeActionCount")
                     .HasColumnType("int");
@@ -1945,6 +1975,15 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
                     .HasForeignKey("PlayerId");
             });
 
+        modelBuilder.Entity("CityVilleDotnet.Domain.Entities.SubLicense", b =>
+            {
+                b.HasOne("CityVilleDotnet.Domain.Entities.Player", null)
+                    .WithMany("SubLicenses")
+                    .HasForeignKey("PlayerId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
+
         modelBuilder.Entity("CityVilleDotnet.Domain.Entities.TrainOrder", b =>
             {
                 b.HasOne("CityVilleDotnet.Domain.Entities.World", null)
@@ -2142,6 +2181,8 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
                 b.Navigation("RequestInventoryItems");
 
                 b.Navigation("SeenFlags");
+
+                b.Navigation("SubLicenses");
 
                 b.Navigation("VisitorHelpOrders");
 

@@ -161,6 +161,11 @@ public static class WorldObjectDtoMapper
             dto.MechanicData["name"] = model.CustomName;
         }
 
+        if (model.UniversityLogo is not null)
+        {
+            dto.MechanicData["universityLogo"] = model.UniversityLogo;
+        }
+
         if (model.HarvestEndTime is not null)
         {
             dto.MechanicData["harvestEndTS"] = ServerUtils.ToUnixTimeSeconds(model.HarvestEndTime.Value);

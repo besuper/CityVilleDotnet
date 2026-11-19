@@ -21,6 +21,7 @@ public class WorldObjectConfiguration : IEntityTypeConfiguration<WorldObject>
         builder.Property(x => x.UpgradeItemName).IsRequired(false).HasMaxLength(64);
         builder.Property(x => x.ParentMacroObjectId).IsRequired(false).HasMaxLength(64);
         builder.Property(x => x.CustomName).IsRequired(false).HasMaxLength(30);
+        builder.Property(x => x.UniversityLogo).IsRequired(false).HasMaxLength(64);
 
         builder.HasIndex(x => new { x.Id, x.WorldFlatId }).IsUnique();
         builder.HasIndex(x => x.WorldFlatId);

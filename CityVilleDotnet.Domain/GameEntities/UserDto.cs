@@ -101,6 +101,7 @@ public static class UserDtoMapper
                     LastTrackingTimestamp = model.LastTrackingTimestamp.ToUnixTimeMilliseconds(),
                     Level = model.Level,
                     Licenses = new ASObject(model.Licenses.ToDictionary(x => x.Name, x => (object)x.Amount)),
+                    SubLicenses = new ASObject(model.SubLicenses.ToDictionary(x => x.Name, x => (object)x.Mask.ToString("x"))), // => as hexadecimal
                     Neighbors = model.Friends
                         .Where(f => !f.GetFriend().IsSamantha() &&f.Status == FriendshipStatus.Accepted)
                         .Select(friend => friend.ToNeighborDto()).ToList(), // TODO: Change this after moving friends to player

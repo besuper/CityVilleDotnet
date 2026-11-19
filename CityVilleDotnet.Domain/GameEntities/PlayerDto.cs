@@ -75,6 +75,8 @@ public class PlayerDto
 
     [JsonPropertyName("licenses")] public ASObject Licenses { get; set; } = new();
 
+    [JsonPropertyName("sublicenses")] public ASObject SubLicenses { get; set; } = new();
+
     [JsonPropertyName("Orders")] public ASObject Orders { get; set; } = new();
 
     [JsonPropertyName("rollCounter")] public int RollCounter { get; set; } = 0;
