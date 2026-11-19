@@ -975,6 +975,14 @@
                 </gate>
             </gates>
         </item>
+        <item name="NPC_rainman_1" className="NPC" type="npc" buyable="false">
+            <randomModifiers name="default">
+                <modifier type="coin" tableName="test_rain_default_table"/>
+            </randomModifiers>
+            <randomModifiers name="rainHelperTable">
+                <modifier type="mixed" tableName="test_rain_helper_table"/>
+            </randomModifiers>
+        </item>
         <item name="mun_drawbridge" type="peepCapacityResource" buyable="false">
             <construction>test_drawbridge_construction</construction>
             <gates/>
@@ -1390,6 +1398,16 @@
         <randomModifierTable type="item" name="test_stock_payouts_second">
             <roll percent="100">
                 <coin amount="200"/>
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="mixed" name="test_rain_helper_table">
+            <roll percent="100">
+                <coin amount="25"/>
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="coin" name="test_rain_default_table">
+            <roll percent="100">
+                <coin amount="999"/>
             </roll>
         </randomModifierTable>
         <randomModifierTable type="item" name="test_stock_share_payouts">

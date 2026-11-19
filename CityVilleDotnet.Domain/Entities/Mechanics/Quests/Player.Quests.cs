@@ -86,6 +86,7 @@ public partial class Player
                         case "finishConstructionByClass":
                         case "instantReadyByClass":
                         case "publicVisitorHelpTypeGlobal":
+                        case "giveWeatherItem":
                         case "neighborVisit": // This case is special, if type is empty we accept everything, if not we have to check if it matches who we visit
                         {
                             if (className is null)

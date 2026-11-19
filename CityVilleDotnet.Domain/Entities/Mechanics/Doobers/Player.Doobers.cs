@@ -10,7 +10,7 @@ namespace CityVilleDotnet.Domain.Entities;
 public partial class Player
 {
     // From Player::processRandomModifiers → processRandomModifiersWithTable → processRandomModifiersFromConfig
-    public List<int> CollectDoobersRewards(string itemName, string modifierGroupName = "default", double coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1, string? modifiersName = null, double goodsMultiplier = 1)
+    public List<int> CollectDoobersRewards(string itemName, string modifierGroupName = "default", double coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1, string? modifiersName = null, double goodsMultiplier = 1, bool energyActionPack = true)
     {
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
         if (gameItem is null) return [];
@@ -27,11 +27,14 @@ public partial class Player
         // Client copies the modifiers before appending, the game settings must stay untouched
         var modifiers = new List<RandomModifier>(selectedModifiers);
 
-        // From Player::processRandomModifiersWithTable with (defaultenergyactionpack)
-        var packModifiers = GameSettingsManager.Instance.GetRandomModifierPackModifiers("defaultenergyactionpack");
+        // Only Player::processRandomModifiers adds this pack, direct processRandomModifiersWithTable calls don't
+        if (energyActionPack)
+        {
+            var packModifiers = GameSettingsManager.Instance.GetRandomModifierPackModifiers("defaultenergyactionpack");
 
-        if (packModifiers is not null && packModifiers.Count > 0)
-            modifiers.AddRange(packModifiers);
+            if (packModifiers is not null && packModifiers.Count > 0)
+                modifiers.AddRange(packModifiers);
+        }
 
         // Client skips the global tables for construction sites (processRandomModifiersWithTable)
         if (!construction)
