@@ -290,6 +290,14 @@ public class GameSettingsManager
         return _craftCollections;
     }
 
+    public IEnumerable<GameItem> GetItems()
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+
+        return _items.Values.OfType<GameItem>();
+    }
+
     public GameItem? GetItem(string itemName)
     {
         if (!_isInitialized)

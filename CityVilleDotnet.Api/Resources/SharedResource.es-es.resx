@@ -495,4 +495,16 @@
     <data name="AdminSeenFlagsUpdated" xml:space="preserve">
         <value>Flags vistos actualizados correctamente.</value>
     </data>
+    <data name="ItemList" xml:space="preserve">
+        <value>Lista de objetos</value>
+    </data>
+    <data name="SearchItem" xml:space="preserve">
+        <value>Buscar un objeto...</value>
+    </data>
+    <data name="Icon" xml:space="preserve">
+        <value>Icono</value>
+    </data>
+    <data name="ItemsFound" xml:space="preserve">
+        <value>{0} objetos encontrados</value>
+    </data>
 </root>

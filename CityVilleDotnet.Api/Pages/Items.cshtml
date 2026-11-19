@@ -1,0 +1,118 @@
+@page
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Resources.SharedResource> Localizer
+@{
+	Layout = "Shared/_GameLayout";
+}
+
+@model CityVilleDotnet.Api.Pages.ItemsModel
+
+<div class="card border-0 shadow-sm mb-4">
+	<div class="card-body">
+		<h6 class="font-weight-bold text-dark mb-3">
+			<i class="bi bi-box-seam mr-2 text-primary"></i>@Localizer["ItemList"]
+		</h6>
+		<input type="search" id="itemSearch" class="form-control mb-2" placeholder="@Localizer["SearchItem"]"
+		       autocomplete="off" autofocus/>
+		<small id="itemCount" class="text-muted"></small>
+		<table class="table table-sm table-hover mt-2 mb-0">
+			<thead>
+			<tr>
+				<th style="width: 80px">@Localizer["Icon"]</th>
+				<th>@Localizer["ItemName"]</th>
+			</tr>
+			</thead>
+			<tbody id="itemRows"></tbody>
+		</table>
+		<ul class="pagination pagination-sm justify-content-center mt-3 mb-0">
+			<li class="page-item">
+				<button id="itemPrev" type="button" class="page-link"><i class="bi bi-chevron-left"></i></button>
+			</li>
+			<li class="page-item disabled"><span id="itemPage" class="page-link"></span></li>
+			<li class="page-item">
+				<button id="itemNext" type="button" class="page-link"><i class="bi bi-chevron-right"></i></button>
+			</li>
+		</ul>
+	</div>
+</div>
+
+<script>
+	(function () {
+		const items = @Json.Serialize(Model.Items);
+		const baseUrl = '@Url.Content("~/")';
+		const countText = @Json.Serialize(Localizer["ItemsFound"].Value);
+		const pageSize = 50;
+		const search = document.getElementById('itemSearch');
+		const rows = document.getElementById('itemRows');
+		const count = document.getElementById('itemCount');
+		const prev = document.getElementById('itemPrev');
+		const next = document.getElementById('itemNext');
+		const pageLabel = document.getElementById('itemPage');
+
+		let page = 0;
+		let matches = items;
+
+		function render() {
+			const pageCount = Math.max(1, Math.ceil(matches.length / pageSize));
+			const fragment = document.createDocumentFragment();
+
+			for (let i = page * pageSize; i < matches.length && i < (page + 1) * pageSize; i++) {
+				const row = document.createElement('tr');
+				const iconCell = document.createElement('td');
+				const nameCell = document.createElement('td');
+
+				if (matches[i][1]) {
+					const icon = document.createElement('img');
+					icon.src = baseUrl + matches[i][1];
+					icon.width = 64;
+					icon.height = 64;
+					icon.alt = '';
+					iconCell.appendChild(icon);
+				}
+
+				nameCell.className = 'align-middle';
+				nameCell.innerHTML = '<code class="user-select-all"></code>';
+				nameCell.firstChild.textContent = matches[i][0];
+
+				row.appendChild(iconCell);
+				row.appendChild(nameCell);
+				fragment.appendChild(row);
+			}
+
+			rows.innerHTML = '';
+			rows.appendChild(fragment);
+			count.textContent = countText.replace('{0}', matches.length);
+			pageLabel.textContent = (page + 1) + ' / ' + pageCount;
+			prev.parentNode.className = 'page-item' + (page === 0 ? ' disabled' : '');
+			next.parentNode.className = 'page-item' + (page >= pageCount - 1 ? ' disabled' : '');
+		}
+
+		function goTo(newPage) {
+			page = newPage;
+			render();
+			window.scrollTo(0, 0);
+		}
+
+		search.addEventListener('input', function () {
+			const query = search.value.trim().toLowerCase();
+			matches = items.filter(function (item) {
+				return item[0].toLowerCase().indexOf(query) !== -1;
+			});
+			page = 0;
+			render();
+		});
+		
+		prev.addEventListener('click', function () {
+			if (page > 0) {
+				goTo(page - 1);
+			}
+		});
+		
+		next.addEventListener('click', function () {
+			if ((page + 1) * pageSize < matches.length) {
+				goTo(page + 1);
+			}
+		});
+		
+		render();
+	})();
+</script>
