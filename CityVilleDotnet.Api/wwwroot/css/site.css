@@ -22,3 +22,9 @@
     .cv-navbar .nav-link { font-size: 0; }
     .cv-navbar .nav-link i { font-size: 1.1rem; margin-right: 0 !important; }
 }
+
+.cv-avatar {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+}

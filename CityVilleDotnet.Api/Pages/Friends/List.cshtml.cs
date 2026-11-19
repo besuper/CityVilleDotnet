@@ -16,6 +16,7 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
     private const int PageSize = 12;
 
     public ApplicationUser? CurrentUser { get; set; }
+    public List<FriendDto> SuggestedPlayers { get; set; } = [];
     public List<FriendDto> AcceptedFriends { get; set; } = [];
     public List<FriendDto> SentFriends { get; set; } = [];
     public List<FriendDto> ReceivedFriends { get; set; } = [];
@@ -78,6 +79,17 @@ public class ListModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             .Skip((ReceivedPage - 1) * PageSize)
             .Take(PageSize)
             .ToList();
+
+        var excludedIds = user.Friends.Select(x => x.GetFriend().Id).Append(user.Id).ToList();
+
+        SuggestedPlayers = await dbContext.Set<Player>()
+            .AsNoTracking()
+            .Where(x => x.Snuid != -1 && x.Level >= 5 && !excludedIds.Contains(x.Id))
+            .OrderByDescending(x => x.LastTrackingTimestamp)
+            .ThenByDescending(x => x.Xp)
+            .Take(4)
+            .Select(x => new FriendDto { UserName = x.Username, Level = x.Level, ProfilePictureUrl = x.ProfilePictureUrl })
+            .ToListAsync(ct);
 
         ViewData["PlayerName"] = user.Username;
         ViewData["PlayerLevel"] = user.Level;

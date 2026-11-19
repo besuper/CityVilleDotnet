@@ -147,6 +147,12 @@
     <data name="EmptySentFriendsRequests" xml:space="preserve">
         <value>No sent friend requests.</value>
     </data>
+    <data name="SuggestedPlayers" xml:space="preserve">
+        <value>Suggested players</value>
+    </data>
+    <data name="EmptySuggestedPlayers" xml:space="preserve">
+        <value>No player to suggest.</value>
+    </data>
     <data name="ReceivedFriendsRequests" xml:space="preserve">
         <value>Received Requests</value>
     </data>
