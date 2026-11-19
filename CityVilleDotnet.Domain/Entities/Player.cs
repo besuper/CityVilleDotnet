@@ -755,6 +755,23 @@ public partial class Player
         return Coupons.Any(x => x.WorldFlatId is null && x.Name == name);
     }
 
+    // CouponGate::takeKeys
+    public List<Coupon> UseCouponGate(GameItem buildingItem, string gateName)
+    {
+        var gate = buildingItem.GetGates().FirstOrDefault(x => x.Name == gateName && x.Type == "coupon");
+
+        if (gate is null || gate.Sticky) return [];
+
+        var used = gate.Keys
+            .Where(x => x is not null)
+            .Select(key => Coupons.FirstOrDefault(x => x.WorldFlatId is null && x.Name == key!.Name) ?? throw new Exception($"Missing coupon {key!.Name}"))
+            .ToList();
+
+        Coupons.RemoveAll(used.Contains);
+
+        return used;
+    }
+
     // InventoryGate::checkForKeys
     public bool HasInventoryGateKeys(string itemName, string gateName)
     {

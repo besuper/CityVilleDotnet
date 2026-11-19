@@ -23,6 +23,7 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
             .Include(x => x.Collections)
             .Include(x => x.SeenFlags)
             .Include(x => x.InventoryItems)
+            .Include(x => x.Coupons)
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.PreyGroups)
             .Include(x => x.GlobalTableOverrides)
@@ -65,9 +66,10 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
         // By default, upgrade mechanic has a gate linked with a gateName; sometimes not and use pre_upgrade as fallback
         var upgradeGateName = gameItem.GetGameEventMechanic("upgrade")?.GateName ?? (obj.ClassName == BuildingClassType.Municipal ? "pre_upgrade" : null);
         var gateKeyCount = upgradeGateName is null ? 0 : gameItem.GetInventoryGateKeys(upgradeGateName).Count;
+        var isCouponGate = gameItem.GetGates().Any(x => x.Name == upgradeGateName && x.Type == "coupon");
 
         // No inventory gate, just remove the cash
-        if (gateKeyCount == 0 && gameItem.Upgrade.CashCost is not null && preyGroup is null)
+        if (gateKeyCount == 0 && !isCouponGate && gameItem.Upgrade.CashCost is not null && preyGroup is null)
             player.RemoveCash(Convert.ToInt32(gameItem.Upgrade.CashCost));
 
         // If the item has an inventory gate, we remove the items
@@ -75,6 +77,9 @@ internal sealed class UpgradeBuilding(CityVilleDbContext context) : AmfService<U
         {
             foreach (var consumed in player.ConsumeInventoryGate(gameItem, upgradeGateName))
                 context.Set<InventoryItem>().Remove(consumed);
+
+            foreach (var used in player.UseCouponGate(gameItem, upgradeGateName))
+                context.Set<Coupon>().Remove(used);
         }
 
         obj.UpgradeBuilding(gameItem.GetFirstDeriveItem(gameItem), newItemName);

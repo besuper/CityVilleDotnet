@@ -269,7 +269,7 @@ public class GameItem
             return keys.SelectMany(x => GetInventoryGateKeys(x.Name)).ToList();
 
         // if null => inventory by default
-        if (!string.IsNullOrEmpty(gate.Type) && gate.Type is not ("inventory" or "upgrade_inventory")) return [];
+        if (!string.IsNullOrEmpty(gate.Type) && gate.Type is not ("inventory" or "upgrade_inventory" or "crinventory")) return [];
 
         return keys.ToList();
     }
@@ -613,6 +613,7 @@ public class GatesItem
     [XmlAttribute("data")] public string? Data { get; set; }
     [XmlAttribute("masteryLevel")] public int MasteryLevel { get; set; }
     [XmlAttribute("dynamicTuning")] public string? DynamicTuning { get; set; }
+    [XmlAttribute("sticky")] public bool Sticky { get; set; }
     [XmlElement("key")] public required List<GateKey?> Keys { get; set; }
 }
 
