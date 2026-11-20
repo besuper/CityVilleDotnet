@@ -509,4 +509,58 @@
     <data name="ItemsFound" xml:space="preserve">
         <value>{0} objets trouvés</value>
     </data>
+    <data name="Wall" xml:space="preserve">
+        <value>Mur</value>
+    </data>
+    <data name="WallFriends" xml:space="preserve">
+        <value>Amis</value>
+    </data>
+    <data name="WallCommunity" xml:space="preserve">
+        <value>Communauté</value>
+    </data>
+    <data name="WallMine" xml:space="preserve">
+        <value>Mes publications</value>
+    </data>
+    <data name="WallHelp" xml:space="preserve">
+        <value>Aider</value>
+    </data>
+    <data name="WallAlreadyHelped" xml:space="preserve">
+        <value>Aidé</value>
+    </data>
+    <data name="WallHelpers" xml:space="preserve">
+        <value>Aidants</value>
+    </data>
+    <data name="WallExpired" xml:space="preserve">
+        <value>Expirée</value>
+    </data>
+    <data name="WallEmpty" xml:space="preserve">
+        <value>Aucune publication pour le moment.</value>
+    </data>
+    <data name="WallGenericPost" xml:space="preserve">
+        <value>{0} a partagé une nouvelle de sa ville.</value>
+    </data>
+    <data name="WallHelpError" xml:space="preserve">
+        <value>Tu ne peux plus aider sur cette publication.</value>
+    </data>
+    <data name="WallHelped" xml:space="preserve">
+        <value>Merci pour ton aide !</value>
+    </data>
+    <data name="WallRewardReceived" xml:space="preserve">
+        <value>Merci pour ton aide ! Tu as reçu : {0}.</value>
+    </data>
+    <data name="reward_coins" xml:space="preserve">
+        <value>pièces</value>
+    </data>
+    <data name="reward_goods" xml:space="preserve">
+        <value>biens</value>
+    </data>
+    <data name="reward_xp" xml:space="preserve">
+        <value>XP</value>
+    </data>
+    <data name="reward_energy" xml:space="preserve">
+        <value>énergie</value>
+    </data>
+    <data name="reward_cash" xml:space="preserve">
+        <value>City Cash</value>
+    </data>
 </root>

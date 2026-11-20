@@ -36,6 +36,9 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
 
         await context.SaveChangesAsync(cancellationToken);
 
+        // max timeTillReset is 72h
+        var recentPostsSince = ServerUtils.TimeProvider.GetUtcNow().UtcDateTime.AddHours(-72);
+
         var user = await context.Set<Player>()
             .AsSplitQuery()
             .AsNoTracking()
@@ -90,6 +93,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .Include(x => x.LotOrders) // FIXME: Limit orders
             .Include(x => x.VisitorHelpOrders) // FIXME: Limit orders
             .Include(x => x.Masteries)
+            .Include(x => x.SocialPosts.Where(p => p.CreatedAt > recentPostsSince))
             .Include(x => x.GlobalTableOverrides)
             .Include(x => x.PreyGroups)
             .ThenInclude(x => x.Captures)

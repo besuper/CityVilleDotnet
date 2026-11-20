@@ -144,6 +144,19 @@
 		console.log("Game is loaded " + seen + ", " + popp + ", " + canvas);
 	}
 
+	function notifyJSClientIsReady() {
+		setTimeout(function () {
+			getFlashApp().permissionDialogClosed("publish_stream", true);
+			getFlashApp().permissionDialogClosed("publish_actions", true);
+		}, 0);
+	}
+
+	function showStreamPermissions(permission) {
+		setTimeout(function () {
+			getFlashApp().permissionDialogClosed(permission, true);
+		}, 0);
+	}
+
 	function getAssetOverrides() {
 		console.log("getAssetOverrides called");
 		return {};

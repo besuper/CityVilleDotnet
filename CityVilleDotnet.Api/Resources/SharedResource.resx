@@ -519,4 +519,58 @@
     <data name="ItemsFound" xml:space="preserve">
         <value>{0} items found</value>
     </data>
+    <data name="Wall" xml:space="preserve">
+        <value>Wall</value>
+    </data>
+    <data name="WallFriends" xml:space="preserve">
+        <value>Friends</value>
+    </data>
+    <data name="WallCommunity" xml:space="preserve">
+        <value>Community</value>
+    </data>
+    <data name="WallMine" xml:space="preserve">
+        <value>My posts</value>
+    </data>
+    <data name="WallHelp" xml:space="preserve">
+        <value>Help</value>
+    </data>
+    <data name="WallAlreadyHelped" xml:space="preserve">
+        <value>Helped</value>
+    </data>
+    <data name="WallHelpers" xml:space="preserve">
+        <value>Helpers</value>
+    </data>
+    <data name="WallExpired" xml:space="preserve">
+        <value>Expired</value>
+    </data>
+    <data name="WallEmpty" xml:space="preserve">
+        <value>No posts yet.</value>
+    </data>
+    <data name="WallGenericPost" xml:space="preserve">
+        <value>{0} shared news from their city.</value>
+    </data>
+    <data name="WallHelpError" xml:space="preserve">
+        <value>You can't help on this post anymore.</value>
+    </data>
+    <data name="WallHelped" xml:space="preserve">
+        <value>Thanks for helping!</value>
+    </data>
+    <data name="WallRewardReceived" xml:space="preserve">
+        <value>Thanks for helping! You received: {0}.</value>
+    </data>
+    <data name="reward_coins" xml:space="preserve">
+        <value>coins</value>
+    </data>
+    <data name="reward_goods" xml:space="preserve">
+        <value>goods</value>
+    </data>
+    <data name="reward_xp" xml:space="preserve">
+        <value>XP</value>
+    </data>
+    <data name="reward_energy" xml:space="preserve">
+        <value>energy</value>
+    </data>
+    <data name="reward_cash" xml:space="preserve">
+        <value>City Cash</value>
+    </data>
 </root>

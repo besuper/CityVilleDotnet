@@ -17,6 +17,10 @@ public class PlayerDto
 
     [JsonPropertyName("playerNews")] public List<object> PlayerNews { get; set; } = [];
 
+    [JsonPropertyName("lastSuperFeedPostError")] public double LastSuperFeedPostError { get; set; }
+
+    [JsonPropertyName("activeVirals")] public ASObject ActiveVirals { get; set; } = new();
+
     [JsonPropertyName("neighbors")] public List<NeighborDto> Neighbors { get; set; } = [];
 
     [JsonPropertyName("wishlist")] public List<object> Wishlist { get; set; } = [];

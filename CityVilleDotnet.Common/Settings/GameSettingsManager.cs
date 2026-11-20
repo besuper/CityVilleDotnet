@@ -35,6 +35,8 @@ public class GameSettingsManager
     private List<RegenerableResourceItem> _regenerableResources = [];
     private List<DailyBonusDay> _dailyBonusDays = [];
     private List<CraftCollection> _craftCollections = [];
+    private Dictionary<string, ViralSetting> _virals = [];
+    private Dictionary<string, FeedCreative> _feedCreatives = [];
     private bool _isInitialized;
 
     private GameSettingsManager()
@@ -214,6 +216,7 @@ public class GameSettingsManager
             _commodities = gameSettings.Commodities;
             _regenerableResources = gameSettings.RegenerableResources;
             _dailyBonusDays = gameSettings.DailyBonus?.Days ?? [];
+            _virals = gameSettings.Virals.DistinctBy(x => x.Name).ToDictionary(x => x.Name);
 
             var globalTableMechanics = _items.Values
                 .SelectMany(x => x?.Mechanics?.GameEventMechanics ?? [])
@@ -270,6 +273,24 @@ public class GameSettingsManager
         }
 
         logger.LogInformation("Loaded {CraftCollectionsCount} craft collections", _craftCollections.Count);
+        logger.LogInformation("Loaded {ViralsCount} virals", _virals.Count);
+
+        var creativesPath = Path.Combine(Path.GetDirectoryName(path) ?? string.Empty, "creatives.xml");
+
+        if (File.Exists(creativesPath))
+        {
+            using (var creativesStream = new FileStream(creativesPath, FileMode.Open))
+            {
+                var creatives = (CreativesContainer?)new XmlSerializer(typeof(CreativesContainer)).Deserialize(creativesStream);
+                _feedCreatives = (creatives?.Feeds ?? []).DistinctBy(x => x.Name).ToDictionary(x => x.Name);
+            }
+        }
+        else
+        {
+            logger.LogWarning("Missing creatives file ({Path})", creativesPath);
+        }
+
+        logger.LogInformation("Loaded {FeedCreativesCount} feed creatives", _feedCreatives.Count);
 
         _isInitialized = true;
     }
@@ -288,6 +309,26 @@ public class GameSettingsManager
             throw new InvalidOperationException("GameSettingsManager not initialized");
 
         return _craftCollections;
+    }
+
+    public ViralSetting? GetViral(string name)
+    {
+        if (!_isInitialized)
+        {
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+        }
+
+        return _virals.GetValueOrDefault(name);
+    }
+
+    public FeedCreative? GetFeedCreative(string name)
+    {
+        if (!_isInitialized)
+        {
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+        }
+
+        return _feedCreatives.GetValueOrDefault(name);
     }
 
     public IEnumerable<GameItem> GetItems()

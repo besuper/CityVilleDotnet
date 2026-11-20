@@ -33,4 +33,5 @@ public class GameSettings
     [XmlElement("dailyBonus")] public DailyBonusContainer? DailyBonus { get; set; }
     [XmlArray("commodities"), XmlArrayItem("commodity")] public List<CommodityItem> Commodities { get; set; } = [];
     [XmlArray("regenerableResources"), XmlArrayItem("regenerableResource")] public List<RegenerableResourceItem> RegenerableResources { get; set; } = [];
+    [XmlArray("virals"), XmlArrayItem("viral")] public List<ViralSetting> Virals { get; set; } = [];
 }

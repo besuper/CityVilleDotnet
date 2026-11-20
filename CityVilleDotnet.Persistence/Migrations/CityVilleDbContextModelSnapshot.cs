@@ -16,7 +16,7 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261119162929_AddUniversityLogoAndSubLicenses";
+    public override string LastMigrationId => "20261119224233_AddSocialPosts";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -831,6 +831,9 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
                 b.Property<int>("SocialLevel")
                     .HasColumnType("int");
 
+                b.Property<DateTime>("SocialNotificationsSeenAt")
+                    .HasColumnType("datetime2");
+
                 b.Property<int>("SocialXp")
                     .HasColumnType("int");
 
@@ -1068,6 +1071,85 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
                 b.HasIndex("PlayerId");
 
                 b.ToTable("SeenFlag");
+            });
+
+        modelBuilder.Entity("CityVilleDotnet.Domain.Entities.SocialPost", b =>
+            {
+                var id = b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
+
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(id);
+
+                b.Property<DateTime>("CreatedAt")
+                    .HasColumnType("datetime2");
+
+                b.Property<string>("Data")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
+
+                b.Property<DateTime>("ExpiresAt")
+                    .HasColumnType("datetime2");
+
+                b.Property<string>("Key")
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasColumnType("nvarchar(128)");
+
+                b.Property<int>("MaxHelpers")
+                    .HasColumnType("int");
+
+                b.Property<Guid>("PlayerId")
+                    .HasColumnType("uniqueidentifier");
+
+                b.Property<Guid?>("TargetPlayerId")
+                    .HasColumnType("uniqueidentifier");
+
+                b.Property<int>("Type")
+                    .HasColumnType("int");
+
+                b.Property<string>("UserMessage")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
+
+                b.HasKey("Id");
+
+                b.HasIndex("ExpiresAt");
+
+                b.HasIndex("TargetPlayerId");
+
+                b.HasIndex("PlayerId", "CreatedAt");
+
+                b.ToTable("SocialPost");
+            });
+
+        modelBuilder.Entity("CityVilleDotnet.Domain.Entities.SocialPostHelper", b =>
+            {
+                var id = b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
+
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(id);
+
+                b.Property<DateTime>("HelpedAt")
+                    .HasColumnType("datetime2");
+
+                b.Property<Guid>("HelperId")
+                    .HasColumnType("uniqueidentifier");
+
+                b.Property<int>("SocialPostId")
+                    .HasColumnType("int");
+
+                b.HasKey("Id");
+
+                b.HasIndex("HelpedAt");
+
+                b.HasIndex("HelperId");
+
+                b.HasIndex("SocialPostId", "HelperId")
+                    .IsUnique();
+
+                b.ToTable("SocialPostHelper");
             });
 
         modelBuilder.Entity("CityVilleDotnet.Domain.Entities.SubLicense", b =>
@@ -1975,6 +2057,41 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
                     .HasForeignKey("PlayerId");
             });
 
+        modelBuilder.Entity("CityVilleDotnet.Domain.Entities.SocialPost", b =>
+            {
+                b.HasOne("CityVilleDotnet.Domain.Entities.Player", "Player")
+                    .WithMany("SocialPosts")
+                    .HasForeignKey("PlayerId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.HasOne("CityVilleDotnet.Domain.Entities.Player", "TargetPlayer")
+                    .WithMany()
+                    .HasForeignKey("TargetPlayerId")
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                b.Navigation("Player");
+
+                b.Navigation("TargetPlayer");
+            });
+
+        modelBuilder.Entity("CityVilleDotnet.Domain.Entities.SocialPostHelper", b =>
+            {
+                b.HasOne("CityVilleDotnet.Domain.Entities.Player", "Helper")
+                    .WithMany()
+                    .HasForeignKey("HelperId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
+
+                b.HasOne("CityVilleDotnet.Domain.Entities.SocialPost", null)
+                    .WithMany("Helpers")
+                    .HasForeignKey("SocialPostId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("Helper");
+            });
+
         modelBuilder.Entity("CityVilleDotnet.Domain.Entities.SubLicense", b =>
             {
                 b.HasOne("CityVilleDotnet.Domain.Entities.Player", null)
@@ -2182,6 +2299,8 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
 
                 b.Navigation("SeenFlags");
 
+                b.Navigation("SocialPosts");
+
                 b.Navigation("SubLicenses");
 
                 b.Navigation("VisitorHelpOrders");
@@ -2196,6 +2315,11 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
                 b.Navigation("Captures");
 
                 b.Navigation("Hunters");
+            });
+
+        modelBuilder.Entity("CityVilleDotnet.Domain.Entities.SocialPost", b =>
+            {
+                b.Navigation("Helpers");
             });
 
         modelBuilder.Entity("CityVilleDotnet.Domain.Entities.TrainOrder", b =>

@@ -1,0 +1,150 @@
+@page
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Resources.SharedResource> Localizer
+@using CityVilleDotnet.Api.Pages.Social
+@{
+	Layout = "Shared/_GameLayout";
+}
+
+@model WallModel
+
+@if (TempData["Error"] != null)
+{
+	<div class="alert alert-danger fade show d-flex align-items-center justify-content-between" role="alert">
+		<span><i class="bi bi-exclamation-triangle-fill mr-2"></i>@TempData["Error"]</span>
+		<button type="button" class="btn btn-sm ml-3" data-dismiss="alert">
+			<i class="bi bi-x-lg"></i>
+		</button>
+	</div>
+}
+@if (TempData["Success"] != null)
+{
+	<div class="alert alert-success fade show d-flex align-items-center justify-content-between" role="alert">
+		<span><i class="bi bi-check-circle-fill mr-2"></i>@TempData["Success"]</span>
+		<button type="button" class="btn btn-sm ml-3" data-dismiss="alert">
+			<i class="bi bi-x-lg"></i>
+		</button>
+	</div>
+}
+
+<ul class="nav nav-pills mb-4">
+	<li class="nav-item">
+		<a class="nav-link @(Model.Tab == WallModel.FriendsTab ? "active" : "")" asp-page="/Social/Wall" asp-route-tab="@WallModel.FriendsTab">
+			<i class="bi bi-people-fill mr-1"></i>@Localizer["WallFriends"]
+		</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link @(Model.Tab == WallModel.CommunityTab ? "active" : "")" asp-page="/Social/Wall" asp-route-tab="@WallModel.CommunityTab">
+			<i class="bi bi-globe2 mr-1"></i>@Localizer["WallCommunity"]
+		</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link @(Model.Tab == WallModel.MineTab ? "active" : "")" asp-page="/Social/Wall" asp-route-tab="@WallModel.MineTab">
+			<i class="bi bi-person-fill mr-1"></i>@Localizer["WallMine"]
+		</a>
+	</li>
+</ul>
+
+@if (Model.Posts.Any())
+{
+	@foreach (var post in Model.Posts)
+	{
+		<div class="card border-0 shadow-sm mb-3">
+			<div class="card-body d-flex">
+				<img src="@post.AuthorPicture" alt="@post.AuthorName" class="rounded-circle border cv-avatar mr-3 align-self-start flex-shrink-0"/>
+				<div class="flex-grow-1">
+					<div class="d-flex justify-content-between">
+						<div class="font-weight-bold text-dark">
+							@post.AuthorName
+							@if (post.TargetName is not null)
+							{
+								<i class="bi bi-arrow-right mx-1 text-muted"></i>@post.TargetName
+							}
+						</div>
+						<small class="text-muted">@post.CreatedAt.ToLocalTime().ToString("g")</small>
+					</div>
+
+					<div class="d-flex mt-2">
+						@if (post.Text.ImageUrl is not null)
+						{
+							<img src="@post.Text.ImageUrl" alt="" class="mr-3" style="width: 90px; height: 90px; object-fit: contain"/>
+						}
+						<div>
+							<div class="text-dark">@(post.Text.Title ?? Localizer["WallGenericPost", post.AuthorName].Value)</div>
+							@if (post.Text.Description is not null)
+							{
+								<div class="text-muted small mt-1">@post.Text.Description</div>
+							}
+							@if (!string.IsNullOrWhiteSpace(post.UserMessage))
+							{
+								<div class="font-italic small mt-2">“@post.UserMessage”</div>
+							}
+						</div>
+					</div>
+
+					<div class="d-flex align-items-center justify-content-between mt-3">
+						<small class="text-muted">
+							@if (post.MaxHelpers > 0)
+							{
+								<i class="bi bi-hand-thumbs-up mr-1"></i>@($"{Localizer["WallHelpers"].Value} : {post.HelpersCount} / {post.MaxHelpers}")
+							}
+							@if (post.Expired)
+							{
+								<span class="badge badge-secondary ml-2">@Localizer["WallExpired"]</span>
+							}
+						</small>
+
+						@if (Model.Tab != WallModel.MineTab && post.MaxHelpers > 0)
+						{
+							<form asp-page-handler="Help" method="post" class="mb-0">
+								<input type="hidden" name="postId" value="@post.Id"/>
+								<input type="hidden" name="tab" value="@Model.Tab"/>
+								<input type="hidden" name="pageNumber" value="@Model.CurrentPage"/>
+								<button type="submit" class="btn btn-sm btn-primary font-weight-bold" disabled="@(!post.CanHelp)">
+									<i class="bi bi-hand-thumbs-up mr-1"></i>@(post.AlreadyHelped ? Localizer["WallAlreadyHelped"] : Localizer["WallHelp"])
+								</button>
+							</form>
+						}
+					</div>
+
+					@if (Model.Tab == WallModel.MineTab && post.HelperNames.Any())
+					{
+						<div class="small text-muted mt-2">
+							<i class="bi bi-people mr-1"></i>@string.Join(", ", post.HelperNames)
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	}
+
+	@if (Model.TotalPages > 1)
+	{
+		<nav class="mb-4">
+			<ul class="pagination pagination-sm justify-content-center">
+				<li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
+					<a class="page-link" asp-page="/Social/Wall" asp-route-tab="@Model.Tab" asp-route-pageNumber="@(Model.CurrentPage - 1)">
+						<i class="bi bi-chevron-left"></i>
+					</a>
+				</li>
+				@for (var i = 1; i <= Model.TotalPages; i++)
+				{
+					<li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+						<a class="page-link" asp-page="/Social/Wall" asp-route-tab="@Model.Tab" asp-route-pageNumber="@i">@i</a>
+					</li>
+				}
+				<li class="page-item @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
+					<a class="page-link" asp-page="/Social/Wall" asp-route-tab="@Model.Tab" asp-route-pageNumber="@(Model.CurrentPage + 1)">
+						<i class="bi bi-chevron-right"></i>
+					</a>
+				</li>
+			</ul>
+		</nav>
+	}
+}
+else
+{
+	<div class="text-center text-muted py-5">
+		<i class="bi bi-chat-square-heart display-4 d-block mb-2 text-secondary"></i>
+		@Localizer["WallEmpty"]
+	</div>
+}

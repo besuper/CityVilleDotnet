@@ -111,6 +111,14 @@ public static class UserDtoMapper
                         SfxDisabled = model.SfxDisabled,
                     },
                     PlayerNews = [], // TODO: Implement news
+                    ActiveVirals = new ASObject(model.GetActiveVirals(ServerUtils.TimeProvider.GetUtcNow().UtcDateTime).ToDictionary(
+                        x => x.Key,
+                        x => (object)new ASObject
+                        {
+                            ["timesPosted"] = x.TimesPosted,
+                            ["originTime"] = new DateTimeOffset(DateTime.SpecifyKind(x.OriginTime, DateTimeKind.Utc)).ToUnixTimeSeconds(),
+                            ["recipients"] = new ASObject()
+                        })),
                     RollCounter = model.RollCounter,
                     RollCounterMap = new ASObject(model.FeatureRollCounters.ToDictionary(x => x.Feature, x => (object)x.Count)),
                     SeenFlags = new ASObject(model.SeenFlags.DistinctBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value is { } value ? (object)value : true)),

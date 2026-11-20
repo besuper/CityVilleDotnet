@@ -53,6 +53,15 @@
                        asp-page="/Friends/List" title="Friends">
                         <i class="bi bi-people mr-2"></i>
                         @Localizer["Friends"]
+                        @await Component.InvokeAsync("SocialNotifications", new { friendRequests = true })
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-secondary font-weight-bold d-flex align-items-center rounded px-3 py-2 my-2 mx-1 cv-hover"
+                       asp-page="/Social/Wall" title="Wall">
+                        <i class="bi bi-chat-square-heart mr-2"></i>
+                        @Localizer["Wall"]
+                        @await Component.InvokeAsync("SocialNotifications", new { friendRequests = false })
                     </a>
                 </li>
                 @if (isAdmin)

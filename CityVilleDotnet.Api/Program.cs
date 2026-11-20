@@ -4,6 +4,7 @@ using System.Threading.RateLimiting;
 using CityVilleDotnet.Api.Common.Amf;
 using CityVilleDotnet.Api.Common.Identity;
 using CityVilleDotnet.Api.Common.Logging;
+using CityVilleDotnet.Api.Common.Social;
 using CityVilleDotnet.Api.Features.Gateway.Endpoint;
 using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Domain.Entities;
@@ -78,6 +79,7 @@ if (!string.IsNullOrEmpty(discordClientId))
 
 builder.Services.AddScoped<PlayerRegistrationService>();
 builder.Services.AddSingleton<ProfilePictureStorage>();
+builder.Services.AddSingleton<FeedTextRenderer>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IAuthorizationHandler, AdminAuthorizationHandler>();
 builder.Services.AddAuthorizationBuilder()
