@@ -144,7 +144,21 @@
 		console.log("Game is loaded " + seen + ", " + popp + ", " + canvas);
 	}
 
+	function ZStatsCount() {
+		console.log("ZStats", Array.prototype.slice.call(arguments));
+	}
+
+	function ZStatsCountSample() {
+		console.log("ZStats", Array.prototype.slice.call(arguments));
+	}
+
+	function recordLoadStats(step) {
+		console.log("Load step completed: " + step);
+	}
+
 	function notifyJSClientIsReady() {
+		console.log("notifyJSClientIsReady called");
+
 		setTimeout(function () {
 			getFlashApp().permissionDialogClosed("publish_stream", true);
 			getFlashApp().permissionDialogClosed("publish_actions", true);

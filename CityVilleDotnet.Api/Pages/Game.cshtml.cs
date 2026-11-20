@@ -37,13 +37,24 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
     public Dictionary<string, object> RuntimeVars => configuration.GetSection("runtimeVars").GetChildren()
         .ToDictionary(x => x.Key, x => int.TryParse(x.Value, out var number) ? number : (object)(x.Value ?? string.Empty));
     public List<Experiment> Experiments => configuration.GetSection("experiments").Get<List<Experiment>>() ?? new List<Experiment>();
-    
+
+    private bool UseZCache => Request.Cookies["nativeFlash"] == "1" && !Request.Query.ContainsKey("disableCache") && !Request.Query.ContainsKey("rev") && Request.Query["player"] != "swf2es";
+    private bool _evictZCache;
+
     public async Task<IActionResult> OnGetAsync()
     {
         var currentUser = await userManager.GetUserAsync(User);
 
         if (currentUser is null)
             return RedirectToPage("/Account/Login");
+
+        var zCacheVersion = configuration.GetValue<int>("zcacheVersion").ToString();
+
+        if (UseZCache && Request.Cookies["zcacheVersion"] != zCacheVersion)
+        {
+            _evictZCache = true;
+            Response.Cookies.Append("zcacheVersion", zCacheVersion, new CookieOptions { Path = "/", MaxAge = TimeSpan.FromDays(365), SameSite = SameSiteMode.Lax });
+        }
 
         var user = await dbContext.Set<Player>()
             .AsNoTracking()
@@ -119,12 +130,17 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             flashVars[param.Key] = param.Value.ToString();
         }
 
-        if (Request.Cookies["nativeFlash"] == "1" && !Request.Query.ContainsKey("disableCache") && !Request.Query.ContainsKey("rev") && Request.Query["player"] != "swf2es")
+        if (UseZCache)
         {
             flashVars["zcache_gameswf_gamesettings"] = "true";
             flashVars["zcache_url"] = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/zcache/ZCache.swf";
             flashVars["zcache_namespace"] = "cityville";
             flashVars["zcache_max_frame_time"] = "12";
+
+            if (_evictZCache)
+            {
+                flashVars["zcache_evict_keys"] = "*";
+            }
         }
 
         return string.Join("&", flashVars.Select(kvp => $"{kvp.Key}={kvp.Value}"));
