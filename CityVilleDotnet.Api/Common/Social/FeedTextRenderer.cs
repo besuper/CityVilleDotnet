@@ -11,7 +11,7 @@ public class FeedTextRenderer(IWebHostEnvironment webHost, ILogger<FeedTextRende
     private const string FeedsPrefix = "Feeds:";
     private static readonly Regex UnknownToken = new(@"\{\w+\}", RegexOptions.Compiled);
 
-    private readonly ConcurrentDictionary<string, Dictionary<string, string>> _feedTextsByLocale = new();
+    private readonly ConcurrentDictionary<string, Dictionary<string, Dictionary<string, string>>> _textsByLocale = new();
 
     public FeedText Render(SocialPost post, string authorName, string culture)
     {
@@ -45,10 +45,7 @@ public class FeedTextRenderer(IWebHostEnvironment webHost, ILogger<FeedTextRende
 
         key = key[FeedsPrefix.Length..];
 
-        if (!GetFeedTexts(locale).TryGetValue(key, out var text) && !GetFeedTexts("en_US").TryGetValue(key, out text))
-        {
-            return null;
-        }
+        var text = GetText("feeds", key, locale);
 
         if (string.IsNullOrWhiteSpace(text))
         {
@@ -63,28 +60,43 @@ public class FeedTextRenderer(IWebHostEnvironment webHost, ILogger<FeedTextRende
         return UnknownToken.Replace(text, string.Empty);
     }
 
-    private Dictionary<string, string> GetFeedTexts(string locale)
+    public string ItemName(string itemName, string culture)
     {
-        return _feedTextsByLocale.GetOrAdd(locale, LoadLocaleFeedTexts);
+        var text = GetText("items", $"{itemName}_friendlyName", culture.Replace('-', '_'));
+
+        return string.IsNullOrWhiteSpace(text) ? itemName : UnknownToken.Replace(text, " ").Trim();
     }
 
-    private Dictionary<string, string> LoadLocaleFeedTexts(string locale)
+    private string? GetText(string bundle, string key, string locale)
     {
-        var path = Path.Combine(webHost.WebRootPath, "lang", $"feeds_{locale}.json");
+        foreach (var candidate in new[] { locale, "en_US" })
+        {
+            if (_textsByLocale.GetOrAdd(candidate, ReadTextsFile).GetValueOrDefault(bundle)?.TryGetValue(key, out var text) == true)
+            {
+                return text;
+            }
+        }
+
+        return null;
+    }
+
+    private Dictionary<string, Dictionary<string, string>> ReadTextsFile(string locale)
+    {
+        var path = Path.Combine(webHost.WebRootPath, "lang", $"social_texts_{locale}.json");
 
         if (!File.Exists(path))
         {
-            logger.LogWarning("Missing feed texts ({Path})", path);
+            logger.LogWarning("Missing social wall texts ({Path})", path);
             return [];
         }
 
         try
         {
-            return JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(path)) ?? [];
+            return JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(File.ReadAllText(path)) ?? [];
         }
         catch (JsonException e)
         {
-            logger.LogError(e, "Invalid feed texts ({Path})", path);
+            logger.LogError(e, "Invalid social wall texts ({Path})", path);
             return [];
         }
     }

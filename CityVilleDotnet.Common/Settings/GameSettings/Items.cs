@@ -28,6 +28,8 @@ public class GameItem
     [XmlAttribute("allowWither")] public string? AllowWitherString { get; set; }
     [XmlIgnore] public bool AllowWither => AllowWitherString != "false";
     [XmlAttribute("storable")] public string? StorableString { get; set; }
+    [XmlAttribute("giftable")] public string? GiftableString { get; set; }
+    [XmlAttribute("lootable")] public string? LootableString { get; set; }
     [XmlIgnore] public bool Storable => StorableString != "false";
     [XmlIgnore] public int? Height { get; set; }
 

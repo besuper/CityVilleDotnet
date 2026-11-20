@@ -94,6 +94,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .Include(x => x.VisitorHelpOrders) // FIXME: Limit orders
             .Include(x => x.Masteries)
             .Include(x => x.SocialPosts.Where(p => p.CreatedAt > recentPostsSince))
+            .ThenInclude(x => x.TargetPlayer)
             .Include(x => x.GlobalTableOverrides)
             .Include(x => x.PreyGroups)
             .ThenInclude(x => x.Captures)

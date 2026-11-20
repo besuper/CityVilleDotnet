@@ -21,12 +21,17 @@ public class GetMFSData(CityVilleDbContext context, IHttpContextAccessor httpCon
 
         var baseUrl = $"{httpContextAccessor.HttpContext!.Request.Scheme}://{httpContextAccessor.HttpContext.Request.Host}{httpContextAccessor.HttpContext.Request.PathBase}";
 
-        var friends = player.Friends.Where(p => p.FriendPlayer is not null && p.FriendPlayer.IsSamantha()).Select(f => f.ToSocialNetworkUserDto(baseUrl)).ToList();
+        var samantha = player.Friends.Where(p => p.FriendPlayer is not null && p.FriendPlayer.IsSamantha()).Select(f => f.ToSocialNetworkUserDto(baseUrl)).ToList();
+        
+        var appFriends = player.Friends
+            .Where(p => p.Status == FriendshipStatus.Accepted && p.FriendPlayer is not null && !p.FriendPlayer.IsSamantha())
+            .Select(f => f.ToSocialNetworkUserDto(baseUrl))
+            .ToList();
 
         return new CityVilleResponse().Data(new ASObject
         {
-            ["nonAppFriends"] = AmfConverter.Convert(friends),
-            ["appFriends"] = new List<object>()
+            ["nonAppFriends"] = AmfConverter.Convert(samantha),
+            ["appFriends"] = AmfConverter.Convert(appFriends)
         });
     }
 }

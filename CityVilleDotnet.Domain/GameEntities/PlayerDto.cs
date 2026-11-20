@@ -21,6 +21,10 @@ public class PlayerDto
 
     [JsonPropertyName("activeVirals")] public ASObject ActiveVirals { get; set; } = new();
 
+    [JsonPropertyName("sentGifts")] public ASObject SentGifts { get; set; } = new();
+
+    [JsonPropertyName("activeRequests")] public ASObject ActiveRequests { get; set; } = new();
+
     [JsonPropertyName("neighbors")] public List<NeighborDto> Neighbors { get; set; } = [];
 
     [JsonPropertyName("wishlist")] public List<object> Wishlist { get; set; } = [];

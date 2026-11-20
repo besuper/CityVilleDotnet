@@ -24,8 +24,6 @@ public class SocialPost
 
     public SocialPost(Player author, SocialPostType type, string key, string data, string? userMessage, Player? targetPlayer, DateTime now)
     {
-        var reward = GameSettingsManager.Instance.GetViral(key)?.Reward;
-
         Player = author;
         Type = type;
         Key = key;
@@ -33,6 +31,16 @@ public class SocialPost
         UserMessage = userMessage?[..Math.Min(userMessage.Length, 256)];
         TargetPlayer = targetPlayer;
         CreatedAt = now;
+
+        if (type != SocialPostType.Feed)
+        {
+            ExpiresAt = now.Add(TimeSpan.FromDays(7));
+            MaxHelpers = 1;
+            return;
+        }
+
+        var reward = GameSettingsManager.Instance.GetViral(key)?.Reward;
+
         ExpiresAt = reward?.ExpirationTime is { } hours ? now.AddHours(hours) : now.Add(TimeSpan.FromHours(48));
         MaxHelpers = reward?.MaxHelpers ?? 0;
     }
@@ -40,6 +48,7 @@ public class SocialPost
     public bool CanHelp(Guid helperId, DateTime now)
     {
         return helperId != Player!.Id
+               && (Type == SocialPostType.Feed || TargetPlayer!.Id == helperId)
                && now < ExpiresAt
                && Helpers.Count < MaxHelpers
                && Helpers.All(x => x.Helper!.Id != helperId);
@@ -57,10 +66,22 @@ public class SocialPost
             throw new DomainException(GameErrorType.InvalidState);
         }
 
+        Helpers.Add(new SocialPostHelper(helper, now));
+
+        if (Type == SocialPostType.Gift)
+        {
+            helper.AddGift(Key);
+            return [new ViralReward { Type = "reward_item", Data = new ViralRewardData { ItemName = Key, Amount = 1 } }];
+        }
+
+        if (Type == SocialPostType.Request)
+        {
+            Player.AddGift(Key);
+            return [];
+        }
+
         var viral = GameSettingsManager.Instance.GetViral(Key);
 
-        Helpers.Add(new SocialPostHelper(helper, now));
-        
         var granted = helper.GrantViralRewards(viral?.Reward?.HelperRewards ?? []);
 
         if (Helpers.Count <= (viral?.MaxHostRewards ?? MaxHelpers))

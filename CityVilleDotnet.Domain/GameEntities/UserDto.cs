@@ -103,7 +103,7 @@ public static class UserDtoMapper
                     Licenses = new ASObject(model.Licenses.ToDictionary(x => x.Name, x => (object)x.Amount)),
                     SubLicenses = new ASObject(model.SubLicenses.ToDictionary(x => x.Name, x => (object)x.Mask.ToString("x"))), // => as hexadecimal
                     Neighbors = model.Friends
-                        .Where(f => !f.GetFriend().IsSamantha() &&f.Status == FriendshipStatus.Accepted)
+                        .Where(f => !f.GetFriend().IsSamantha() && f.Status == FriendshipStatus.Accepted)
                         .Select(friend => friend.ToNeighborDto()).ToList(), // TODO: Change this after moving friends to player
                     Options = new OptionsDto
                     {
@@ -116,9 +116,20 @@ public static class UserDtoMapper
                         x => (object)new ASObject
                         {
                             ["timesPosted"] = x.TimesPosted,
-                            ["originTime"] = new DateTimeOffset(DateTime.SpecifyKind(x.OriginTime, DateTimeKind.Utc)).ToUnixTimeSeconds(),
+                            ["originTime"] = ToUnixSeconds(x.OriginTime),
                             ["recipients"] = new ASObject()
                         })),
+                    SentGifts = new ASObject(model.GetSentGifts(ServerUtils.TimeProvider.GetUtcNow().UtcDateTime).ToDictionary(x => $"i{x.RecipientSnuid}", x => (object)ToUnixSeconds(x.SentAt))),
+                    ActiveRequests = model.GetActiveItemRequests(ServerUtils.TimeProvider.GetUtcNow().UtcDateTime) is { } activeRequests
+                        ? new ASObject
+                        {
+                            ["request_gift_request"] = new ASObject
+                            {
+                                ["ts"] = ToUnixSeconds(activeRequests.Ts),
+                                ["zids"] = activeRequests.RecipientSnuids.Select(x => (object)$"i{x}").ToList()
+                            }
+                        }
+                        : new ASObject(),
                     RollCounter = model.RollCounter,
                     RollCounterMap = new ASObject(model.FeatureRollCounters.ToDictionary(x => x.Feature, x => (object)x.Count)),
                     SeenFlags = new ASObject(model.SeenFlags.DistinctBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value is { } value ? (object)value : true)),
@@ -271,7 +282,13 @@ public static class UserDtoMapper
 
         return dto;
     }
-    
+
+    // TODO: switch to DateTimeOffset later
+    private static long ToUnixSeconds(DateTime utc)
+    {
+        return new DateTimeOffset(DateTime.SpecifyKind(utc, DateTimeKind.Utc)).ToUnixTimeSeconds();
+    }
+
     private static ASObject BuildWorldSummary(World world, Player model, List<Quest> activeQuests)
     {
         return new ASObject(new Dictionary<string, object>()

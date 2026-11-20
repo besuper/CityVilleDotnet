@@ -37,6 +37,7 @@ public class GameSettingsManager
     private List<CraftCollection> _craftCollections = [];
     private Dictionary<string, ViralSetting> _virals = [];
     private Dictionary<string, FeedCreative> _feedCreatives = [];
+    private List<GameItem> _giftableItems = [];
     private bool _isInitialized;
 
     private GameSettingsManager()
@@ -275,6 +276,13 @@ public class GameSettingsManager
         logger.LogInformation("Loaded {CraftCollectionsCount} craft collections", _craftCollections.Count);
         logger.LogInformation("Loaded {ViralsCount} virals", _virals.Count);
 
+        // only giftable items, without quest and event drops and no lootables, that was done in server side, implement it later
+        _giftableItems = _items.Values
+            .OfType<GameItem>()
+            .Where(x => x.GiftableString == "true" && x.LootableString != "true" && !x.Name.StartsWith("quest_item_") && !x.Name.StartsWith("item_") && !x.Name.EndsWith("_drop") && !x.Name.Contains("lootdrop") && !x.Name.Contains("doober"))
+            .OrderBy(x => x.Name)
+            .ToList();
+
         var creativesPath = Path.Combine(Path.GetDirectoryName(path) ?? string.Empty, "creatives.xml");
 
         if (File.Exists(creativesPath))
@@ -319,6 +327,16 @@ public class GameSettingsManager
         }
 
         return _virals.GetValueOrDefault(name);
+    }
+
+    public IReadOnlyList<GameItem> GetGiftableItems()
+    {
+        if (!_isInitialized)
+        {
+            throw new InvalidOperationException("GameSettingsManager not initialized");
+        }
+
+        return _giftableItems;
     }
 
     public FeedCreative? GetFeedCreative(string name)

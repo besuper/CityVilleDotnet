@@ -573,4 +573,61 @@
     <data name="reward_cash" xml:space="preserve">
         <value>City Cash</value>
     </data>
+    <data name="WallReceived" xml:space="preserve">
+        <value>Received</value>
+    </data>
+    <data name="WallAccept" xml:space="preserve">
+        <value>Accept</value>
+    </data>
+    <data name="WallGive" xml:space="preserve">
+        <value>Give</value>
+    </data>
+    <data name="WallGiftText" xml:space="preserve">
+        <value>{0} sent you {1}.</value>
+    </data>
+    <data name="WallRequestText" xml:space="preserve">
+        <value>{0} is asking for {1}.</value>
+    </data>
+    <data name="WallGiftSentText" xml:space="preserve">
+        <value>You sent {1} to {0}.</value>
+    </data>
+    <data name="WallRequestSentText" xml:space="preserve">
+        <value>You asked {0} for {1}.</value>
+    </data>
+    <data name="WallRequestDone" xml:space="preserve">
+        <value>Accepted</value>
+    </data>
+    <data name="GiftsTitle" xml:space="preserve">
+        <value>Send a gift</value>
+    </data>
+    <data name="GiftsMaterials" xml:space="preserve">
+        <value>Building materials</value>
+    </data>
+    <data name="GiftsSearchMaterial" xml:space="preserve">
+        <value>Search a material...</value>
+    </data>
+    <data name="GiftsRecipients" xml:space="preserve">
+        <value>To</value>
+    </data>
+    <data name="GiftsAlreadySent" xml:space="preserve">
+        <value>Gift already sent</value>
+    </data>
+    <data name="GiftsSend" xml:space="preserve">
+        <value>Send</value>
+    </data>
+    <data name="GiftsChooseGift" xml:space="preserve">
+        <value>Choose a gift.</value>
+    </data>
+    <data name="GiftsChooseFriends" xml:space="preserve">
+        <value>Choose at least one friend.</value>
+    </data>
+    <data name="GiftsSent" xml:space="preserve">
+        <value>{0} sent to {1}.</value>
+    </data>
+    <data name="WallGiftAccepted" xml:space="preserve">
+        <value>You received: {0}.</value>
+    </data>
+    <data name="WallRequestGiven" xml:space="preserve">
+        <value>You gave {0} to {1}.</value>
+    </data>
 </root>

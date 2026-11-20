@@ -1,0 +1,118 @@
+@page
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Resources.SharedResource> Localizer
+@using CityVilleDotnet.Api.Pages.Social
+@{
+	Layout = "Shared/_GameLayout";
+}
+
+@model GiftsModel
+
+@if (TempData["Error"] != null)
+{
+	<div class="alert alert-danger fade show d-flex align-items-center justify-content-between" role="alert">
+		<span><i class="bi bi-exclamation-triangle-fill mr-2"></i>@TempData["Error"]</span>
+		<button type="button" class="btn btn-sm ml-3" data-dismiss="alert">
+			<i class="bi bi-x-lg"></i>
+		</button>
+	</div>
+}
+@if (TempData["Success"] != null)
+{
+	<div class="alert alert-success fade show d-flex align-items-center justify-content-between" role="alert">
+		<span><i class="bi bi-check-circle-fill mr-2"></i>@TempData["Success"]</span>
+		<button type="button" class="btn btn-sm ml-3" data-dismiss="alert">
+			<i class="bi bi-x-lg"></i>
+		</button>
+	</div>
+}
+
+<form method="post">
+	<h5 class="font-weight-bold text-dark mb-3">
+		<i class="bi bi-gift-fill mr-2 text-primary"></i>@Localizer["GiftsTitle"]
+	</h5>
+
+	<div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 mb-4">
+		@foreach (var gift in Model.Gifts)
+		{
+			<div class="col mb-3">
+				<label class="card border-0 shadow-sm h-100 text-center p-2 mb-0">
+					<input type="radio" name="gift" value="@gift.Name" class="mb-2" checked="@(gift.Name == Model.SelectedGift)"/>
+					@if (gift.IconUrl is not null)
+					{
+						<img src="@gift.IconUrl" alt="" loading="lazy" class="mx-auto" style="width: 64px; height: 64px; object-fit: contain"/>
+					}
+					<span class="small text-dark mt-1">@gift.DisplayName</span>
+				</label>
+			</div>
+		}
+	</div>
+
+	<h6 class="font-weight-bold text-dark mb-2">
+		<i class="bi bi-tools mr-2 text-primary"></i>@Localizer["GiftsMaterials"]
+	</h6>
+	<input type="search" id="materialSearch" class="form-control mb-3" placeholder="@Localizer["GiftsSearchMaterial"]"/>
+	<div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 mb-4 overflow-auto" style="max-height: 320px">
+		@foreach (var material in Model.Materials)
+		{
+			<div class="col mb-3 cv-material" data-name="@material.DisplayName.ToLowerInvariant()">
+				<label class="card border-0 shadow-sm h-100 text-center p-2 mb-0">
+					<input type="radio" name="gift" value="@material.Name" class="mb-2" checked="@(material.Name == Model.SelectedGift)"/>
+					@if (material.IconUrl is not null)
+					{
+						<img src="@material.IconUrl" alt="" loading="lazy" class="mx-auto" style="width: 48px; height: 48px; object-fit: contain"/>
+					}
+					<span class="small text-dark mt-1">@material.DisplayName</span>
+				</label>
+			</div>
+		}
+	</div>
+
+	<h5 class="font-weight-bold text-dark mb-3">
+		<i class="bi bi-people-fill mr-2 text-primary"></i>@Localizer["GiftsRecipients"]
+	</h5>
+
+	@if (Model.Recipients.Any())
+	{
+		<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 mb-4">
+			@foreach (var recipient in Model.Recipients)
+			{
+				<div class="col mb-3">
+					<label class="card border-0 shadow-sm h-100 p-2 mb-0 d-flex flex-row align-items-center">
+						<input type="checkbox" name="recipients" value="@recipient.Snuid" class="mr-2" disabled="@recipient.AlreadyGifted" checked="@(recipient.Snuid == Model.SelectedRecipient && !recipient.AlreadyGifted)"/>
+						<img src="@recipient.Picture" alt="" class="rounded-circle border mr-2 flex-shrink-0" style="width: 40px; height: 40px; object-fit: cover"/>
+						<span class="small">
+							<span class="font-weight-bold text-dark d-block">@recipient.Name</span>
+							@if (recipient.AlreadyGifted)
+							{
+								<span class="text-muted">@Localizer["GiftsAlreadySent"]</span>
+							}
+						</span>
+					</label>
+				</div>
+			}
+		</div>
+
+		<button type="submit" class="btn btn-primary font-weight-bold">
+			<i class="bi bi-send mr-1"></i>@Localizer["GiftsSend"]
+		</button>
+	}
+	else
+	{
+		<div class="text-center text-muted py-4">
+			<i class="bi bi-people display-4 d-block mb-2 text-secondary"></i>
+			@Localizer["EmptyFriends"]
+		</div>
+	}
+</form>
+
+<script>
+	document.getElementById('materialSearch').addEventListener('input', function () {
+		const query = this.value.trim().toLowerCase();
+		const materials = document.querySelectorAll('.cv-material');
+
+		for (let i = 0; i < materials.length; i++) {
+			const hidden = query !== '' && materials[i].getAttribute('data-name').indexOf(query) === -1;
+			materials[i].style.display = hidden ? 'none' : '';
+		}
+	});
+</script>

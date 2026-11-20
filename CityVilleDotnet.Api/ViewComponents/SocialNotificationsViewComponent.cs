@@ -1,4 +1,6 @@
+using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
+using CityVilleDotnet.Domain.Enums;
 using CityVilleDotnet.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,9 +29,16 @@ public class SocialNotificationsViewComponent(UserManager<ApplicationUser> userM
             return View(await dbContext.Set<Friend>().CountAsync(x => x.Player!.Id == player.Id && x.Status == FriendshipStatus.Pending && x.Requested));
         }
 
-        return View(await dbContext.Set<SocialPost>()
+        var now = ServerUtils.TimeProvider.GetUtcNow().UtcDateTime;
+
+        var newHelps = await dbContext.Set<SocialPost>()
             .Where(x => x.Player!.Id == player.Id)
             .SelectMany(x => x.Helpers)
-            .CountAsync(x => x.HelpedAt > player.SocialNotificationsSeenAt));
+            .CountAsync(x => x.HelpedAt > player.SocialNotificationsSeenAt);
+
+        var pendingReceived = await dbContext.Set<SocialPost>()
+            .CountAsync(x => x.Type != SocialPostType.Feed && x.TargetPlayer!.Id == player.Id && x.ExpiresAt > now && !x.Helpers.Any());
+
+        return View(newHelps + pendingReceived);
     }
 }

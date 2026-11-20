@@ -178,8 +178,31 @@
 		return document.getElementById('flashapp');
 	}
 
-	function sendRequest(a, b, c, d) {
-		console.log("sendRequest called: ", a, b, c, d);
+	function sendRequest(handler, ids, data) {
+		const xhr = new XMLHttpRequest();
+		
+		const fail = function () {
+			console.warn("sendRequest failed: HTTP " + xhr.status);
+			getFlashApp().onRequestSent("error", "", data, []);
+		};
+
+		xhr.open("POST", "/social/send-request");
+		xhr.setRequestHeader("Content-Type", "application/json");
+		
+		xhr.onerror = fail;
+		xhr.onload = function () {
+			if (xhr.status !== 200) {
+				fail();
+				return;
+			}
+
+			const result = JSON.parse(xhr.responseText);
+			getFlashApp().onRequestSent(result.error, result.type, data, result.ids);
+		};
+		
+		xhr.send(JSON.stringify({ handler: handler, ids: (ids || []).map(String), data: data }));
+
+		return true;
 	}
 
 	function completeSendRequest(b) {
@@ -191,8 +214,13 @@
 			console.log("Reload App");
 			window.location.reload();
 		},
-		"navigateTo": function (a, b, c) {
-			console.log("Navigate To" + a + " - " + b + " - " + c);
+		"navigateTo": function (url, silentLoad) {
+			console.log("Navigate To " + url + " - " + silentLoad);
+
+			if (/^gifts\.php/i.test(url)) {
+				const queryIndex = url.indexOf("?");
+				window.open("/Social/Gifts" + (queryIndex >= 0 ? url.substring(queryIndex) : ""), "_blank");
+			}
 		},
 		"openTab": function (a, b, c) {
 			console.log("Open Tab" + a + " - " + b + " - " + c);
@@ -204,7 +232,7 @@
 
 	// Resize the game for mobile clients
 	if (cvTouch) {
-		const fitGame = () => {
+		const fitGame = function () {
 			const scale = Math.min(1, innerWidth / 960, innerHeight / 756);
 			const container = document.getElementById("flashOuterContainer");
 			container.style.width = (innerWidth / scale) + "px";
