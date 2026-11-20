@@ -11,7 +11,7 @@ public partial class Player
 
     public void Publish(SocialPostType type, string key, string data, string? userMessage, Player? targetPlayer, DateTime now)
     {
-        SocialPosts.Add(new SocialPost(type, key, data, userMessage, targetPlayer, now));
+        SocialPosts.Add(new SocialPost(this, type, key, data, userMessage, targetPlayer, now));
     }
 
     // TODO: implement loot/collectable/event

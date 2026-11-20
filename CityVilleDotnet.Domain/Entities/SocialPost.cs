@@ -22,10 +22,11 @@ public class SocialPost
 
     public SocialPost() {}
 
-    public SocialPost(SocialPostType type, string key, string data, string? userMessage, Player? targetPlayer, DateTime now)
+    public SocialPost(Player author, SocialPostType type, string key, string data, string? userMessage, Player? targetPlayer, DateTime now)
     {
         var reward = GameSettingsManager.Instance.GetViral(key)?.Reward;
 
+        Player = author;
         Type = type;
         Key = key;
         Data = data;

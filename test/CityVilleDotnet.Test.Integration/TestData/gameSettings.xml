@@ -1683,6 +1683,35 @@
         <commodity name="goods" default="1" bonus="0"/>
         <commodity name="premium_goods" default="0" bonus="10"/>
     </commodities>
+    <virals>
+        <viral name="test_viral_help">
+            <timeTillReset>4</timeTillReset>
+            <maxHostRewards>1</maxHostRewards>
+            <reward>
+                <expirationTime>24</expirationTime>
+                <maxHelpers>2</maxHelpers>
+                <hostRewards>
+                    <reward type="reward_item">
+                        <data itemName="test_reward_item" amount="1"/>
+                    </reward>
+                </hostRewards>
+                <helperRewards>
+                    <reward type="reward_coins">
+                        <data amount="50"/>
+                    </reward>
+                    <reward type="reward_loot">
+                        <data amount="1"/>
+                    </reward>
+                </helperRewards>
+            </reward>
+        </viral>
+        <viral name="test_viral_no_reward">
+            <timeTillReset>2</timeTillReset>
+        </viral>
+        <viral name="test_viral_empty_reward">
+            <reward/>
+        </viral>
+    </virals>
     <regenerableResources>
         <regenerableResource name="gas" regenInterval="86400" regenAmount="4" regenCap="12" softCap="50"/>
     </regenerableResources>
