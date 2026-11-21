@@ -1129,16 +1129,20 @@ public partial class Player
 
         if (gameItem is null) return;
 
-        foreach (var masteryItem in gameItem.MasteryItems.OrderByDescending(x => x.Level))
-        {
-            if (masteryItem.RequiredCount is null || masteryItem.Level is null) continue;
+        var previousLevel = mastery.Level;
+        
+        mastery.LevelUp(gameItem.MasteryItems.Where(x => x.RequiredCount <= mastery.Count).Max(x => x.Level) ?? 0);
 
-            if (mastery.Count >= masteryItem.RequiredCount && mastery.Level != masteryItem.Level)
-            {
-                // TODO: Give rewards or implement MasteryRewardTransaction 
-                mastery.LevelUp(masteryItem.Level.Value);
-                break;
-            }
+        if (mastery.Level <= previousLevel)
+        {
+            return;
+        }
+
+        var rewards = gameItem.MasteryItems.FirstOrDefault(x => x.Level == mastery.Level)?.Rewards ?? [];
+
+        foreach (var reward in rewards.Where(x => x.Type == "item"))
+        {
+            AddGift(reward.Value);
         }
     }
 

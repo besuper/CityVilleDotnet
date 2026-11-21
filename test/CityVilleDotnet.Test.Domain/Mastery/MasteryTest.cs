@@ -117,6 +117,21 @@ public class MasteryTest
     }
 
     [Fact]
+    public void Player_IncrementMastery_Strawberries_StaysAtMaxLevelOnEachHarvest()
+    {
+        var faker = new Faker();
+        var player = faker.Player();
+
+        for (var i = 0; i < 300; i++) player.IncrementMastery("plot_strawberries");
+
+        for (var i = 0; i < 5; i++)
+        {
+            player.IncrementMastery("plot_strawberries");
+            player.Masteries.First().Level.Should().Be(3);
+        }
+    }
+
+    [Fact]
     public void Player_IncrementMastery_Strawberries_ProgressesThroughAllLevels()
     {
         var faker = new Faker();
@@ -191,5 +206,57 @@ public class MasteryTest
         act.Should().NotThrow();
         player.Masteries.First().Count.Should().Be(1);
         player.Masteries.First().Level.Should().Be(0);
+    }
+
+    [Fact]
+    public void Player_IncrementMastery_BeforeReq_GivesNoReward()
+    {
+        var faker = new Faker();
+        var player = faker.Player();
+
+        player.IncrementMastery("test_mastery_reward_crop");
+
+        player.CountInventoryItem("test_mastery_reward_1").Should().Be(0);
+    }
+
+    [Fact]
+    public void Player_IncrementMastery_LevelUp_GivesLevelReward()
+    {
+        var faker = new Faker();
+        var player = faker.Player();
+
+        player.IncrementMastery("test_mastery_reward_crop", 2);
+
+        player.CountInventoryItem("test_mastery_reward_1").Should().Be(1);
+        player.CountInventoryItem("test_mastery_reward_2").Should().Be(0);
+    }
+
+    [Fact]
+    public void Player_IncrementMastery_AtMaxLevel_DoesNotGiveRewardAgain()
+    {
+        var faker = new Faker();
+        var player = faker.Player();
+
+        player.IncrementMastery("test_mastery_reward_crop", 5);
+
+        for (var i = 0; i < 5; i++)
+        {
+            player.IncrementMastery("test_mastery_reward_crop");
+        }
+
+        player.CountInventoryItem("test_mastery_reward_2").Should().Be(1);
+    }
+
+    [Fact]
+    public void Player_IncrementMastery_SkipsLevels_GivesOnlyReachedLevelReward()
+    {
+        var faker = new Faker();
+        var player = faker.Player();
+
+        player.IncrementMastery("test_mastery_reward_crop", 5);
+
+        player.Masteries.First().Level.Should().Be(2);
+        player.CountInventoryItem("test_mastery_reward_1").Should().Be(0);
+        player.CountInventoryItem("test_mastery_reward_2").Should().Be(1);
     }
 }

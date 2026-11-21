@@ -827,6 +827,8 @@ public class MasteryItem
         get => CashCost?.ToString();
         set => CashCost = string.IsNullOrEmpty(value) ? null : int.Parse(value);
     }
+
+    [XmlArray("rewards"), XmlArrayItem("reward")] public List<UpgradeReward> Rewards { get; set; } = [];
 }
 
 [Serializable]

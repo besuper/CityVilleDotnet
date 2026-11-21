@@ -15,6 +15,7 @@ public class BuyMasteryGoal(CityVilleDbContext context) : AmfService<BuyMasteryG
     {
         var player = await context.Set<Player>()
             .Include(x => x.Masteries)
+            .Include(x => x.InventoryItems)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         var levels = GameSettingsManager.Instance.GetItem(request.MasteryName)?.MasteryItems.OrderBy(x => x.Level).ToList() ?? throw new Exception($"Can't find game item {request.MasteryName}");
