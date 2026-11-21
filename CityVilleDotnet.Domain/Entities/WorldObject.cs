@@ -1137,6 +1137,15 @@ public partial class WorldObject
         CrewMembers.Add(new CrewMember(crew));
     }
 
+    public int GetFreeCrewSlots(string? gateName)
+    {
+        var gates = GameSettingsManager.Instance.GetItem(GetItemName())?.GetGates() ?? [];
+        var gate = string.IsNullOrEmpty(gateName) ? gates.FirstOrDefault() : gates.FirstOrDefault(x => x.Name == gateName);
+        var requiredCrew = gate?.Keys.FirstOrDefault(x => x?.Name == "required_crew")?.Amount ?? 0;
+
+        return Math.Max(0, requiredCrew - CrewMembers.Count);
+    }
+
     public int GetMaxWorkers()
     {
         if (ContractName is null) return 0;

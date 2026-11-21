@@ -624,4 +624,19 @@
     <data name="WallRequestGiven" xml:space="preserve">
         <value>Le diste {0} a {1}.</value>
     </data>
+    <data name="WallCrewText" xml:space="preserve">
+        <value>{0} busca personal para su {1}.</value>
+    </data>
+    <data name="WallCrewSentText" xml:space="preserve">
+        <value>Buscas personal para tu {0}.</value>
+    </data>
+    <data name="WallJoinCrew" xml:space="preserve">
+        <value>Unirse al equipo</value>
+    </data>
+    <data name="WallCrewJoinedButton" xml:space="preserve">
+        <value>Te uniste</value>
+    </data>
+    <data name="WallCrewJoined" xml:space="preserve">
+        <value>¡Te uniste al equipo de {0}!</value>
+    </data>
 </root>

@@ -4,5 +4,6 @@ public enum SocialPostType
 {
     Feed = 0,
     Gift = 1,
-    Request = 2
+    Request = 2,
+    Crew = 3
 }

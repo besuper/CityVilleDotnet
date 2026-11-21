@@ -58,10 +58,18 @@ public class SocialPost
         MaxHelpers = reward?.MaxHelpers ?? 0;
     }
 
+    public static SocialPost CreateCrewRequest(Player author, WorldObject building, int freeSlots, DateTime now)
+    {
+        return new SocialPost(author, SocialPostType.Crew, building.GetItemName(), "{}", null, null, building.WorldFlatId, building.GetItemName(), null, now)
+        {
+            MaxHelpers = freeSlots
+        };
+    }
+
     public bool CanHelp(Guid helperId, DateTime now)
     {
         return helperId != Player!.Id
-               && (Type == SocialPostType.Feed || TargetPlayer!.Id == helperId)
+               && (Type is SocialPostType.Feed or SocialPostType.Crew || TargetPlayer!.Id == helperId)
                && now < ExpiresAt
                && Helpers.Count < MaxHelpers
                && Helpers.All(x => x.Helper!.Id != helperId);
@@ -77,6 +85,12 @@ public class SocialPost
         if (!CanHelp(helper.Id, now))
         {
             throw new DomainException(GameErrorType.InvalidState);
+        }
+
+        if (Type == SocialPostType.Crew)
+        {
+            JoinCrew(helper, now);
+            return [];
         }
 
         Helpers.Add(new SocialPostHelper(helper, now));
@@ -103,5 +117,18 @@ public class SocialPost
         }
 
         return granted;
+    }
+
+    private void JoinCrew(Player helper, DateTime now)
+    {
+        if (!helper.Friends.Any(x => x.Status == FriendshipStatus.Accepted && x.GetFriend().Id == Player!.Id))
+        {
+            throw new DomainException(GameErrorType.InvalidState);
+        }
+
+        var building = Player!.GetWorldByType(TargetWorld!.Value)?.GetBuildingById(TargetObjectId!.Value) ?? throw new DomainException(GameErrorType.InvalidState);
+
+        Helpers.Add(new SocialPostHelper(helper, now));
+        building.AddCrewMember(helper);
     }
 }

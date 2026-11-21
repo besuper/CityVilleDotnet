@@ -1,6 +1,8 @@
 using System.Globalization;
 using CityVilleDotnet.Api.Common.Social;
+using CityVilleDotnet.Common.Exceptions;
 using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Settings.GameSettings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.Enums;
@@ -65,7 +67,7 @@ public class WallModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             MineTab => query.Where(x => x.Player!.Id == player.Id),
             ReceivedTab => query.Where(x => x.Type != SocialPostType.Feed && x.TargetPlayer!.Id == player.Id && x.ExpiresAt > now && !x.Helpers.Any()),
             CommunityTab => query.Where(x => x.Type == SocialPostType.Feed && x.ExpiresAt > now && x.Player!.Id != player.Id && !friendIds.Contains(x.Player.Id)),
-            _ => query.Where(x => x.Type == SocialPostType.Feed && x.ExpiresAt > now && friendIds.Contains(x.Player!.Id))
+            _ => query.Where(x => (x.Type == SocialPostType.Feed || x.Type == SocialPostType.Crew) && x.ExpiresAt > now && friendIds.Contains(x.Player!.Id))
         };
 
         var pageSize = 12;
@@ -136,6 +138,8 @@ public class WallModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x.Objects)
+            .Include(x => x.Friends.Where(f => f.Status == FriendshipStatus.Accepted))
+            .ThenInclude(x => x.FriendPlayer)
             .FirstOrDefaultAsync(x => x.AppUser!.Id == appUser.Id, ct);
 
         var post = await dbContext.Set<SocialPost>()
@@ -168,13 +172,24 @@ public class WallModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
             return RedirectToPage("/Social/Wall", new { tab, pageNumber });
         }
 
-        var rewards = post.Help(helper, now);
+        // the crew building can be in another world than the one the author is playing
+        if (post.Type == SocialPostType.Crew)
+        {
+            await dbContext.Set<World>()
+                .Where(w => w.Player!.Id == post.Player!.Id && w.Type == post.TargetWorld)
+                .Include(w => w.Objects.Where(o => o.WorldFlatId == post.TargetObjectId))
+                .ThenInclude(o => o.CrewMembers)
+                .LoadAsync(ct);
+        }
+
+        List<ViralReward> rewards;
 
         try
         {
+            rewards = post.Help(helper, now);
             await dbContext.SaveChangesAsync(ct);
         }
-        catch (DbUpdateException)
+        catch (Exception e) when (e is DomainException or DbUpdateException)
         {
             TempData["Error"] = localizer["WallHelpError"].Value;
 
@@ -188,6 +203,7 @@ public class WallModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         {
             SocialPostType.Gift => localizer["WallGiftAccepted", received].Value,
             SocialPostType.Request => localizer["WallRequestGiven", feedTextRenderer.ItemName(post.Key, culture), post.Player!.Username].Value,
+            SocialPostType.Crew => localizer["WallCrewJoined", post.Player!.Username].Value,
             _ => string.IsNullOrEmpty(received) ? localizer["WallHelped"].Value : localizer["WallRewardReceived", received].Value
         };
 
@@ -196,6 +212,11 @@ public class WallModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
 
     private FeedText RenderRequest(SocialPost post, bool isMine, string culture)
     {
+        if (post.Type == SocialPostType.Crew)
+        {
+            return RenderCrew(post, isMine, culture);
+        }
+
         var textKey = (post.Type, isMine) switch
         {
             (SocialPostType.Gift, true) => "WallGiftSentText",
@@ -208,6 +229,15 @@ public class WallModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         var icon = GameSettingsManager.Instance.GetItem(post.Key)?.Images.FirstOrDefault(x => x.Name == "icon")?.Url;
 
         return new FeedText(localizer[textKey, name, feedTextRenderer.ItemName(post.Key, culture)].Value, status, icon is null ? null : "/" + icon);
+    }
+
+    private FeedText RenderCrew(SocialPost post, bool isMine, string culture)
+    {
+        var building = feedTextRenderer.ItemName(post.Key, culture);
+        var text = isMine ? localizer["WallCrewSentText", building].Value : localizer["WallCrewText", post.Player!.Username, building].Value;
+        var icon = GameSettingsManager.Instance.GetItem(post.Key)?.Images.FirstOrDefault(x => x.Name == "icon")?.Url;
+
+        return new FeedText(text, null, icon is null ? null : "/" + icon);
     }
 
     private async Task<bool> HasPendingReceivedAsync(Player player, DateTime now, CancellationToken ct)

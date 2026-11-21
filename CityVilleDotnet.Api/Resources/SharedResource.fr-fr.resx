@@ -620,4 +620,19 @@
     <data name="WallRequestGiven" xml:space="preserve">
         <value>Tu as donné {0} à {1}.</value>
     </data>
+    <data name="WallCrewText" xml:space="preserve">
+        <value>{0} cherche du personnel pour son {1}.</value>
+    </data>
+    <data name="WallCrewSentText" xml:space="preserve">
+        <value>Tu cherches du personnel pour ton {0}.</value>
+    </data>
+    <data name="WallJoinCrew" xml:space="preserve">
+        <value>Rejoindre l'équipe</value>
+    </data>
+    <data name="WallCrewJoinedButton" xml:space="preserve">
+        <value>Équipe rejointe</value>
+    </data>
+    <data name="WallCrewJoined" xml:space="preserve">
+        <value>Tu as rejoint l'équipe de {0} !</value>
+    </data>
 </root>

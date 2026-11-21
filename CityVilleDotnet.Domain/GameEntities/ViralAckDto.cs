@@ -22,6 +22,8 @@ public static class ViralAckDtoMapper
                 {
                     Zid = x.HelperSnuid.ToString(),
                     ItemName = x.ItemName,
+                    // the client only tests that crewPos exists
+                    CrewPos = x.IsCrew ? 0 : null,
                     Ts = UserDtoMapper.ToUnixSeconds(x.HelpedAt),
                     TargetObjectName = x.TargetObjectName
                 }).ToList()

@@ -89,7 +89,7 @@
 
 					<div class="d-flex align-items-center justify-content-between mt-3">
 						<small class="text-muted">
-							@if (post.Type == SocialPostType.Feed && post.MaxHelpers > 0)
+							@if (post.Type is SocialPostType.Feed or SocialPostType.Crew && post.MaxHelpers > 0)
 							{
 								<i class="bi bi-hand-thumbs-up mr-1"></i>@($"{Localizer["WallHelpers"].Value} : {post.HelpersCount} / {post.MaxHelpers}")
 							}
@@ -113,6 +113,10 @@
 									else if (post.Type == SocialPostType.Request)
 									{
 										<i class="bi bi-box-arrow-up-right mr-1"></i>@Localizer["WallGive"]
+									}
+									else if (post.Type == SocialPostType.Crew)
+									{
+										<i class="bi bi-person-plus mr-1"></i>@(post.AlreadyHelped ? Localizer["WallCrewJoinedButton"] : Localizer["WallJoinCrew"])
 									}
 									else
 									{

@@ -30,6 +30,19 @@ public partial class Player
 
         return recipients;
     }
+    
+    public void RequestCrew(WorldObject building, string? gateName, DateTime now)
+    {
+        var freeSlots = building.GetFreeCrewSlots(gateName);
+        var alreadyRequested = SocialPosts.Any(x => x.Type == SocialPostType.Crew && x.TargetObjectId == building.WorldFlatId && x.TargetWorld == LastPlayedWorldType && x.ExpiresAt > now);
+
+        if (freeSlots == 0 || alreadyRequested)
+        {
+            return;
+        }
+
+        SocialPosts.Add(SocialPost.CreateCrewRequest(this, building, freeSlots, now));
+    }
 
     // TODO: implement loot/collectable/event
     public List<ViralReward> GrantViralRewards(IEnumerable<ViralReward> rewards)
@@ -108,7 +121,7 @@ public partial class Player
     }
 
     // ViralAckData::loadFeatureData
-    public List<(int TargetObjectId, string? TargetObjectName, string? ItemName, int HelperSnuid, DateTime HelpedAt)> GetViralAcks(WorldType world, DateTime now)
+    public List<(int TargetObjectId, string? TargetObjectName, string? ItemName, int HelperSnuid, DateTime HelpedAt, bool IsCrew)> GetViralAcks(WorldType world, DateTime now)
     {
         var since = now.Add(-ViralAckLifetime);
 
@@ -116,7 +129,7 @@ public partial class Player
             .Where(x => x.TargetObjectId is not null && x.TargetWorld == world)
             .SelectMany(x => x.Helpers
                 .Where(h => !h.AckSeen && h.HelpedAt > since)
-                .Select(h => (x.TargetObjectId!.Value, x.TargetObjectName, x.TargetItemName, h.Helper!.Snuid, h.HelpedAt)))
+                .Select(h => (x.TargetObjectId!.Value, x.TargetObjectName, x.TargetItemName, h.Helper!.Snuid, h.HelpedAt, x.Type == SocialPostType.Crew)))
             .ToList();
     }
 

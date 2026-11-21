@@ -80,7 +80,7 @@ public class PlayerSocialTest
 
         var acks = author.GetViralAcks(author.LastPlayedWorldType, Now.AddHours(2));
 
-        acks.Should().ContainSingle().Which.Should().Be((42, "test_viral_ack_building", "test_viral_ack_material", helper.Snuid, Now.AddHours(1)));
+        acks.Should().ContainSingle().Which.Should().Be((42, "test_viral_ack_building", "test_viral_ack_material", helper.Snuid, Now.AddHours(1), false));
     }
 
     [Fact]

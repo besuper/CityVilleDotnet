@@ -53,7 +53,9 @@ public static class AmfConverter
 
         foreach (var property in properties)
         {
-            if (property.GetCustomAttribute<JsonIgnoreAttribute>() != null) continue;
+            var jsonIgnore = property.GetCustomAttribute<JsonIgnoreAttribute>();
+
+            if (jsonIgnore is not null && jsonIgnore.Condition != JsonIgnoreCondition.WhenWritingNull) continue;
 
             var jsonPropertyNameAttr = property.GetCustomAttribute<JsonPropertyNameAttribute>();
             var propertyName = jsonPropertyNameAttr != null
@@ -64,6 +66,9 @@ public static class AmfConverter
 
             if (value is null)
             {
+                // the client tests some keys with "in": a null value must not create the key
+                if (jsonIgnore is not null) continue;
+
                 result[propertyName] = null;
                 continue;
             }

@@ -235,6 +235,18 @@
 				const queryIndex = url.indexOf("?");
 				window.open("/Social/Gifts" + (queryIndex >= 0 ? url.substring(queryIndex) : ""), "_blank");
 			}
+
+			if (/^crew\.php/i.test(url)) {
+				const objectId = /[?&]mId=(\d+)/.exec(url);
+				const gateName = /[?&]gname=([^&]*)/.exec(url);
+
+				if (objectId) {
+					const xhr = new XMLHttpRequest();
+					xhr.open("POST", "/social/crew-request");
+					xhr.setRequestHeader("Content-Type", "application/json");
+					xhr.send(JSON.stringify({ objectId: parseInt(objectId[1], 10), gateName: gateName ? decodeURIComponent(gateName[1]) : null }));
+				}
+			}
 		},
 		"openTab": function (a, b, c) {
 			console.log("Open Tab" + a + " - " + b + " - " + c);
