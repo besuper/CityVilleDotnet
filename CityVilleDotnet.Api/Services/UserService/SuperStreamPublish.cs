@@ -52,7 +52,7 @@ public class SuperStreamPublishFeedData
 
 public class SuperStreamPublishClickthroughParams
 {
-    [AmfParam("targetObjectId")] public int TargetObjectId { get; set; }
+    [AmfParam("targetObjectId")] public int? TargetObjectId { get; set; }
     [AmfParam("targetObjectName")] public string? TargetObjectName { get; set; }
 }
 

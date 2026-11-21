@@ -39,4 +39,19 @@ public class SuperStreamPublishTest(DatabaseFixture fixture) : IntegrationTest(f
         post.UserMessage.Should().Be("thanks");
         post.TargetPlayer!.Id.Should().Be(target.Id);
     }
+
+    [Fact]
+    public async Task SuperStreamPublish_ClickthroughParamsWithoutTarget_SavesPostWithoutTargetObject()
+    {
+        var author = Faker.Player();
+        await Context.AddAsync(author, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        object[] parameters = ["test_viral_help", new ASObject { ["hotelName"] = "test_hotel" }, author.Snuid.ToString(), new ASObject { ["hotelId"] = 16777345, ["guestID"] = null }, null!, null!];
+
+        var response = await new SuperStreamPublish(Context).HandlePacket(parameters, author.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+        var post = await Context.Set<SocialPost>().AsNoTracking().SingleAsync(x => x.Player!.Id == author.Id, TestContext.Current.CancellationToken);
+        post.TargetObjectId.Should().BeNull();
+    }
 }
