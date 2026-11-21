@@ -669,7 +669,17 @@ public partial class Player
         var contractName = obj.ContractName;
         var goodsMultiplier = mechanic.PayoutMultipliers?.Contains("goods") == true ? 1 + (buildingItem.HarvestMultiplier ?? 0) / 100.0 : 1;
 
-        CollectDoobersRewards(contractName, goodsMultiplier: goodsMultiplier);
+        // MechanicMapResource::harvestingDefinition
+        var harvestingItem = buildingItem.HarvestMechanicData is not null
+            ? GameSettingsManager.Instance.GetItem(contractName) ?? throw new Exception($"Can't find game item for {contractName}")
+            : buildingItem;
+
+        CollectDoobersRewards(contractName,
+            coinMultiplier: GetMasteryBonusMultiplier(harvestingItem, "coinYield"),
+            premiumGoodsMultiplier: GetMasteryBonusMultiplier(harvestingItem, "premium_goods"),
+            goodsMultiplier: goodsMultiplier * GetMasteryBonusMultiplier(harvestingItem, "goods"),
+            xpMultiplier: GetMasteryBonusMultiplier(harvestingItem, "XP"),
+            energyMultiplier: GetMasteryBonusMultiplier(harvestingItem, "energy"));
 
         if (GameSettingsManager.Instance.GetItem(contractName)?.HasMasteries() == true)
         {
@@ -1111,10 +1121,33 @@ public partial class Player
         return Math.Max(cost, 1);
     }
 
+    // Player::isEligibleForMastery
+    private bool IsEligibleForMastery(GameItem item)
+    {
+        return item.Type switch
+        {
+            "plot_contract" => Level >= GameSettingsManager.Instance.GetSettings().MasteryRequiredLevel,
+            "airplane_contract" or "space_shuttle_contract" or "sailboat_contract" => true,
+            _ => false
+        };
+    }
+
+    // MasteryBonus::init + ItemBonus::getBonusModifier
+    public double GetMasteryBonusMultiplier(GameItem harvestingItem, string field)
+    {
+        var levelBonus = IsEligibleForMastery(harvestingItem)
+            ? harvestingItem.MasteryItems.ElementAtOrDefault(GetMasteryLevel(harvestingItem.Name))?.BonusMultiplier ?? 0
+            : 0;
+
+        var percent = harvestingItem.HarvestBonuses?.Bonuses
+            .Where(x => x.Name == "masteryBonus" && x.Field == field)
+            .Sum(x => x.PercentModifier + levelBonus) ?? 0;
+
+        return 1 + percent / 100.0;
+    }
+
     public void IncrementMastery(string itemName, int amount = 1)
     {
-        // TODO: Implement bonusMultiplier with doobers collect
-
         var mastery = Masteries.FirstOrDefault(x => x.ItemName == itemName);
 
         if (mastery is null)

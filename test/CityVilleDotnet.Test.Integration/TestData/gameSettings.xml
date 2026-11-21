@@ -948,6 +948,21 @@
         </item>
         <item name="test_mastery_reward_1" type="decoration" buyable="false"/>
         <item name="test_mastery_reward_2" type="decoration" buyable="false"/>
+        <item name="test_mastery_bonus_crop" type="plot_contract" buyable="true">
+            <harvestBonuses>
+                <bonus name="masteryBonus" field="goods" percentModifier="0" featureName="mastery"/>
+            </harvestBonuses>
+            <mastery level="0" bonusMultiplier="0"/>
+            <mastery level="1" req="2" bonusMultiplier="10"/>
+            <mastery level="2" req="5" bonusMultiplier="20"/>
+        </item>
+        <item name="test_mastery_bonus_plane" type="airplane_contract" buyable="true">
+            <harvestBonuses>
+                <bonus name="masteryBonus" field="coinYield" percentModifier="0" featureName="mastery"/>
+            </harvestBonuses>
+            <mastery level="0" bonusMultiplier="0"/>
+            <mastery level="1" req="2" bonusMultiplier="10"/>
+        </item>
         <item name="test_mastery_gate" type="business" buyable="true">
             <gates>
                 <gate type="mastery" loadType="dynamic" name="mastery_crop" masteryLevel="2" cashCost="100">

@@ -82,6 +82,7 @@ public class FarmingSettings
     [XmlAttribute("cashGainedPerLevel")] public int CashGainedPerLevel { get; set; }
     [XmlAttribute("highestLevel")] public int HighestLevel { get; set; } = 200;
     [XmlAttribute("businessUpgradesRequiredLevel")] public int BusinessUpgradesRequiredLevel { get; set; } = 15;
+    [XmlAttribute("masteryRequiredLevel")] public int MasteryRequiredLevel { get; set; } = 15;
     [XmlAttribute("crewMemberCashCost")] public int CrewMemberCashCost { get; set; }
     [XmlAttribute("sellBackRatio")] public double SellBackRatio { get; set; }
     [XmlAttribute("goodsToCoinRatio")] public double GoodsToCoinRatio { get; set; }

@@ -10,7 +10,7 @@ namespace CityVilleDotnet.Domain.Entities;
 public partial class Player
 {
     // From Player::processRandomModifiers → processRandomModifiersWithTable → processRandomModifiersFromConfig
-    public List<int> CollectDoobersRewards(string itemName, string modifierGroupName = "default", double coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1, string? modifiersName = null, double goodsMultiplier = 1, bool energyActionPack = true)
+    public List<int> CollectDoobersRewards(string itemName, string modifierGroupName = "default", double coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1, string? modifiersName = null, double goodsMultiplier = 1, bool energyActionPack = true, double xpMultiplier = 1, double energyMultiplier = 1)
     {
         var gameItem = GameSettingsManager.Instance.GetItem(itemName);
         if (gameItem is null) return [];
@@ -41,7 +41,7 @@ public partial class Player
             modifiers.AddRange(SelectGlobalTableModifiers(gameItem));
 
         // process each modifier (processRandomModifiersFromConfig)
-        ProcessModifiers(gameItem, modifiers, secureRands, coinMultiplier, construction, premiumGoodsMultiplier, goodsMultiplier);
+        ProcessModifiers(gameItem, modifiers, secureRands, coinMultiplier, construction, premiumGoodsMultiplier, goodsMultiplier, xpMultiplier, energyMultiplier);
 
         return secureRands;
     }
@@ -174,7 +174,7 @@ public partial class Player
     }
 
     // From Player::processRandomModifiersFromConfig
-    private void ProcessModifiers(GameItem gameItem, List<RandomModifier> modifiers, List<int> secureRands, double coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1, double goodsMultiplier = 1)
+    private void ProcessModifiers(GameItem gameItem, List<RandomModifier> modifiers, List<int> secureRands, double coinMultiplier = 1, bool construction = false, double premiumGoodsMultiplier = 1, double goodsMultiplier = 1, double xpMultiplier = 1, double energyMultiplier = 1)
     {
         foreach (var itemModifier in modifiers)
         {
@@ -255,7 +255,7 @@ public partial class Player
 
                     if (secureRand < currentRollPercent && !found)
                     {
-                        ApplyRollRewards(roll, itemModifier.Multiplier, coinMultiplier, premiumGoodsMultiplier, goodsMultiplier);
+                        ApplyRollRewards(roll, itemModifier.Multiplier, coinMultiplier, premiumGoodsMultiplier, goodsMultiplier, xpMultiplier, energyMultiplier);
                         found = true;
                     }
 
@@ -265,7 +265,7 @@ public partial class Player
         }
     }
 
-    private void ApplyRollRewards(Roll roll, double multiplier, double coinMultiplier = 1, double premiumGoodsMultiplier = 1, double goodsMultiplier = 1)
+    private void ApplyRollRewards(Roll roll, double multiplier, double coinMultiplier = 1, double premiumGoodsMultiplier = 1, double goodsMultiplier = 1, double xpMultiplier = 1, double energyMultiplier = 1)
     {
         foreach (var (rewardType, rewardElements) in roll.Rewards)
         {
@@ -282,14 +282,16 @@ public partial class Player
                         StaticLogger.Current.LogDebug("Found coin {CoinAmount}", coinAmount);
                         break;
                     case "xp":
-                        if (amount <= 0) break;
-                        AddXp(amount);
-                        StaticLogger.Current.LogDebug("Found xp {XpAmount}", amount);
+                        var xpAmount = (int)Math.Ceiling(element.Amount / roll.Divisor * multiplier * xpMultiplier);
+                        if (xpAmount <= 0) break;
+                        AddXp(xpAmount);
+                        StaticLogger.Current.LogDebug("Found xp {XpAmount}", xpAmount);
                         break;
                     case "energy":
-                        if (amount <= 0) break;
-                        AddEnergy(amount);
-                        StaticLogger.Current.LogDebug("Found energy {EnergyAmount}", amount);
+                        var energyAmount = (int)Math.Ceiling(element.Amount / roll.Divisor * multiplier * energyMultiplier);
+                        if (energyAmount <= 0) break;
+                        AddEnergy(energyAmount);
+                        StaticLogger.Current.LogDebug("Found energy {EnergyAmount}", energyAmount);
                         break;
                     case "collectable":
                         var collectionName = GameSettingsManager.Instance.GetCollectionByItemName(element.Name);

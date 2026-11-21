@@ -170,6 +170,7 @@ public class GameItem
     [XmlElement("unlocksItem")] public string? UnlocksItem { get; set; }
     [XmlElement("workers")] public WorkersDefinitionItem? Workers { get; set; }
     [XmlElement("harvestBonuses")] public HarvestBonusesContainer? HarvestBonuses { get; set; }
+    [XmlElement("harvestMechanicData")] public HarvestMechanicDataItem? HarvestMechanicData { get; set; }
     [XmlElement("harvestLoopConfig")] public HarvestLoopConfigItem? HarvestLoopConfig { get; set; }
     [XmlIgnore] public int? NumCrop { get; set; }
 
@@ -828,6 +829,8 @@ public class MasteryItem
         set => CashCost = string.IsNullOrEmpty(value) ? null : int.Parse(value);
     }
 
+    [XmlAttribute("bonusMultiplier")] public double BonusMultiplier { get; set; }
+
     [XmlArray("rewards"), XmlArrayItem("reward")] public List<UpgradeReward> Rewards { get; set; } = [];
 }
 
@@ -989,6 +992,9 @@ public class HarvestBonusItem
     [XmlAttribute("field")] public string? Field { get; set; }
     [XmlAttribute("percentModifier")] public double PercentModifier { get; set; }
 }
+
+[Serializable]
+public class HarvestMechanicDataItem;
 
 [Serializable]
 public class WorldRectsContainer

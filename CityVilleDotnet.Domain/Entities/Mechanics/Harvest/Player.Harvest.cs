@@ -12,8 +12,8 @@ public partial class Player
         var gameItem = GameSettingsManager.Instance.GetItem(itemName) ?? throw new Exception($"Can't find game item for {itemName}");
         var contractName = obj.ContractName;
 
-        var coinMultiplier = obj.GetClassName().IsBusiness() ? Math.Max(obj.Visits ?? 0, 1) : 1;
-        var premiumGoodsMultiplier = 1.0;
+        var coinMultiplier = (obj.GetClassName().IsBusiness() ? Math.Max(obj.Visits ?? 0, 1) : 1) * GetMasteryBonusMultiplier(gameItem, "coinYield");
+        var premiumGoodsMultiplier = GetMasteryBonusMultiplier(gameItem, "premium_goods");
         var workerBonus = gameItem.GetWorkerHarvestBonus();
 
         if (workerBonus?.Field == "premium_goods" && obj.Workers.Count > 0)
@@ -22,7 +22,12 @@ public partial class Player
         }
 
         var (coinYield, cashYield) = obj.Harvest(actionTime);
-        var secureRands = CollectDoobersRewards(itemName, coinMultiplier: coinMultiplier, premiumGoodsMultiplier: premiumGoodsMultiplier);
+        var secureRands = CollectDoobersRewards(itemName,
+            coinMultiplier: coinMultiplier,
+            premiumGoodsMultiplier: premiumGoodsMultiplier,
+            goodsMultiplier: GetMasteryBonusMultiplier(gameItem, "goods"),
+            xpMultiplier: GetMasteryBonusMultiplier(gameItem, "XP"),
+            energyMultiplier: GetMasteryBonusMultiplier(gameItem, "energy"));
 
         if (obj.ClassName == BuildingClassType.HarvestableShip && contractName is not null)
         {
