@@ -38,6 +38,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
 
         // max timeTillReset is 72h
         var recentPostsSince = ServerUtils.TimeProvider.GetUtcNow().UtcDateTime.AddHours(-72);
+        var viralAckSince = ServerUtils.TimeProvider.GetUtcNow().UtcDateTime.Add(-Player.ViralAckLifetime);
 
         var user = await context.Set<Player>()
             .AsSplitQuery()
@@ -93,8 +94,11 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .Include(x => x.LotOrders) // FIXME: Limit orders
             .Include(x => x.VisitorHelpOrders) // FIXME: Limit orders
             .Include(x => x.Masteries)
-            .Include(x => x.SocialPosts.Where(p => p.CreatedAt > recentPostsSince))
+            .Include(x => x.SocialPosts.Where(p => p.CreatedAt > recentPostsSince || (p.TargetObjectId != null && p.Helpers.Any(h => !h.AckSeen && h.HelpedAt > viralAckSince))))
             .ThenInclude(x => x.TargetPlayer)
+            .Include(x => x.SocialPosts.Where(p => p.CreatedAt > recentPostsSince || (p.TargetObjectId != null && p.Helpers.Any(h => !h.AckSeen && h.HelpedAt > viralAckSince))))
+            .ThenInclude(x => x.Helpers)
+            .ThenInclude(x => x.Helper)
             .Include(x => x.GlobalTableOverrides)
             .Include(x => x.PreyGroups)
             .ThenInclude(x => x.Captures)

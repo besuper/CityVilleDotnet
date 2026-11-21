@@ -5,6 +5,7 @@ public class SocialPostHelper
     public int Id { get; }
     public Player? Helper { get; private set; }
     public DateTime HelpedAt { get; private set; }
+    public bool AckSeen { get; private set; }
 
     public SocialPostHelper() {}
 
@@ -12,5 +13,10 @@ public class SocialPostHelper
     {
         Helper = helper;
         HelpedAt = helpedAt;
+    }
+
+    public void MarkAckSeen()
+    {
+        AckSeen = true;
     }
 }

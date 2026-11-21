@@ -18,11 +18,15 @@ public class SocialPost
     public DateTime CreatedAt { get; private set; }
     public DateTime ExpiresAt { get; private set; }
     public int MaxHelpers { get; private set; }
+    public int? TargetObjectId { get; private set; }
+    public string? TargetObjectName { get; private set; }
+    public string? TargetItemName { get; private set; }
+    public WorldType? TargetWorld { get; private set; }
     public List<SocialPostHelper> Helpers { get; private set; } = [];
 
     public SocialPost() {}
 
-    public SocialPost(Player author, SocialPostType type, string key, string data, string? userMessage, Player? targetPlayer, DateTime now)
+    public SocialPost(Player author, SocialPostType type, string key, string data, string? userMessage, Player? targetPlayer, int targetObjectId, string? targetObjectName, string? targetItemName, DateTime now)
     {
         Player = author;
         Type = type;
@@ -31,6 +35,15 @@ public class SocialPost
         UserMessage = userMessage?[..Math.Min(userMessage.Length, 256)];
         TargetPlayer = targetPlayer;
         CreatedAt = now;
+
+        // the client sends targetObjectId = 0 when the post is not about a building
+        if (targetObjectId > 0)
+        {
+            TargetObjectId = targetObjectId;
+            TargetObjectName = targetObjectName;
+            TargetItemName = targetItemName;
+            TargetWorld = author.LastPlayedWorldType;
+        }
 
         if (type != SocialPostType.Feed)
         {

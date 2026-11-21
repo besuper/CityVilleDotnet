@@ -12,6 +12,9 @@ public static class SocialPostFactory
         string? key = null,
         string? userMessage = null,
         Domain.Entities.Player? targetPlayer = null,
+        int targetObjectId = 0,
+        string? targetObjectName = null,
+        string? targetItemName = null,
         DateTime? now = null)
     {
         return new Domain.Entities.SocialPost(
@@ -21,6 +24,9 @@ public static class SocialPostFactory
             "{}",
             userMessage,
             targetPlayer,
+            targetObjectId,
+            targetObjectName,
+            targetItemName,
             now ?? faker.Date.Recent().ToUniversalTime());
     }
 }

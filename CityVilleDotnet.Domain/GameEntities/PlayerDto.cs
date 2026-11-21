@@ -19,11 +19,11 @@ public class PlayerDto
 
     [JsonPropertyName("lastSuperFeedPostError")] public double LastSuperFeedPostError { get; set; }
 
-    [JsonPropertyName("activeVirals")] public ASObject ActiveVirals { get; set; } = new();
+    [JsonPropertyName("activeVirals")] public Dictionary<string, ActiveViralDto> ActiveVirals { get; set; } = [];
 
-    [JsonPropertyName("sentGifts")] public ASObject SentGifts { get; set; } = new();
+    [JsonPropertyName("sentGifts")] public Dictionary<string, long> SentGifts { get; set; } = [];
 
-    [JsonPropertyName("activeRequests")] public ASObject ActiveRequests { get; set; } = new();
+    [JsonPropertyName("activeRequests")] public Dictionary<string, ActiveRequestDto> ActiveRequests { get; set; } = [];
 
     [JsonPropertyName("neighbors")] public List<NeighborDto> Neighbors { get; set; } = [];
 

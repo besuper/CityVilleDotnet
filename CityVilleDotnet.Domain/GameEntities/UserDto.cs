@@ -12,7 +12,7 @@ public class UserDto
 {
     [JsonPropertyName("userInfo")] public required UserInfoDto UserInfo { get; set; }
     [JsonPropertyName("franchises")] public List<FranchiseDto> Franchises { get; set; } = new();
-    [JsonPropertyName("featureData")] public required ASObject FeatureData { get; set; }
+    [JsonPropertyName("featureData")] public required Dictionary<string, object> FeatureData { get; set; }
     [JsonPropertyName("preyGroups")] public List<ASObject> PreyGroups { get; set; } = [];
     [JsonPropertyName("crews")] public Dictionary<string, List<string>> Crews { get; set; } = [];
 }
@@ -111,25 +111,9 @@ public static class UserDtoMapper
                         SfxDisabled = model.SfxDisabled,
                     },
                     PlayerNews = [], // TODO: Implement news
-                    ActiveVirals = new ASObject(model.GetActiveVirals(ServerUtils.TimeProvider.GetUtcNow().UtcDateTime).ToDictionary(
-                        x => x.Key,
-                        x => (object)new ASObject
-                        {
-                            ["timesPosted"] = x.TimesPosted,
-                            ["originTime"] = ToUnixSeconds(x.OriginTime),
-                            ["recipients"] = new ASObject()
-                        })),
-                    SentGifts = new ASObject(model.GetSentGifts(ServerUtils.TimeProvider.GetUtcNow().UtcDateTime).ToDictionary(x => $"i{x.RecipientSnuid}", x => (object)ToUnixSeconds(x.SentAt))),
-                    ActiveRequests = model.GetActiveItemRequests(ServerUtils.TimeProvider.GetUtcNow().UtcDateTime) is { } activeRequests
-                        ? new ASObject
-                        {
-                            ["request_gift_request"] = new ASObject
-                            {
-                                ["ts"] = ToUnixSeconds(activeRequests.Ts),
-                                ["zids"] = activeRequests.RecipientSnuids.Select(x => (object)$"i{x}").ToList()
-                            }
-                        }
-                        : new ASObject(),
+                    ActiveVirals = model.ToActiveViralDtos(),
+                    SentGifts = model.GetSentGifts(ServerUtils.TimeProvider.GetUtcNow().UtcDateTime).ToDictionary(x => $"i{x.RecipientSnuid}", x => ToUnixSeconds(x.SentAt)),
+                    ActiveRequests = model.ToActiveRequestDtos(),
                     RollCounter = model.RollCounter,
                     RollCounterMap = new ASObject(model.FeatureRollCounters.ToDictionary(x => x.Feature, x => (object)x.Count)),
                     SeenFlags = new ASObject(model.SeenFlags.DistinctBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value is { } value ? (object)value : true)),
@@ -168,7 +152,7 @@ public static class UserDtoMapper
                 WorldSummary = new ASObject(summaryWorlds.ToDictionary(w => w.Type.ToDescriptionString(), object (w) => BuildWorldSummary(w, model, activeQuests)))
             },
             Franchises = model.Franchises.Select(x => x.ToDto()).ToList(),
-            FeatureData = new ASObject(new Dictionary<string, object>()
+            FeatureData = new Dictionary<string, object>
             {
                 {
                     "rewardForSpend", new ASObject()
@@ -199,7 +183,7 @@ public static class UserDtoMapper
                 { "gardens", new ASObject() },
                 { "incentivizedExpansions", model.GetWorld().BuildIncentivizedExpansions() },
                 { "helperClicks", new ASObject() },
-                { "viralAck", new ASObject() },
+                { "viralAck", model.ToViralAckDtos() },
                 { "matchup", new ASObject() },
                 { "trickOrTreat", new ASObject() },
                 { "poll", new ASObject() },
@@ -268,7 +252,7 @@ public static class UserDtoMapper
                 { "xpromoMetaData", new ASObject { { "118", new ASObject { { "level", 20 } } } } },
                 { "socialInventory", new ASObject { { "samObjectIds", new ASObject() } } },
                 { "globalTable", BuildGlobalTableAsObject(model) }
-            }), // Enable or disable some features for the user
+            }, // Enable or disable some features for the user
         };
 
         // The client reads featureData[groupId] for every prey group of the settings
@@ -284,7 +268,7 @@ public static class UserDtoMapper
     }
 
     // TODO: switch to DateTimeOffset later
-    private static long ToUnixSeconds(DateTime utc)
+    internal static long ToUnixSeconds(DateTime utc)
     {
         return new DateTimeOffset(DateTime.SpecifyKind(utc, DateTimeKind.Utc)).ToUnixTimeSeconds();
     }

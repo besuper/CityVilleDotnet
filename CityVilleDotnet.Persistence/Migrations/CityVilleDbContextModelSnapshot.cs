@@ -16,7 +16,7 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261119224233_AddSocialPosts";
+    public override string LastMigrationId => "20261121114741_AddViralAck";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -1102,8 +1102,22 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
                 b.Property<Guid>("PlayerId")
                     .HasColumnType("uniqueidentifier");
 
+                b.Property<string>("TargetItemName")
+                    .HasMaxLength(128)
+                    .HasColumnType("nvarchar(128)");
+
+                b.Property<int?>("TargetObjectId")
+                    .HasColumnType("int");
+
+                b.Property<string>("TargetObjectName")
+                    .HasMaxLength(128)
+                    .HasColumnType("nvarchar(128)");
+
                 b.Property<Guid?>("TargetPlayerId")
                     .HasColumnType("uniqueidentifier");
+
+                b.Property<int?>("TargetWorld")
+                    .HasColumnType("int");
 
                 b.Property<int>("Type")
                     .HasColumnType("int");
@@ -1130,6 +1144,9 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
                     .HasColumnType("int");
 
                 SqlServerPropertyBuilderExtensions.UseIdentityColumn(id);
+
+                b.Property<bool>("AckSeen")
+                    .HasColumnType("bit");
 
                 b.Property<DateTime>("HelpedAt")
                     .HasColumnType("datetime2");

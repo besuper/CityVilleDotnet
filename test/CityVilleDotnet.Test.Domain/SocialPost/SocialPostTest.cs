@@ -150,4 +150,31 @@ public class SocialPostTest
         helper.Gold.Should().Be(helperGold);
         post.Helpers.Should().ContainSingle();
     }
+
+    [Fact]
+    public void SocialPost_Create_WithTargetObject_SavesTargetAndAuthorWorld()
+    {
+        var faker = new Faker();
+        var author = faker.Player();
+
+        var post = faker.SocialPost(author: author, targetObjectId: 42, targetObjectName: "test_viral_ack_building", targetItemName: "test_viral_ack_material", now: Now);
+
+        post.TargetObjectId.Should().Be(42);
+        post.TargetObjectName.Should().Be("test_viral_ack_building");
+        post.TargetItemName.Should().Be("test_viral_ack_material");
+        post.TargetWorld.Should().Be(author.LastPlayedWorldType);
+    }
+
+    [Fact]
+    public void SocialPost_Create_WithoutTargetObject_HasNoTarget()
+    {
+        var faker = new Faker();
+
+        var post = faker.SocialPost(targetObjectId: 0, targetObjectName: "test_viral_ack_building", targetItemName: "test_viral_ack_material", now: Now);
+
+        post.TargetObjectId.Should().BeNull();
+        post.TargetObjectName.Should().BeNull();
+        post.TargetItemName.Should().BeNull();
+        post.TargetWorld.Should().BeNull();
+    }
 }

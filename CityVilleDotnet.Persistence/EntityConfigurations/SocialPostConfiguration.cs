@@ -13,6 +13,8 @@ public class SocialPostConfiguration : IEntityTypeConfiguration<SocialPost>
 
         builder.Property(x => x.Key).HasMaxLength(128);
         builder.Property(x => x.UserMessage).HasMaxLength(256);
+        builder.Property(x => x.TargetObjectName).HasMaxLength(128);
+        builder.Property(x => x.TargetItemName).HasMaxLength(128);
 
         builder.HasOne(x => x.Player).WithMany(x => x.SocialPosts).HasForeignKey("PlayerId").IsRequired().OnDelete(DeleteBehavior.Cascade);
         builder.HasOne(x => x.TargetPlayer).WithMany().HasForeignKey("TargetPlayerId").OnDelete(DeleteBehavior.Restrict);

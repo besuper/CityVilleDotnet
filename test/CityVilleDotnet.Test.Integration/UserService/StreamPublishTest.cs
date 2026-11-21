@@ -89,4 +89,38 @@ public class StreamPublishTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var post = await GetSavedPost(author);
         post.MaxHelpers.Should().Be(0);
     }
+
+    [Fact]
+    public async Task StreamPublish_BuildingMaterialFeed_SavesTargetObject()
+    {
+        var author = await SeedPlayer();
+        var request = new StreamPublishRequest
+        {
+            Type = "test_viral_help",
+            Data = new ASObject { ["material"] = "test_viral_ack_material" },
+            FeedData = new StreamPublishFeedData { Material = "test_viral_ack_material" },
+            ClickthroughParams = new StreamPublishClickthroughParams { TargetObjectId = 42, TargetObjectName = "test_viral_ack_building" }
+        };
+
+        await new StreamPublish(Context).HandlePacket(request, author.Id, TestContext.Current.CancellationToken);
+
+        var post = await GetSavedPost(author);
+        post.TargetObjectId.Should().Be(42);
+        post.TargetObjectName.Should().Be("test_viral_ack_building");
+        post.TargetItemName.Should().Be("test_viral_ack_material");
+        post.TargetWorld.Should().Be(author.LastPlayedWorldType);
+    }
+
+    [Fact]
+    public async Task StreamPublish_WithoutClickthroughParams_SavesPostWithoutTargetObject()
+    {
+        var author = await SeedPlayer();
+        var request = new StreamPublishRequest { Type = "test_viral_help" };
+
+        await new StreamPublish(Context).HandlePacket(request, author.Id, TestContext.Current.CancellationToken);
+
+        var post = await GetSavedPost(author);
+        post.TargetObjectId.Should().BeNull();
+        post.TargetWorld.Should().BeNull();
+    }
 }

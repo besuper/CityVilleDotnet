@@ -28,10 +28,6 @@ public class GetMFSData(CityVilleDbContext context, IHttpContextAccessor httpCon
             .Select(f => f.ToSocialNetworkUserDto(baseUrl))
             .ToList();
 
-        return new CityVilleResponse().Data(new ASObject
-        {
-            ["nonAppFriends"] = AmfConverter.Convert(samantha),
-            ["appFriends"] = AmfConverter.Convert(appFriends)
-        });
+        return new CityVilleResponse().Data(AmfConverter.Convert(new MfsDataDto { NonAppFriends = samantha, AppFriends = appFriends })!);
     }
 }

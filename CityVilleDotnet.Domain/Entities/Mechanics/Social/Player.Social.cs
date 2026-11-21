@@ -6,12 +6,14 @@ namespace CityVilleDotnet.Domain.Entities;
 
 public partial class Player
 {
+    public static readonly TimeSpan ViralAckLifetime = TimeSpan.FromDays(7);
+
     public List<SocialPost> SocialPosts { get; private set; } = [];
     public DateTime SocialNotificationsSeenAt { get; private set; }
 
-    public void Publish(SocialPostType type, string key, string data, string? userMessage, Player? targetPlayer, DateTime now)
+    public void Publish(SocialPostType type, string key, string data, string? userMessage, Player? targetPlayer, int targetObjectId, string? targetObjectName, string? targetItemName, DateTime now)
     {
-        SocialPosts.Add(new SocialPost(this, type, key, data, userMessage, targetPlayer, now));
+        SocialPosts.Add(new SocialPost(this, type, key, data, userMessage, targetPlayer, targetObjectId, targetObjectName, targetItemName, now));
     }
 
     public List<Player> SendRequest(SocialPostType type, string itemName, string data, IReadOnlyCollection<int> recipientSnuids, DateTime now)
@@ -23,7 +25,7 @@ public partial class Player
 
         foreach (var recipient in recipients)
         {
-            SocialPosts.Add(new SocialPost(this, type, itemName, data, null, recipient, now));
+            SocialPosts.Add(new SocialPost(this, type, itemName, data, null, recipient, 0, null, null, now));
         }
 
         return recipients;
@@ -103,6 +105,33 @@ public partial class Player
         }
 
         return (requests.Min(x => x.CreatedAt), requests.Select(x => x.TargetPlayer!.Snuid).Distinct().ToList());
+    }
+
+    // ViralAckData::loadFeatureData
+    public List<(int TargetObjectId, string? TargetObjectName, string? ItemName, int HelperSnuid, DateTime HelpedAt)> GetViralAcks(WorldType world, DateTime now)
+    {
+        var since = now.Add(-ViralAckLifetime);
+
+        return SocialPosts
+            .Where(x => x.TargetObjectId is not null && x.TargetWorld == world)
+            .SelectMany(x => x.Helpers
+                .Where(h => !h.AckSeen && h.HelpedAt > since)
+                .Select(h => (x.TargetObjectId!.Value, x.TargetObjectName, x.TargetItemName, h.Helper!.Snuid, h.HelpedAt)))
+            .ToList();
+    }
+
+    // ViralAckPickStack::onPickClosed
+    public void MarkViralAckSeen(WorldType world, int targetObjectId, int? helperSnuid)
+    {
+        var helpers = SocialPosts
+            .Where(x => x.TargetObjectId == targetObjectId && x.TargetWorld == world)
+            .SelectMany(x => x.Helpers)
+            .Where(h => helperSnuid is null || h.Helper!.Snuid == helperSnuid);
+
+        foreach (var helper in helpers)
+        {
+            helper.MarkAckSeen();
+        }
     }
 
     public void MarkSocialNotificationsSeen(DateTime now)
