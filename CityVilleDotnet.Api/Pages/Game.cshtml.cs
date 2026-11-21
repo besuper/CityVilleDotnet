@@ -38,7 +38,7 @@ public class GameModel(UserManager<ApplicationUser> userManager, CityVilleDbCont
         .ToDictionary(x => x.Key, x => int.TryParse(x.Value, out var number) ? number : (object)(x.Value ?? string.Empty));
     public List<Experiment> Experiments => configuration.GetSection("experiments").Get<List<Experiment>>() ?? new List<Experiment>();
 
-    private bool UseZCache => Request.Cookies["nativeFlash"] == "1" && !Request.Query.ContainsKey("disableCache") && !Request.Query.ContainsKey("rev") && Request.Query["player"] != "swf2es";
+    private bool UseZCache => Request.Cookies["nativeFlash"] == "1" && !Request.Query.ContainsKey("disableCache") && !Request.Query.ContainsKey("rev");
     private bool _evictZCache;
 
     public async Task<IActionResult> OnGetAsync()

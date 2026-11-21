@@ -15,18 +15,19 @@
 -   **Collections & wishlist**, inventory, consumables, bundles
 -   **Friends**: requests, visits, helping neighbors, energy
 -   **Multi languages**: english, spanish, french, italian, portuguese
--   **Embedded [ruffle](https://ruffle.rs/) flash emulator**: no need to install Flash
+-   **Embedded [swf2es](https://swf2es.github.io/swf2es/) and [Ruffle](https://ruffle.rs/) Flash emulators**: no need to install Flash
+-   **Facebook-like social system**: share, send gifts, ask for help, hire friends
 
 <!-- progress:start -->
 ## Implementation progress
-_Last update: 2026-11-13 · 🟡 = partial_
+_Last update: 2026-11-21 · 🟡 = partial_
 
 | | Progress | |
 |---|---|---|
-| Client transactions | <img src="docs/progress/transactions.svg" alt="36%"> 36% | 91 ✅ · 20 🟡 · 145 ❌ |
-| World actions | <img src="docs/progress/world_actions.svg" alt="53%"> 53% | 20 ✅ · 4 🟡 · 14 ❌ |
-| Quest task actions | <img src="docs/progress/quest_actions.svg" alt="94%"> 94% | 95 ✅ · 3 🟡 · 83 ❌ (% weighted by use) |
-| Completable quests | <img src="docs/progress/quests.svg" alt="86%"> 86% | 1091 / 1276 |
+| Client transactions | <img src="docs/progress/transactions.svg" alt="38%"> 38% | 97 ✅ · 23 🟡 · 136 ❌ |
+| World actions | <img src="docs/progress/world_actions.svg" alt="61%"> 61% | 23 ✅ · 5 🟡 · 10 ❌ |
+| Quest task actions | <img src="docs/progress/quest_actions.svg" alt="94%"> 94% | 99 ✅ · 2 🟡 · 80 ❌ (% weighted by use) |
+| Completable quests | <img src="docs/progress/quests.svg" alt="86%"> 86% | 1109 / 1289 |
 <!-- progress:end -->
 
 ## Versions

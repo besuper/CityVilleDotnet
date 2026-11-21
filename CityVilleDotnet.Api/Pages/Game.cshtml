@@ -4,7 +4,7 @@
 @inject Microsoft.Extensions.Localization.IStringLocalizer<CityVilleDotnet.Api.Resources.SharedResource> Localizer
 @{
 	Layout = "Shared/_GameLayout";
-	var useSwf2es = Request.Query["player"] == "swf2es";
+	var useRuffle = Request.Query["player"] == "ruffle";
 }
 
 @model CityVilleDotnet.Api.Pages.GameModel
@@ -27,17 +27,19 @@
 		}
 	</script>
 	
-	@if (useSwf2es)
+	@if (useRuffle)
 	{
-		<script type="module">
-			import { configure, replaceFlash } from "https://unpkg.com/swf2es@0.1";
-			configure({ cache: true });
-			replaceFlash();
-		</script>
+		<script type="text/javascript" src="ruffle/ruffle.js?v=2"></script>
 	}
 	else
 	{
-		<script type="text/javascript" src="ruffle/ruffle.js?v=2"></script>
+		<script type="module">
+			if (!(navigator.plugins && navigator.plugins["Shockwave Flash"])) {
+				const { configure, replaceFlash } = await import("https://unpkg.com/swf2es@0.1");
+				configure({ cache: true });
+				replaceFlash();
+			}
+		</script>
 	}
 
 	<style>
@@ -234,6 +236,10 @@
 			if (/^gifts\.php/i.test(url)) {
 				const queryIndex = url.indexOf("?");
 				window.open("/Social/Gifts" + (queryIndex >= 0 ? url.substring(queryIndex) : ""), "_blank");
+			}
+
+			if (/^invite\.php/i.test(url)) {
+				window.location.href = "/Friends/List";
 			}
 
 			if (/^crew\.php/i.test(url)) {
