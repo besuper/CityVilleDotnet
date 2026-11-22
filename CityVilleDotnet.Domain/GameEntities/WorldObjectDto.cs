@@ -1,10 +1,10 @@
 ﻿using CityVilleDotnet.Common.Settings;
+using CityVilleDotnet.Common.Settings.GameSettings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using System.Text.Json.Serialization;
 using CityVilleDotnet.Domain.EnumExtensions;
 using CityVilleDotnet.Domain.Enums;
-using FluorineFx;
 
 namespace CityVilleDotnet.Domain.GameEntities;
 
@@ -66,7 +66,7 @@ public class WorldObjectDto
     [JsonPropertyName("mechanicData")] public Dictionary<string, object?> MechanicData { get; set; } = new Dictionary<string, object?>();
 
     // TODO: Implement Gates
-    [JsonPropertyName("gates")] public List<object> Gates { get; set; } = [];
+    [JsonPropertyName("gates")] public List<GateDto> Gates { get; set; } = [];
 
     [JsonPropertyName("itemOwner")] public string? ItemOwner { get; set; }
 
@@ -143,17 +143,11 @@ public static class WorldObjectDtoMapper
 
         if (model.ParentMacroObjectId is not null)
         {
-            var macroObjectData = new ASObject
+            dto.MechanicData["macroObject"] = new MacroObjectDataDto
             {
-                { "parentMacroObjectId", model.ParentMacroObjectId }
+                ParentMacroObjectId = model.ParentMacroObjectId,
+                IsCandidate = model.IsMacroObjectCandidate ? "true" : null
             };
-
-            if (model.IsMacroObjectCandidate)
-            {
-                macroObjectData["isCandidate"] = "true";
-            }
-
-            dto.MechanicData["macroObject"] = macroObjectData;
         }
 
         if (model.CustomName is not null)
@@ -173,20 +167,20 @@ public static class WorldObjectDtoMapper
 
         if (model.InvestmentCount > 0 || model.InvestmentReturns > 0)
         {
-            dto.MechanicData["investmentData"] = new ASObject
+            dto.MechanicData["investmentData"] = new InvestmentDataDto
             {
-                { "coin", model.InvestmentReturns },
-                { "coin_numInvestments", model.InvestmentCount }
+                Coin = model.InvestmentReturns,
+                CoinNumInvestments = model.InvestmentCount
             };
         }
 
         if (model.RemodelItemName is not null)
         {
-            dto.MechanicData["remodel"] = new ASObject
+            dto.MechanicData["remodel"] = new RemodelDto
             {
-                { "itemName", model.RemodelItemName },
-                { "gate", new ASObject { { "builds", model.RemodelBuilds ?? 0 } } },
-                { "complete", false }
+                ItemName = model.RemodelItemName,
+                Gate = new RemodelGateDto { Builds = model.RemodelBuilds ?? 0 },
+                Complete = false
             };
         }
 
@@ -211,10 +205,10 @@ public static class WorldObjectDtoMapper
             var item = GameSettingsManager.Instance.GetItem(model.ItemName);
 
             dto.MechanicData["harvestState"] = model.State == WorldObjectState.Open || model.State == WorldObjectState.ClosedHarvestable
-                ? new ASObject
+                ? new CustomerHarvestStateDto
                 {
-                    { "customers", model.Visits },
-                    { "customersReq", item?.CustomerCapacity ?? 0 }
+                    Customers = model.Visits ?? 0,
+                    CustomersReq = item?.CustomerCapacity ?? 0
                 }
                 : null;
         }
@@ -223,10 +217,10 @@ public static class WorldObjectDtoMapper
 
         if (model.ContractName is not null && gameItem?.GetGameEventMechanic("contractPlant") is not null)
         {
-            dto.MechanicData["contract"] = new ASObject
+            dto.MechanicData["contract"] = new ContractDataDto
             {
-                { "contractName", model.ContractName },
-                { "plantTime", (model.PlantTime ?? 0) / 1000 }
+                ContractName = model.ContractName,
+                PlantTime = (model.PlantTime ?? 0) / 1000
             };
         }
         
@@ -241,19 +235,19 @@ public static class WorldObjectDtoMapper
             {
                 var timestamp = (long)(model.PlantTime.Value / 1000);
 
-                dto.MechanicData["harvestState"] = new ASObject
+                dto.MechanicData["harvestState"] = new TimedHarvestStateDto
                 {
-                    { "state", "supplied" },
-                    { "timestamp", timestamp },
-                    { "endTimestamp", timestamp + (gameItem.HarvestLoopConfig?.TimerDuration ?? 0) }
+                    State = "supplied",
+                    Timestamp = timestamp,
+                    EndTimestamp = timestamp + (gameItem.HarvestLoopConfig?.TimerDuration ?? 0)
                 };
             }
             else
             {
-                dto.MechanicData["harvestState"] = new ASObject
+                dto.MechanicData["harvestState"] = new TimedHarvestStateDto
                 {
-                    { "state", "closed" },
-                    { "timestamp", -1 }
+                    State = "closed",
+                    Timestamp = -1
                 };
             }
         }
@@ -262,10 +256,10 @@ public static class WorldObjectDtoMapper
             var customersReq = gameItem.CommodityRequired ?? 0;
 
             dto.MechanicData["harvestState"] = model.State == WorldObjectState.Open || model.State == WorldObjectState.ClosedHarvestable
-                ? new ASObject
+                ? new CustomerHarvestStateDto
                 {
-                    { "customers", Math.Min(model.Visits ?? 0, customersReq) },
-                    { "customersReq", customersReq }
+                    Customers = Math.Min(model.Visits ?? 0, customersReq),
+                    CustomersReq = customersReq
                 }
                 : null;
         }
@@ -278,11 +272,11 @@ public static class WorldObjectDtoMapper
             {
                 if (mechanic.Type == "streakData")
                 {
-                    dto.MechanicData["streakData"] = new ASObject
+                    dto.MechanicData["streakData"] = new StreakDataDto
                     {
-                        { "activationTime", model.ActivationTime ?? -1 },
-                        { "inactiveTime", model.InactiveTime ?? -1 },
-                        { "streakLength", model.StreakLength }
+                        ActivationTime = model.ActivationTime ?? -1,
+                        InactiveTime = model.InactiveTime ?? -1,
+                        StreakLength = model.StreakLength
                     };
                 }
 
@@ -295,10 +289,7 @@ public static class WorldObjectDtoMapper
 
         if (model.ClassName == BuildingClassType.GreenHouse)
         {
-            dto.MechanicData["greenHouseStorage"] = new Dictionary<string, object>()
-            {
-                { "item", model.GetGreenHousePlot().ToDto() }
-            };
+            dto.MechanicData["greenHouseStorage"] = new GreenHouseStorageDto { Item = model.GetGreenHousePlot().ToDto() };
 
             dto.State = WorldObjectState.Static.ToDescriptionString(); // restore to static state
         }
@@ -324,11 +315,11 @@ public static class WorldObjectDtoMapper
             {
                 var customersReq = model.GetSupplyCustomersReq();
 
-                dto.MechanicData["harvestState"] = new ASObject
+                dto.MechanicData["harvestState"] = new CustomerHarvestStateDto
                 {
-                    { "customers", Math.Min(model.Visits ?? 0, customersReq) },
-                    { "customersReq", customersReq },
-                    { "resources", model.GetSupplyResourceNames().Select(x => (object)x).ToList() }
+                    Customers = Math.Min(model.Visits ?? 0, customersReq),
+                    CustomersReq = customersReq,
+                    Resources = model.GetSupplyResourceNames()
                 };
             }
         }
@@ -349,24 +340,17 @@ public static class WorldObjectDtoMapper
             {
                 var customersReq = model.GetThemeParkCustomersReq();
 
-                dto.MechanicData["harvestState"] = new ASObject
+                dto.MechanicData["harvestState"] = new CustomerHarvestStateDto
                 {
-                    { "customers", Math.Min(model.Visits ?? 0, customersReq) },
-                    { "customersReq", customersReq },
-                    { "filledSlotCount", model.SupplyResources.Count }
+                    Customers = Math.Min(model.Visits ?? 0, customersReq),
+                    CustomersReq = customersReq,
+                    FilledSlotCount = model.SupplyResources.Count
                 };
             }
         }
 
         if (model.ClassName == BuildingClassType.ZooEnclosure)
         {
-            var storage = new ASObject();
-
-            foreach (var storageItem in model.StorageItems)
-            {
-                storage[storageItem.Name] = storageItem.Amount;
-            }
-
             var numSlots = gameItem?.Mechanics?.GetMechanicByGameMode("all")?.GetMechanicItemByType("slots")?.NumSlots ?? 3;
             var slots = new List<object?>();
 
@@ -375,9 +359,9 @@ public static class WorldObjectDtoMapper
                 slots.Add(model.Slots.FirstOrDefault(x => x.SlotIndex == i)?.ItemName);
             }
 
-            dto.MechanicData["storage"] = storage;
+            dto.MechanicData["storage"] = model.StorageItems.ToDictionary(x => x.Name, x => x.Amount);
             dto.MechanicData["slots"] = slots;
-            dto.MechanicData["giftSenders"] = new ASObject();
+            dto.MechanicData["giftSenders"] = new EmptyDto();
         }
 
         if (model.ClassName == BuildingClassType.ConstructionSite)
@@ -386,16 +370,18 @@ public static class WorldObjectDtoMapper
 
             foreach (var buildGate in gates.Where(x => x.Name == "build"))
             {
-                var keysObj = new ASObject();
+                var keys = new Dictionary<string, int>();
 
-                foreach (var key in buildGate.Keys.Where(k => k is not null))
-                    keysObj[key!.Name] = key.Amount;
-
-                dto.Gates.Add(new ASObject
+                foreach (var key in buildGate.Keys.OfType<GateKey>())
                 {
-                    { "name", buildGate.Name },
-                    { "type", buildGate.Type },
-                    { "keys", keysObj },
+                    keys[key.Name] = key.Amount;
+                }
+
+                dto.Gates.Add(new GateDto
+                {
+                    Name = buildGate.Name,
+                    Type = buildGate.Type,
+                    Keys = keys
                 });
             }
         }

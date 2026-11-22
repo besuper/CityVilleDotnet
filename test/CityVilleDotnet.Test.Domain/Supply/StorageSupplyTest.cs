@@ -11,7 +11,6 @@ using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Factory.Quest;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
-using FluorineFx;
 using WorldEntity = CityVilleDotnet.Domain.Entities.World;
 using WorldObjectEntity = CityVilleDotnet.Domain.Entities.WorldObject;
 
@@ -328,10 +327,10 @@ public class StorageSupplyTest
         var dto = mall.ToDto(world.Objects);
 
         dto.State.Should().Be(WorldObjectState.Static.ToDescriptionString());
-        var harvestState = dto.MechanicData["harvestState"].Should().BeOfType<ASObject>().Subject;
-        harvestState["customers"].Should().Be(5);
-        harvestState["customersReq"].Should().Be(30);
-        harvestState["resources"].Should().BeAssignableTo<List<object>>().Which.Should().Equal("test_mall_shop_a", "test_mall_shop_b");
+        var harvestState = dto.MechanicData["harvestState"].Should().BeOfType<CustomerHarvestStateDto>().Subject;
+        harvestState.Customers.Should().Be(5);
+        harvestState.CustomersReq.Should().Be(30);
+        harvestState.Resources.Should().Equal("test_mall_shop_a", "test_mall_shop_b");
     }
 
     [Fact]

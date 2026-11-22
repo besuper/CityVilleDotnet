@@ -32,7 +32,7 @@ internal sealed class ProcessHubWorkers(CityVilleDbContext context) : AmfService
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new CityVilleResponse().Data(new ASObject { { "frontendData", group.ToHunterWorkersAsObject() } });
+        return new CityVilleResponse().Data(new ASObject { { "frontendData", AmfConverter.Convert(group.ToHunterWorkersDto()) } });
     }
 }
 

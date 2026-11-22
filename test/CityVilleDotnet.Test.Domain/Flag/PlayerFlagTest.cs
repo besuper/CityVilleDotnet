@@ -81,8 +81,8 @@ public class PlayerFlagTest
         var dto = player.ToDto().UserInfo.Player;
 
         var flag = dto.FlagContainer.Should().ContainSingle().Subject;
-        flag["name"].Should().Be("test_flag");
-        flag["m_value"].Should().Be(-2);
-        flag["lastModifiedGlobalEngineTime"].Should().Be(StartTime.ToUnixTimeMilliseconds());
+        flag.Name.Should().Be("test_flag");
+        flag.Value.Should().Be(-2);
+        flag.LastModifiedGlobalEngineTime.Should().Be(StartTime.ToUnixTimeMilliseconds());
     }
 }

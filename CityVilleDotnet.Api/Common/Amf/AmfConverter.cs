@@ -16,7 +16,17 @@ public static class AmfConverter
         if (obj is IDictionary dict && IsStringKeyedDictionary(obj.GetType()))
             return ConvertDictionary(dict);
 
-        if (obj is ASObject || IsSimpleType(obj.GetType()))
+        if (obj is ASObject asObject)
+        {
+            foreach (var key in new List<string>(asObject.Keys))
+            {
+                asObject[key] = Convert(asObject[key]);
+            }
+
+            return asObject;
+        }
+
+        if (IsSimpleType(obj.GetType()))
             return obj;
 
         if (obj is IEnumerable arrayList)
@@ -85,22 +95,7 @@ public static class AmfConverter
 
         foreach (var item in collection)
         {
-            if (item is null)
-            {
-                result.Add(null);
-            }
-            else if (item is ASObject || IsSimpleType(item.GetType()))
-            {
-                result.Add(item);
-            }
-            else if (item is IEnumerable enumerable)
-            {
-                result.Add(ConvertToList(enumerable));
-            }
-            else
-            {
-                result.Add(ConvertToAsObject(item));
-            }
+            result.Add(Convert(item));
         }
 
         return result;

@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using FluorineFx;
 
 namespace CityVilleDotnet.Domain.GameEntities;
 
@@ -29,7 +28,7 @@ public class UserInfoDto
     [JsonPropertyName("world")]
     public required WorldDto World { get; set; }
 
-    [JsonPropertyName("world_summary")] public ASObject WorldSummary { get; set; } = [];
+    [JsonPropertyName("world_summary")] public Dictionary<string, WorldSummaryDto> WorldSummary { get; set; } = [];
     [JsonPropertyName("CompletedQuests")] public List<string> CompletedQuests { get; set; } = [];
     [JsonPropertyName("questsExpired")] public List<string> QuestsExpired { get; set; } = [];
     [JsonPropertyName("lastPlayedWorldId")] public required string LastPlayedWorldId { get; set; }

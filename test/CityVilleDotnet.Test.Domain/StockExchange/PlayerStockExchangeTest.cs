@@ -10,7 +10,6 @@ using CityVilleDotnet.Factory.Player;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
 using CityVilleDotnet.Test.Domain.Fixtures;
-using FluorineFx;
 
 namespace CityVilleDotnet.Test.Domain.StockExchange;
 
@@ -275,10 +274,10 @@ public class PlayerStockExchangeTest
         player.SetGold(1500);
         player.PlantMechanicContract(building, Item("test_stockexchange"), Item("test_contract_stock"));
 
-        var contract = (ASObject)building.ToDto().MechanicData["contract"]!;
+        var contract = building.ToDto().MechanicData["contract"].Should().BeOfType<ContractDataDto>().Subject;
 
-        contract["contractName"].Should().Be("test_contract_stock");
-        contract["plantTime"].Should().Be(building.PlantTime!.Value / 1000);
+        contract.ContractName.Should().Be("test_contract_stock");
+        contract.PlantTime.Should().Be(building.PlantTime!.Value / 1000);
     }
 
     [Fact]
@@ -291,9 +290,9 @@ public class PlayerStockExchangeTest
         var dto = building.ToDto();
 
         dto.MechanicData.ContainsKey("contract").Should().BeFalse();
-        var investmentData = (ASObject)dto.MechanicData["investmentData"]!;
-        investmentData["coin"].Should().Be(450);
-        investmentData["coin_numInvestments"].Should().Be(1);
+        var investmentData = dto.MechanicData["investmentData"].Should().BeOfType<InvestmentDataDto>().Subject;
+        investmentData.Coin.Should().Be(450);
+        investmentData.CoinNumInvestments.Should().Be(1);
     }
 
     [Fact]

@@ -11,7 +11,6 @@ using CityVilleDotnet.Factory.Quest;
 using CityVilleDotnet.Factory.World;
 using CityVilleDotnet.Factory.WorldObject;
 using CityVilleDotnet.Test.Domain.Fixtures;
-using FluorineFx;
 
 namespace CityVilleDotnet.Test.Domain.GlobalTableOverride;
 
@@ -192,7 +191,7 @@ public class GlobalTableOverrideTest
 
         var dto = player.ToDto();
 
-        dto.FeatureData["globalTable"].Should().BeOfType<ASObject>().Which.Should().BeEmpty();
+        dto.FeatureData["globalTable"].Should().BeOfType<Dictionary<string, Dictionary<string, string>>>().Which.Should().BeEmpty();
     }
 
     [Fact]
@@ -205,16 +204,16 @@ public class GlobalTableOverrideTest
         player.GlobalTableOverrides.Add(faker.GlobalTableOverride(keyword: "Business", table: "test_global_z_table", source: "quest_2"));
         player.GlobalTableOverrides.Add(faker.GlobalTableOverride(keyword: "Community", table: "test_global_z_table", source: "quest_2"));
 
-        var globalTable = player.ToDto().FeatureData["globalTable"].Should().BeOfType<ASObject>().Subject;
+        var globalTable = player.ToDto().FeatureData["globalTable"].Should().BeOfType<Dictionary<string, Dictionary<string, string>>>().Subject;
 
         globalTable.Should().HaveCount(2);
 
-        var business = globalTable["Business"].Should().BeOfType<ASObject>().Subject;
+        var business = globalTable["Business"];
         business.Should().HaveCount(2);
         business["test_global_z_table"].Should().Be("quest_1,quest_2");
         business["test_global_a_table"].Should().Be("quest_1");
 
-        var community = globalTable["Community"].Should().BeOfType<ASObject>().Subject;
+        var community = globalTable["Community"];
         community["test_global_z_table"].Should().Be("quest_2");
     }
 
@@ -424,9 +423,9 @@ public class GlobalTableOverrideTest
         player.AddObjectTableOverrides(ObjectId, BuildTables());
         player.AddObjectTableOverrides(43, BuildTables());
 
-        var globalTable = player.ToDto().FeatureData["globalTable"].Should().BeOfType<ASObject>().Subject;
+        var globalTable = player.ToDto().FeatureData["globalTable"].Should().BeOfType<Dictionary<string, Dictionary<string, string>>>().Subject;
 
-        var business = globalTable["Business"].Should().BeOfType<ASObject>().Subject;
+        var business = globalTable["Business"];
         business["test_global_a_table"].Should().Be("42,43");
     }
 

@@ -34,7 +34,7 @@ public class SyncWorkers(CityVilleDbContext context) : AmfService<SyncWorkersReq
 
         return new CityVilleResponse().Data(new ASObject
         {
-            ["workers"] = isTrains ? world.ToTrainWorkersAsObject() : world.ToFactoryWorkersAsObject()
+            ["workers"] = isTrains ? AmfConverter.Convert(world.ToTrainWorkersDto()) : AmfConverter.Convert(world.ToFactoryWorkersDto())
         });
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using FluorineFx;
 
 namespace CityVilleDotnet.Domain.GameEntities;
 
@@ -9,5 +8,5 @@ public class CitySimDto
     public required PopulationSummaryDto PopulationSummary { get; set; }
 
     [JsonPropertyName("appraisalSummary")]
-    public ASObject? AppraisalSummary { get; set; }
+    public required SimSummaryDto AppraisalSummary { get; set; }
 }

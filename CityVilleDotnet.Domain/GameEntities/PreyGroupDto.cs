@@ -1,47 +1,32 @@
+using System.Text.Json.Serialization;
 using CityVilleDotnet.Domain.Entities;
-using CityVilleDotnet.Domain.EnumExtensions;
-using FluorineFx;
 
 namespace CityVilleDotnet.Domain.GameEntities;
 
-public static class PreyGroupDto
+public class PreyGroupDto
 {
-    public static ASObject ToPreyGroupAsObject(this PreyGroup? group, string groupId)
-    {
-        return new ASObject
-        {
-            { "preyId", groupId },
-            { "preys", group?.Preys.Select(object (x) => x).ToList() ?? [] },
-            { "numPreysCaptured", group?.NumPreysCaptured ?? 0 },
-            { "typesPreysCaptured", new ASObject(group?.Captures.ToDictionary(x => x.PreyId.ToString(), object (x) => x.Count) ?? []) },
-            { "gateUnlockLevel", group?.GateUnlockLevel ?? 1 }
-        };
-    }
+    [JsonPropertyName("preyId")] public required string PreyId { get; set; }
 
-    // Every prey group reads its hunters from the "cops" bucket
-    public static ASObject ToHunterWorkersAsObject(this PreyGroup? group)
+    [JsonPropertyName("preys")] public required List<int> Preys { get; set; }
+
+    [JsonPropertyName("numPreysCaptured")] public int NumPreysCaptured { get; set; }
+
+    [JsonPropertyName("typesPreysCaptured")] public required Dictionary<string, int> TypesPreysCaptured { get; set; }
+
+    [JsonPropertyName("gateUnlockLevel")] public int GateUnlockLevel { get; set; }
+}
+
+public static class PreyGroupDtoMapper
+{
+    public static PreyGroupDto ToPreyGroupDto(this PreyGroup? group, string groupId)
     {
-        return new ASObject
+        return new PreyGroupDto
         {
-            {
-                "cops", new ASObject
-                {
-                    { "attributes", new ASObject() },
-                    {
-                        "members", group?.Hunters.OrderBy(x => x.Position).Select(object (x) => new ASObject
-                        {
-                            { "zid", x.GetZid() },
-                            {
-                                "data", new ASObject
-                                {
-                                    { "state", x.State.ToDescriptionString() },
-                                    { "ts", x.Timestamp }
-                                }
-                            }
-                        }).ToList() ?? []
-                    }
-                }
-            }
+            PreyId = groupId,
+            Preys = group?.Preys.ToList() ?? [],
+            NumPreysCaptured = group?.NumPreysCaptured ?? 0,
+            TypesPreysCaptured = group?.Captures.ToDictionary(x => x.PreyId.ToString(), x => x.Count) ?? [],
+            GateUnlockLevel = group?.GateUnlockLevel ?? 1
         };
     }
 }

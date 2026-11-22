@@ -79,9 +79,9 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
         {
             // socialInventory feature is enabled after level 10
             // TODO: Check if needed to implement it better
-            featuredData["socialInventory"] = new ASObject
+            featuredData["socialInventory"] = new SocialInventoryFeatureDto
             {
-                { "samObjectIds", new ASObject(playerToLoad.GetWorld().Objects.ToDictionary(x => x.WorldFlatId.ToString(), _ => (object)0)) }
+                SamObjectIds = playerToLoad.GetWorld().Objects.ToDictionary(x => x.WorldFlatId.ToString(), _ => 0)
             };
         }
 

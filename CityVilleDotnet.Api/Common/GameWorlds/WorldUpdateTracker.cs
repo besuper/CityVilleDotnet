@@ -190,13 +190,13 @@ public sealed class WorldUpdateTracker : IDisposable
             .Include(x => x.Objects.Where(o => o.ParentMacroObjectId != null))
             .FirstAsync(x => x.Id == worldId, cancellationToken);
 
-        var macroObjects = world.ToMacroObjectsAsObject();
+        var macroObjects = world.ToMacroObjectsDto();
 
         foreach (var name in _removedMacroNames)
         {
             macroObjects[name] = null;
         }
 
-        return macroObjects;
+        return (ASObject)AmfConverter.Convert(macroObjects)!;
     }
 }
