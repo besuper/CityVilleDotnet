@@ -16,7 +16,7 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261121114741_AddViralAck";
+    public override string LastMigrationId => "20261122211204_AddSomeMaxLength";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -918,7 +918,8 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
 
                 b.PrimitiveCollection<string>("Preys")
                     .IsRequired()
-                    .HasColumnType("nvarchar(max)");
+                    .HasMaxLength(64)
+                    .HasColumnType("nvarchar(64)");
 
                 b.HasKey("Id");
 
@@ -983,11 +984,13 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
 
                 b.PrimitiveCollection<string>("Progress")
                     .IsRequired()
-                    .HasColumnType("nvarchar(max)");
+                    .HasMaxLength(512)
+                    .HasColumnType("nvarchar(512)");
 
                 b.PrimitiveCollection<string>("Purchased")
                     .IsRequired()
-                    .HasColumnType("nvarchar(max)");
+                    .HasMaxLength(512)
+                    .HasColumnType("nvarchar(512)");
 
                 b.Property<int>("QuestType")
                     .HasColumnType("int");
@@ -1476,7 +1479,8 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
                     .HasColumnType("nvarchar(64)");
 
                 b.Property<string>("ItemOwner")
-                    .HasColumnType("nvarchar(max)");
+                    .HasMaxLength(32)
+                    .HasColumnType("nvarchar(32)");
 
                 b.Property<bool>("NeverOpened")
                     .HasColumnType("bit");

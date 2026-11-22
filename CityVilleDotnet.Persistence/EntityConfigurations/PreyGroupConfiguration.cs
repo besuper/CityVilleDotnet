@@ -15,7 +15,7 @@ public class PreyGroupConfiguration : IEntityTypeConfiguration<PreyGroup>
         builder.Property(x => x.NumPreysCaptured);
         builder.Property(x => x.GateUnlockLevel);
         builder.Property(x => x.LastQueueRefill);
-        builder.PrimitiveCollection(x => x.Preys);
+        builder.PrimitiveCollection(x => x.Preys).HasMaxLength(64);
 
         builder.HasIndex("PlayerId", nameof(PreyGroup.GroupId)).IsUnique();
 
