@@ -1,5 +1,6 @@
 ﻿using FluorineFx;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -58,36 +59,46 @@ public static class AmfConverter
     {
         var result = new ASObject();
 
-        var type = obj.GetType();
-        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        foreach (var property in PropertyCache.GetOrAdd(obj.GetType(), BuildProperties))
+        {
+            var value = property.Property.GetValue(obj);
 
-        foreach (var property in properties)
+            if (value is null)
+            {
+                // the client tests some keys with "in": a null value must not create the key
+                if (property.SkipWhenNull) continue;
+
+                result[property.Name] = null;
+                continue;
+            }
+
+            result[property.Name] = Convert(value);
+        }
+
+        return result;
+    }
+
+    private static readonly ConcurrentDictionary<Type, AmfProperty[]> PropertyCache = new();
+
+    private static AmfProperty[] BuildProperties(Type type)
+    {
+        var result = new List<AmfProperty>();
+
+        foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
         {
             var jsonIgnore = property.GetCustomAttribute<JsonIgnoreAttribute>();
 
             if (jsonIgnore is not null && jsonIgnore.Condition != JsonIgnoreCondition.WhenWritingNull) continue;
 
-            var jsonPropertyNameAttr = property.GetCustomAttribute<JsonPropertyNameAttribute>();
-            var propertyName = jsonPropertyNameAttr != null
-                ? jsonPropertyNameAttr.Name
-                : property.Name;
+            var name = property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? property.Name;
 
-            var value = property.GetValue(obj);
-
-            if (value is null)
-            {
-                // the client tests some keys with "in": a null value must not create the key
-                if (jsonIgnore is not null) continue;
-
-                result[propertyName] = null;
-                continue;
-            }
-
-            result[propertyName] = Convert(value);
+            result.Add(new AmfProperty(property, name, jsonIgnore is not null));
         }
 
-        return result;
+        return result.ToArray();
     }
+
+    private sealed record AmfProperty(PropertyInfo Property, string Name, bool SkipWhenNull);
 
     private static List<object?> ConvertToList(IEnumerable collection)
     {

@@ -99,6 +99,7 @@ public abstract class AmfService<TRequest> : AmfService where TRequest : new()
     }
 
     private static readonly ConcurrentDictionary<Type, AmfPropertyInfo[]> PropertyCache = new();
+    private static readonly ConcurrentDictionary<Type, bool> MappableCache = new();
 
     private static AmfPropertyInfo[] GetOrBuildPropertyCache(Type type)
     {
@@ -162,7 +163,7 @@ public abstract class AmfService<TRequest> : AmfService where TRequest : new()
         if (value is string str && targetType == typeof(string))
             return str.Sanitize();
 
-        if (value is IDictionary dict && IsMappableClass(targetType))
+        if (value is IDictionary dict && MappableCache.GetOrAdd(targetType, IsMappableClass))
             return MapFromDictionary(dict, targetType);
 
         if (targetType.IsInstanceOfType(value)) return value;
