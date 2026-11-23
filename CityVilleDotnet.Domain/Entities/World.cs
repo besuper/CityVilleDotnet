@@ -569,21 +569,9 @@ public partial class World
         }
     }
 
-    public int CountStreakByItemNames(string[] itemNames)
-    {
-        var obj = Objects.FirstOrDefault(o => o.StreakLength > 0 && itemNames.Contains(o.GetDeepItemName()));
-
-        if (obj is null) return 0;
-
-        return obj.StreakLength;
-    }
-
+    // GameQuestUtility::checkStreakEffect
     public int GetStreakEffectByItemNames(string[] itemNames)
     {
-        var obj = Objects.FirstOrDefault(o => o.EnergyModifier > 0 && itemNames.Contains(o.GetDeepItemName()));
-
-        if (obj is null) return 0;
-
-        return obj.EnergyModifier;
+        return Objects.FirstOrDefault(o => itemNames.Contains(o.ItemName))?.EnergyModifier ?? 0;
     }
 }

@@ -18,6 +18,7 @@ internal sealed class StreakData(CityVilleDbContext context) : AmfService<Streak
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
 
         if (player is null) throw new Exception("Player not found");
@@ -78,6 +79,8 @@ internal sealed class StreakData(CityVilleDbContext context) : AmfService<Streak
 
             obj.Supply(mechanic.MaxStreakLength, gameItem.GetPositiveStreakRewards(), gameItem.GetStreakMaxEffect());
         }
+
+        player.HandleQuestsProgress("countNumAtThisStreak", itemName: obj.ItemName, amount: obj.StreakLength);
 
         await context.SaveChangesAsync(cancellationToken);
 

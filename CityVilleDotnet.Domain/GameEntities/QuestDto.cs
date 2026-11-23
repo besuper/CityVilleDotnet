@@ -57,6 +57,10 @@ public static class QuestDtoMapper
                 case "countLights":
                     extraData["oldLightCount"] = player.CityLightCount - model.Progress[index];
                     break;
+                case "countNumAtThisStreak":
+                case "checkStreakEffect":
+                    extraData["streak"] = tasks[index].Streak ?? 0;
+                    break;
             }
         }
 

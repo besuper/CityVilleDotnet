@@ -170,6 +170,14 @@ public partial class Player
                             if (task.Type == itemName)
                                 quest.Progress[index] += amount;
                             break;
+                        case "countNumAtThisStreak":
+                            // amount is the object's current streak
+                            if (itemName is not null && (splitType ?? [taskType]).Contains(itemName) && amount >= task.Streak)
+                            {
+                                quest.Progress[index] += 1;
+                            }
+
+                            break;
                         case "incrementalPopulationCount":
                         case "gainLevels":
                             quest.Progress[index] += amount;
@@ -370,17 +378,11 @@ public partial class Player
                             quest.Progress[index] = value;
 
                         continue;
-                    case "countNumAtThisStreak":
-                        var count = GetWorld().CountStreakByItemNames(splitType ?? [taskType]);
-
-                        if (count >= task.Streak)
-                            quest.Progress[index] = 1;
-                        continue;
                     case "checkStreakEffect":
-                        var effect = GetWorld().GetStreakEffectByItemNames(splitType ?? [taskType]);
-
-                        if (effect >= task.Streak)
+                        if (GetWorld().GetStreakEffectByItemNames(splitType ?? [taskType]) >= task.Streak)
+                        {
                             quest.Progress[index] = 1;
+                        }
                         continue;
                     case "countFranchiseExpansionsByName":
                         if (!calculatedResults.TryGetValue(resultKey, out value))
