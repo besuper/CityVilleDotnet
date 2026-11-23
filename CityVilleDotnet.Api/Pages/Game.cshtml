@@ -4,7 +4,7 @@
 @inject Microsoft.Extensions.Localization.IStringLocalizer<CityVilleDotnet.Api.Resources.SharedResource> Localizer
 @{
 	Layout = "Shared/_GameLayout";
-	var useRuffle = Request.Query["player"] == "ruffle";
+	var useSwf2Es = Request.Query["player"] == "swf2es";
 }
 
 @model CityVilleDotnet.Api.Pages.GameModel
@@ -27,11 +27,7 @@
 		}
 	</script>
 	
-	@if (useRuffle)
-	{
-		<script type="text/javascript" src="ruffle/ruffle.js?v=2"></script>
-	}
-	else
+	@if (useSwf2Es)
 	{
 		<script type="module">
 			if (!(navigator.plugins && navigator.plugins["Shockwave Flash"])) {
@@ -40,6 +36,10 @@
 				replaceFlash();
 			}
 		</script>
+	}
+	else
+	{
+		<script type="text/javascript" src="ruffle/ruffle.js?v=2"></script>
 	}
 
 	<style>
