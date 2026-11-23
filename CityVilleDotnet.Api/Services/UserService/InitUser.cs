@@ -24,15 +24,30 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
 
         var hubNames = GameSettingsManager.Instance.GetPreyGroups().SelectMany(x => x.GetHubNames()).ToList();
 
-        var preyPlayer = await context.Set<Player>()
+        var trackedUser = await context.Set<Player>()
             .AsSplitQuery()
+            .Include(x => x.Quests)
+            .Include(x => x.InventoryItems)
             .Include(x => x.PreyGroups)
             .ThenInclude(x => x.Hunters)
             .Include(x => x.Worlds.Where(w => w.Type == WorldType.Main))
-            .ThenInclude(x => x.Objects.Where(o => hubNames.Contains(o.ItemName)))
+            .ThenInclude(x => x.Objects.Where(o => o.TempId != -1 || o.EnergyModifier > 0 || hubNames.Contains(o.ItemName)))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
-        preyPlayer.RefreshPreyGroups(preyPlayer.GetWorld(), ServerUtils.GetCurrentTimeSeconds());
+        var trackedWorld = trackedUser.GetWorld();
+
+        trackedUser.RefreshPreyGroups(trackedWorld, ServerUtils.GetCurrentTimeSeconds());
+
+        // Remove the first building if user refresh before completing the tutorial to avoid being stuck
+        if (trackedUser.IsNew && trackedWorld.Objects.FirstOrDefault(y => y.TempId != -1) is { } firstBuilding)
+        {
+            trackedWorld.RemoveBuilding(firstBuilding);
+            context.Remove(firstBuilding);
+        }
+
+        trackedUser.UpdateEnergy();
+        trackedWorld.CleanTempIDs();
+        trackedUser.SpawnEligibleQuests();
 
         await context.SaveChangesAsync(cancellationToken);
 
@@ -108,41 +123,6 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
 
         if (user is null)
             throw new Exception("Player not initialized correctly");
-
-        // Handle energy regeneration
-        var trackedUser = await context.Set<Player>()
-            .AsSplitQuery()
-            .Include(x => x.Quests)
-            .Include(x => x.InventoryItems)
-            .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x!.Objects.Where(y => y.TempId != -1 || y.EnergyModifier > 0))
-            .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken);
-
-        if (trackedUser is null)
-            throw new Exception("Player not found for user");
-
-        // Remove the first building if user refresh before completing the tutorial to avoid being stuck
-        if (trackedUser.IsNew)
-        {
-            var firstBuilding = trackedUser.GetWorld().Objects.FirstOrDefault(y => y.TempId != -1);
-
-            if (firstBuilding is not null)
-            {
-                user.GetWorld().RemoveBuilding(user.GetWorld().Objects.FirstOrDefault(y => y.TempId != -1)!);
-                trackedUser.GetWorld().RemoveBuilding(firstBuilding);
-                
-                context.Remove(firstBuilding);
-            }
-        }
-
-        trackedUser.UpdateEnergy();
-        trackedUser.GetWorld().CleanTempIDs();
-        trackedUser.SpawnEligibleQuests();
-        
-        user.GetWorld().CleanTempIDs();
-        user.UpdateEnergy(); // This will not save
-
-        await context.SaveChangesAsync(cancellationToken);
 
         // Rows only, the summaries of the non active worlds are built from the persisted fields
         var allWorlds = await context.Set<World>()
