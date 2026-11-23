@@ -2,6 +2,7 @@
 using FluorineFx.IO;
 using FluorineFx;
 using System.Collections.Frozen;
+using System.Diagnostics;
 using System.Reflection;
 using Humanizer;
 using CityVilleDotnet.Api.Common.Amf;
@@ -97,7 +98,10 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, CityVille
                     continue;
                 }
 
-                logger.LogInformation("Received request from {player} for {FunctionName} sequence {Sequence} parameters {parameters}", playerId, functionName, sequence, parameters);
+                logger.LogDebug("Received request from {player} for {FunctionName} sequence {Sequence} parameters {parameters}", playerId, functionName, sequence, parameters);
+
+                var startTime = Stopwatch.GetTimestamp();
+                var handler = functionName;
 
                 ASObject? response;
 
@@ -134,6 +138,8 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, CityVille
                         upperClassName = ResolveMechanicHandler(mechanicType);
                     }
 
+                    handler = $"{packageName}.{upperClassName}";
+
                     using var worldUpdateTracker = new WorldUpdateTracker(context);
 
                     response = await InvokeHandlePacketAsync($"CityVilleDotnet.Api.Services.{packageName}.{upperClassName}", parameters, playerId, ct);
@@ -141,7 +147,7 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, CityVille
                     if (response is null)
                     {
                         logger.LogError("Something went wrong while processing the request. {PackageName}.{UpperClassName}", packageName, upperClassName);
-                        logger.LogDebug("Parameters {Objects}", (object?)parameters);
+                        logger.LogError("Parameters {Objects}", (object?)parameters);
 
                         response = CreateEmptyResponse();
                     }
@@ -150,7 +156,7 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, CityVille
                 }
                 catch (DomainException de)
                 {
-                    logger.LogWarning("Domain exception for {FunctionName} Reason: {Errors} Message: {Message}", functionName, de.Reason, de.ClientMessage);
+                    logger.LogError("Domain exception for {FunctionName} Reason: {Errors} Message: {Message}", functionName, de.Reason, de.ClientMessage);
 
                     context.ChangeTracker.Clear();
 
@@ -176,6 +182,8 @@ internal sealed class GatewayService(IServiceProvider serviceProvider, CityVille
 
                     response = new CityVilleResponse().Error(GameErrorType.InvalidData).ToObject();
                 }
+
+                logger.LogInformation("Handled request from {player} for {FunctionName} ({Handler}) sequence {Sequence} in {ElapsedMs} ms", playerId, functionName, handler, sequence, (int)Stopwatch.GetElapsedTime(startTime).TotalMilliseconds);
 
                 responses.Add(response);
             }
