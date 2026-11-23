@@ -88,6 +88,7 @@ public class OpenWorld(CityVilleDbContext context, ILogger<OpenWorld> logger) : 
         if (playerToLoad.Id == playerId)
         {
             var trackedPlayer = await context.Set<Player>()
+                .AsSplitQuery()
                 .Include(x => x.Quests)
                 .Include(x => x.InventoryItems)
                 .Include(x => x.Worlds.Where(w => w.Type == request.WorldType))
