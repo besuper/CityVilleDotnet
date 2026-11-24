@@ -30,7 +30,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .Include(x => x.InventoryItems)
             .Include(x => x.PreyGroups)
             .ThenInclude(x => x.Hunters)
-            .Include(x => x.Worlds.Where(w => w.Type == WorldType.Main))
+            .Include(x => x.Worlds)
             .ThenInclude(x => x.Objects.Where(o => o.TempId != -1 || o.EnergyModifier > 0 || hubNames.Contains(o.ItemName)))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
@@ -46,7 +46,13 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
         }
 
         trackedUser.UpdateEnergy();
-        trackedWorld.CleanTempIDs();
+        
+        // Reset temp ids for every worlds
+        foreach (var world in trackedUser.Worlds)
+        {
+            world.CleanTempIDs();
+        }
+
         trackedUser.SpawnEligibleQuests();
 
         await context.SaveChangesAsync(cancellationToken);
