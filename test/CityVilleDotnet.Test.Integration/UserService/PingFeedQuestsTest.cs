@@ -125,4 +125,56 @@ public class PingFeedQuestsTest(DatabaseFixture fixture) : IntegrationTest(fixtu
         var quest = await Context.Set<Quest>().FirstAsync(x => x.Name == "qm_test_lakefront_expansion", TestContext.Current.CancellationToken);
         quest.Progress.Should().Equal(1, 0);
     }
+
+    // qm_test_hotels: 2 businesses in the resort of an open hotel + an already shared check-in feed
+    [Fact]
+    public async Task PingFeedQuests_OpenHotelWithResortBusinesses_CompletesHotelQuest()
+    {
+        var world = Faker.World(objects:
+        [
+            Faker.WorldObject(itemName: "test_resort_hotel", className: BuildingClassType.Hotel, state: WorldObjectState.Open, x: 0, y: 0, worldFlatId: 1),
+            Faker.WorldObject(itemName: "test_resort_shop", className: BuildingClassType.Business, x: 4, y: 1, worldFlatId: 2),
+            Faker.WorldObject(itemName: "test_resort_shop", className: BuildingClassType.Business, x: 2, y: 4, worldFlatId: 3)
+        ]);
+        var user = Faker.Player(world: world);
+        var quest = Faker.Quest(name: "qm_test_hotels", length: 3);
+        quest.Progress[2] = 1;
+        user.Quests.Add(quest);
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var response = await new PingFeedQuests(Context).HandlePacket([], user.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+
+        Context.ChangeTracker.Clear();
+
+        var updatedQuest = await Context.Set<Quest>().FirstAsync(x => x.Name == "qm_test_hotels", TestContext.Current.CancellationToken);
+        updatedQuest.QuestType.Should().Be(QuestType.Completed);
+        updatedQuest.Progress.Should().Equal(2, 1, 1);
+    }
+
+    [Fact]
+    public async Task PingFeedQuests_ClosedHotel_KeepsHotelQuestActive()
+    {
+        var world = Faker.World(objects:
+        [
+            Faker.WorldObject(itemName: "test_resort_hotel", className: BuildingClassType.Hotel, state: WorldObjectState.Closed, x: 0, y: 0, worldFlatId: 1),
+            Faker.WorldObject(itemName: "test_resort_shop", className: BuildingClassType.Business, x: 4, y: 1, worldFlatId: 2)
+        ]);
+        var user = Faker.Player(world: world);
+        user.Quests.Add(Faker.Quest(name: "qm_test_hotels", length: 3));
+
+        await Context.AddAsync(user, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        await new PingFeedQuests(Context).HandlePacket([], user.Id, TestContext.Current.CancellationToken);
+
+        Context.ChangeTracker.Clear();
+
+        var quest = await Context.Set<Quest>().FirstAsync(x => x.Name == "qm_test_hotels", TestContext.Current.CancellationToken);
+        quest.QuestType.Should().Be(QuestType.Active);
+        quest.Progress.Should().Equal(1, 0, 0);
+    }
 }

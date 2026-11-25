@@ -2,6 +2,7 @@ using AwesomeAssertions;
 using CityVilleDotnet.Api.Services.UserService;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Factory.Player;
+using CityVilleDotnet.Factory.Quest;
 using CityVilleDotnet.Test.Integration.Fixtures;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -122,5 +123,36 @@ public class StreamPublishTest(DatabaseFixture fixture) : IntegrationTest(fixtur
         var post = await GetSavedPost(author);
         post.TargetObjectId.Should().BeNull();
         post.TargetWorld.Should().BeNull();
+    }
+
+    // qm_test_hotels: countStreamPublishByName on test_viral_checkin,test_viral_checkin_2
+    [Fact]
+    public async Task StreamPublish_QuestViral_ProgressesCountStreamPublishByName()
+    {
+        var author = Faker.Player();
+        author.Quests.Add(Faker.Quest(name: "qm_test_hotels", length: 3));
+        await Context.AddAsync(author, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        await new StreamPublish(Context).HandlePacket(new StreamPublishRequest { Type = "test_viral_checkin" }, author.Id, TestContext.Current.CancellationToken);
+
+        Context.ChangeTracker.Clear();
+        var quest = await Context.Set<Quest>().SingleAsync(x => x.Name == "qm_test_hotels", TestContext.Current.CancellationToken);
+        quest.Progress.Should().Equal(0, 0, 1);
+    }
+
+    [Fact]
+    public async Task StreamPublish_OtherViral_KeepsQuestProgress()
+    {
+        var author = Faker.Player();
+        author.Quests.Add(Faker.Quest(name: "qm_test_hotels", length: 3));
+        await Context.AddAsync(author, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        await new StreamPublish(Context).HandlePacket(new StreamPublishRequest { Type = "test_viral_help" }, author.Id, TestContext.Current.CancellationToken);
+
+        Context.ChangeTracker.Clear();
+        var quest = await Context.Set<Quest>().SingleAsync(x => x.Name == "qm_test_hotels", TestContext.Current.CancellationToken);
+        quest.Progress.Should().Equal(0, 0, 0);
     }
 }

@@ -138,6 +138,7 @@ public class GameItem
     [XmlElement("gates")] public required GatesContainer? Gates { get; set; }
     [XmlElement("sizeX")] public int? SizeX { get; set; }
     [XmlElement("sizeY")] public int? SizeY { get; set; }
+    [XmlElement("shockwave")] public ShockwaveItem? Shockwave { get; set; }
     [XmlElement("berthsquares")] public string? BerthSquares { get; set; }
     [XmlElement("supportedShipKeywords")] public string? SupportedShipKeywords { get; set; }
     [XmlElement("image")] public List<ImageItem> Images { get; set; } = [];
@@ -654,6 +655,11 @@ public class MemberKey
 }
 
 [Serializable]
+public class ShockwaveItem
+{
+    [XmlAttribute("radius")] public double Radius { get; set; }
+}
+
 public class PopulationItem
 {
     [XmlAttribute("min")]

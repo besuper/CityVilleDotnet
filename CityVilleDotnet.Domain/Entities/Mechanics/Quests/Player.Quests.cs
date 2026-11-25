@@ -117,6 +117,7 @@ public partial class Player
                         case "countStoreItem":
                         case "countMoveToStorage":
                         case "countPlaceFromStorage":
+                        case "countStreamPublishByName":
                         {
                             if (itemName is null)
                                 throw new Exception("Can't validate byName action without itemName");
@@ -401,6 +402,16 @@ public partial class Player
                         if (value > quest.Progress[index])
                             quest.Progress[index] = value;
 
+                        continue;
+                    case "firstTimeHotelSupply":
+                        if (GetWorld().HasOpenHotel())
+                        {
+                            quest.Progress[index] = 1;
+                        }
+
+                        continue;
+                    case "resortBusinessThreshold":
+                        quest.Progress[index] = GetWorld().GetMaxResortBusinessCount();
                         continue;
                     case "countHeadquarters":
                         if (!calculatedResults.TryGetValue(resultKey, out value))

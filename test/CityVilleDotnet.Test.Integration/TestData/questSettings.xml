@@ -242,6 +242,13 @@
             <task action="storeItemInMechanicUserByKeyword" type="test_storage_kw" total="2"/>
         </tasks>
     </quest>
+    <quest name="qm_test_hotels" delay="1" visible="true" spawns_from="_manual">
+        <tasks>
+            <task action="resortBusinessThreshold" type="" total="2" sticky="false"/>
+            <task action="firstTimeHotelSupply" type="hotel" total="1" sticky="true"/>
+            <task action="countStreamPublishByName" type="test_viral_checkin,test_viral_checkin_2" total="1" sticky="true"/>
+        </tasks>
+    </quest>
     <quest name="qm_test_storage_counts" delay="1" visible="true" spawns_from="_manual">
         <tasks>
             <task action="countSlottedContainerObjects" type="Neighborhood" total="5"/>

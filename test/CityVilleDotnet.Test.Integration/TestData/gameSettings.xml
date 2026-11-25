@@ -1215,6 +1215,22 @@
         <item name="test_shop" type="business" className="Business" buyable="true">
             <gates/>
         </item>
+        <item name="test_resort_hotel" type="hotel" className="Hotel" buyable="true">
+            <sizeX>4</sizeX>
+            <sizeY>4</sizeY>
+            <shockwave radius="6.5"/>
+            <gates/>
+        </item>
+        <item name="test_resort_shop" type="business" className="Business" buyable="true">
+            <sizeX>2</sizeX>
+            <sizeY>2</sizeY>
+            <gates/>
+        </item>
+        <item name="test_resort_kiosk" type="business" className="Business" buyable="true">
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+        </item>
         <item name="test_premium_shop" type="business" className="Business" buyable="true">
             <keyword>test_premium</keyword>
             <gates/>

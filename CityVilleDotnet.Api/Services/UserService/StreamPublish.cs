@@ -16,6 +16,7 @@ public class StreamPublish(CityVilleDbContext context) : AmfService<StreamPublis
     public override async Task<ASObject> HandlePacket(StreamPublishRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var player = await context.Set<Player>()
+            .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
         Player? targetPlayer = null;
@@ -28,6 +29,8 @@ public class StreamPublish(CityVilleDbContext context) : AmfService<StreamPublis
         player.Publish(SocialPostType.Feed, request.Type, JsonSerializer.Serialize(request.Data), request.UserMessage, targetPlayer,
             request.ClickthroughParams?.TargetObjectId ?? 0, request.ClickthroughParams?.TargetObjectName, request.FeedData?.Material,
             ServerUtils.TimeProvider.GetUtcNow().UtcDateTime);
+
+        player.HandleQuestsProgress("countStreamPublishByName", itemName: request.Type);
 
         await context.SaveChangesAsync(cancellationToken);
 
