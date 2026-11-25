@@ -62,6 +62,10 @@ public class ValidateFunc
     [XmlAttribute("keyword")] public string? Keyword { get; set; }
     [XmlAttribute("itemName")] public string? ItemName { get; set; }
     [XmlAttribute("check")] public string? Check { get; set; }
+    [XmlAttribute("experiment")] public string? Experiment { get; set; }
+    [XmlAttribute("variant")] public int Variant { get; set; }
+    [XmlAttribute("discardZero")] public bool DiscardZero { get; set; }
+    [XmlAttribute("forTheme")] public string? ForTheme { get; set; }
 
     public bool IsValid(int playerLevel)
     {

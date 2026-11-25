@@ -5,6 +5,7 @@ using CityVilleDotnet.Common.Settings;
 using CityVilleDotnet.Common.Utils;
 using CityVilleDotnet.Domain.Entities;
 using CityVilleDotnet.Domain.GameEntities;
+using CityVilleDotnet.Api.Pages;
 using CityVilleDotnet.Persistence;
 using FluorineFx;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ using CityVilleDotnet.Domain.Enums;
 
 namespace CityVilleDotnet.Api.Services.UserService;
 
-internal sealed class InitUser(CityVilleDbContext context) : AmfService
+internal sealed class InitUser(CityVilleDbContext context, IConfiguration configuration) : AmfService
 {
     public override async Task<ASObject> HandlePacket(object[] @params, Guid playerId, CancellationToken cancellationToken)
     {
@@ -23,11 +24,18 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
             .ExecuteUpdateAsync(s => s.SetProperty(x => x.LastPlayedWorldType, WorldType.Main), cancellationToken);
 
         var hubNames = GameSettingsManager.Instance.GetPreyGroups().SelectMany(x => x.GetHubNames()).ToList();
+        var experiments = (configuration.GetSection("experiments").Get<List<Experiment>>() ?? []).ToDictionary(x => x.Name, x => x.Variant);
+
+        var playerObjects = context.Set<World>().Where(w => w.Player!.Id == playerId).SelectMany(w => w.Objects);
+        var ownedItemNames = await playerObjects.Select(o => o.ItemName)
+            .Union(playerObjects.Where(o => o.TargetBuildingName != null).Select(o => o.TargetBuildingName!))
+            .ToListAsync(cancellationToken);
 
         var trackedUser = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Quests)
             .Include(x => x.InventoryItems)
+            .Include(x => x.Flags)
             .Include(x => x.PreyGroups)
             .ThenInclude(x => x.Hunters)
             .Include(x => x.Worlds)
@@ -54,6 +62,7 @@ internal sealed class InitUser(CityVilleDbContext context) : AmfService
         }
 
         trackedUser.SpawnEligibleQuests();
+        trackedUser.GrantEligibleItems(experiments, ownedItemNames);
 
         await context.SaveChangesAsync(cancellationToken);
 

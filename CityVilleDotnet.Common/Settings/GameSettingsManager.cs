@@ -38,6 +38,8 @@ public class GameSettingsManager
     private Dictionary<string, ViralSetting> _virals = [];
     private Dictionary<string, FeedCreative> _feedCreatives = [];
     private List<GameItem> _giftableItems = [];
+    private List<GrantItemSetting> _grantItems = [];
+    private Dictionary<string, SunsetSetting> _sunsets = [];
     private bool _isInitialized;
 
     private GameSettingsManager()
@@ -218,6 +220,8 @@ public class GameSettingsManager
             _regenerableResources = gameSettings.RegenerableResources;
             _dailyBonusDays = gameSettings.DailyBonus?.Days ?? [];
             _virals = gameSettings.Virals.DistinctBy(x => x.Name).ToDictionary(x => x.Name);
+            _grantItems = gameSettings.GrantItems;
+            _sunsets = gameSettings.Sunsets.GroupBy(x => x.Theme).ToDictionary(x => x.Key, x => x.Last());
 
             var globalTableMechanics = _items.Values
                 .SelectMany(x => x?.Mechanics?.GameEventMechanics ?? [])
@@ -528,6 +532,16 @@ public class GameSettingsManager
     public ValidateItem? GetValidator(string name)
     {
         return _validators.GetValueOrDefault(name);
+    }
+
+    public List<GrantItemSetting> GetGrantItems()
+    {
+        return _grantItems;
+    }
+
+    public SunsetSetting? GetSunset(string theme)
+    {
+        return _sunsets.GetValueOrDefault(theme);
     }
 
     public bool IsValidatorSatisfied(string? validatorName, int playerLevel)

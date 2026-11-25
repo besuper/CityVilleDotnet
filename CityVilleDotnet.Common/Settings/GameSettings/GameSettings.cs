@@ -34,4 +34,6 @@ public class GameSettings
     [XmlArray("commodities"), XmlArrayItem("commodity")] public List<CommodityItem> Commodities { get; set; } = [];
     [XmlArray("regenerableResources"), XmlArrayItem("regenerableResource")] public List<RegenerableResourceItem> RegenerableResources { get; set; } = [];
     [XmlArray("virals"), XmlArrayItem("viral")] public List<ViralSetting> Virals { get; set; } = [];
+    [XmlArray("grantItems"), XmlArrayItem("item")] public List<GrantItemSetting> GrantItems { get; set; } = [];
+    [XmlArray("sunsets"), XmlArrayItem("sunset")] public List<SunsetSetting> Sunsets { get; set; } = [];
 }

@@ -625,6 +625,39 @@
             <sizeY>1</sizeY>
             <gates/>
         </item>
+        <item name="test_grant_pad" type="decoration" buyable="false">
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+            <upgrade item="test_grant_pad_2">
+                <requirements/>
+            </upgrade>
+        </item>
+        <item name="test_grant_pad_2" type="decoration" buyable="false">
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+        </item>
+        <item name="test_grant_exp_item" type="decoration" buyable="false">
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+        </item>
+        <item name="test_grant_sunset_item" type="decoration" buyable="false">
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+        </item>
+        <item name="test_grant_unsupported_item" type="decoration" buyable="false">
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+        </item>
+        <item name="test_grant_key" type="decoration" buyable="false">
+            <sizeX>1</sizeX>
+            <sizeY>1</sizeY>
+            <gates/>
+        </item>
         <item name="test_mystery_crate" type="decoration" buyable="true">
             <sizeX>1</sizeX>
             <sizeY>1</sizeY>
@@ -1366,7 +1399,42 @@
                 <func _class="MapResourceValidationUtil" _name="isNotItem" itemName="test_banned_house"/>
             </allOf>
         </validate>
+        <validate name="test_grant_level_validator">
+            <allOf>
+                <func _class="ScriptingConditionsUtil" _name="playerRequiredLevel" level="10"/>
+            </allOf>
+        </validate>
+        <validate name="test_grant_exp_validator">
+            <allOf>
+                <func _class="ExperimentValidationUtil" _name="isVariantGreaterThan" experiment="test_grant_exp" variant="1"/>
+            </allOf>
+        </validate>
+        <validate name="test_grant_sunset_validator">
+            <allOf>
+                <func _class="SunsetValidationUtil" _name="isNotSunset" forTheme="test_grant_sunset"/>
+            </allOf>
+        </validate>
+        <validate name="test_grant_unsupported_validator">
+            <allOf>
+                <func _class="QuestValidationUtil" _name="isQuestCompleted" questName="test_quest"/>
+            </allOf>
+        </validate>
     </validators>
+
+    <grantItems>
+        <item key="test_grant_level" names="test_grant_pad" validator="test_grant_level_validator"/>
+        <item key="test_grant_exp" name="test_grant_exp_item" validator="test_grant_exp_validator"/>
+        <item key="test_grant_sunset" name="test_grant_sunset_item" validator="test_grant_sunset_validator"/>
+        <item key="test_grant_unsupported" name="test_grant_unsupported_item" validator="test_grant_unsupported_validator"/>
+        <item key="test_grant_keys" names="test_grant_key,test_grant_key"/>
+    </grantItems>
+
+    <sunsets>
+        <sunset theme="test_grant_sunset">
+            <startDate>01/01/2026 00:00:00 PST</startDate>
+            <endDate>06/15/2026 12:00:00 PDT</endDate>
+        </sunset>
+    </sunsets>
 
     <levels_cv_level_regrade_var_0>
         <level num="1" requiredXP="0" energyMax="12"/>
