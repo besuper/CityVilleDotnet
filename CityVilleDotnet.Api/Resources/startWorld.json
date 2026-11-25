@@ -10,20 +10,6 @@
 	],
 	"sizeX": 36,
 	"sizeY": 36,
-	"citySim": {
-		"populationSummary": {
-			"segments": {
-				"citizen": {
-					"id": "citizen",
-					"minimum": 0,
-					"yield": 30,
-					"maximum": 50,
-					"capacity": 0,
-					"potential": 0
-				}
-			}
-		}
-	},
 	"objects": [
 		{
 			"itemName": "storage_barn",
