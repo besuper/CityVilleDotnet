@@ -1046,6 +1046,11 @@ public partial class Player
         LotOrders.Add(lotOrder);
     }
 
+    public LotOrder? FindLotOrder(int preferredLotId)
+    {
+        return LotOrders.FirstOrDefault(x => x.LotId == preferredLotId) ?? LotOrders.FirstOrDefault();
+    }
+
     // TLotOrderPlace: coins first, cash only when the item has no coin cost
     public void PayLotOrder(GameItem item)
     {

@@ -18,8 +18,7 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
             .Include(x => x!.LotOrders.Where(o =>
                 o.OrderState == OrderState.Pending
                 && o.TransmissionStatus == TransmissionStatus.Received
-                && o.SenderId == request.SenderId.ToString() // FIXME: Change all IDs to int
-                && o.LotId == request.LotId))
+                && o.SenderId == request.SenderId.ToString())) // FIXME: Change all IDs to int
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x!.Objects)
             .ThenInclude(x => x.FranchiseLocation)
@@ -28,10 +27,10 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
         if (receiveUser is null)
             throw new Exception("Can't find player");
 
-        var lotOrder = receiveUser.LotOrders.FirstOrDefault();
+        var lotOrder = receiveUser.FindLotOrder(request.LotId);
 
         if (lotOrder is null)
-            throw new Exception($"Can't find pending received order from sender {request.SenderId} for lot {request.LotId}");
+            throw new Exception($"Can't find pending received order from sender {request.SenderId}");
 
         var gameItem = GameSettingsManager.Instance.GetItem(lotOrder.ResourceType);
 
@@ -45,7 +44,7 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
             .Include(x => x!.LotOrders.Where(o =>
                 o.OrderState == OrderState.Pending
                 && o.TransmissionStatus == TransmissionStatus.Sent
-                && o.LotId == request.LotId))
+                && o.RecipientId == lotOrder.RecipientId))
             .Include(x => x!.Franchises.Where(f =>
                 f.FranchiseType == lotOrder.ResourceType
                 && f.FranchiseName == lotOrder.OrderResourceName))
@@ -58,23 +57,23 @@ public class AcceptOrder(CityVilleDbContext context) : AmfService<AcceptOrderReq
         if (senderPlayer is null)
             throw new Exception("Can't find sender player");
 
-        var senderLotOrder = senderPlayer.LotOrders.FirstOrDefault();
+        var senderLotOrder = senderPlayer.FindLotOrder(lotOrder.LotId);
 
         if (senderLotOrder is null)
-            throw new Exception($"Can't find sender's pending sent order for lot {request.LotId}");
+            throw new Exception($"Can't find sender's pending sent order to recipient {lotOrder.RecipientId}");
 
         var senderFranchise = senderPlayer.Franchises.FirstOrDefault();
 
         if (senderFranchise is null)
             throw new Exception("Can't find sender franchise");
 
-        var newBuilding = receiveUser.GetWorld().Objects.FirstOrDefault(x => x.WorldFlatId == lotOrder.LotId);
+        var newBuilding = receiveUser.GetWorld().Objects.FirstOrDefault(x => x.WorldFlatId == request.LotId);
 
         if (newBuilding is null)
-            throw new Exception($"Can't find building with WorldFlatId {lotOrder.LotId}");
+            throw new Exception($"Can't find building with WorldFlatId {request.LotId}");
 
-        senderLotOrder.Accept();
-        lotOrder.Accept();
+        senderLotOrder.AcceptOnLot(request.LotId);
+        lotOrder.AcceptOnLot(request.LotId);
 
         receiveUser.GetWorld().ReplaceBuildingFromLotOrder(lotOrder);
 

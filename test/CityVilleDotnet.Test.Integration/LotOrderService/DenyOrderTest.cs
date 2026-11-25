@@ -65,6 +65,19 @@ public class DenyOrderTest(DatabaseFixture fixture) : IntegrationTest(fixture)
     }
 
     [Fact]
+    public async Task DenyOrder_LotReassignedByClient_RemovesBothOrdersAndRefundsSender()
+    {
+        var (receiver, sender) = await SeedPlayers();
+        await AddOrders(receiver, sender, -1);
+
+        var response = await new DenyOrder(Context).HandlePacket(CreateRequest(sender, LotId), receiver.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+        sender.Gold.Should().Be(1200);
+        (await Context.Set<LotOrder>().AnyAsync(TestContext.Current.CancellationToken)).Should().BeFalse();
+    }
+
+    [Fact]
     public async Task DenyOrder_SentOrderMissing_RemovesReceivedOrderWithoutRefund()
     {
         var (receiver, sender) = await SeedPlayers();
