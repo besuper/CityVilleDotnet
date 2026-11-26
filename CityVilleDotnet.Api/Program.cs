@@ -80,6 +80,7 @@ if (!string.IsNullOrEmpty(discordClientId))
 builder.Services.AddScoped<PlayerRegistrationService>();
 builder.Services.AddSingleton<ProfilePictureStorage>();
 builder.Services.AddSingleton<FeedTextRenderer>();
+builder.Services.AddHostedService<SocialPostCleanupService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IAuthorizationHandler, AdminAuthorizationHandler>();
 builder.Services.AddAuthorizationBuilder()
