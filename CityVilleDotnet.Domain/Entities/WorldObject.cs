@@ -397,7 +397,7 @@ public partial class WorldObject
         BuildingClassType.Headquarter => WorldObjectState.Base,
         BuildingClassType.Plot or BuildingClassType.Factory or BuildingClassType.Ship or BuildingClassType.FerryShip
             or BuildingClassType.HarvestableShip or BuildingClassType.Airplane or BuildingClassType.Aircraftcarrier
-            or BuildingClassType.Heliport or BuildingClassType.Amphitheater => WorldObjectState.Plowed,
+            or BuildingClassType.Heliport or BuildingClassType.Amphitheater or BuildingClassType.LaunchPad => WorldObjectState.Plowed,
         BuildingClassType.Residence or BuildingClassType.Municipal or BuildingClassType.Landmark or BuildingClassType.Skyscraper
             or BuildingClassType.University or BuildingClassType.ZooEnclosure or BuildingClassType.Corporation
             or BuildingClassType.CustomResidence or BuildingClassType.XPromoBuilding => WorldObjectState.Planted,

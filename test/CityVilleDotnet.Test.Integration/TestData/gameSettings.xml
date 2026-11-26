@@ -1114,6 +1114,29 @@
             <growTime>0.5</growTime>
             <gates/>
         </item>
+        <item name="test_launchpad" type="launchpad" className="LaunchPad" buyable="false">
+            <keyword>test_launchpad_kw</keyword>
+            <mechanics>
+                <gameEventMechanics gameMode="GMPlant">
+                    <mechanic type="contractPlant" className="PlantContractMechanic" priority="1" data="contract"/>
+                </gameEventMechanics>
+                <gameEventMechanics gameMode="GMPlay">
+                    <mechanic type="contractHarvest" className="HarvestFriendContractMechanic" priority="1" payoutMultipliers="xp" data="contract" bonusData="travelers" bonusTable="bonus"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_contract_space" type="space_shuttle_contract" buyable="true" allowWither="false">
+            <contractPlaceableOn>test_launchpad_kw</contractPlaceableOn>
+            <growTime>0.5</growTime>
+            <randomModifiers>
+                <modifier type="coin" tableName="test_space_cointable"/>
+            </randomModifiers>
+            <inventoryItemCost itemName="test_rocket_fuel" amount="5"/>
+            <gates/>
+        </item>
+        <item name="test_rocket_fuel" type="quest_item" buyable="false">
+            <gates/>
+        </item>
         <item name="test_contract_elsewhere" type="contract" buyable="true" allowWither="false">
             <contractPlaceableOn>test_other_building</contractPlaceableOn>
             <cost>1000</cost>
@@ -1523,6 +1546,11 @@
         <randomModifierTable type="coin" name="test_rain_default_table">
             <roll percent="100">
                 <coin amount="999"/>
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="item" name="test_space_cointable">
+            <roll percent="100">
+                <coin amount="70"/>
             </roll>
         </randomModifierTable>
         <randomModifierTable type="item" name="test_stock_share_payouts">

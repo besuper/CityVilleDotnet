@@ -64,6 +64,36 @@ public class ContractHarvestTest(DatabaseFixture fixture) : IntegrationTest(fixt
     }
 
     [Fact]
+    public async Task ContractHarvest_GrownFriendContract_PaysPlowsAndProgressesQuest()
+    {
+        var building = Faker.WorldObject(itemName: "test_launchpad", className: BuildingClassType.LaunchPad, state: WorldObjectState.Plowed, worldFlatId: 5);
+        var player = Faker.Player(world: Faker.World(objects: [building]));
+        player.SetGold(0);
+        player.AddItem("test_rocket_fuel", 5);
+        player.PlantMechanicContract(building, GameSettingsManager.Instance.GetItem("test_launchpad")!, GameSettingsManager.Instance.GetItem("test_contract_space")!);
+        building.SetFullGrown();
+        player.Quests.Add(Faker.Quest(name: "qm_test_space_shuttle", length: 2));
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        Context.ChangeTracker.Clear();
+
+        var handler = new ContractHarvest(Context);
+
+        var response = await handler.HandlePacket(new ContractHarvestRequest { ObjectId = 5, GameMode = "GMPlay" }, player.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+
+        var storedPlayer = await Context.Set<Player>().AsNoTracking().Include(x => x.Quests).FirstAsync(x => x.Id == player.Id, TestContext.Current.CancellationToken);
+        storedPlayer.Gold.Should().Be(70);
+        storedPlayer.Quests.First(x => x.Name == "qm_test_space_shuttle").Progress.Should().Equal(0, 1);
+
+        var storedBuilding = await Context.Set<WorldObject>().AsNoTracking().FirstAsync(x => x.Id == building.Id, TestContext.Current.CancellationToken);
+        storedBuilding.State.Should().Be(WorldObjectState.Plowed);
+        storedBuilding.ContractName.Should().BeNull();
+    }
+
+    [Fact]
     public async Task ContractHarvest_NotGrown_ThrowsAndKeepsContract()
     {
         var building = Faker.WorldObject(itemName: "test_stockexchange", className: BuildingClassType.PeepCapacityResource, state: WorldObjectState.Plowed, worldFlatId: 5);

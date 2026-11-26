@@ -14,10 +14,14 @@ public class ContractPlant(CityVilleDbContext context) : AmfService<ContractPlan
 {
     public override async Task<ASObject> HandlePacket(ContractPlantRequest request, Guid playerId, CancellationToken cancellationToken)
     {
+        var contract = GameSettingsManager.Instance.GetItem(request.ExtraData.ContractName) ?? throw new Exception($"Can't find contract {request.ExtraData.ContractName}");
+        var costItemName = contract.InventoryItemCost?.ItemName;
+
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
             .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId))
+            .Include(x => x.InventoryItems.Where(i => i.Name == costItemName))
             .Include(x => x.Quests.Where(q => q.QuestType == QuestType.Active))
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
@@ -29,8 +33,6 @@ public class ContractPlant(CityVilleDbContext context) : AmfService<ContractPlan
         {
             throw new Exception($"No contractPlant mechanic found for {obj.ItemName} in game mode {request.GameMode}");
         }
-
-        var contract = GameSettingsManager.Instance.GetItem(request.ExtraData.ContractName) ?? throw new Exception($"Can't find contract {request.ExtraData.ContractName}");
 
         player.PlantMechanicContract(obj, gameItem, contract);
         player.HandleQuestsProgress("startContractByName", itemName: contract.Name);

@@ -635,6 +635,10 @@ public partial class Player
         {
             RemoveCash((int)(contract.Cash.Value * costMultiplier));
         }
+        else if (contract.InventoryItemCost is not null)
+        {
+            RemoveItem(contract.InventoryItemCost.ItemName, contract.InventoryItemCost.Amount);
+        }
         else if (contract.Cost > 0)
         {
             RemoveCoins((int)(contract.Cost.Value * costMultiplier));

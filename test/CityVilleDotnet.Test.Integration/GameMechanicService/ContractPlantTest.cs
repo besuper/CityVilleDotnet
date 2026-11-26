@@ -52,6 +52,33 @@ public class ContractPlantTest(DatabaseFixture fixture) : IntegrationTest(fixtur
     }
 
     [Fact]
+    public async Task ContractPlant_InventoryItemCost_RemovesItemsPlantsAndProgressesQuest()
+    {
+        var building = Faker.WorldObject(itemName: "test_launchpad", className: BuildingClassType.LaunchPad, state: WorldObjectState.Plowed, worldFlatId: 5);
+        var player = Faker.Player(world: Faker.World(objects: [building]));
+        player.AddItem("test_rocket_fuel", 5);
+        player.Quests.Add(Faker.Quest(name: "qm_test_space_shuttle", length: 2));
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        Context.ChangeTracker.Clear();
+
+        var handler = new ContractPlant(Context);
+
+        var response = await handler.HandlePacket(CreateRequest(5, "GMPlant", "test_contract_space"), player.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+
+        var storedPlayer = await Context.Set<Player>().AsNoTracking().Include(x => x.Quests).Include(x => x.InventoryItems).FirstAsync(x => x.Id == player.Id, TestContext.Current.CancellationToken);
+        storedPlayer.CountInventoryItem("test_rocket_fuel").Should().Be(0);
+        storedPlayer.Quests.First(x => x.Name == "qm_test_space_shuttle").Progress.Should().Equal(1, 0);
+
+        var storedBuilding = await Context.Set<WorldObject>().AsNoTracking().FirstAsync(x => x.Id == building.Id, TestContext.Current.CancellationToken);
+        storedBuilding.State.Should().Be(WorldObjectState.Planted);
+        storedBuilding.ContractName.Should().Be("test_contract_space");
+    }
+
+    [Fact]
     public async Task ContractPlant_GameModeWithoutContractPlant_ThrowsAndKeepsBuildingPlowed()
     {
         var building = Faker.WorldObject(itemName: "test_stockexchange", className: BuildingClassType.PeepCapacityResource, state: WorldObjectState.Plowed, worldFlatId: 5);

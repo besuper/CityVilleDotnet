@@ -44,7 +44,7 @@ public class ContractHarvest(CityVilleDbContext context) : AmfService<ContractHa
         var contractName = mechanic.ClassName switch
         {
             "HarvestInvestmentMechanic" => player.HarvestInvestment(obj, gameItem),
-            "HarvestContractMechanic" or "HarvestPeepContractMechanic" => player.HarvestMechanicContract(obj, gameItem, mechanic),
+            "HarvestContractMechanic" or "HarvestPeepContractMechanic" or "HarvestFriendContractMechanic" =>player.HarvestMechanicContract(obj, gameItem, mechanic),
             _ => throw new Exception($"Contract harvest {mechanic.ClassName} is not supported")
         };
 

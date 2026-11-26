@@ -144,6 +144,7 @@ public class GameItem
     [XmlElement("image")] public List<ImageItem> Images { get; set; } = [];
     [XmlElement("anyData")] public List<AnyDataItem> AnyData { get; set; } = [];
     [XmlElement("contractPlaceableOn")] public string? ContractPlaceableOn { get; set; }
+    [XmlElement("inventoryItemCost")] public InventoryItemCostItem? InventoryItemCost { get; set; }
 
     public double GetAnyDataDouble(string key, double defaultValue)
     {
@@ -524,6 +525,13 @@ public class ThemeParkSlotItem
     [XmlAttribute("type")] public string? Type { get; set; }
     [XmlAttribute("item")] public string? Item { get; set; }
     [XmlAttribute("commodityReq")] public int CommodityRequired { get; set; }
+}
+
+[Serializable]
+public class InventoryItemCostItem
+{
+    [XmlAttribute("itemName")] public required string ItemName { get; set; }
+    [XmlAttribute("amount")] public int Amount { get; set; }
 }
 
 [Serializable]
