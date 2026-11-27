@@ -16,7 +16,7 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261122211204_AddSomeMaxLength";
+    public override string LastMigrationId => "20261127200858_AddWonderHarvestLoop";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -1410,6 +1410,10 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
                 b.Property<long?>("ActivationTime")
                     .HasColumnType("bigint");
 
+                b.Property<string>("AppliedCoupon")
+                    .HasMaxLength(64)
+                    .HasColumnType("nvarchar(64)");
+
                 b.Property<double?>("BuildTime")
                     .HasColumnType("float");
 
@@ -1453,6 +1457,9 @@ partial class CityVilleDbContextModelSnapshot : ModelSnapshot
                     .HasColumnType("bit");
 
                 b.Property<DateTime?>("HarvestEndTime")
+                    .HasColumnType("datetime2");
+
+                b.Property<DateTime?>("HarvestLoopStartTime")
                     .HasColumnType("datetime2");
 
                 b.Property<long?>("InactiveTime")

@@ -40,6 +40,7 @@ public sealed class LoadWorld(CityVilleDbContext context, ILogger<LoadWorld> log
             .Include(x => x.Worlds.Where(w => w.Type == request.Type))
             .ThenInclude(w => w.TrainOrder)
             .ThenInclude(o => o!.Workers)
+            .Include(x => x.Coupons)
             .FirstOrDefaultAsync(x => x.Snuid == request.TargetUsedId, cancellationToken);
 
         if (playerToLoad is null)

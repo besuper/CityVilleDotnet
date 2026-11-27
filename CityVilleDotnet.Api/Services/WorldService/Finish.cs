@@ -69,6 +69,8 @@ public sealed class Finish(CityVilleDbContext context) : AmfService<FinishReques
 
             foreach (var consumed in player.ConsumeInventoryGate(finishedItem, "build"))
                 context.Set<InventoryItem>().Remove(consumed);
+
+            player.UseAddToWorldHarvestLoopCoupon(finishedItem);
         }
 
         player.RemoveObjectTableOverrides(obj.WorldFlatId);

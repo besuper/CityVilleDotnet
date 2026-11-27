@@ -83,7 +83,7 @@ public class FranchiseInfoDto
 
 public static class WorldObjectDtoMapper
 {
-    public static WorldObjectDto ToDto(this WorldObject model, IReadOnlyCollection<WorldObject>? worldObjects = null)
+    public static WorldObjectDto ToDto(this WorldObject model, IReadOnlyCollection<WorldObject>? worldObjects = null, IReadOnlyCollection<string>? coupons = null)
     {
         if (model.HasGrown())
             model.SetReadyToHarvest();
@@ -214,6 +214,40 @@ public static class WorldObjectDtoMapper
         }
 
         var gameItem = GameSettingsManager.Instance.GetItem(model.ItemName);
+
+        if (gameItem?.HarvestLoopConfig is { } harvestLoopConfig)
+        {
+            // TimedHarvestableResource (wonder terminal) reads mechanicData.harvestLoop, appliedCoupon and peeps directly
+            if (model.ClassName == BuildingClassType.TimedHarvestableResource)
+            {
+                if (model.HarvestLoopStartTime is not null)
+                {
+                    dto.MechanicData["harvestLoop"] = new HarvestLoopDataDto { StartTs = ServerUtils.ToUnixTimeSeconds(model.HarvestLoopStartTime.Value) };
+                }
+
+                if (model.AppliedCoupon is not null)
+                {
+                    dto.MechanicData["appliedCoupon"] = model.AppliedCoupon;
+                }
+
+                // the VIPs waiting at the terminal are the plane coupons the player still holds
+                var peeps = (coupons ?? []).Intersect(harvestLoopConfig.GetRequiredCoupons()).Select(x => new WonderPeepDto { Coupon = x }).ToList();
+
+                if (peeps.Count > 0)
+                {
+                    dto.MechanicData["peeps"] = peeps;
+                }
+            }
+            // Wonder::set harvestLoop
+            else if (model.HarvestLoopStartTime is not null)
+            {
+                var openTs = ServerUtils.ToUnixTimeSeconds(model.HarvestLoopStartTime.Value);
+                var closeTs = openTs + harvestLoopConfig.GetTimerDuration(model.AppliedCoupon);
+
+                dto.MechanicData["harvestState"] = new HarvestLoopStateDto { OpenTs = openTs, CloseTs = closeTs };
+                dto.MechanicData["sleepState"] = new SleepStateDto { SleepTs = closeTs, WakeTs = closeTs + harvestLoopConfig.SleepDuration };
+            }
+        }
 
         if (model.ContractName is not null && gameItem?.GetGameEventMechanic("contractPlant") is not null)
         {

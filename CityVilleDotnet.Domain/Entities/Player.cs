@@ -666,7 +666,7 @@ public partial class Player
     }
 
     // HarvestContractMechanic::processHarvest
-    public string HarvestMechanicContract(WorldObject obj, GameItem buildingItem, MechanicItem mechanic)
+    public string HarvestMechanicContract(WorldObject obj, GameItem buildingItem, MechanicItem mechanic, string? modifiersName = null)
     {
         if (obj.ContractName is null || !obj.HasGrown()) throw new Exception($"Contract of {obj.ItemName} is not ready to harvest");
 
@@ -679,6 +679,7 @@ public partial class Player
             : buildingItem;
 
         CollectDoobersRewards(contractName,
+            modifiersName: modifiersName,
             coinMultiplier: GetMasteryBonusMultiplier(harvestingItem, "coinYield"),
             premiumGoodsMultiplier: GetMasteryBonusMultiplier(harvestingItem, "premium_goods"),
             goodsMultiplier: goodsMultiplier * GetMasteryBonusMultiplier(harvestingItem, "goods"),

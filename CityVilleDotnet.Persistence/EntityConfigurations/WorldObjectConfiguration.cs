@@ -21,6 +21,7 @@ public class WorldObjectConfiguration : IEntityTypeConfiguration<WorldObject>
         builder.Property(x => x.UpgradeItemName).IsRequired(false).HasMaxLength(64);
         builder.Property(x => x.ParentMacroObjectId).IsRequired(false).HasMaxLength(64);
         builder.Property(x => x.CustomName).IsRequired(false).HasMaxLength(30);
+        builder.Property(x => x.AppliedCoupon).IsRequired(false).HasMaxLength(64);
         builder.Property(x => x.UniversityLogo).IsRequired(false).HasMaxLength(64);
         builder.Property(x => x.ItemOwner).IsRequired(false).HasMaxLength(32);
 

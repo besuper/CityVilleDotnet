@@ -923,6 +923,10 @@ public class MechanicItem
     [XmlAttribute("upgradeActionMechanic")] public bool UpgradeActionMechanic { get; set; }
     [XmlAttribute("mysteryBusinessReq")] public int MysteryBusinessReq { get; set; }
     [XmlAttribute("previousState")] public string? PreviousState { get; set; }
+    [XmlAttribute("numRequired")] public int NumRequired { get; set; }
+    [XmlAttribute("finishWithCash")] public int FinishWithCash { get; set; }
+    [XmlAttribute("terminalKeyword")] public string? TerminalKeyword { get; set; }
+    [XmlAttribute("FTUETable")] public string? FtueTable { get; set; }
 
     public bool AllowsItem(GameItem? item)
     {
@@ -991,6 +995,28 @@ public class WorkerSlotItem
 public class HarvestLoopConfigItem
 {
     [XmlElement("timerDuration")] public int TimerDuration { get; set; }
+    [XmlElement("sleepDuration")] public int SleepDuration { get; set; }
+    [XmlElement("lockOnKeyword")] public string? LockOnKeyword { get; set; }
+    [XmlElement("requiredCoupon")] public string? RequiredCoupon { get; set; }
+    [XmlElement("cash")] public int Cash { get; set; }
+    [XmlElement("energyGain")] public int EnergyGain { get; set; }
+    [XmlElement("boostSeconds")] public int BoostSeconds { get; set; }
+    [XmlElement("overrideDuration")] public string? OverrideDuration { get; set; }
+
+    public IEnumerable<string> GetRequiredCoupons()
+    {
+        return RequiredCoupon?.Split(',') ?? [];
+    }
+
+    // TimedHarvestableResource::closeTS, overrideDuration is "coupon:seconds,..."
+    public int GetTimerDuration(string? appliedCoupon)
+    {
+        var overrideDuration = OverrideDuration?.Split(',')
+            .Select(x => x.Split(':'))
+            .FirstOrDefault(x => x.Length == 2 && x[0] == appliedCoupon);
+
+        return overrideDuration is not null ? int.Parse(overrideDuration[1]) : TimerDuration;
+    }
 }
 
 [Serializable]

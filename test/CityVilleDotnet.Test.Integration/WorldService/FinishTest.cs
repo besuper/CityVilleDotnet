@@ -294,4 +294,49 @@ public class FinishTest(DatabaseFixture fixture) : IntegrationTest(fixture)
             .SelectMany(x => x.GlobalTableOverrides)
             .ToListAsync(TestContext.Current.CancellationToken);
     }
+
+    private async Task<Player> SaveFinishedWonderSite(params string[] coupons)
+    {
+        var wonder = Faker.WorldObject(itemName: "test_wonder", className: BuildingClassType.Wonder, x: 10, y: 20);
+        wonder.SetAsConstructionSite("construction_3x3_2stage", 2);
+        wonder.AddConstructionStage();
+        wonder.AddConstructionStage();
+        var player = Faker.Player(world: Faker.World(objects: [wonder]));
+
+        foreach (var coupon in coupons)
+        {
+            player.GiveCoupon(coupon);
+        }
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        Context.ChangeTracker.Clear();
+
+        return player;
+    }
+
+    // test_wonder has a TimerCouponMechanic on onAddToWorld: a coupon named after the item is spent
+    [Fact]
+    public async Task Finish_WonderWithItemCoupon_SpendsTheCoupon()
+    {
+        var player = await SaveFinishedWonderSite("test_wonder", "test_wonder_coupon");
+
+        await new Finish(Context).HandlePacket(CreateFinishRequest(10, 20), player.Id, TestContext.Current.CancellationToken);
+
+        var coupons = await Context.Set<Player>().AsNoTracking().Where(x => x.Id == player.Id).SelectMany(x => x.Coupons).ToListAsync(TestContext.Current.CancellationToken);
+        coupons.Should().ContainSingle().Which.Name.Should().Be("test_wonder_coupon");
+    }
+
+    [Fact]
+    public async Task Finish_WonderWithoutCoupon_LeavesHarvestLoopReady()
+    {
+        var player = await SaveFinishedWonderSite();
+
+        var response = await new Finish(Context).HandlePacket(CreateFinishRequest(10, 20), player.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+        var wonder = await Context.Set<WorldObject>().AsNoTracking().FirstAsync(x => x.ItemName == "test_wonder" && x.X == 10 && x.Y == 20, TestContext.Current.CancellationToken);
+        wonder.ClassName.Should().Be(BuildingClassType.Wonder);
+        wonder.HarvestLoopStartTime.Should().BeNull();
+    }
 }

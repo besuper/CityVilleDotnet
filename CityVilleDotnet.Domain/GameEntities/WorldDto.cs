@@ -43,6 +43,8 @@ public static class WorldDtoMapper
 {
     public static WorldDto ToDto(this World model)
     {
+        var coupons = model.Player?.Coupons.Where(x => x.WorldFlatId is null).Select(x => x.Name).ToList();
+
         return new WorldDto()
         {
             SizeX = model.SizeX,
@@ -53,7 +55,7 @@ public static class WorldDtoMapper
                 PopulationSummary = model.ToPopulationSummaryDto(),
                 AppraisalSummary = model.ToAppraisalSummaryDto()
             },
-            Objects = model.Objects.Where(x => x.StoredInId is null).Select(x => x.ToDto(model.Objects)).ToList(),
+            Objects = model.Objects.Where(x => x.StoredInId is null).Select(x => x.ToDto(model.Objects, coupons)).ToList(),
             ThemeCollections = model.ThemeCollections,
             LastExpansionTier = model.LastExpansionTier,
             WorldId = model.Type.ToDescriptionString(),

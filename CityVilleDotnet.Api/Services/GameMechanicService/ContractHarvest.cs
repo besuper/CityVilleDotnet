@@ -15,11 +15,13 @@ public class ContractHarvest(CityVilleDbContext context) : AmfService<ContractHa
     public override async Task<ASObject> HandlePacket(ContractHarvestRequest request, Guid playerId, CancellationToken cancellationToken)
     {
         var globalTableProviders = GameSettingsManager.Instance.GetGlobalTableProviders();
+        var wonderTerminals = GameSettingsManager.Instance.GetItemsByKeyword("wonderTerminal").Select(x => x.Name).ToList();
 
         var player = await context.Set<Player>()
             .AsSplitQuery()
             .Include(x => x.Worlds.Where(w => w.Type == w.Player!.LastPlayedWorldType))
-            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || globalTableProviders.Contains(o.ItemName) || o.EnergyModifier > 0))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.ObjectId || o.TempId == request.ObjectId || globalTableProviders.Contains(o.ItemName) || wonderTerminals.Contains(o.ItemName) || o.EnergyModifier > 0))
+            .ThenInclude(o => o.MechanicCounters)
             .Include(x => x.InventoryItems)
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
@@ -27,9 +29,11 @@ public class ContractHarvest(CityVilleDbContext context) : AmfService<ContractHa
             .Include(x => x.GlobalTableOverrides)
             .Include(x => x.FeatureRollCounters)
             .Include(x => x.Masteries)
+            .Include(x => x.Coupons)
             .FirstOrDefaultAsync(x => x.Id == playerId, cancellationToken) ?? throw new Exception("Player not found");
 
-        var obj = player.GetWorld().GetBuildingByClientId(request.ObjectId);
+        var world = player.GetWorld();
+        var obj = world.GetBuildingByClientId(request.ObjectId);
 
         var gameItem = GameSettingsManager.Instance.GetItem(obj.ItemName) ?? throw new Exception($"Can't find game item for {obj.ItemName}");
 
@@ -45,6 +49,7 @@ public class ContractHarvest(CityVilleDbContext context) : AmfService<ContractHa
         {
             "HarvestInvestmentMechanic" => player.HarvestInvestment(obj, gameItem),
             "HarvestContractMechanic" or "HarvestPeepContractMechanic" or "HarvestFriendContractMechanic" =>player.HarvestMechanicContract(obj, gameItem, mechanic),
+            "HarvestWonderPeepContractMechanic" => player.HarvestWonderPeepContract(world, obj, gameItem, mechanic),
             _ => throw new Exception($"Contract harvest {mechanic.ClassName} is not supported")
         };
 

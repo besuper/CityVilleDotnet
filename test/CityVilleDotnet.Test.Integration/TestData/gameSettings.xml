@@ -1404,6 +1404,98 @@
                 </inventoryCheck>
             </inventoryChecks>
         </item>
+        <item name="test_wonder" type="wonder" buyable="false">
+            <keyword>test_wonder_lock</keyword>
+            <energyCost harvest="3"/>
+            <harvestLoopConfig>
+                <lockOnKeyword>test_wonder_lock</lockOnKeyword>
+                <timerDuration>180</timerDuration>
+                <sleepDuration>1000</sleepDuration>
+                <cash>10</cash>
+                <energyGain>10</energyGain>
+                <boostSeconds>30</boostSeconds>
+            </harvestLoopConfig>
+            <randomModifiers>
+                <modifier type="coin" tableName="test_wonder_coins"/>
+            </randomModifiers>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="onAddToWorld">
+                    <mechanic type="harvestLoop" className="TimerCouponMechanic" priority="3"/>
+                </gameEventMechanics>
+                <gameEventMechanics gameMode="GMPlay">
+                    <mechanic type="harvestLoop" className="TimerActionMechanic" priority="2"/>
+                    <mechanic type="maintenanceHarvestLoop" className="BaseMaintenanceMechanic" priority="0" consumableName="tool_key" numRequired="12" finishWithCash="36"/>
+                </gameEventMechanics>
+                <gameEventMechanics gameMode="hudTimerClicked">
+                    <mechanic type="harvestLoop" className="TimerActionMechanic" priority="1"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_coupon_wonder" type="wonder" buyable="false">
+            <keyword>test_wonder_lock</keyword>
+            <harvestLoopConfig>
+                <lockOnKeyword>test_wonder_lock</lockOnKeyword>
+                <requiredCoupon>test_wonder_coupon</requiredCoupon>
+                <timerDuration>180</timerDuration>
+                <cash>10</cash>
+                <energyGain>10</energyGain>
+                <boostSeconds>30</boostSeconds>
+            </harvestLoopConfig>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="GMPlay">
+                    <mechanic type="harvestLoop" className="TimerCouponMechanic" priority="2"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_wonder_terminal" type="timedHarvestableResource" buyable="false">
+            <keyword>wonderTerminal</keyword>
+            <keyword>test_wonder_lock</keyword>
+            <harvestLoopConfig>
+                <lockOnKeyword>test_wonder_lock</lockOnKeyword>
+                <requiredCoupon>test_vip_coupon_a,test_vip_coupon_b</requiredCoupon>
+                <timerDuration>180</timerDuration>
+                <overrideDuration>test_vip_coupon_b:60</overrideDuration>
+                <cash>10</cash>
+                <energyGain>10</energyGain>
+                <boostSeconds>30</boostSeconds>
+            </harvestLoopConfig>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="onUseCoupon">
+                    <mechanic type="harvestLoop" className="TimerCouponMechanic" priority="2" sourceData="peeps" clearData="peeps"/>
+                </gameEventMechanics>
+                <gameEventMechanics gameMode="MacroObjectSell">
+                    <mechanic type="removeCoupon" className="CouponSpendMechanic" priority="2" couponData="peeps"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_vip_plane" type="airplane" className="Airplane" buyable="false">
+            <keyword>test_vip_plane_kw</keyword>
+            <harvestMechanicData dataName="contract" fieldName="contractName"/>
+            <gates/>
+            <mechanics>
+                <gameEventMechanics gameMode="GMPlant">
+                    <mechanic type="contractPlant" className="PlantContractMechanic" priority="2" data="contract"/>
+                </gameEventMechanics>
+                <gameEventMechanics gameMode="GMPlay">
+                    <mechanic type="contractHarvest" className="HarvestWonderPeepContractMechanic" priority="2" data="contract" terminalKeyword="wonderTerminal" terminalData="peeps" FTUETable="firstTime" fallbackTable="fallback"/>
+                </gameEventMechanics>
+            </mechanics>
+        </item>
+        <item name="test_vip_plane_contract" type="contract" buyable="true" allowWither="false">
+            <contractPlaceableOn>test_vip_plane_kw</contractPlaceableOn>
+            <cost>100</cost>
+            <growTime>0.5</growTime>
+            <randomModifiers name="default">
+                <modifier type="coin" tableName="test_vip_plane_coins"/>
+            </randomModifiers>
+            <randomModifiers name="firstTime">
+                <modifier type="mixed" tableName="test_vip_plane_first"/>
+            </randomModifiers>
+            <gates/>
+        </item>
     </items>
 
     <validators>
@@ -1556,6 +1648,21 @@
         <randomModifierTable type="item" name="test_stock_share_payouts">
             <roll percent="100">
                 <coin amount="10"/>
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="coin" name="test_wonder_coins">
+            <roll percent="100">
+                <coin amount="50"/>
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="coin" name="test_vip_plane_coins">
+            <roll percent="100">
+                <coin amount="100"/>
+            </roll>
+        </randomModifierTable>
+        <randomModifierTable type="mixed" name="test_vip_plane_first">
+            <roll percent="100">
+                <not_spawnable type="coupon" name="test_vip_coupon_a"/>
             </roll>
         </randomModifierTable>
     </randomModifierTables>

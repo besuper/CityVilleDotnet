@@ -74,6 +74,30 @@ public class TimedHarvestStateDto
     public long? EndTimestamp { get; set; }
 }
 
+public class HarvestLoopStateDto
+{
+    [JsonPropertyName("openTS")] public long OpenTs { get; set; }
+
+    [JsonPropertyName("closeTS")] public long CloseTs { get; set; }
+}
+
+public class HarvestLoopDataDto
+{
+    [JsonPropertyName("startTS")] public long StartTs { get; set; }
+}
+
+public class WonderPeepDto
+{
+    [JsonPropertyName("coupon")] public required string Coupon { get; set; }
+}
+
+public class SleepStateDto
+{
+    [JsonPropertyName("sleepTS")] public long SleepTs { get; set; }
+
+    [JsonPropertyName("wakeTS")] public long WakeTs { get; set; }
+}
+
 public class GreenHouseStorageDto
 {
     [JsonPropertyName("item")] public required WorldObjectDto Item { get; set; }

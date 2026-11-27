@@ -85,6 +85,11 @@ public partial class WorldObject
     public List<WorldObjectSlot> Slots { get; private set; } = [];
     public List<WorldObjectWorker> Workers { get; private set; } = [];
 
+    public bool HasMechanicCounter(string mechanicType)
+    {
+        return MechanicCounters.Any(x => x.MechanicType == mechanicType);
+    }
+
     public void IncrementMechanicCounter(string mechanicType)
     {
         var counter = MechanicCounters.FirstOrDefault(x => x.MechanicType == mechanicType);
