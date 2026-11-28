@@ -97,6 +97,60 @@ public class RedeemVisitorHelpActionTest(DatabaseFixture fixture) : IntegrationT
         plot.PlantTime!.Value.Should().BeApproximately(plantTime - 33_120_000, 1);
     }
 
+    [Fact]
+    public async Task RedeemVisitorHelpAction_WitheredShip_RevivesShip()
+    {
+        var time = new FakeTimeProvider(StartTime);
+        ServerUtils.TimeProvider = time;
+        var ship = Faker.WorldObject(itemName: "test_ship", className: BuildingClassType.Ship, contractName: "test_ship_contract", state: WorldObjectState.Planted, plantTime: ServerUtils.GetCurrentTime(), worldFlatId: TargetId);
+        var player = await SeedPlayer(ship);
+
+        time.Advance(TimeSpan.FromSeconds(300));
+
+        await CreateHandler().HandlePacket(CreateRequest(), player.Id, TestContext.Current.CancellationToken);
+
+        ship.State.Should().Be(WorldObjectState.Grown);
+        ship.IsWithered().Should().BeFalse();
+        ship.CanHarvest().Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task RedeemVisitorHelpAction_ShipAwayUnderInstantLimit_BecomesGrown()
+    {
+        ServerUtils.TimeProvider = new FakeTimeProvider(StartTime);
+        var ship = Faker.WorldObject(itemName: "test_ship", className: BuildingClassType.Ship, contractName: "test_ship_contract", state: WorldObjectState.Planted, plantTime: ServerUtils.GetCurrentTime(), worldFlatId: TargetId);
+        var player = await SeedPlayer(ship);
+
+        await CreateHandler().HandlePacket(CreateRequest(), player.Id, TestContext.Current.CancellationToken);
+
+        ship.State.Should().Be(WorldObjectState.Grown);
+        ship.CanHarvest().Should().BeTrue();
+    }
+
+    // test_pier at (10, 10) has berth squares (9, 12) and (9, 9), test_ship at (6, 10) covers x 6..9 and y 10..12
+    [Fact]
+    public async Task RedeemVisitorHelpAction_LoadedShipBerthedAtPier_HarvestsAndCountsPierUpgradeAction()
+    {
+        var pier = Faker.WorldObject(itemName: "test_pier", className: BuildingClassType.Pier, x: 10, y: 10);
+        var farPier = Faker.WorldObject(itemName: "test_pier", className: BuildingClassType.Pier, x: 30, y: 30);
+        var ship = Faker.WorldObject(itemName: "test_ship", className: BuildingClassType.Ship, contractName: "test_ship_contract", state: WorldObjectState.Grown, x: 6, y: 10, worldFlatId: TargetId);
+        var player = Faker.Player(world: Faker.World(objects: [pier, farPier, ship]));
+        player.AddVisitorHelpOrder(Faker.VisitorHelpOrder(senderId: SenderId, helpTargets: [TargetId]));
+
+        await Context.AddAsync(player, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        Context.ChangeTracker.Clear();
+
+        await CreateHandler().HandlePacket(CreateRequest(), player.Id, TestContext.Current.CancellationToken);
+
+        var storedPier = await Context.Set<WorldObject>().AsNoTracking().FirstAsync(x => x.Id == pier.Id, TestContext.Current.CancellationToken);
+        var storedFarPier = await Context.Set<WorldObject>().AsNoTracking().FirstAsync(x => x.Id == farPier.Id, TestContext.Current.CancellationToken);
+        var storedShip = await Context.Set<WorldObject>().AsNoTracking().FirstAsync(x => x.Id == ship.Id, TestContext.Current.CancellationToken);
+        storedPier.UpgradeActionCount.Should().Be(1);
+        storedFarPier.UpgradeActionCount.Should().BeNull();
+        storedShip.ContractName.Should().BeNull();
+    }
+
     // test_bus_tour rolls test_bus_tour_table: 40 coins, without the visits multiplier of a real harvest
     [Fact]
     public async Task RedeemVisitorHelpAction_Business_RollsDoobersAndCountsUpgradeAction()

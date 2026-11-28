@@ -728,6 +728,24 @@
             <keyword>cargoship</keyword>
             <gates/>
         </item>
+        <item name="test_pier" type="pier" buyable="true">
+            <sizeX>4</sizeX>
+            <sizeY>4</sizeY>
+            <berthsquares>-1|2;-1|-1</berthsquares>
+            <supportedShipKeywords>test_cargo</supportedShipKeywords>
+            <gates/>
+        </item>
+        <item name="test_ship" type="ship" buyable="true">
+            <sizeX>3</sizeX>
+            <sizeY>2</sizeY>
+            <keyword>test_cargo</keyword>
+            <gates/>
+        </item>
+        <item name="test_ship_contract" type="ship_contract" buyable="true">
+            <coinYield>100</coinYield>
+            <growTime>0.001</growTime>
+            <gates/>
+        </item>
         <item name="test_ferry_ship" type="ferryShip" buyable="true">
             <sizeX>3</sizeX>
             <sizeY>2</sizeY>

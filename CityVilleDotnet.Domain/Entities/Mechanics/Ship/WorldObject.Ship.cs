@@ -32,6 +32,11 @@ public partial class WorldObject
             pier.Y + square.Y >= Y && pier.Y + square.Y <= Y + height);
     }
 
+    public void CountPierUpgradeAction()
+    {
+        UpgradeActionCount = (UpgradeActionCount ?? 0) + 1;
+    }
+
     // CruiseShipLogicComponent::harvest
     public void CountCruiseUpgradeAction(string contractName)
     {

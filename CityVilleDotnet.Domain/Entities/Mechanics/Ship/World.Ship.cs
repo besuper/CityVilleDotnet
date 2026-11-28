@@ -11,4 +11,13 @@ public partial class World
             dockHouse.CountCruiseUpgradeAction(contractName);
         }
     }
+
+    // Ship::doHarvest
+    public void CountPierUpgradeActions(WorldObject ship)
+    {
+        foreach (var pier in Objects.Where(x => x.ClassName == BuildingClassType.Pier && ship.IsBerthedAt(x)))
+        {
+            pier.CountPierUpgradeAction();
+        }
+    }
 }

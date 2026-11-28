@@ -32,6 +32,8 @@ public class FarmingSettings
     [XmlAttribute("friendVisitPlotRepGain")]
     public required int FriendVisitPlotRepGain { get; set; }
 
+    [XmlAttribute("friendVisitShipRepGain")] public int FriendVisitShipRepGain { get; set; } = 1;
+
     [XmlAttribute("friendHelpDefaultGoodsReward")]
     public required int FriendHelpDefaultGoodsReward { get; set; }
 

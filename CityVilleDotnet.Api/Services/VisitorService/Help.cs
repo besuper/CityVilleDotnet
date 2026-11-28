@@ -67,6 +67,15 @@ public class Help(CityVilleDbContext context, ILogger<Help> logger) : AmfService
                 reputation = settings.FriendVisitPlotRepGain;
                 coins = settings.FriendHelpDefaultCoinReward;
                 break;
+            case "shipHarvest":
+                reputation = settings.FriendVisitShipRepGain;
+                goods = settings.FriendHelpDefaultGoodsReward;
+                break;
+            case "shipWater":
+            case "shipRevive":
+                reputation = settings.FriendVisitShipRepGain;
+                coins = settings.FriendHelpDefaultCoinReward;
+                break;
             default:
                 throw new Exception($"Not implemented help type {request.Type}");
         }

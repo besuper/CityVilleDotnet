@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace CityVilleDotnet.Test.Integration.VisitorService;
 
 // HarvestableResource::onVisitorHelp: harvest gives rep + goods, water and revive give rep + coins
-// TestData: friendVisitPlotRepGain=1, friendHelpDefaultGoodsReward=15, friendHelpDefaultCoinReward=25
+// TestData: friendVisitPlotRepGain=1, friendVisitShipRepGain=1, friendHelpDefaultGoodsReward=15, friendHelpDefaultCoinReward=25
 [Collection("Database")]
 public class HelpTest(DatabaseFixture fixture) : IntegrationTest(fixture)
 {
@@ -87,6 +87,39 @@ public class HelpTest(DatabaseFixture fixture) : IntegrationTest(fixture)
         var socialXpBefore = visitor.SocialXp;
 
         await new Help(Context, NullLogger<Help>.Instance).HandlePacket(CreateRequest("plotHarvest", visitor, owner), visitor.Id, TestContext.Current.CancellationToken);
+
+        visitor.Gold.Should().Be(goldBefore);
+        visitor.Goods.Should().Be(goodsBefore + 15);
+        visitor.SocialXp.Should().Be(socialXpBefore + 1);
+    }
+
+    [Theory]
+    [InlineData("shipWater")]
+    [InlineData("shipRevive")]
+    public async Task Help_ShipWaterOrRevive_GivesReputationAndCoins(string type)
+    {
+        var (visitor, owner) = await SeedFriends();
+        var goldBefore = visitor.Gold;
+        var goodsBefore = visitor.Goods;
+        var socialXpBefore = visitor.SocialXp;
+
+        var response = await new Help(Context, NullLogger<Help>.Instance).HandlePacket(CreateRequest(type, visitor, owner), visitor.Id, TestContext.Current.CancellationToken);
+
+        response["errorType"].Should().Be(0);
+        visitor.Gold.Should().Be(goldBefore + 25);
+        visitor.Goods.Should().Be(goodsBefore);
+        visitor.SocialXp.Should().Be(socialXpBefore + 1);
+    }
+
+    [Fact]
+    public async Task Help_ShipHarvest_GivesReputationAndGoods()
+    {
+        var (visitor, owner) = await SeedFriends();
+        var goldBefore = visitor.Gold;
+        var goodsBefore = visitor.Goods;
+        var socialXpBefore = visitor.SocialXp;
+
+        await new Help(Context, NullLogger<Help>.Instance).HandlePacket(CreateRequest("shipHarvest", visitor, owner), visitor.Id, TestContext.Current.CancellationToken);
 
         visitor.Gold.Should().Be(goldBefore);
         visitor.Goods.Should().Be(goodsBefore + 15);

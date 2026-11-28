@@ -1001,7 +1001,7 @@ public partial class WorldObject
     // From HarvestableResource::visitBoost
     public void BoostPlot()
     {
-        if (GetClassName() != BuildingClassType.Plot)
+        if (GetClassName() is not (BuildingClassType.Plot or BuildingClassType.Ship))
         {
             throw new Exception($"Can't water {ClassName}");
         }

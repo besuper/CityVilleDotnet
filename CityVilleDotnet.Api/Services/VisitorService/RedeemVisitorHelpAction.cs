@@ -21,7 +21,7 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
             .AsSplitQuery()
             .Include(x => x.VisitorHelpOrders.Where(o => o.SenderId == request.SenderId))
             .Include(x => x.Worlds.Where(w => w.Type == WorldType.Main)) // TODO: Friends can only help main world?
-            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.WorldObjectId || globalTableProviders.Contains(o.ItemName) || hubNames.Contains(o.ItemName)))
+            .ThenInclude(x => x.Objects.Where(o => o.WorldFlatId == request.WorldObjectId || o.ClassName == BuildingClassType.Pier || globalTableProviders.Contains(o.ItemName) || hubNames.Contains(o.ItemName)))
             .Include(x => x.InventoryItems)
             .Include(x => x.Collections)
             .ThenInclude(x => x.Items)
@@ -51,12 +51,17 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
 
                 obj.Harvest();
                 player.CollectDoobersRewards(itemName);
+
+                if (obj.ClassName == BuildingClassType.Ship)
+                {
+                    world.CountPierUpgradeActions(obj);
+                }
                 player.RollPreySpawns(world, GameSettingsManager.Instance.GetItem(obj.ItemName) ?? throw new Exception($"Can't find game item for {obj.ItemName}"), experiments);
 
                 player.HandleQuestsProgress("harvestByClass", className: className.ToString());
                 player.HandleQuestsProgress("harvestResidenceByName", itemName: obj.ItemName);
 
-                if (obj.ClassName == BuildingClassType.Plot)
+                if (obj.ClassName is BuildingClassType.Plot or BuildingClassType.Ship)
                 {
                     player.HandleQuestsProgress("harvestPlotByName", itemName: itemName);
 
@@ -86,13 +91,12 @@ public sealed class RedeemVisitorHelpAction(CityVilleDbContext context, ILogger<
         if (action == "")
         {
 
-            if (obj.GetClassName() == BuildingClassType.Plot && obj.IsWithered())
+            if (obj.GetClassName() is BuildingClassType.Plot or BuildingClassType.Ship && obj.IsWithered())
             {
                 obj.SetFullGrown();
             }
-            else if (obj.GetClassName() == BuildingClassType.Plot && obj.State == WorldObjectState.Planted)
+            else if (obj.GetClassName() is BuildingClassType.Plot or BuildingClassType.Ship && obj.State == WorldObjectState.Planted)
             {
-                // Plot can be watered
                 obj.BoostPlot();
             }
             else if (obj.GetClassName() == BuildingClassType.Business)

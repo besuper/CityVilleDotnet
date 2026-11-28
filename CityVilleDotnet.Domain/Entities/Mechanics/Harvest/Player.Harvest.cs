@@ -29,6 +29,11 @@ public partial class Player
             xpMultiplier: GetMasteryBonusMultiplier(gameItem, "XP"),
             energyMultiplier: GetMasteryBonusMultiplier(gameItem, "energy"));
 
+        if (obj.ClassName == BuildingClassType.Ship)
+        {
+            world.CountPierUpgradeActions(obj);
+        }
+
         if (obj.ClassName == BuildingClassType.HarvestableShip && contractName is not null)
         {
             world.CountCruiseUpgradeActions(obj, contractName);
